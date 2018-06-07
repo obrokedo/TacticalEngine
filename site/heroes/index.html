@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Defining Heroes - Tactical Engine</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Defining Heroes";
+    var mkdocs_page_input_path = "heroes.md";
+    var mkdocs_page_url = "/heroes/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Tactical Engine</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../configure/">Configuring the Engine</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../adding-media/">Adding Assets</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../dev-mode/">Development Mode</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../gamestates/">Game States</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../battles/">Battles</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../battlesystem/">Battle System</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Defining Heroes</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#overview">Overview</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#leaders">Leaders</a></li>
+        
+            <li><a class="toctree-l3" href="#movement-type">Movement Type</a></li>
+        
+            <li><a class="toctree-l3" href="#equippable-items">Equippable Items</a></li>
+        
+            <li><a class="toctree-l3" href="#statistic-growth">Statistic Growth</a></li>
+        
+            <li><a class="toctree-l3" href="#special-attack-chances">Special Attack Chances</a></li>
+        
+            <li><a class="toctree-l3" href="#spell-progression">Spell Progression</a></li>
+        
+            <li><a class="toctree-l3" href="#starting-items">Starting Items</a></li>
+        
+            <li><a class="toctree-l3" href="#promotion">Promotion</a></li>
+        
+            <li><a class="toctree-l3" href="#special-promotion">Special Promotion</a></li>
+        
+            <li><a class="toctree-l3" href="#planner-attributes">Planner Attributes</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../enemies/">Defining Enemies</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../items/">Defining Items</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../cinematics/">Scripting Cinematics</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../maps/">Building Maps</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../speech/">Creating Dialogue</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../triggers/">Using Triggers and Conditions</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../quests/">Using Quests</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../distribute/">Creating a Distributable</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Tactical Engine</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Defining Heroes</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="overview">Overview</h1>
+<hr />
+<p>Defining Heroes is done on the Heroes tab of the planner. A Hero represents an entity that will be able to join the players 'group' and in doing so they will be eligible to participate in battles and progress in power through leveling up and through receiving new items. In general each Hero should be unique to the group, that is, there should not be multiple instances of the Hero in the group at a given time. As Heroes progress they may gain the option of being promoted which allows for a completely different set of attributes to be used for the hero. Each hero must contain at minimum one <em>HeroProgression</em> that defines their starting statistics when they join the force. At maximum a hero should have three <em>HeroProgessions</em> defined, one unpromoted, one promoted and one special promotion.</p>
+<p><img alt="" src="../img/hero-newhero.png" /></p>
+<h2 id="leaders">Leaders</h2>
+<p>Hero's that are marked with the 'Is Leader' option represent a combatant that is so important that if they are killed in any battle then the battle is considered lost. Because of this, very few heroes should be marked as leader. However at least one hero must be defined and in the players 'group' at any given time, generally the first hero in the players 'group'. The hero that is marked as a leader that has been in the 'group' the longest time will act as the players controllable character for in-town movement and interaction. For situations where a hero may be considered a leader in a subset of the battles, you should use the <em>On Hero Death</em> condition for those battles.</p>
+<p>For more information about the in-town game state see: <a href="../gamestates/">Game States</a></p>
+<p>For more information about using triggers see: <a href="../triggers/">Using Triggers and Conditions</a></p>
+<h2 id="movement-type">Movement Type</h2>
+<p>Each hero will have a movement type that dictates how terrain effects it's movement in battle. Available values for this property are set in the implementation of the <code>EngineConfigurationValues</code> that you have defined via the <code>getMovementTypes</code> attribute. Each moveable space in battle should be defined with one of the terrain types in your implementation of <code>EngineConfigurationValues</code> via the <code>getTerrainTypes</code> attribute.</p>
+<p>For more information about defining terrain and movement types see: <a href="../configure/">Configuring the Engine</a></p>
+<p>For more information about the effects of terrain and movement types see: <a href="../battlesystem/">Default Battle System</a></p>
+<h2 id="equippable-items">Equippable Items</h2>
+<p>Each hero can define a subset of equippable items that they can equip. A hero will only be allowed to equip an item if the items <em>Item Style</em> matches on the of the values selected in the 'Usable Items' attribute of the hero. The list of item styles is defined by your implementation of <code>EngineConfigurationValues</code> as defined by <code>getWeaponTypes</code>. By default all heroes are allowed to wear rings.</p>
+<p>For more information about defining weapon types see: <a href="../configure/">Configuring the Engine</a></p>
+<h2 id="statistic-growth">Statistic Growth</h2>
+<p>A hero starts the game with the statistics indicated in their starting progression. </p>
+<p>Most statistics can naturally increase over the course of the game when a hero levels up: </p>
+<p>The first set of these are <em>HP</em>, <em>MP</em>, <em>Attack</em>, <em>Defense</em> and <em>Agility</em> statistics. For these five statistics the hero will start with the value indicated by their starting progressions <em>HP Start</em>, <em>MP Start</em>, <em>Attack Start</em>, <em>Defense Start</em> and <em>Agility Start</em> values respectively. As the hero gains levels their statistics should approach the values indicated by the <em>HP End</em>, <em>MP End</em>, <em>Attack End</em>, <em>Defense End</em> and <em>Agility End</em> attributes. The speed in which these statistics grow is determine by each of the respective <em>ATTRIBUTE Gain</em> category. The values available in this list are defined in your implementation of <code>LevelProgressionConfiguration</code> via the <code>getStandardStatProgressionTypeList</code> attribute. Each time a hero gains a level, the defined <code>LevelProgressionConfiguration</code> will have its' <code>getProgressArray</code> method called which will indicate the percent of the way towards the final statistic value (<em>ATTRIBUTE End</em>) the given attribute should be at with that attributes <em>Gain</em> rate and their current level.</p>
+<p>The next set of values that may grow as you gain levels are <em>Body</em> and <em>Mind</em>, their initial values are indicated by a selection of 'WEAK', 'MEDIUM' or 'STRONG'. These values map to percentages as defined by your implementation of <code>LevelProgressionConfiguration</code> via the <code>getBaseBodyMindStat</code> method. These values grow at a rate as defined by their respective <em>Progression Type</em>. The available <em>Progression Types</em> are defined by your implementation of <code>LevelProgressionConfiguration</code> via the <code>getBodyMindProgressionTypeList</code> method. Each time a hero gains a level, the defined <code>LevelProgressionConfiguration</code> will have its' <code>getLevelUpBodyMindStat</code> method called which will indicate the value that the <em>Body</em> or <em>Mind</em> statistic should be set to given the hero's current level and <em>Progression Type</em> </p>
+<p>Finally, although the Special Attack statistics do not specify a growth rate they can also grow as the hero levels, their initial values are indicated by a selection of 'WEAK', 'MEDIUM' or 'STRONG'. These values map to percentages as defined by your implementation of <code>LevelProgressionConfiguration</code> via the <code>getBaseBattleStat</code> method. The growth of these values is defined by <code>LevelProgressionConfiguration</code> via the <code>getLevelUpBattleStat</code> method which is called each time a hero gains a level.</p>
+<p>For more information about defining statistic growth see: <a href="../configure/">Configuring the Engine</a></p>
+<h2 id="special-attack-chances">Special Attack Chances</h2>
+<p>Each time a hero uses a basic attack or is attacked with a basic attack there is a chance that they will perform a special beneficial action. </p>
+<ul>
+<li>Counter: The target of attack will perform a single attack action against their attacker provided that they are in range. This attack deals damage equal to the damage they would have normally done times the value defined in the <code>BattleFunctionConfiguration</code> by the <code>getCounterDamageModifier</code>.</li>
+<li>Evade: The target of the basic attack will take no damage or effects from the a single attack. The defendants "Dodge" animation will be shown.</li>
+<li>Double: The attacker will perform two full damage attacks back-to-back against it's target.</li>
+<li>Critical: The attacker will deal increased damage with their basic attack, the amount dealt is equal to the damage they would have normally done times the value defined in the <code>BattleFunctionConfiguration</code> by the <code>getCritDamageModifier</code>.</li>
+</ul>
+<p>The value specified in this field should be a number 0-100 that indicates the percent chance that the hero will perform the given special action. For instance a value of "20" in the 'Double Chance Strength' field means that each time the hero performs a basic attack they will have a 20% to perform a double attack.</p>
+<p>Each of these percent values may be further modified in the <code>BattleFunctionConfiguration</code> via the <code>getDoublePercent</code>, <code>getCounterPercent</code>, <code>getDodgePercent</code>, <code>getCritPercent</code> attributes which allows for adding custom values that can be used to increase/decrease battle difficulty.</p>
+<p>For more information about defining special attack chances and outcomes see: <a href="../configure/">Configuring the Engine</a></p>
+<h2 id="spell-progression">Spell Progression</h2>
+<p>Hero's can be defined to begin the game with spells also to learn new spells and spell levels as they progress. A defined <em>SpellProgression</em> is directly tied to a <em>HeroProgression</em> by the combination of values indicated by <em>Promoted Progression</em> and <em>Special Promoted Progression</em>. A hero that is currently unpromoted will be progressing via the <em>HeroProgression</em> that has the <em>Promoted Progression</em> box unchecked, similarly their spells will be progressing at a rate as defined by <em>SpellProgressions</em> that have the <em>Promoted Progression</em> box unchecked. Once the hero becomes promoted then they will be progressing via the <em>HeroProgression</em> that has the <em>Promoted Progression</em> box checked, similarly their spells will be progressing at a rate as defined by <em>SpellProgressions</em> that have the <em>Promoted Progression</em> box checked.</p>
+<p>For example: </p>
+<blockquote>
+<blockquote>
+<p>Consider the hero with four spell progressions defined</p>
+<p><img alt="" src="../img/hero-spell-prom1.png" /></p>
+<p><img alt="" src="../img/hero-spell-prom2.png" /></p>
+<p><img alt="" src="../img/hero-spell-prom3.png" /></p>
+<p><img alt="" src="../img/hero-spell-prom4.png" /></p>
+<ul>
+<li>
+<p>If the hero was unpromoted and level 1 they would know Lightning level 1 and Flood level 2. They would eventually be able to attain Lightning 2-4 and Flood level 3 at higher levels.</p>
+</li>
+<li>
+<p>If the hero was promoted and level 1, but not special promoted they would know Bolt level 2. They would eventually be able to attain Bolt 3-4 at higher levels.</p>
+</li>
+<li>
+<p>If the hero was special promoted and level 1 they would know Blaze level 3. They would gain no more spells as they continued to level.</p>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+<p>Spells may be defined with up to four levels, so <em>SpellProgressions</em> may also indicate four numbers in the <em>Levels Gained</em> attribute with each number indicating which level the hero will gain the next level of the spell.</p>
+<p>For example: </p>
+<blockquote>
+<blockquote>
+<p><img alt="" src="../img/hero-spelllevels.png" /></p>
+<p>The <em>Levels Gained</em> text field contains four numbers which means this hero can learn Lightning levels 1-4. Because the <em>Promoted Progression</em> box is checked and the first number indicated is '1', Lightning level 1 will be learned as soon as the hero is promoted or if the hero is defined as promoted to start. Because the next number is '7', the hero will learn Lightning level 2 once they reach promoted level 7. Lightning level 3 will be learned at level 12 and Lightning level 4 will be learned at level 18. If the first two numbers were "1" (So 1,1,12,18), then the hero would learn Lightning level 1 and 2 when they are promoted.</p>
+</blockquote>
+</blockquote>
+<p>For more information about defining spells see: <a href="../configure/">Configuring the Engine</a></p>
+<h2 id="starting-items">Starting Items</h2>
+<p>Heroes can join the 'group' with equipment and other items. The list of items available to give to a hero is the same as the list of items defined in the planner. Keep in mind when adding equipped items to a hero that it could modify the final statistics of the hero when it is in battle. </p>
+<p>To give an hero a starting item, right click on their name in the planner and select "Starting Item".</p>
+<h2 id="promotion">Promotion</h2>
+<p>Depending on how you have configured your engine, heroes can become eligible for promotion by reaching the level specified in your implementation of <code>EngineConfigurationValues</code> via the <code>getHeroPromotionLevel</code> attribute. Promotion represents an opportunity to change all aspects of a hero's progression including statistic progression, access to spells, movement type and usable item types. On attaining promotion level an unpromoted hero can be promoted by speaking with a priest and selecting the Promote option. Hero's must have a promotion progression defined in order to be promoted, otherwise errors will occur. A hero can be defined as promoted to begin with by checking the 'Promoted' box, in this case the hero will use the 'HeroProgession' that has the 'Promoted Progression' box checked. Hero's that join the group already promoted cannot ever use a Special Promotion.</p>
+<h3 id="upon-promotion-changes-occur-in-the-following-areas">Upon promotion changes occur in the following areas.</h3>
+<p><strong>Basic Statistics (By default: HP, MP, Attack, Defense, Agility) </strong></p>
+<p>None of the hero's basic statistics will be immediately changed, that means that a hero may have a statistic lower then the indicated 'Start' value, but on subsequent level ups, statistic progression will be done using the promoted progressions 'Start' and 'End' values which will likely result in a different growth then the unpromoted progression. </p>
+<p><strong> Level </strong></p>
+<p>The hero's level will be changed to a value of "1". All level specific attributes (spell progression) should use this new lower number to define progression timing.</p>
+<p><strong> Movement Value and Movement Type </strong></p>
+<p>The hero's base movement statistic and their movement type will immediately be changed to the value specified in the promoted progression.</p>
+<p><strong> Resistances </strong></p>
+<p>The hero's base elemental resistances will immediately be changed to the the value specified in the promoted progression.</p>
+<p><strong> Special Attack Chance (By default: Double, Counter, Dodge, Critical) </strong></p>
+<p>The hero's special attack chances will immediately be changed to the value specified in the promoted progression.</p>
+<p><strong> Spells </strong></p>
+<p>All of the hero's spells learned before promotion will be immediately forgotten. Any <em>SpellProgressions</em> that are defined for the hero that are marked as promoted will be checked to see if the hero meets the level requirements for the indicated spell and if so, they will learn that spell immediately. For any spell that the hero previously knew that they should retain after promotion a <em>SpellProgression</em> should be defined with the <em>Promoted Progression</em> box checked and the <em>Levels Gained</em> set as "1" so that they immediately gain the spell.</p>
+<blockquote>
+<blockquote>
+<p><strong>For example:</strong> </p>
+<p>Joe is unpromoted and level 14 with the following <em>SpellProgression's</em> defined:</p>
+<p><img alt="" src="../img/hero-progress-spell1.png" /></p>
+<p>Because of this he knows Flood level 2.</p>
+<p>After he becomes promoted he becomes level 1 and has only the following <em>SpellProgression</em> defined that is marked as <em>Promoted Progression</em></p>
+<p><img alt="" src="../img/hero-progress-spell2.png" /></p>
+<p>Because he has forgotten his original spells this means that he only has access to Burst level 1</p>
+<p>If we wanted him to continue having access to Flood level 2 then we would need to add an additional <em>SpellProgression</em> marked <em>Promoted Progression</em> that defines the levels that he learns Flood level 2. </p>
+<p><img alt="" src="../img/hero-progress-spell3.png" /></p>
+</blockquote>
+</blockquote>
+<p><strong> Usable Items and Inventory</strong></p>
+<p>A promoted hero will immediately lose proficiency with the items specified in their unpromoted progression and will become proficient in the items specified as <em>Usable Items</em> in the promoted progression. The items in the hero's inventory will remain unchanged, but depending upon their newly defined <em>Usable Items</em> they may no longer have a given item equipped if they are no longer able to use it.</p>
+<p>For more information about in game statistics see: <a href="../battlesystem/">Default Battle System</a></p>
+<p>For more information about defining promotion level see: <a href="../configure/">Configuring the Engine</a></p>
+<h2 id="special-promotion">Special Promotion</h2>
+<p>Special promotion is very similar to promotion as defined above except that a <em>HeroProgression</em> that is marked as 'Special Promoted Progression' can only be attained when the hero to be promoted is holding the indicated 'Special Promotion Required Item' in their inventory. The list of items to allow special promotion is the same as the list of items defined in the planner. When this occurs the Priest will prompt the user to see if they want to use the indicated item to promote the hero to this special promotion. If yes is selected then the item will be removed from the hero's inventory and the hero's progression will now follow the special progression. This is identical as far as changes are concerned to a normal promotion except that the hero's spell progression will now be drawn from <em>SpellProgression's</em> that have the <em>Special Promotion Progression</em> box selected.</p>
+<p>For more information about creating items see: <a href="../items/">Defining Items</a></p>
+<h2 id="planner-attributes">Planner Attributes</h2>
+<h3 id="default-values">Default Values</h3>
+<ul>
+<li>Name: The name of the hero</li>
+<li>Promoted: If true, this hero is promoted when they initially join the party</li>
+<li>Level: Starting Level for the hero</li>
+<li>Animation File: The name of the animation file that should be used for this hero</li>
+<li>Is Leader: Whether this hero is the leader of the force</li>
+</ul>
+<h3 id="hero-progression-this-heroes-statistic-progression">Hero Progression: This heroes statistic progression</h3>
+<ul>
+<li>Promoted Progression: Whether this progression represents this heroes promoted or unpromoted progression</li>
+<li>Special Promotion Progression: If checked, this progression will be used for the SPECIAL promotion path (as opposed to default). Selecting this supercedes the 'promoted' checkbox</li>
+<li>Special Promotion Required Item: If special promotion is checked, this is the item that must be possesed by the group to allow the this special promotion to occur. If this item is not owned then this progression path will be unavailable. If special promotion is checked and this value is not specified then this promotion path will be impossible to take.</li>
+<li>Starting Move: The heroes base move while in this progression</li>
+<li>Movement Type: The movement type of this hero</li>
+<li>Attack Gain: The amount of attack the hero should gain per level</li>
+<li>Attack Start: The amount of attack the hero should start with</li>
+<li>Attack End: The minimum amount of attack the hero should end with</li>
+<li>Defense Gain: The amount of defense the hero should gain per level</li>
+<li>Defense Start: The amount of defense the hero should start with</li>
+<li>Defense End: The minimum amount of defense the hero should end with</li>
+<li>Speed Gain: The amount of speed the hero should gain per level</li>
+<li>Speed Start: The amount of speed the hero should start with</li>
+<li>Speed End: The minimum amount of speed the hero should end with</li>
+<li>HP Gain: The amount of HP the hero should gain per level</li>
+<li>HP Start: The amount of HP the hero should start with</li>
+<li>HP End: The minimum amount of HP the hero should end with</li>
+<li>MP Gain: The amount of MP the hero should gain per level</li>
+<li>MP Start: The amount of MP the hero should start with</li>
+<li>MP End: The minimum amount of MP the hero should end with</li>
+<li>Fire Affinitiy: The heroes base fire affinity. Items can modify this value.</li>
+<li>Electricity Affinitiy: The heroes base electricity affinity. Items can modify this value.</li>
+<li>Cold Affinitiy: The heroes base cold affinity. Items can modify this value.</li>
+<li>Dark Affinitiy: The heroes base dark affinity. Items can modify this value.</li>
+<li>Water Affinitiy: The heroes base water affinity. Items can modify this value.</li>
+<li>Earth Affinitiy: The heroes base earth affinity. Items can modify this value.</li>
+<li>Wind Affinitiy: The heroes base wind affinity. Items can modify this value.</li>
+<li>Light Affinitiy: The heroes base light affinity. Items can modify this value.</li>
+<li>Body Strength: Determines the base body value for the hero.</li>
+<li>Body Progression Type: The name of the progression type that dicates how this heroes body stat will increase.</li>
+<li>Mind Strength: Determines the base mind value for the hero.</li>
+<li>Mind Progression Type: The name of the progression type that dicates how this heroes mind stat will increase.</li>
+<li>Counter Chance Strength: Determines the base counter chance value for the hero.</li>
+<li>Evade Chance Strength: Determines the base evade chance value for the hero.</li>
+<li>Double Chance Strength: Determines the base double attack chance value for the hero.</li>
+<li>Critical Strength: Determines the base critical attack chance value for the hero.</li>
+<li>Usuable Items: The type of weapons that this hero can use</li>
+<li>Class Name: The name of this characters class.</li>
+</ul>
+<h3 id="spell-progression-this-heroes-spell-progression">Spell Progression: This heroes spell progression</h3>
+<ul>
+<li>Spell ID: The ID of the spell that this hero knows</li>
+<li>Promoted Progression: If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the DEFAULT progression path.</li>
+<li>Special Promotion Progression: If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the SPECIAL progression path. Selecting this supercedes the 'Promoted Progression' option</li>
+<li>Levels Gained: A comma seperated list of the levels that the spell levels will be gained at.</li>
+</ul>
+<h3 id="starting-item-an-item-that-this-hero-should-start-with">Starting Item: An item that this hero should start with</h3>
+<ul>
+<li>Item ID: The ID of the item that this hero should start with</li>
+<li>Item Equipped: If true, the item will start as equipped.</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../enemies/" class="btn btn-neutral float-right" title="Defining Enemies">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../battlesystem/" class="btn btn-neutral" title="Battle System"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../battlesystem/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../enemies/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>

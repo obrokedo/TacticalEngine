@@ -1,0 +1,529 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Tactical Engine is a game engine for creating 2d top-down tactical RPGs that can be deployed on Windows, Linux and Mac systems. \n\n\nConfigurable\n\n\nThe Tactical Engine is designed to be highly modifiable while still allowing for quick prototyping for those that don't want to deal with the lower level details. For those that really want to modify the engine, the entire code-base is available on source-forge.\n\n\nThe engine supports Tiled maps (.tmx files) out of the box, but can be configured to consume any type of map file. \n\n\nFree and Open-Source\n\n\nUse of Tactical Engine is completely free and the entirety of the code-base write in Java is available for download and modification. \n\n\nProvided Tools\n\n\nTactical Engine comes bundled with a number of tools to aid in the creation of assets that can be consumed by the engine.\n\n\n\n\n2D sprite animator for pixel based animations.\n\n\nPortrait definer.\n\n\nAsset generation tool for creating items, heroes, enemies, cinematics and in-game triggers to drive the action.\n\n\nGIF-to-animation converter.\n\n\nA built in development mode with a suite of debugging and viewing tools.",
+            "title": "Home"
+        },
+        {
+            "location": "/#configurable",
+            "text": "The Tactical Engine is designed to be highly modifiable while still allowing for quick prototyping for those that don't want to deal with the lower level details. For those that really want to modify the engine, the entire code-base is available on source-forge.  The engine supports Tiled maps (.tmx files) out of the box, but can be configured to consume any type of map file.",
+            "title": "Configurable"
+        },
+        {
+            "location": "/#free-and-open-source",
+            "text": "Use of Tactical Engine is completely free and the entirety of the code-base write in Java is available for download and modification.",
+            "title": "Free and Open-Source"
+        },
+        {
+            "location": "/#provided-tools",
+            "text": "Tactical Engine comes bundled with a number of tools to aid in the creation of assets that can be consumed by the engine.   2D sprite animator for pixel based animations.  Portrait definer.  Asset generation tool for creating items, heroes, enemies, cinematics and in-game triggers to drive the action.  GIF-to-animation converter.  A built in development mode with a suite of debugging and viewing tools.",
+            "title": "Provided Tools"
+        },
+        {
+            "location": "/configure/",
+            "text": "Resource Locations\n\n\nRequired Settings\n\n\nOverriding Default Values\n\n\nAPple\n\n\nAPple\nAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPpleAPple\n\n\nAPple\n\n\n\n\nConfiguring Movement and Terrain\nAPple\n\n\nAPple\nAPple\n\n\nAPple\nAPple\n\n\nAPple\nAPple\n\n\nAPple\nAPple\n\n\nAPple\nAPple\n\n\nAPple\nAPple\n\n\nAPple",
+            "title": "Configuring the Engine"
+        },
+        {
+            "location": "/configure/#resource-locations",
+            "text": "",
+            "title": "Resource Locations"
+        },
+        {
+            "location": "/configure/#required-settings",
+            "text": "",
+            "title": "Required Settings"
+        },
+        {
+            "location": "/configure/#overriding-default-values",
+            "text": "APple  APple\nAPple  APpleAPple  APpleAPple  APpleAPple  APpleAPple  APpleAPple  APpleAPple  APpleAPple  APpleAPple  APpleAPple  APpleAPple  APple",
+            "title": "Overriding Default Values"
+        },
+        {
+            "location": "/adding-media/",
+            "text": "Supported Media Types\n\n\nResource Locations\n\n\nRequired Media",
+            "title": "Adding Assets"
+        },
+        {
+            "location": "/adding-media/#supported-media-types",
+            "text": "",
+            "title": "Supported Media Types"
+        },
+        {
+            "location": "/adding-media/#resource-locations",
+            "text": "",
+            "title": "Resource Locations"
+        },
+        {
+            "location": "/adding-media/#required-media",
+            "text": "",
+            "title": "Required Media"
+        },
+        {
+            "location": "/dev-mode/",
+            "text": "Speeding Up Engine\n\n\nManually Setting Quests Complete\n\n\nIn-battle Tools\n\n\nAnimation Viewer\n\n\nLevel Progression Tester\n\n\nConvert GIFs to Animations\n\n\nCreating Portrait Animations",
+            "title": "Development Mode"
+        },
+        {
+            "location": "/dev-mode/#speeding-up-engine",
+            "text": "",
+            "title": "Speeding Up Engine"
+        },
+        {
+            "location": "/dev-mode/#manually-setting-quests-complete",
+            "text": "",
+            "title": "Manually Setting Quests Complete"
+        },
+        {
+            "location": "/dev-mode/#in-battle-tools",
+            "text": "",
+            "title": "In-battle Tools"
+        },
+        {
+            "location": "/dev-mode/#animation-viewer",
+            "text": "",
+            "title": "Animation Viewer"
+        },
+        {
+            "location": "/dev-mode/#level-progression-tester",
+            "text": "",
+            "title": "Level Progression Tester"
+        },
+        {
+            "location": "/dev-mode/#convert-gifs-to-animations",
+            "text": "",
+            "title": "Convert GIFs to Animations"
+        },
+        {
+            "location": "/dev-mode/#creating-portrait-animations",
+            "text": "",
+            "title": "Creating Portrait Animations"
+        },
+        {
+            "location": "/gamestates/",
+            "text": "",
+            "title": "Game States"
+        },
+        {
+            "location": "/battles/",
+            "text": "Affinities\n\n\nSpecial Attacks\n\n\nBattle Effects\n\n\nMovement Type\n\n\nTerrain\n\n\nAttack Range",
+            "title": "Battles"
+        },
+        {
+            "location": "/battles/#affinities",
+            "text": "",
+            "title": "Affinities"
+        },
+        {
+            "location": "/battles/#special-attacks",
+            "text": "",
+            "title": "Special Attacks"
+        },
+        {
+            "location": "/battles/#battle-effects",
+            "text": "",
+            "title": "Battle Effects"
+        },
+        {
+            "location": "/battles/#movement-type",
+            "text": "",
+            "title": "Movement Type"
+        },
+        {
+            "location": "/battles/#terrain",
+            "text": "",
+            "title": "Terrain"
+        },
+        {
+            "location": "/battles/#attack-range",
+            "text": "",
+            "title": "Attack Range"
+        },
+        {
+            "location": "/battlesystem/",
+            "text": "Player 'Group",
+            "title": "Battle System"
+        },
+        {
+            "location": "/battlesystem/#player-group",
+            "text": "",
+            "title": "Player 'Group"
+        },
+        {
+            "location": "/heroes/",
+            "text": "Overview\n\n\n\n\nDefining Heroes is done on the Heroes tab of the planner. A Hero represents an entity that will be able to join the players 'group' and in doing so they will be eligible to participate in battles and progress in power through leveling up and through receiving new items. In general each Hero should be unique to the group, that is, there should not be multiple instances of the Hero in the group at a given time. As Heroes progress they may gain the option of being promoted which allows for a completely different set of attributes to be used for the hero. Each hero must contain at minimum one \nHeroProgression\n that defines their starting statistics when they join the force. At maximum a hero should have three \nHeroProgessions\n defined, one unpromoted, one promoted and one special promotion.\n\n\n\n\nLeaders\n\n\nHero's that are marked with the 'Is Leader' option represent a combatant that is so important that if they are killed in any battle then the battle is considered lost. Because of this, very few heroes should be marked as leader. However at least one hero must be defined and in the players 'group' at any given time, generally the first hero in the players 'group'. The hero that is marked as a leader that has been in the 'group' the longest time will act as the players controllable character for in-town movement and interaction. For situations where a hero may be considered a leader in a subset of the battles, you should use the \nOn Hero Death\n condition for those battles.\n\n\nFor more information about the in-town game state see: \nGame States\n\n\nFor more information about using triggers see: \nUsing Triggers and Conditions\n\n\nMovement Type\n\n\nEach hero will have a movement type that dictates how terrain effects it's movement in battle. Available values for this property are set in the implementation of the \nEngineConfigurationValues\n that you have defined via the \ngetMovementTypes\n attribute. Each moveable space in battle should be defined with one of the terrain types in your implementation of \nEngineConfigurationValues\n via the \ngetTerrainTypes\n attribute.\n\n\nFor more information about defining terrain and movement types see: \nConfiguring the Engine\n\n\nFor more information about the effects of terrain and movement types see: \nDefault Battle System\n\n\nEquippable Items\n\n\nEach hero can define a subset of equippable items that they can equip. A hero will only be allowed to equip an item if the items \nItem Style\n matches on the of the values selected in the 'Usable Items' attribute of the hero. The list of item styles is defined by your implementation of \nEngineConfigurationValues\n as defined by \ngetWeaponTypes\n. By default all heroes are allowed to wear rings.\n\n\nFor more information about defining weapon types see: \nConfiguring the Engine\n\n\nStatistic Growth\n\n\nA hero starts the game with the statistics indicated in their starting progression. \n\n\nMost statistics can naturally increase over the course of the game when a hero levels up: \n\n\nThe first set of these are \nHP\n, \nMP\n, \nAttack\n, \nDefense\n and \nAgility\n statistics. For these five statistics the hero will start with the value indicated by their starting progressions \nHP Start\n, \nMP Start\n, \nAttack Start\n, \nDefense Start\n and \nAgility Start\n values respectively. As the hero gains levels their statistics should approach the values indicated by the \nHP End\n, \nMP End\n, \nAttack End\n, \nDefense End\n and \nAgility End\n attributes. The speed in which these statistics grow is determine by each of the respective \nATTRIBUTE Gain\n category. The values available in this list are defined in your implementation of \nLevelProgressionConfiguration\n via the \ngetStandardStatProgressionTypeList\n attribute. Each time a hero gains a level, the defined \nLevelProgressionConfiguration\n will have its' \ngetProgressArray\n method called which will indicate the percent of the way towards the final statistic value (\nATTRIBUTE End\n) the given attribute should be at with that attributes \nGain\n rate and their current level.\n\n\nThe next set of values that may grow as you gain levels are \nBody\n and \nMind\n, their initial values are indicated by a selection of 'WEAK', 'MEDIUM' or 'STRONG'. These values map to percentages as defined by your implementation of \nLevelProgressionConfiguration\n via the \ngetBaseBodyMindStat\n method. These values grow at a rate as defined by their respective \nProgression Type\n. The available \nProgression Types\n are defined by your implementation of \nLevelProgressionConfiguration\n via the \ngetBodyMindProgressionTypeList\n method. Each time a hero gains a level, the defined \nLevelProgressionConfiguration\n will have its' \ngetLevelUpBodyMindStat\n method called which will indicate the value that the \nBody\n or \nMind\n statistic should be set to given the hero's current level and \nProgression Type\n \n\n\nFinally, although the Special Attack statistics do not specify a growth rate they can also grow as the hero levels, their initial values are indicated by a selection of 'WEAK', 'MEDIUM' or 'STRONG'. These values map to percentages as defined by your implementation of \nLevelProgressionConfiguration\n via the \ngetBaseBattleStat\n method. The growth of these values is defined by \nLevelProgressionConfiguration\n via the \ngetLevelUpBattleStat\n method which is called each time a hero gains a level.\n\n\nFor more information about defining statistic growth see: \nConfiguring the Engine\n\n\nSpecial Attack Chances\n\n\nEach time a hero uses a basic attack or is attacked with a basic attack there is a chance that they will perform a special beneficial action. \n\n\n\n\nCounter: The target of attack will perform a single attack action against their attacker provided that they are in range. This attack deals damage equal to the damage they would have normally done times the value defined in the \nBattleFunctionConfiguration\n by the \ngetCounterDamageModifier\n.\n\n\nEvade: The target of the basic attack will take no damage or effects from the a single attack. The defendants \"Dodge\" animation will be shown.\n\n\nDouble: The attacker will perform two full damage attacks back-to-back against it's target.\n\n\nCritical: The attacker will deal increased damage with their basic attack, the amount dealt is equal to the damage they would have normally done times the value defined in the \nBattleFunctionConfiguration\n by the \ngetCritDamageModifier\n.\n\n\n\n\nThe value specified in this field should be a number 0-100 that indicates the percent chance that the hero will perform the given special action. For instance a value of \"20\" in the 'Double Chance Strength' field means that each time the hero performs a basic attack they will have a 20% to perform a double attack.\n\n\nEach of these percent values may be further modified in the \nBattleFunctionConfiguration\n via the \ngetDoublePercent\n, \ngetCounterPercent\n, \ngetDodgePercent\n, \ngetCritPercent\n attributes which allows for adding custom values that can be used to increase/decrease battle difficulty.\n\n\nFor more information about defining special attack chances and outcomes see: \nConfiguring the Engine\n\n\nSpell Progression\n\n\nHero's can be defined to begin the game with spells also to learn new spells and spell levels as they progress. A defined \nSpellProgression\n is directly tied to a \nHeroProgression\n by the combination of values indicated by \nPromoted Progression\n and \nSpecial Promoted Progression\n. A hero that is currently unpromoted will be progressing via the \nHeroProgression\n that has the \nPromoted Progression\n box unchecked, similarly their spells will be progressing at a rate as defined by \nSpellProgressions\n that have the \nPromoted Progression\n box unchecked. Once the hero becomes promoted then they will be progressing via the \nHeroProgression\n that has the \nPromoted Progression\n box checked, similarly their spells will be progressing at a rate as defined by \nSpellProgressions\n that have the \nPromoted Progression\n box checked.\n\n\nFor example: \n\n\n\n\n\n\nConsider the hero with four spell progressions defined\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nIf the hero was unpromoted and level 1 they would know Lightning level 1 and Flood level 2. They would eventually be able to attain Lightning 2-4 and Flood level 3 at higher levels.\n\n\n\n\n\n\nIf the hero was promoted and level 1, but not special promoted they would know Bolt level 2. They would eventually be able to attain Bolt 3-4 at higher levels.\n\n\n\n\n\n\nIf the hero was special promoted and level 1 they would know Blaze level 3. They would gain no more spells as they continued to level.\n\n\n\n\n\n\n\n\n\n\nSpells may be defined with up to four levels, so \nSpellProgressions\n may also indicate four numbers in the \nLevels Gained\n attribute with each number indicating which level the hero will gain the next level of the spell.\n\n\nFor example: \n\n\n\n\n\n\n\n\nThe \nLevels Gained\n text field contains four numbers which means this hero can learn Lightning levels 1-4. Because the \nPromoted Progression\n box is checked and the first number indicated is '1', Lightning level 1 will be learned as soon as the hero is promoted or if the hero is defined as promoted to start. Because the next number is '7', the hero will learn Lightning level 2 once they reach promoted level 7. Lightning level 3 will be learned at level 12 and Lightning level 4 will be learned at level 18. If the first two numbers were \"1\" (So 1,1,12,18), then the hero would learn Lightning level 1 and 2 when they are promoted.\n\n\n\n\n\n\nFor more information about defining spells see: \nConfiguring the Engine\n\n\nStarting Items\n\n\nHeroes can join the 'group' with equipment and other items. The list of items available to give to a hero is the same as the list of items defined in the planner. Keep in mind when adding equipped items to a hero that it could modify the final statistics of the hero when it is in battle. \n\n\nTo give an hero a starting item, right click on their name in the planner and select \"Starting Item\".\n\n\nPromotion\n\n\nDepending on how you have configured your engine, heroes can become eligible for promotion by reaching the level specified in your implementation of \nEngineConfigurationValues\n via the \ngetHeroPromotionLevel\n attribute. Promotion represents an opportunity to change all aspects of a hero's progression including statistic progression, access to spells, movement type and usable item types. On attaining promotion level an unpromoted hero can be promoted by speaking with a priest and selecting the Promote option. Hero's must have a promotion progression defined in order to be promoted, otherwise errors will occur. A hero can be defined as promoted to begin with by checking the 'Promoted' box, in this case the hero will use the 'HeroProgession' that has the 'Promoted Progression' box checked. Hero's that join the group already promoted cannot ever use a Special Promotion.\n\n\nUpon promotion changes occur in the following areas.\n\n\nBasic Statistics (By default: HP, MP, Attack, Defense, Agility) \n\n\nNone of the hero's basic statistics will be immediately changed, that means that a hero may have a statistic lower then the indicated 'Start' value, but on subsequent level ups, statistic progression will be done using the promoted progressions 'Start' and 'End' values which will likely result in a different growth then the unpromoted progression. \n\n\n Level \n\n\nThe hero's level will be changed to a value of \"1\". All level specific attributes (spell progression) should use this new lower number to define progression timing.\n\n\n Movement Value and Movement Type \n\n\nThe hero's base movement statistic and their movement type will immediately be changed to the value specified in the promoted progression.\n\n\n Resistances \n\n\nThe hero's base elemental resistances will immediately be changed to the the value specified in the promoted progression.\n\n\n Special Attack Chance (By default: Double, Counter, Dodge, Critical) \n\n\nThe hero's special attack chances will immediately be changed to the value specified in the promoted progression.\n\n\n Spells \n\n\nAll of the hero's spells learned before promotion will be immediately forgotten. Any \nSpellProgressions\n that are defined for the hero that are marked as promoted will be checked to see if the hero meets the level requirements for the indicated spell and if so, they will learn that spell immediately. For any spell that the hero previously knew that they should retain after promotion a \nSpellProgression\n should be defined with the \nPromoted Progression\n box checked and the \nLevels Gained\n set as \"1\" so that they immediately gain the spell.\n\n\n\n\n\n\nFor example:\n \n\n\nJoe is unpromoted and level 14 with the following \nSpellProgression's\n defined:\n\n\n\n\nBecause of this he knows Flood level 2.\n\n\nAfter he becomes promoted he becomes level 1 and has only the following \nSpellProgression\n defined that is marked as \nPromoted Progression\n\n\n\n\nBecause he has forgotten his original spells this means that he only has access to Burst level 1\n\n\nIf we wanted him to continue having access to Flood level 2 then we would need to add an additional \nSpellProgression\n marked \nPromoted Progression\n that defines the levels that he learns Flood level 2. \n\n\n\n\n\n\n\n\n Usable Items and Inventory\n\n\nA promoted hero will immediately lose proficiency with the items specified in their unpromoted progression and will become proficient in the items specified as \nUsable Items\n in the promoted progression. The items in the hero's inventory will remain unchanged, but depending upon their newly defined \nUsable Items\n they may no longer have a given item equipped if they are no longer able to use it.\n\n\nFor more information about in game statistics see: \nDefault Battle System\n\n\nFor more information about defining promotion level see: \nConfiguring the Engine\n\n\nSpecial Promotion\n\n\nSpecial promotion is very similar to promotion as defined above except that a \nHeroProgression\n that is marked as 'Special Promoted Progression' can only be attained when the hero to be promoted is holding the indicated 'Special Promotion Required Item' in their inventory. The list of items to allow special promotion is the same as the list of items defined in the planner. When this occurs the Priest will prompt the user to see if they want to use the indicated item to promote the hero to this special promotion. If yes is selected then the item will be removed from the hero's inventory and the hero's progression will now follow the special progression. This is identical as far as changes are concerned to a normal promotion except that the hero's spell progression will now be drawn from \nSpellProgression's\n that have the \nSpecial Promotion Progression\n box selected.\n\n\nFor more information about creating items see: \nDefining Items\n\n\nPlanner Attributes\n\n\nDefault Values\n\n\n\n\nName: The name of the hero\n\n\nPromoted: If true, this hero is promoted when they initially join the party\n\n\nLevel: Starting Level for the hero\n\n\nAnimation File: The name of the animation file that should be used for this hero\n\n\nIs Leader: Whether this hero is the leader of the force\n\n\n\n\nHero Progression: This heroes statistic progression\n\n\n\n\nPromoted Progression: Whether this progression represents this heroes promoted or unpromoted progression\n\n\nSpecial Promotion Progression: If checked, this progression will be used for the SPECIAL promotion path (as opposed to default). Selecting this supercedes the 'promoted' checkbox\n\n\nSpecial Promotion Required Item: If special promotion is checked, this is the item that must be possesed by the group to allow the this special promotion to occur. If this item is not owned then this progression path will be unavailable. If special promotion is checked and this value is not specified then this promotion path will be impossible to take.\n\n\nStarting Move: The heroes base move while in this progression\n\n\nMovement Type: The movement type of this hero\n\n\nAttack Gain: The amount of attack the hero should gain per level\n\n\nAttack Start: The amount of attack the hero should start with\n\n\nAttack End: The minimum amount of attack the hero should end with\n\n\nDefense Gain: The amount of defense the hero should gain per level\n\n\nDefense Start: The amount of defense the hero should start with\n\n\nDefense End: The minimum amount of defense the hero should end with\n\n\nSpeed Gain: The amount of speed the hero should gain per level\n\n\nSpeed Start: The amount of speed the hero should start with\n\n\nSpeed End: The minimum amount of speed the hero should end with\n\n\nHP Gain: The amount of HP the hero should gain per level\n\n\nHP Start: The amount of HP the hero should start with\n\n\nHP End: The minimum amount of HP the hero should end with\n\n\nMP Gain: The amount of MP the hero should gain per level\n\n\nMP Start: The amount of MP the hero should start with\n\n\nMP End: The minimum amount of MP the hero should end with\n\n\nFire Affinitiy: The heroes base fire affinity. Items can modify this value.\n\n\nElectricity Affinitiy: The heroes base electricity affinity. Items can modify this value.\n\n\nCold Affinitiy: The heroes base cold affinity. Items can modify this value.\n\n\nDark Affinitiy: The heroes base dark affinity. Items can modify this value.\n\n\nWater Affinitiy: The heroes base water affinity. Items can modify this value.\n\n\nEarth Affinitiy: The heroes base earth affinity. Items can modify this value.\n\n\nWind Affinitiy: The heroes base wind affinity. Items can modify this value.\n\n\nLight Affinitiy: The heroes base light affinity. Items can modify this value.\n\n\nBody Strength: Determines the base body value for the hero.\n\n\nBody Progression Type: The name of the progression type that dicates how this heroes body stat will increase.\n\n\nMind Strength: Determines the base mind value for the hero.\n\n\nMind Progression Type: The name of the progression type that dicates how this heroes mind stat will increase.\n\n\nCounter Chance Strength: Determines the base counter chance value for the hero.\n\n\nEvade Chance Strength: Determines the base evade chance value for the hero.\n\n\nDouble Chance Strength: Determines the base double attack chance value for the hero.\n\n\nCritical Strength: Determines the base critical attack chance value for the hero.\n\n\nUsuable Items: The type of weapons that this hero can use\n\n\nClass Name: The name of this characters class.\n\n\n\n\nSpell Progression: This heroes spell progression\n\n\n\n\nSpell ID: The ID of the spell that this hero knows\n\n\nPromoted Progression: If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the DEFAULT progression path.\n\n\nSpecial Promotion Progression: If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the SPECIAL progression path. Selecting this supercedes the 'Promoted Progression' option\n\n\nLevels Gained: A comma seperated list of the levels that the spell levels will be gained at.\n\n\n\n\nStarting Item: An item that this hero should start with\n\n\n\n\nItem ID: The ID of the item that this hero should start with\n\n\nItem Equipped: If true, the item will start as equipped.",
+            "title": "Defining Heroes"
+        },
+        {
+            "location": "/heroes/#overview",
+            "text": "Defining Heroes is done on the Heroes tab of the planner. A Hero represents an entity that will be able to join the players 'group' and in doing so they will be eligible to participate in battles and progress in power through leveling up and through receiving new items. In general each Hero should be unique to the group, that is, there should not be multiple instances of the Hero in the group at a given time. As Heroes progress they may gain the option of being promoted which allows for a completely different set of attributes to be used for the hero. Each hero must contain at minimum one  HeroProgression  that defines their starting statistics when they join the force. At maximum a hero should have three  HeroProgessions  defined, one unpromoted, one promoted and one special promotion.",
+            "title": "Overview"
+        },
+        {
+            "location": "/heroes/#leaders",
+            "text": "Hero's that are marked with the 'Is Leader' option represent a combatant that is so important that if they are killed in any battle then the battle is considered lost. Because of this, very few heroes should be marked as leader. However at least one hero must be defined and in the players 'group' at any given time, generally the first hero in the players 'group'. The hero that is marked as a leader that has been in the 'group' the longest time will act as the players controllable character for in-town movement and interaction. For situations where a hero may be considered a leader in a subset of the battles, you should use the  On Hero Death  condition for those battles.  For more information about the in-town game state see:  Game States  For more information about using triggers see:  Using Triggers and Conditions",
+            "title": "Leaders"
+        },
+        {
+            "location": "/heroes/#movement-type",
+            "text": "Each hero will have a movement type that dictates how terrain effects it's movement in battle. Available values for this property are set in the implementation of the  EngineConfigurationValues  that you have defined via the  getMovementTypes  attribute. Each moveable space in battle should be defined with one of the terrain types in your implementation of  EngineConfigurationValues  via the  getTerrainTypes  attribute.  For more information about defining terrain and movement types see:  Configuring the Engine  For more information about the effects of terrain and movement types see:  Default Battle System",
+            "title": "Movement Type"
+        },
+        {
+            "location": "/heroes/#equippable-items",
+            "text": "Each hero can define a subset of equippable items that they can equip. A hero will only be allowed to equip an item if the items  Item Style  matches on the of the values selected in the 'Usable Items' attribute of the hero. The list of item styles is defined by your implementation of  EngineConfigurationValues  as defined by  getWeaponTypes . By default all heroes are allowed to wear rings.  For more information about defining weapon types see:  Configuring the Engine",
+            "title": "Equippable Items"
+        },
+        {
+            "location": "/heroes/#statistic-growth",
+            "text": "A hero starts the game with the statistics indicated in their starting progression.   Most statistics can naturally increase over the course of the game when a hero levels up:   The first set of these are  HP ,  MP ,  Attack ,  Defense  and  Agility  statistics. For these five statistics the hero will start with the value indicated by their starting progressions  HP Start ,  MP Start ,  Attack Start ,  Defense Start  and  Agility Start  values respectively. As the hero gains levels their statistics should approach the values indicated by the  HP End ,  MP End ,  Attack End ,  Defense End  and  Agility End  attributes. The speed in which these statistics grow is determine by each of the respective  ATTRIBUTE Gain  category. The values available in this list are defined in your implementation of  LevelProgressionConfiguration  via the  getStandardStatProgressionTypeList  attribute. Each time a hero gains a level, the defined  LevelProgressionConfiguration  will have its'  getProgressArray  method called which will indicate the percent of the way towards the final statistic value ( ATTRIBUTE End ) the given attribute should be at with that attributes  Gain  rate and their current level.  The next set of values that may grow as you gain levels are  Body  and  Mind , their initial values are indicated by a selection of 'WEAK', 'MEDIUM' or 'STRONG'. These values map to percentages as defined by your implementation of  LevelProgressionConfiguration  via the  getBaseBodyMindStat  method. These values grow at a rate as defined by their respective  Progression Type . The available  Progression Types  are defined by your implementation of  LevelProgressionConfiguration  via the  getBodyMindProgressionTypeList  method. Each time a hero gains a level, the defined  LevelProgressionConfiguration  will have its'  getLevelUpBodyMindStat  method called which will indicate the value that the  Body  or  Mind  statistic should be set to given the hero's current level and  Progression Type    Finally, although the Special Attack statistics do not specify a growth rate they can also grow as the hero levels, their initial values are indicated by a selection of 'WEAK', 'MEDIUM' or 'STRONG'. These values map to percentages as defined by your implementation of  LevelProgressionConfiguration  via the  getBaseBattleStat  method. The growth of these values is defined by  LevelProgressionConfiguration  via the  getLevelUpBattleStat  method which is called each time a hero gains a level.  For more information about defining statistic growth see:  Configuring the Engine",
+            "title": "Statistic Growth"
+        },
+        {
+            "location": "/heroes/#special-attack-chances",
+            "text": "Each time a hero uses a basic attack or is attacked with a basic attack there is a chance that they will perform a special beneficial action.    Counter: The target of attack will perform a single attack action against their attacker provided that they are in range. This attack deals damage equal to the damage they would have normally done times the value defined in the  BattleFunctionConfiguration  by the  getCounterDamageModifier .  Evade: The target of the basic attack will take no damage or effects from the a single attack. The defendants \"Dodge\" animation will be shown.  Double: The attacker will perform two full damage attacks back-to-back against it's target.  Critical: The attacker will deal increased damage with their basic attack, the amount dealt is equal to the damage they would have normally done times the value defined in the  BattleFunctionConfiguration  by the  getCritDamageModifier .   The value specified in this field should be a number 0-100 that indicates the percent chance that the hero will perform the given special action. For instance a value of \"20\" in the 'Double Chance Strength' field means that each time the hero performs a basic attack they will have a 20% to perform a double attack.  Each of these percent values may be further modified in the  BattleFunctionConfiguration  via the  getDoublePercent ,  getCounterPercent ,  getDodgePercent ,  getCritPercent  attributes which allows for adding custom values that can be used to increase/decrease battle difficulty.  For more information about defining special attack chances and outcomes see:  Configuring the Engine",
+            "title": "Special Attack Chances"
+        },
+        {
+            "location": "/heroes/#spell-progression",
+            "text": "Hero's can be defined to begin the game with spells also to learn new spells and spell levels as they progress. A defined  SpellProgression  is directly tied to a  HeroProgression  by the combination of values indicated by  Promoted Progression  and  Special Promoted Progression . A hero that is currently unpromoted will be progressing via the  HeroProgression  that has the  Promoted Progression  box unchecked, similarly their spells will be progressing at a rate as defined by  SpellProgressions  that have the  Promoted Progression  box unchecked. Once the hero becomes promoted then they will be progressing via the  HeroProgression  that has the  Promoted Progression  box checked, similarly their spells will be progressing at a rate as defined by  SpellProgressions  that have the  Promoted Progression  box checked.  For example:     Consider the hero with four spell progressions defined        If the hero was unpromoted and level 1 they would know Lightning level 1 and Flood level 2. They would eventually be able to attain Lightning 2-4 and Flood level 3 at higher levels.    If the hero was promoted and level 1, but not special promoted they would know Bolt level 2. They would eventually be able to attain Bolt 3-4 at higher levels.    If the hero was special promoted and level 1 they would know Blaze level 3. They would gain no more spells as they continued to level.      Spells may be defined with up to four levels, so  SpellProgressions  may also indicate four numbers in the  Levels Gained  attribute with each number indicating which level the hero will gain the next level of the spell.  For example:      The  Levels Gained  text field contains four numbers which means this hero can learn Lightning levels 1-4. Because the  Promoted Progression  box is checked and the first number indicated is '1', Lightning level 1 will be learned as soon as the hero is promoted or if the hero is defined as promoted to start. Because the next number is '7', the hero will learn Lightning level 2 once they reach promoted level 7. Lightning level 3 will be learned at level 12 and Lightning level 4 will be learned at level 18. If the first two numbers were \"1\" (So 1,1,12,18), then the hero would learn Lightning level 1 and 2 when they are promoted.    For more information about defining spells see:  Configuring the Engine",
+            "title": "Spell Progression"
+        },
+        {
+            "location": "/heroes/#starting-items",
+            "text": "Heroes can join the 'group' with equipment and other items. The list of items available to give to a hero is the same as the list of items defined in the planner. Keep in mind when adding equipped items to a hero that it could modify the final statistics of the hero when it is in battle.   To give an hero a starting item, right click on their name in the planner and select \"Starting Item\".",
+            "title": "Starting Items"
+        },
+        {
+            "location": "/heroes/#promotion",
+            "text": "Depending on how you have configured your engine, heroes can become eligible for promotion by reaching the level specified in your implementation of  EngineConfigurationValues  via the  getHeroPromotionLevel  attribute. Promotion represents an opportunity to change all aspects of a hero's progression including statistic progression, access to spells, movement type and usable item types. On attaining promotion level an unpromoted hero can be promoted by speaking with a priest and selecting the Promote option. Hero's must have a promotion progression defined in order to be promoted, otherwise errors will occur. A hero can be defined as promoted to begin with by checking the 'Promoted' box, in this case the hero will use the 'HeroProgession' that has the 'Promoted Progression' box checked. Hero's that join the group already promoted cannot ever use a Special Promotion.",
+            "title": "Promotion"
+        },
+        {
+            "location": "/heroes/#upon-promotion-changes-occur-in-the-following-areas",
+            "text": "Basic Statistics (By default: HP, MP, Attack, Defense, Agility)   None of the hero's basic statistics will be immediately changed, that means that a hero may have a statistic lower then the indicated 'Start' value, but on subsequent level ups, statistic progression will be done using the promoted progressions 'Start' and 'End' values which will likely result in a different growth then the unpromoted progression.    Level   The hero's level will be changed to a value of \"1\". All level specific attributes (spell progression) should use this new lower number to define progression timing.   Movement Value and Movement Type   The hero's base movement statistic and their movement type will immediately be changed to the value specified in the promoted progression.   Resistances   The hero's base elemental resistances will immediately be changed to the the value specified in the promoted progression.   Special Attack Chance (By default: Double, Counter, Dodge, Critical)   The hero's special attack chances will immediately be changed to the value specified in the promoted progression.   Spells   All of the hero's spells learned before promotion will be immediately forgotten. Any  SpellProgressions  that are defined for the hero that are marked as promoted will be checked to see if the hero meets the level requirements for the indicated spell and if so, they will learn that spell immediately. For any spell that the hero previously knew that they should retain after promotion a  SpellProgression  should be defined with the  Promoted Progression  box checked and the  Levels Gained  set as \"1\" so that they immediately gain the spell.    For example:    Joe is unpromoted and level 14 with the following  SpellProgression's  defined:   Because of this he knows Flood level 2.  After he becomes promoted he becomes level 1 and has only the following  SpellProgression  defined that is marked as  Promoted Progression   Because he has forgotten his original spells this means that he only has access to Burst level 1  If we wanted him to continue having access to Flood level 2 then we would need to add an additional  SpellProgression  marked  Promoted Progression  that defines the levels that he learns Flood level 2.       Usable Items and Inventory  A promoted hero will immediately lose proficiency with the items specified in their unpromoted progression and will become proficient in the items specified as  Usable Items  in the promoted progression. The items in the hero's inventory will remain unchanged, but depending upon their newly defined  Usable Items  they may no longer have a given item equipped if they are no longer able to use it.  For more information about in game statistics see:  Default Battle System  For more information about defining promotion level see:  Configuring the Engine",
+            "title": "Upon promotion changes occur in the following areas."
+        },
+        {
+            "location": "/heroes/#special-promotion",
+            "text": "Special promotion is very similar to promotion as defined above except that a  HeroProgression  that is marked as 'Special Promoted Progression' can only be attained when the hero to be promoted is holding the indicated 'Special Promotion Required Item' in their inventory. The list of items to allow special promotion is the same as the list of items defined in the planner. When this occurs the Priest will prompt the user to see if they want to use the indicated item to promote the hero to this special promotion. If yes is selected then the item will be removed from the hero's inventory and the hero's progression will now follow the special progression. This is identical as far as changes are concerned to a normal promotion except that the hero's spell progression will now be drawn from  SpellProgression's  that have the  Special Promotion Progression  box selected.  For more information about creating items see:  Defining Items",
+            "title": "Special Promotion"
+        },
+        {
+            "location": "/heroes/#planner-attributes",
+            "text": "",
+            "title": "Planner Attributes"
+        },
+        {
+            "location": "/heroes/#default-values",
+            "text": "Name: The name of the hero  Promoted: If true, this hero is promoted when they initially join the party  Level: Starting Level for the hero  Animation File: The name of the animation file that should be used for this hero  Is Leader: Whether this hero is the leader of the force",
+            "title": "Default Values"
+        },
+        {
+            "location": "/heroes/#hero-progression-this-heroes-statistic-progression",
+            "text": "Promoted Progression: Whether this progression represents this heroes promoted or unpromoted progression  Special Promotion Progression: If checked, this progression will be used for the SPECIAL promotion path (as opposed to default). Selecting this supercedes the 'promoted' checkbox  Special Promotion Required Item: If special promotion is checked, this is the item that must be possesed by the group to allow the this special promotion to occur. If this item is not owned then this progression path will be unavailable. If special promotion is checked and this value is not specified then this promotion path will be impossible to take.  Starting Move: The heroes base move while in this progression  Movement Type: The movement type of this hero  Attack Gain: The amount of attack the hero should gain per level  Attack Start: The amount of attack the hero should start with  Attack End: The minimum amount of attack the hero should end with  Defense Gain: The amount of defense the hero should gain per level  Defense Start: The amount of defense the hero should start with  Defense End: The minimum amount of defense the hero should end with  Speed Gain: The amount of speed the hero should gain per level  Speed Start: The amount of speed the hero should start with  Speed End: The minimum amount of speed the hero should end with  HP Gain: The amount of HP the hero should gain per level  HP Start: The amount of HP the hero should start with  HP End: The minimum amount of HP the hero should end with  MP Gain: The amount of MP the hero should gain per level  MP Start: The amount of MP the hero should start with  MP End: The minimum amount of MP the hero should end with  Fire Affinitiy: The heroes base fire affinity. Items can modify this value.  Electricity Affinitiy: The heroes base electricity affinity. Items can modify this value.  Cold Affinitiy: The heroes base cold affinity. Items can modify this value.  Dark Affinitiy: The heroes base dark affinity. Items can modify this value.  Water Affinitiy: The heroes base water affinity. Items can modify this value.  Earth Affinitiy: The heroes base earth affinity. Items can modify this value.  Wind Affinitiy: The heroes base wind affinity. Items can modify this value.  Light Affinitiy: The heroes base light affinity. Items can modify this value.  Body Strength: Determines the base body value for the hero.  Body Progression Type: The name of the progression type that dicates how this heroes body stat will increase.  Mind Strength: Determines the base mind value for the hero.  Mind Progression Type: The name of the progression type that dicates how this heroes mind stat will increase.  Counter Chance Strength: Determines the base counter chance value for the hero.  Evade Chance Strength: Determines the base evade chance value for the hero.  Double Chance Strength: Determines the base double attack chance value for the hero.  Critical Strength: Determines the base critical attack chance value for the hero.  Usuable Items: The type of weapons that this hero can use  Class Name: The name of this characters class.",
+            "title": "Hero Progression: This heroes statistic progression"
+        },
+        {
+            "location": "/heroes/#spell-progression-this-heroes-spell-progression",
+            "text": "Spell ID: The ID of the spell that this hero knows  Promoted Progression: If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the DEFAULT progression path.  Special Promotion Progression: If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the SPECIAL progression path. Selecting this supercedes the 'Promoted Progression' option  Levels Gained: A comma seperated list of the levels that the spell levels will be gained at.",
+            "title": "Spell Progression: This heroes spell progression"
+        },
+        {
+            "location": "/heroes/#starting-item-an-item-that-this-hero-should-start-with",
+            "text": "Item ID: The ID of the item that this hero should start with  Item Equipped: If true, the item will start as equipped.",
+            "title": "Starting Item: An item that this hero should start with"
+        },
+        {
+            "location": "/enemies/",
+            "text": "Overview\n\n\n\n\nDefining Enemies is done on the Enemies tab of the planner. Each Enemy consists of a set of statistics that effects its' in battle prowess, special abilities and starting equipment. Each Enemy also must have an animation file associated with it that has both overland movement animations as well as attack cinematic animations. Multiple enemies of the same type can appear in the same battle and may appear in multiple battles throughout the course of the game; unlike \nHeroes\n, each instance of this enemy will begin each battle as if they were just being created for the first time. To create a new Enemy right click on the Enemies navigator under the Enemies tab and select \"Add Planner Item\"\n\n\n\n\nMovement Type\n\n\nEach enemy will have a movement type that dictates how terrain effects it's movement in battle. Available values for this property are set in the implementation of the \nEngineConfigurationValues\n that you have defined via the \ngetMovementTypes\n attribute. Each moveable space in battle should be defined with one of the terrain types in your implementation of \nEngineConfigurationValues\n via the \ngetTerrainTypes\n attribute.\n\n\nFor more information about defining terrain and movement types see: \nConfiguring the Engine\n\n\nFor more information about the effects of terrain and movement types see: \nDefault Battle System\n\n\nStatistics\n\n\nAll statistics defined for a given enemy represent their base statistics, that means that equipped items may modify the specified values.\n\n\nSpecial Attack Chances\n\n\nJust like \nHeroes\n, each time an enemy uses a basic attack or is attacked with a basic attack there is a chance that they will perform a special beneficial action. \n\n\n\n\nCounter: The target of attack will perform a single attack action against their attacker provided that they are in range. This attack deals damage equal to the damage they would have normally done times the value defined in the \nBattleFunctionConfiguration\n by the \ngetCounterDamageModifier\n.\n\n\nEvade: The target of the basic attack will take no damage or effects from the a single attack. The defendants \"Dodge\" animation will be shown.\n\n\nDouble: The attacker will perform two full damage attacks back-to-back against it's target.\n\n\nCritical: The attacker will deal increased damage with their basic attack, the amount dealt is equal to the damage they would have normally done times the value defined in the \nBattleFunctionConfiguration\n by the \ngetCritDamageModifier\n.\n\n\n\n\nThe value specified in this field should be a number 0-100 that indicates the percent chance that the enemy will perform the given special action. For instance a value of \"20\" in the 'Double Chance Strength' field means that each time the enemy performs a basic attack they will have a 20% to perform a double attack.\n\n\nEach of these percent values may be further modified in the \nBattleFunctionConfiguration\n via the \ngetDoublePercent\n, \ngetCounterPercent\n, \ngetDodgePercent\n, \ngetCritPercent\n attributes which allows for adding custom values that can be used to increase/decrease battle difficulty.\n\n\nFor more information about defining special attack chances and outcomes see: \nConfiguring the Engine\n\n\nEnemy Level\n\n\nThis value is not presented to the player by default, but is used to determine how much experience should be gained by attacking or defeating this enemy. In general the higher the level, the higher the experience gained. The exact effect of this value will likely be used in the \nBattleFunctionConfiguration\n via the \ngetExperienceGainedByDamage\n attribute.\n\n\nFor more information about defining experience gain see: \nConfiguring the Engine\n\n\nFor more information about experience and levels see: \nDefault Battle System\n\n\nAttack Effects\n\n\nEnemies can be defined to have attack effects applied on a basic attack. Enemies with an attack effect will have some percent chance between 0-100 to apply the indicated attack effect on their target provided that the target does not dodge. The list of available attack effects to choose from is configured in your \nBattleEffectFactory\n via the \ngetBattleEffectList\n attribute. \n\n\nTo create an attack effect for a given enemy, right click on their name in the planner and select \"Attack Effect\".\n\n\n\n\nFor more information about defining attack effects see: \nConfiguring the Engine\n\n\nFor more information about attack effects in battle see: \nDefault Battle System\n\n\nSpells\n\n\nEnemies can be defined to have the ability to cast spells. Enemy spells perform in just the same way that Hero spells do; they still take MP and have the same range and area. The list of available spell to choose from is configured in your \nSpellFactory\n via the \ngetSpellList\n attribute. \n\n\nTo allow a given enemy to cast a spell, right click on their name in the planner and select \"Spell\".\n\n\n\n\nNote: Enemies with spells must be defined to use an AI that considers spells, currently \"cleric\" or \"wizard\". This is done via the map on a per-enemy basis.\n\n\nFor more information about defining spells see: \nConfiguring the Engine\n\n\nStarting Items\n\n\nEnemies can begin a battle with equipment and other items. These will be present for each of the enemies of this type in the battle. The list of items available to give to an enemy is the same as the list of items defined in the planner. Keep in mind when adding equipped items to an enemy that it could modify the final statistics of the enemy when it is in battle. If there is an item that you would like to appear in an enemies inventory but only in specific cases, then the item should be added to the enemy via a trigger and not defined here.\n\n\nTo give an enemy a starting item, right click on their name in the planner and select \"Starting Item\".\n\n\n\n\nFor more information about creating items see: \nDefining Items\n\n\nFor more information about using triggers see: \nUsing Triggers and Conditions\n\n\nBosses\n\n\nAlthough bosses are likely only appear in battle once per game they are defined just like other enemies. If their death is a key condition of a battle it should be set via conditions like normal.\n\n\nFor more information about using conditions see: \nUsing Triggers and Conditions\n\n\nPlanner Attributes\n\n\nDefault values\n\n\n\n\nName: The name of the enemy\n\n\nHP: Starting HP for the enemy\n\n\nMP: Starting MP for the enemy\n\n\nAttack: Starting Attack for the enemy\n\n\nDefense: Starting Defense for the enemy\n\n\nSpeed: Starting Speed for the enemy\n\n\nFire Affinitiy: The enemies base fire affinity. Items can modify this value.\n\n\nElectricity Affinitiy: The enemies base electricity affinity. Items can modify this value.\n\n\nCold Affinitiy: The enemies base cold affinity. Items can modify this value.\n\n\nDark Affinitiy: The enemies base dark affinity. Items can modify this value.\n\n\nWater Affinitiy: The enemies base water affinity. Items can modify this value.\n\n\nEarth Affinitiy: The enemies base earth affinity. Items can modify this value.\n\n\nWind Affinitiy: The enemies base wind affinity. Items can modify this value.\n\n\nLight Affinitiy: The enemies base light affinity. Items can modify this value.\n\n\nBody Strength: Determines the base body value for the hero.\n\n\nMind Strength: Determines the base mind value for the hero.\n\n\nCounter Chance Strength: Determines the base counter value for the hero.\n\n\nEvade Chance Strength: Determines the base evade value for the hero.\n\n\nDouble Chance Strength: Determines the base body value for the hero.\n\n\nCritical Strength: Determines the base critical value for the hero.\n\n\nLevel: Starting Level for the enemy\n\n\nMove: Starting Move for the enemy\n\n\nMovement Type: The enemies movement type as it relates to land effect and barriers\n\n\nAnimation File: The name of the animation file that should be used for this enemy\n\n\nGold Dropped: The amount of gold that is dropped on death.\n\n\nPalette: (CURRENTLY UNUSED) The palette that should be used to modify the selected animation colors\n\n\n\n\nSpell: A spell that this enemy knows\n\n\n\n\nSpell ID: The ID of the spell that this enemy knows\n\n\nMax Level: The max level known of the specified spell\n\n\n\n\nStarting Item: An item that this hero should start with\n\n\n\n\nItem ID: The ID of the item that this enemy should start with\n\n\nItem Equipped: If true, the item will start as equipped.\n\n\n\n\nAttack Effect: An effect that may occur on the enemy attack\n\n\n\n\nEffect ID: The ID of the effect that the enemies attack may cause. A value of CUSTOM means that this weapons effect will be passed to the BattleFunctions script to be performed.\n\n\nEffect Chance: The percent chance that the effect will occur\n\n\nEffect Level: The level of the effect that should be applied (1-4)",
+            "title": "Defining Enemies"
+        },
+        {
+            "location": "/enemies/#overview",
+            "text": "Defining Enemies is done on the Enemies tab of the planner. Each Enemy consists of a set of statistics that effects its' in battle prowess, special abilities and starting equipment. Each Enemy also must have an animation file associated with it that has both overland movement animations as well as attack cinematic animations. Multiple enemies of the same type can appear in the same battle and may appear in multiple battles throughout the course of the game; unlike  Heroes , each instance of this enemy will begin each battle as if they were just being created for the first time. To create a new Enemy right click on the Enemies navigator under the Enemies tab and select \"Add Planner Item\"",
+            "title": "Overview"
+        },
+        {
+            "location": "/enemies/#movement-type",
+            "text": "Each enemy will have a movement type that dictates how terrain effects it's movement in battle. Available values for this property are set in the implementation of the  EngineConfigurationValues  that you have defined via the  getMovementTypes  attribute. Each moveable space in battle should be defined with one of the terrain types in your implementation of  EngineConfigurationValues  via the  getTerrainTypes  attribute.  For more information about defining terrain and movement types see:  Configuring the Engine  For more information about the effects of terrain and movement types see:  Default Battle System",
+            "title": "Movement Type"
+        },
+        {
+            "location": "/enemies/#statistics",
+            "text": "All statistics defined for a given enemy represent their base statistics, that means that equipped items may modify the specified values.",
+            "title": "Statistics"
+        },
+        {
+            "location": "/enemies/#special-attack-chances",
+            "text": "Just like  Heroes , each time an enemy uses a basic attack or is attacked with a basic attack there is a chance that they will perform a special beneficial action.    Counter: The target of attack will perform a single attack action against their attacker provided that they are in range. This attack deals damage equal to the damage they would have normally done times the value defined in the  BattleFunctionConfiguration  by the  getCounterDamageModifier .  Evade: The target of the basic attack will take no damage or effects from the a single attack. The defendants \"Dodge\" animation will be shown.  Double: The attacker will perform two full damage attacks back-to-back against it's target.  Critical: The attacker will deal increased damage with their basic attack, the amount dealt is equal to the damage they would have normally done times the value defined in the  BattleFunctionConfiguration  by the  getCritDamageModifier .   The value specified in this field should be a number 0-100 that indicates the percent chance that the enemy will perform the given special action. For instance a value of \"20\" in the 'Double Chance Strength' field means that each time the enemy performs a basic attack they will have a 20% to perform a double attack.  Each of these percent values may be further modified in the  BattleFunctionConfiguration  via the  getDoublePercent ,  getCounterPercent ,  getDodgePercent ,  getCritPercent  attributes which allows for adding custom values that can be used to increase/decrease battle difficulty.  For more information about defining special attack chances and outcomes see:  Configuring the Engine",
+            "title": "Special Attack Chances"
+        },
+        {
+            "location": "/enemies/#enemy-level",
+            "text": "This value is not presented to the player by default, but is used to determine how much experience should be gained by attacking or defeating this enemy. In general the higher the level, the higher the experience gained. The exact effect of this value will likely be used in the  BattleFunctionConfiguration  via the  getExperienceGainedByDamage  attribute.  For more information about defining experience gain see:  Configuring the Engine  For more information about experience and levels see:  Default Battle System",
+            "title": "Enemy Level"
+        },
+        {
+            "location": "/enemies/#attack-effects",
+            "text": "Enemies can be defined to have attack effects applied on a basic attack. Enemies with an attack effect will have some percent chance between 0-100 to apply the indicated attack effect on their target provided that the target does not dodge. The list of available attack effects to choose from is configured in your  BattleEffectFactory  via the  getBattleEffectList  attribute.   To create an attack effect for a given enemy, right click on their name in the planner and select \"Attack Effect\".   For more information about defining attack effects see:  Configuring the Engine  For more information about attack effects in battle see:  Default Battle System",
+            "title": "Attack Effects"
+        },
+        {
+            "location": "/enemies/#spells",
+            "text": "Enemies can be defined to have the ability to cast spells. Enemy spells perform in just the same way that Hero spells do; they still take MP and have the same range and area. The list of available spell to choose from is configured in your  SpellFactory  via the  getSpellList  attribute.   To allow a given enemy to cast a spell, right click on their name in the planner and select \"Spell\".   Note: Enemies with spells must be defined to use an AI that considers spells, currently \"cleric\" or \"wizard\". This is done via the map on a per-enemy basis.  For more information about defining spells see:  Configuring the Engine",
+            "title": "Spells"
+        },
+        {
+            "location": "/enemies/#starting-items",
+            "text": "Enemies can begin a battle with equipment and other items. These will be present for each of the enemies of this type in the battle. The list of items available to give to an enemy is the same as the list of items defined in the planner. Keep in mind when adding equipped items to an enemy that it could modify the final statistics of the enemy when it is in battle. If there is an item that you would like to appear in an enemies inventory but only in specific cases, then the item should be added to the enemy via a trigger and not defined here.  To give an enemy a starting item, right click on their name in the planner and select \"Starting Item\".   For more information about creating items see:  Defining Items  For more information about using triggers see:  Using Triggers and Conditions",
+            "title": "Starting Items"
+        },
+        {
+            "location": "/enemies/#bosses",
+            "text": "Although bosses are likely only appear in battle once per game they are defined just like other enemies. If their death is a key condition of a battle it should be set via conditions like normal.  For more information about using conditions see:  Using Triggers and Conditions",
+            "title": "Bosses"
+        },
+        {
+            "location": "/enemies/#planner-attributes",
+            "text": "",
+            "title": "Planner Attributes"
+        },
+        {
+            "location": "/enemies/#default-values",
+            "text": "Name: The name of the enemy  HP: Starting HP for the enemy  MP: Starting MP for the enemy  Attack: Starting Attack for the enemy  Defense: Starting Defense for the enemy  Speed: Starting Speed for the enemy  Fire Affinitiy: The enemies base fire affinity. Items can modify this value.  Electricity Affinitiy: The enemies base electricity affinity. Items can modify this value.  Cold Affinitiy: The enemies base cold affinity. Items can modify this value.  Dark Affinitiy: The enemies base dark affinity. Items can modify this value.  Water Affinitiy: The enemies base water affinity. Items can modify this value.  Earth Affinitiy: The enemies base earth affinity. Items can modify this value.  Wind Affinitiy: The enemies base wind affinity. Items can modify this value.  Light Affinitiy: The enemies base light affinity. Items can modify this value.  Body Strength: Determines the base body value for the hero.  Mind Strength: Determines the base mind value for the hero.  Counter Chance Strength: Determines the base counter value for the hero.  Evade Chance Strength: Determines the base evade value for the hero.  Double Chance Strength: Determines the base body value for the hero.  Critical Strength: Determines the base critical value for the hero.  Level: Starting Level for the enemy  Move: Starting Move for the enemy  Movement Type: The enemies movement type as it relates to land effect and barriers  Animation File: The name of the animation file that should be used for this enemy  Gold Dropped: The amount of gold that is dropped on death.  Palette: (CURRENTLY UNUSED) The palette that should be used to modify the selected animation colors",
+            "title": "Default values"
+        },
+        {
+            "location": "/enemies/#spell-a-spell-that-this-enemy-knows",
+            "text": "Spell ID: The ID of the spell that this enemy knows  Max Level: The max level known of the specified spell",
+            "title": "Spell: A spell that this enemy knows"
+        },
+        {
+            "location": "/enemies/#starting-item-an-item-that-this-hero-should-start-with",
+            "text": "Item ID: The ID of the item that this enemy should start with  Item Equipped: If true, the item will start as equipped.",
+            "title": "Starting Item: An item that this hero should start with"
+        },
+        {
+            "location": "/enemies/#attack-effect-an-effect-that-may-occur-on-the-enemy-attack",
+            "text": "Effect ID: The ID of the effect that the enemies attack may cause. A value of CUSTOM means that this weapons effect will be passed to the BattleFunctions script to be performed.  Effect Chance: The percent chance that the effect will occur  Effect Level: The level of the effect that should be applied (1-4)",
+            "title": "Attack Effect: An effect that may occur on the enemy attack"
+        },
+        {
+            "location": "/items/",
+            "text": "Item \"Deals\"\n\n\nQuest Items\n\n\nEquippable Items\n\n\nItem Style\n\n\nRange\n\n\nAttack Image\n\n\nDamage Affinity\n\n\nOHKO\n\n\nCustom Usable Items\n\n\nRange and Area of Effect\n\n\nDamages Item\n\n\nUsable Item Spells\n\n\nSpell Cast\n\n\nDamages Item",
+            "title": "Defining Items"
+        },
+        {
+            "location": "/items/#item-deals",
+            "text": "",
+            "title": "Item \"Deals\""
+        },
+        {
+            "location": "/items/#quest-items",
+            "text": "",
+            "title": "Quest Items"
+        },
+        {
+            "location": "/items/#equippable-items",
+            "text": "",
+            "title": "Equippable Items"
+        },
+        {
+            "location": "/items/#item-style",
+            "text": "",
+            "title": "Item Style"
+        },
+        {
+            "location": "/items/#range",
+            "text": "",
+            "title": "Range"
+        },
+        {
+            "location": "/items/#attack-image",
+            "text": "",
+            "title": "Attack Image"
+        },
+        {
+            "location": "/items/#damage-affinity",
+            "text": "",
+            "title": "Damage Affinity"
+        },
+        {
+            "location": "/items/#ohko",
+            "text": "",
+            "title": "OHKO"
+        },
+        {
+            "location": "/items/#custom-usable-items",
+            "text": "",
+            "title": "Custom Usable Items"
+        },
+        {
+            "location": "/items/#range-and-area-of-effect",
+            "text": "",
+            "title": "Range and Area of Effect"
+        },
+        {
+            "location": "/items/#damages-item",
+            "text": "",
+            "title": "Damages Item"
+        },
+        {
+            "location": "/items/#usable-item-spells",
+            "text": "",
+            "title": "Usable Item Spells"
+        },
+        {
+            "location": "/items/#spell-cast",
+            "text": "",
+            "title": "Spell Cast"
+        },
+        {
+            "location": "/items/#damages-item_1",
+            "text": "",
+            "title": "Damages Item"
+        },
+        {
+            "location": "/cinematics/",
+            "text": "Actors\n\n\nBlocking Actions\n\n\nSpecial Actions\n\n\nCinematics in Town\n\n\nCinematics in Battle\n\n\nUsing the Cinematic Creator",
+            "title": "Scripting Cinematics"
+        },
+        {
+            "location": "/cinematics/#actors",
+            "text": "",
+            "title": "Actors"
+        },
+        {
+            "location": "/cinematics/#blocking-actions",
+            "text": "",
+            "title": "Blocking Actions"
+        },
+        {
+            "location": "/cinematics/#special-actions",
+            "text": "",
+            "title": "Special Actions"
+        },
+        {
+            "location": "/cinematics/#cinematics-in-town",
+            "text": "",
+            "title": "Cinematics in Town"
+        },
+        {
+            "location": "/cinematics/#cinematics-in-battle",
+            "text": "",
+            "title": "Cinematics in Battle"
+        },
+        {
+            "location": "/cinematics/#using-the-cinematic-creator",
+            "text": "",
+            "title": "Using the Cinematic Creator"
+        },
+        {
+            "location": "/maps/",
+            "text": "Layers\n\n\nFile Format\n\n\nWalkable Spaces\n\n\nDefining Map Objects (Locations)\n\n\nMap Attributes\n\n\nUsing the Engine Map Editor\n\n\nRoofs\n\n\nStairs\n\n\nTerrain",
+            "title": "Building Maps"
+        },
+        {
+            "location": "/maps/#layers",
+            "text": "",
+            "title": "Layers"
+        },
+        {
+            "location": "/maps/#file-format",
+            "text": "",
+            "title": "File Format"
+        },
+        {
+            "location": "/maps/#walkable-spaces",
+            "text": "",
+            "title": "Walkable Spaces"
+        },
+        {
+            "location": "/maps/#defining-map-objects-locations",
+            "text": "",
+            "title": "Defining Map Objects (Locations)"
+        },
+        {
+            "location": "/maps/#map-attributes",
+            "text": "",
+            "title": "Map Attributes"
+        },
+        {
+            "location": "/maps/#using-the-engine-map-editor",
+            "text": "",
+            "title": "Using the Engine Map Editor"
+        },
+        {
+            "location": "/maps/#roofs",
+            "text": "",
+            "title": "Roofs"
+        },
+        {
+            "location": "/maps/#stairs",
+            "text": "",
+            "title": "Stairs"
+        },
+        {
+            "location": "/maps/#terrain",
+            "text": "",
+            "title": "Terrain"
+        },
+        {
+            "location": "/speech/",
+            "text": "Defining Basic Dialogue\n\n\nDefining Conversation Dialogue\n\n\nUsing Yes or No Dialogue",
+            "title": "Creating Dialogue"
+        },
+        {
+            "location": "/speech/#defining-basic-dialogue",
+            "text": "",
+            "title": "Defining Basic Dialogue"
+        },
+        {
+            "location": "/speech/#defining-conversation-dialogue",
+            "text": "",
+            "title": "Defining Conversation Dialogue"
+        },
+        {
+            "location": "/speech/#using-yes-or-no-dialogue",
+            "text": "",
+            "title": "Using Yes or No Dialogue"
+        },
+        {
+            "location": "/triggers/",
+            "text": "",
+            "title": "Using Triggers and Conditions"
+        },
+        {
+            "location": "/quests/",
+            "text": "Overview\n\n\nUse in Triggers",
+            "title": "Using Quests"
+        },
+        {
+            "location": "/quests/#overview",
+            "text": "",
+            "title": "Overview"
+        },
+        {
+            "location": "/quests/#use-in-triggers",
+            "text": "",
+            "title": "Use in Triggers"
+        },
+        {
+            "location": "/distribute/",
+            "text": "Building a Development Release\n\n\nBuilding a Production Release",
+            "title": "Creating a Distributable"
+        },
+        {
+            "location": "/distribute/#building-a-development-release",
+            "text": "",
+            "title": "Building a Development Release"
+        },
+        {
+            "location": "/distribute/#building-a-production-release",
+            "text": "",
+            "title": "Building a Production Release"
+        }
+    ]
+}
