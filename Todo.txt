@@ -1,0 +1,3 @@
+Cinematic sprite render effects, move to separate files and allow custom ones?
+Handle custom cinematic events, would be pretty slick to bundle cinematic definition, parsing and execution in a class
+Change animation configuration to be in the EngineConfig and make methods non static... what about games not wanting promotion?
