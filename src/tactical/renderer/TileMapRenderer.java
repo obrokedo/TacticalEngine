@@ -21,8 +21,6 @@ public class TileMapRenderer extends Manager
 		this.map = this.stateInfo.getResourceManager().getMap();
 	}
 	
-	
-
 	public void render(float xOffset, float yOffset, Camera camera, Graphics g, PaddedGameContainer gc)
 	{	
 		int maxScreenTilesX = camera.getViewportWidth() / map.getTileRenderWidth() + 1;

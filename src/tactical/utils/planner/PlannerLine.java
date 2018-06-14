@@ -33,7 +33,6 @@ public class PlannerLine
 	private ArrayList<Component> components;
 	private ArrayList<Object> values;
 	private boolean isDefining;
-	private JComboBox<String> box;
 	private JPanel uiAspect;
 
 	public PlannerLine(PlannerLineDef plDef, boolean isDefining)
@@ -90,35 +89,6 @@ public class PlannerLine
 		if (isDefining)
 		{
 			headerLabel.setForeground(Color.WHITE);
-
-			/**
-			 * I believe that this is dead code I removed the "defining panel"
-			 * 7-7-17... so if it continues to work this can be removed
-			if (definingPanel == null)
-			{
-				System.out.println("CREATE NEW DEFIINING PANEL");
-				Vector<String> allowableStrings = new Vector<String>();
-				for (PlannerLineDef pld : allowableValues)
-					allowableStrings.add(pld.getName());
-				box = new JComboBox<String>(allowableStrings);
-				box.setMaximumRowCount(30);
-				headerPanel.add(box);
-
-				JButton addLineButton = new JButton("Add line");
-				addLineButton.setActionCommand("addline");
-				addLineButton.addActionListener(aListener);
-				headerPanel.add(addLineButton);
-
-				if (plDef.getTag().equalsIgnoreCase("Cinematic"))
-				{
-					JButton refreshButton = new JButton("Refresh");
-					refreshButton.setActionCommand("refresh");
-					refreshButton.addActionListener(aListener);
-					headerPanel.add(refreshButton);
-				}
-				definingPanel = headerPanel;
-			}
-			*/
 		}
 		else
 		{
@@ -489,13 +459,6 @@ public class PlannerLine
 		this.components = components;
 	}
 
-	public int getSelectedItem()
-	{
-		System.out.println(box.getSelectedIndex());
-		System.out.println(box);
-		return box.getSelectedIndex();
-	}
-
 	public ArrayList<Object> getValues() {
 		return values;
 	}
@@ -515,6 +478,6 @@ public class PlannerLine
 	@Override
 	public String toString() {
 		return "PlannerLine [plDef=" + plDef + ", components=" + components + ", values=" + values + ", isDefining="
-				+ isDefining + ", box=" + box + ", uiAspect=" + uiAspect + "]";
+				+ isDefining + ", uiAspect=" + uiAspect + "]";
 	}
 }

@@ -28,30 +28,6 @@ public class PlannerReference {
 	
 	public static void removeReferences(int referenceType, int referenceIndex) {
 		PlannerFrame.referenceListByReferenceType.get(referenceType - 1).remove(referenceIndex).setName("");
-		
-		/*
-		for (int i = 0; i < jtp.getTabCount() - 2; i++) {
-			for (PlannerContainer pcs : plannerTabs.get(i).getListPC()) {
-				for (PlannerLine pl : pcs.getLines()) {
-					for (int j = 0; j < pl.getPlDef().getPlannerValues().size(); j++) {
-						PlannerValueDef pvd = pl.getPlDef().getPlannerValues()
-								.get(j);
-
-						if (pvd.getRefersTo() == referenceType
-								&& pvd.getValueType() == PlannerValueDef.TYPE_INT ||
-									pvd.getValueType() == PlannerValueDef.TYPE_UNBOUNDED_INT) {
-							if ((int) pl.getValues().get(j) == referenceIndex + 1)
-								pl.getValues().set(j, 0);
-							else if ((int) pl.getValues().get(j) > referenceIndex + 1) {
-								pl.getValues().set(j,
-										(int) pl.getValues().get(j) - 1);
-							}
-						}
-					}
-				}
-			}
-		}
-		*/
 	}
 	
 	public static List<String> getBadReferences(List<PlannerTab> tabsWithReferences) {

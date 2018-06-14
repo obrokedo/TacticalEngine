@@ -48,6 +48,7 @@ import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.cinematic.CinematicCreatorPanel;
 import tactical.utils.planner.mapedit.MapEditorPanel;
+import tactical.utils.planner.unified.UnifiedViewPanel;
 
 public class PlannerFrame extends JFrame implements ActionListener,
 		ChangeListener {
@@ -63,6 +64,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private static String version = TacticalGame.VERSION;
 	private CinematicCreatorPanel cinematicMapPanel;
 	private MapEditorPanel mapEditorPanel;
+	private UnifiedViewPanel unifiedViewPanel;
 	private PlannerMap plannerMap;
 	private JMenuItem exportMapItem;
 	private JMenuItem playCinematicMenuItem;
@@ -84,8 +86,11 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	public static final int TAB_QUEST = 7;
 	public static final int TAB_CIN_MAP = 8;
 	public static final int TAB_EDIT_MAP = 9;
+	public static final int TAB_UNIFIED_VIEW = 10;
 
 	public static void main(String args[]) {
+		
+		
 		PlannerFrame pf = new PlannerFrame(null);
 		pf.setVisible(true);
 		pf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -271,6 +276,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		jtp.addTab("Cinematic Creator", cinematicMapPanel.getUiAspect());
 		mapEditorPanel = new MapEditorPanel(this, referenceListByReferenceType);
 		jtp.addTab("Map Editor", mapEditorPanel.getUIAspect());
+		unifiedViewPanel = new UnifiedViewPanel(mapEditorPanel);
+		jtp.addTab("Unified View" , unifiedViewPanel);
 		// jtp.addTab("Battle Functions", new PlannerFunctionPanel());
 		// jtp.addTab("Map Triggers", new MapTriggerPanel(containersByName));
 		jtp.addChangeListener(this);
@@ -280,6 +287,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		jtp.setEnabledAt(TAB_CONDITIONS, false);
 		jtp.setEnabledAt(TAB_CIN_MAP, false);
 		jtp.setEnabledAt(TAB_EDIT_MAP, false);
+		jtp.setEnabledAt(TAB_UNIFIED_VIEW, false);
 		jtp.setSelectedIndex(TAB_HERO);
 		JPanel backPanel = new JPanel(new BorderLayout());
 		backPanel.add(jtp, BorderLayout.CENTER);
@@ -339,6 +347,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				jtp.setEnabledAt(TAB_CIN, true);
 				jtp.setEnabledAt(TAB_TEXT, true);
 				jtp.setEnabledAt(TAB_CONDITIONS, true);
+				jtp.setEnabledAt(TAB_UNIFIED_VIEW, true);
 			}
 		} else if (actionCommand.equalsIgnoreCase("open")) {
 			JFileChooser fc = createFileChooser();
@@ -391,26 +400,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		}
 		else if (actionCommand.equalsIgnoreCase("exportmap"))
 		{
-			JFileChooser fc = createFileChooser();
-			fc.setSelectedFile(new File(triggerFile.getParentFile().getParentFile() + "/map/" + plannerMap.getMapName()));
-			fc.setFileFilter(new FileNameExtensionFilter("Tiled Map File", "tmx"));
-			int returnVal = fc.showSaveDialog(this);
-			
-			File newMapFile = null;
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				newMapFile = fc.getSelectedFile();
-
-				Path path = Paths.get(newMapFile.getAbsolutePath());
-				try {
-					Files.write(path, plannerMap.outputNewMap().getBytes());
-					JOptionPane.showMessageDialog(this, "The map was exported successfully");
-				} catch (IOException e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "An error occurred while trying to save the map:"
-							+ e.getMessage(), "Error saving map", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-			}
+			exportMap();
 		}
 		else if (actionCommand.equalsIgnoreCase("playcin")) {
 			if (cinematicMapPanel.getSelectedCinematicId() != -1) {
@@ -438,6 +428,28 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			}
 		}
 		
+	}
+
+	private void exportMap() {
+		JFileChooser fc = createFileChooser();
+		fc.setSelectedFile(new File(triggerFile.getParentFile().getParentFile() + "/map/" + plannerMap.getMapName()));
+		fc.setFileFilter(new FileNameExtensionFilter("Tiled Map File", "tmx"));
+		int returnVal = fc.showSaveDialog(this);
+		
+		File newMapFile = null;
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			newMapFile = fc.getSelectedFile();
+
+			Path path = Paths.get(newMapFile.getAbsolutePath());
+			try {
+				Files.write(path, plannerMap.outputNewMap().getBytes());
+				JOptionPane.showMessageDialog(this, "The map was exported successfully");
+			} catch (IOException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "An error occurred while trying to save the map:"
+						+ e.getMessage(), "Error saving map", JOptionPane.ERROR_MESSAGE);
+			}
+		}
 	}
 
 	private List<SearchResult> searchLocal(String searchString) {
@@ -591,9 +603,12 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		}
 
 		exportMapItem.setEnabled(true);
-
-		mapEditorPanel.loadMap(plannerMap, fileName);
+		ArrayList<PlannerTab> tabsWithMapRefs = getTabsWithMapReferences();
+		plannerMap.setTabsWithMapReferences(tabsWithMapRefs);
+		
+		mapEditorPanel.loadMap(plannerMap, fileName, tabsWithMapRefs);
 		cinematicMapPanel.loadMap(plannerMap);
+		unifiedViewPanel.loadMap(plannerMap, tabsWithMapRefs);
 		jtp.setEnabledAt(TAB_CIN_MAP, true);
 		jtp.setEnabledAt(TAB_EDIT_MAP, true);
 		jtp.setSelectedIndex(TAB_EDIT_MAP);
@@ -653,12 +668,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CIN), "cinematic", containersByName);
 			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CONDITIONS), "condition", containersByName);
 			
-			ArrayList<PlannerTab> tabsWithReferences = new ArrayList<>();
-			for (int i = TAB_TRIGGER; i <= TAB_TEXT; i++) {
-				tabsWithReferences.add(plannerTabs.get(i));
-			}
-			
-			PlannerReference.establishReferences(tabsWithReferences, referenceListByReferenceType);
+			PlannerReference.establishReferences(getTabsWithMapReferences(), referenceListByReferenceType);
 			updateErrorList(PlannerReference.getBadReferences(getDataInputTabs()));
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -672,6 +682,15 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		jtp.setEnabledAt(TAB_CIN, true);
 		jtp.setEnabledAt(TAB_TEXT, true);
 		jtp.setEnabledAt(TAB_CONDITIONS, true);
+		jtp.setEnabledAt(TAB_UNIFIED_VIEW, true);
+	}
+
+	private ArrayList<PlannerTab> getTabsWithMapReferences() {
+		ArrayList<PlannerTab> tabsWithReferences = new ArrayList<>();
+		for (int i = TAB_TRIGGER; i <= TAB_TEXT; i++) {
+			tabsWithReferences.add(plannerTabs.get(i));
+		}
+		return tabsWithReferences;
 	}
 
 	private void saveTriggers(boolean success) {
@@ -710,7 +729,11 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		}
 
 		if (success) {
-			JOptionPane.showMessageDialog(this, "The file was saved successfully");
+			int rc = JOptionPane.showConfirmDialog(this, 
+					"The file was saved successfully.\nWould you also like to export the map at this time (Highly recommended)", 
+					"Save Successful", JOptionPane.YES_NO_OPTION);
+			if (rc == JOptionPane.YES_OPTION)
+				exportMap();
 		}
 	}
 
@@ -727,6 +750,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		{
 			cinematicMapPanel.reloadCinematicItem();
 			playCinematicMenuItem.setEnabled(true);
+		} else if (jtp.getSelectedIndex() == TAB_UNIFIED_VIEW) {
+			unifiedViewPanel.panelSelected();
 		}
 	}
 
@@ -761,7 +786,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	
 	public List<PlannerTab> getDataInputTabs() {
 		List<PlannerTab> referenceTabs = new ArrayList<>();
-		for (int i = 0; i < jtp.getTabCount() - 2; i++) {
+		for (int i = 0; i < jtp.getTabCount() - 3; i++) {
 			referenceTabs.add(plannerTabs.get(i));
 		}
 		return referenceTabs;
@@ -782,5 +807,13 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	public boolean hasPlannerMap() {
 		return plannerMap != null;
+	}
+
+	public PlannerMap getPlannerMap() {
+		return plannerMap;
+	}
+
+	public UnifiedViewPanel getUnifiedViewPanel() {
+		return unifiedViewPanel;
 	}
 }

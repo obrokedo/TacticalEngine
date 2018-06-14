@@ -88,11 +88,11 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 		}
 	}
 
-	public void addNewContainer()
+	public PlannerContainer addNewContainer()
 	{
 		String newName = JOptionPane.showInputDialog("Enter the new objects name");
 		if (newName == null)
-			return;
+			return null;
 
 		String type = containers[typeComboBox.getSelectedIndex()];
 		PlannerContainer newPC = new PlannerContainer(containersByName.get(type), this);
@@ -101,6 +101,7 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 		pcd.getDataLines().add(new PlannerReference(newName));
 		newPC.getDefLine().getValues().add(newName);
 		plannerTree.addItem(newName, listPC.size() - 1);
+		return newPC;
 	}
 
 	public void duplicateContainer(int index)
@@ -130,6 +131,10 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 			return;
 		plannerTree.removeItem(index);
 		PlannerReference.removeReferences(refersTo, index);
+		if (refersTo == PlannerValueDef.REFERS_TRIGGER)
+			plannerFrame.getPlannerMap().removeReferences(true, index);
+		else if (refersTo == PlannerValueDef.REFERS_TEXT)
+			plannerFrame.getPlannerMap().removeReferences(false, index);
 		plannerFrame.updateErrorList(PlannerReference.getBadReferences(plannerFrame.getDataInputTabs()));
 		uiAspect.remove(currentPCScroll);
 		uiAspect.repaint();
@@ -338,5 +343,13 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 
 	public int getTabIndex() {
 		return tabIndex;
+	}
+	
+	public PlannerContainer getPlannerContainerByReference(PlannerReference ref) {
+		for (PlannerContainer pc : listPC) {
+			if (((String) (pc.getDefLine().getValues().get(0))).equalsIgnoreCase(ref.getName()))
+					return pc;
+		}
+		return null;
 	}
 }

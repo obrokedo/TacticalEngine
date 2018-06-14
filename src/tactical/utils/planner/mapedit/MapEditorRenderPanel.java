@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 import tactical.loading.PlannerMap;
 import tactical.map.MapObject;
 import tactical.utils.planner.PlannerFrame;
+import tactical.utils.planner.PlannerTab;
 
 public class MapEditorRenderPanel extends JPanel implements MouseListener
 {
@@ -19,6 +21,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener
 	private PlannerMap plannerMap;
 	private MapObject selectedMapObject = null;
 	private MapEditorPanel parentPanel;
+	private ArrayList<PlannerTab> tabsWithMapReferences;
 
 	public MapEditorRenderPanel(MapEditorPanel parentPanel)
 	{
@@ -34,7 +37,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener
 			plannerMap.renderMap(g, this);
 			plannerMap.renderMapLocations(g, selectedMapObject,
 					parentPanel.isDisplayEnemy(), parentPanel.isDisplayOther(), parentPanel.isDisplayTerrain(),
-					parentPanel.isDisplayUnused());
+					parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable());
 		}
 	}
 
@@ -42,6 +45,10 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener
 		this.plannerMap = plannerMap;
 		this.setPreferredSize(new Dimension(plannerMap.getMapWidthInPixels(), plannerMap.getMapHeightInPixels()));
 		selectedMapObject = null;
+	}
+	
+	public void setTabsWithMapReferences(ArrayList<PlannerTab> tabsWithMapReferences) {
+		this.tabsWithMapReferences = tabsWithMapReferences;
 	}
 
 	@Override
@@ -70,22 +77,12 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener
 			{
 				for (MapObject mo : plannerMap.getMapObjects())
 				{
-					if (mo.getKey() == null || mo.getKey().length() == 0)
-					{
-						if (!parentPanel.isDisplayUnused())
-							continue;
-					}
-					else
-					{
-						if (mo.getKey().equalsIgnoreCase("enemy") && !parentPanel.isDisplayEnemy())
-							continue;
-						else if (mo.getKey().equalsIgnoreCase("terrain") && !parentPanel.isDisplayTerrain())
-							continue;
-						else if (!mo.getKey().equalsIgnoreCase("enemy") 
-								&& !mo.getKey().equalsIgnoreCase("terrain") 
-								&& !parentPanel.isDisplayOther())
-							continue;
-					}
+					boolean interactable = plannerMap.isInteractableMapObject(mo);
+					
+					if (plannerMap.isMapObjectFilteredOut(mo, 
+							parentPanel.isDisplayEnemy(), parentPanel.isDisplayOther(), parentPanel.isDisplayTerrain(),
+							parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable(), interactable))
+						continue;					
 
 					if (mo.getShape().contains(m.getX(), m.getY()))
 					{
@@ -125,8 +122,13 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener
 
 			this.repaint();
 
-			if (m.getButton() == MouseEvent.BUTTON3)
-				this.parentPanel.editMapObject();
+			if (m.getButton() == MouseEvent.BUTTON3) {
+				if (plannerMap.isInteractableMapObject(selectedMapObject)) {				
+					parentPanel.getPlannerFrame().getUnifiedViewPanel().setMoToEdit(selectedMapObject);
+					parentPanel.getPlannerFrame().setSelectedTabIndex(PlannerFrame.TAB_UNIFIED_VIEW);
+				}
+					
+			}
 		}
 	}
 

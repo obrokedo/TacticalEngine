@@ -123,24 +123,18 @@ public class PlannerContainer implements ActionListener
 	{
 		this.lines.add(line);
 		parentTab.refreshItem(this);
-		uiAspect.revalidate();
-		uiAspect.repaint();
 	}
 
 	public void addLine(PlannerLine line, int addIndex)
 	{
 		this.lines.add(addIndex, line);
 		parentTab.refreshItem(this);
-		uiAspect.revalidate();
-		uiAspect.repaint();
 	}
 
 	public PlannerLine removeLine(int index)
 	{
 		PlannerLine pl = lines.remove(index);
 		parentTab.refreshItem(this);
-		uiAspect.revalidate();
-		uiAspect.repaint();
 		return pl;
 	}
 
@@ -149,8 +143,6 @@ public class PlannerContainer implements ActionListener
 		PlannerLine pl = lines.get(index);
 		lines.add(index + 1, new PlannerLine(pl));
 		parentTab.refreshItem(this);
-		uiAspect.revalidate();
-		uiAspect.repaint();
 	}
 
 	public PlannerContainer duplicateContainer(String newName)
@@ -161,9 +153,9 @@ public class PlannerContainer implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent a) {
 		String action = a.getActionCommand();
-		if (action.equalsIgnoreCase("addline"))
+		if (action.startsWith("addline"))
 		{
-			int index = defLine.getSelectedItem();
+			int index = Integer.parseInt(action.substring(8));
 			this.lines.add(new PlannerLine(pcdef.getAllowableLines().get(index), false));
 			parentTab.addAttribute(pcdef.getAllowableLines().get(index).getName(), lines.size() - 1);
 			// setupUI();
@@ -181,9 +173,6 @@ public class PlannerContainer implements ActionListener
 			int index = Integer.parseInt(action.split(" ")[1]) - 1;
 			lines.remove(index);
 			parentTab.refreshItem(this);
-			// setupUI();
-			uiAspect.revalidate();
-			uiAspect.repaint();
 		}
 		else if (action.startsWith("moveup"))
 		{
@@ -193,9 +182,6 @@ public class PlannerContainer implements ActionListener
 				PlannerLine pl = lines.remove(index);
 				lines.add(index - 1, pl);
 				parentTab.refreshItem(this);
-				// setupUI();
-				uiAspect.revalidate();
-				uiAspect.repaint();
 			}
 		}
 		else if (action.startsWith("movedown"))
@@ -205,10 +191,8 @@ public class PlannerContainer implements ActionListener
 			{
 				PlannerLine pl = lines.remove(index);
 				lines.add(index + 1, pl);
+				pl.getUiAspect().repaint();
 				parentTab.refreshItem(this);
-				// setupUI();
-				uiAspect.revalidate();
-				uiAspect.repaint();
 			}
 		}
 		else if (action.startsWith("duplicate"))
@@ -217,9 +201,6 @@ public class PlannerContainer implements ActionListener
 			PlannerLine pl = lines.get(index);
 			lines.add(index + 1, new PlannerLine(pl));
 			parentTab.refreshItem(this);
-			// setupUI();
-			uiAspect.revalidate();
-			uiAspect.repaint();
 		}
 		else if (action.startsWith("save")) {
 			int index = Integer.parseInt(action.split(" ")[1]) - 1;

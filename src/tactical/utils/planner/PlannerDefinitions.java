@@ -34,6 +34,8 @@ public class PlannerDefinitions {
 
 	public static void setupRefererList(ArrayList<ArrayList<PlannerReference>> listOfLists)
 	{
+		TacticalGame.ENGINE_CONFIGURATIOR.initialize();
+		
 		for (int i = 0; i < 50; i++)
 			listOfLists.add(new ArrayList<PlannerReference>());
 
@@ -45,9 +47,6 @@ public class PlannerDefinitions {
 		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("wizard"));
 		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("cleric"));
 		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("fighter"));
-
-		// Setup stat gain types
-		TacticalGame.ENGINE_CONFIGURATIOR.initialize();
 
 		// Setup progression type
 		for (String progressionName : TacticalGame.ENGINE_CONFIGURATIOR.getLevelProgression().getStandardStatProgressionTypeList())

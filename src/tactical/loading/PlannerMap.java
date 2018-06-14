@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map.Entry;
@@ -13,6 +14,11 @@ import javax.swing.JPanel;
 import tactical.map.Map;
 import tactical.map.MapObject;
 import tactical.utils.XMLParser.TagArea;
+import tactical.utils.planner.PlannerContainer;
+import tactical.utils.planner.PlannerFrame;
+import tactical.utils.planner.PlannerLine;
+import tactical.utils.planner.PlannerReference;
+import tactical.utils.planner.PlannerTab;
 
 public class PlannerMap extends Map {
 	private final Color UNSELECTED_MO_FILL_COLOR = new Color(0, 0, 255, 50);
@@ -23,6 +29,7 @@ public class PlannerMap extends Map {
 	private Hashtable<MapObject, TagArea> tagAreaByMapObject = new Hashtable<>();
 	private TagArea rootTagArea;
 	private String mapName;
+	private ArrayList<PlannerTab> tabsWithMapReferences;
 
 	public PlannerMap(String mapName) {
 		super();
@@ -81,32 +88,22 @@ public class PlannerMap extends Map {
 
 	public void renderMapLocations(Graphics g, MapObject selectedMO)
 	{
-		renderMapLocations(g, selectedMO, true, true, true, true);
+		renderMapLocations(g, selectedMO, true, true, true, true, true);
 	}
 
 	public void renderMapLocations(Graphics g, MapObject selectedMO,
 			boolean displayEnemy, boolean displayOther, boolean displayTerrain,
-			boolean displayUnused)
+			boolean displayUnused, boolean displayInteractables)
 	{
 		for (MapObject mo : getMapObjects())
 		{
-			if (mo.getKey() == null || mo.getKey().length() == 0)
-			{
-				if (!displayUnused)
-					continue;
-			}
-			else
-			{
-				if (mo.getKey().equalsIgnoreCase("enemy") && !displayEnemy)
-					continue;
-				if (mo.getKey().equalsIgnoreCase("terrain") && !displayTerrain)
-					continue;
-				else if (!mo.getKey().equalsIgnoreCase("enemy") &&
-						!mo.getKey().equalsIgnoreCase("battletrigger")
-						&& !mo.getKey().equalsIgnoreCase("terrain") && !mo.getKey().equalsIgnoreCase("trigger")
-						&& !displayOther)
-					continue;
-			}
+			String name = mo.getName();
+			
+			boolean interactable = isInteractableMapObject(mo);
+			
+			if (isMapObjectFilteredOut(mo, displayEnemy, displayOther, displayTerrain, 
+					displayUnused, displayInteractables, interactable))
+				continue;
 
 			int[] xP, yP;
 			xP = new int[mo.getShape().getPointCount()];
@@ -116,11 +113,14 @@ public class PlannerMap extends Map {
 				xP[i] = (int) mo.getShape().getPoint(i)[0];
 				yP[i] = (int) mo.getShape().getPoint(i)[1];
 			}
-			
-			String name = mo.getName();
-
-			if (mo != selectedMO)
-				g.setColor(UNSELECTED_MO_FILL_COLOR);
+						
+			if (mo != selectedMO) {
+				if (interactable)
+					g.setColor(new Color(255, 128, 0, 150));
+				else
+					g.setColor(UNSELECTED_MO_FILL_COLOR);
+				
+			}
 			else
 				g.setColor(SELECTED_MO_FILL_COLOR);
 			g.fillPolygon(xP, yP, xP.length);
@@ -137,6 +137,64 @@ public class PlannerMap extends Map {
 				g.drawString(name, xP[0] + 5, yP[0] + 15);
 			}
 		}
+	}
+	
+	public boolean isMapObjectFilteredOut(MapObject mo, 
+			boolean displayEnemy, boolean displayOther, boolean displayTerrain,
+			boolean displayUnused, boolean displayInteractables, boolean interactable) {
+		if (mo.getKey() == null || mo.getKey().length() == 0)
+		{
+			if (!displayUnused && (!interactable || !displayInteractables))
+				return true;
+		}
+		else
+		{	
+			if (mo.getKey().equalsIgnoreCase("enemy") && !displayEnemy)
+				return true;
+			if (mo.getKey().equalsIgnoreCase("terrain") && !displayTerrain)
+				return true;
+			else if (!mo.getKey().equalsIgnoreCase("enemy") &&
+					!mo.getKey().equalsIgnoreCase("battletrigger")
+					&& !mo.getKey().equalsIgnoreCase("terrain") && 
+					!mo.getKey().equalsIgnoreCase("trigger") && 
+					!interactable
+					&& !displayOther)
+				return true;
+			
+			
+		}
+		
+		if (interactable && !displayInteractables)
+			return true;
+		return false;
+	}
+
+	public boolean isInteractableMapObject(MapObject mo) {
+		boolean interactable = false;
+		if (mo.getName() != null) {
+			if (getPCReferencingMapObject(mo) != null)
+				interactable = true;
+		}
+		
+		if ("npc".equalsIgnoreCase(mo.getKey()) || "searcharea".equalsIgnoreCase(mo.getKey())) {
+			interactable = true;
+		}
+		return interactable;
+	}
+	
+	public PlannerContainer getPCReferencingMapObject(MapObject mo) {
+		for (PlannerContainer pc : tabsWithMapReferences.get(PlannerFrame.TAB_CONDITIONS).getListPC()) {
+			for (PlannerLine pl : pc.getLines()) {
+				if ("On Location Enter".equalsIgnoreCase(pl.getPlDef().getName())) {
+					if (pl.getValues().size() > 0 && pl.getValues().get(0) instanceof PlannerReference
+							&& ((PlannerReference) pl.getValues().get(0)).getName().equalsIgnoreCase(mo.getName())) {
+						return pc;
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	public void addMapObject(MapObject mo, TagArea ta) {
@@ -222,6 +280,31 @@ public class PlannerMap extends Map {
 
 	@Override
 	public void intializeRoofs() {}
+
+	public void setTabsWithMapReferences(ArrayList<PlannerTab> tabsWithMapReferences) {
+		this.tabsWithMapReferences = tabsWithMapReferences;
+	}
 	
-	
+	public void removeReferences(boolean isTrigger, int idx) {
+		for (MapObject mos : mapObjects) {
+			if (isTrigger && "searcharea".equalsIgnoreCase(mos.getKey())) {
+				replaceId("searchtrigger", idx, mos);
+			} else if (!isTrigger && "npc".equalsIgnoreCase(mos.getKey())) {
+				replaceId("textid", idx, mos);
+			}
+		}
+	}
+
+	private void replaceId(String key, int idx, MapObject mos) {
+		if (mos.getParams().containsKey(key)) {
+			try {
+				int id = Integer.parseInt(mos.getParam(key));
+				if (id > idx)
+					id--;
+				else if (id == idx)
+					id = -1;
+				mos.getParams().put(key, "" + id);
+			} catch (NumberFormatException e) {}
+		}
+	}
 }

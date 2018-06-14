@@ -28,6 +28,7 @@ import tactical.utils.planner.PlannerFrame;
 import tactical.utils.planner.PlannerLine;
 import tactical.utils.planner.PlannerLineDef;
 import tactical.utils.planner.PlannerReference;
+import tactical.utils.planner.PlannerTab;
 import tactical.utils.planner.PlannerValueDef;
 
 
@@ -36,6 +37,7 @@ public class MapEditorPanel implements ActionListener {
 	private static final String COMMAND_DISPLAY_TERRAIN = "dispterrain";
 	private static final String COMMAND_DISPLAY_OTHER = "dispother";
 	private static final String COMMAND_DISPLAY_UNUSED = "dispunused";
+	private static final String COMMAND_DISPLAY_INTERACTABLE = "dispinter";
 
 	private MapEditorRenderPanel mapPanel;
 	private PlannerMap plannerMap;
@@ -46,7 +48,7 @@ public class MapEditorPanel implements ActionListener {
 	private JComboBox<String> moCombo;
 	private ArrayList<ArrayList<PlannerReference>> listOfLists;
 	private boolean displayEnemy = true, displayTerrain = true,
-		displayOther = true, displayUnused = true;
+		displayOther = true, displayUnused = true, displayInteractable = true;
 	// private Hashtable<String, ArrayList<String>> entrancesByMap = new Hashtable<>();
 
 	public MapEditorPanel(PlannerFrame plannerFrame, ArrayList<ArrayList<PlannerReference>> listOfLists)
@@ -64,6 +66,7 @@ public class MapEditorPanel implements ActionListener {
 
 		locationVisiblePanel.add(createCheckBox("Enemies", COMMAND_DISPLAY_ENEMY));
 		locationVisiblePanel.add(createCheckBox("Terrain", COMMAND_DISPLAY_TERRAIN));
+		locationVisiblePanel.add(createCheckBox("Triggerables", COMMAND_DISPLAY_INTERACTABLE));
 		locationVisiblePanel.add(createCheckBox("Others", COMMAND_DISPLAY_OTHER));
 		locationVisiblePanel.add(createCheckBox("Untyped/Locations", COMMAND_DISPLAY_UNUSED));
 
@@ -81,10 +84,11 @@ public class MapEditorPanel implements ActionListener {
 		return cb;
 	}
 
-	public void loadMap(PlannerMap map, String mapName)
+	public void loadMap(PlannerMap map, String mapName, ArrayList<PlannerTab> tabsWithMapReferences)
 	{
 		plannerMap = map;
 		mapPanel.setPlannerMap(plannerMap);
+		mapPanel.setTabsWithMapReferences(tabsWithMapReferences);
 		mapScrollPane.getVerticalScrollBar().setUnitIncrement(mapPanel.getPreferredSize().height / 20);
 		mapScrollPane.getHorizontalScrollBar().setUnitIncrement(mapPanel.getPreferredSize().width / 20);
 		mapScrollPane.revalidate();
@@ -245,6 +249,11 @@ public class MapEditorPanel implements ActionListener {
 			displayUnused = ((JCheckBox) aEv.getSource()).isSelected();
 			mapPanel.repaint();
 		}
+		else if (COMMAND_DISPLAY_INTERACTABLE.equalsIgnoreCase(command))
+		{
+			displayInteractable = ((JCheckBox) aEv.getSource()).isSelected();
+			mapPanel.repaint();
+		}
 		else if ("setmo".equalsIgnoreCase(command))
 		{
 			setMapObject();
@@ -275,13 +284,16 @@ public class MapEditorPanel implements ActionListener {
 		mo.getParams().clear();
 		this.mouseDown(mo);
 	}
-
-	public void editMapObject()
-	{
+	
+	public void editMapObject() {
 		setMapObject();
 
 		MapObject mo = this.mapPanel.getSelectedMapObject();
+		editMapObject(mo);
+	}
 
+	public void editMapObject(MapObject mo)
+	{
 		PlannerContainerDef pcdef = this.plannerFrame.getContainerDefByName("mapedit");
 		PlannerLineDef pld = getLineDefByName(pcdef, mo.getKey());
 
@@ -371,5 +383,13 @@ public class MapEditorPanel implements ActionListener {
 
 	public boolean isDisplayUnused() {
 		return displayUnused;
+	}
+
+	public boolean isDisplayInteractable() {
+		return displayInteractable;
+	}
+
+	public PlannerFrame getPlannerFrame() {
+		return plannerFrame;
 	}
 }
