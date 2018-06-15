@@ -78,12 +78,11 @@ public class Line implements UnifiedRenderable {
 		PlannerContainerDef pcdef = pc.getPcdef();			
 		pl.setupUI(pcdef.getAllowableLines(), null, 1, pcdef.getListOfLists(), false, true, null);
 
-		int rc = uvp.showScrollableOptionPane(pl.getUiAspect(), true);
+		uvp.showScrollableOptionPane(pl.getUiAspect(), false);
 		
-		if (rc != JOptionPane.NO_OPTION) {
-			pl.commitChanges();
-			
-			uvp.setupPanel((String) uvp.getDrivers().getSelectedItem());
-		}
+		pl.commitChanges();
+		
+		uvp.setupPanel((String) uvp.getDrivers().getSelectedItem());
+
 	}
 }

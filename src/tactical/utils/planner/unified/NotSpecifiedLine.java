@@ -84,37 +84,28 @@ public class NotSpecifiedLine implements UnifiedRenderable {
 		
 		if (r.contains(x, y)) {
 			if (forTrigger) {
-				createNewContainer(PlannerFrame.TAB_TRIGGER, "searchtrigger");							
+				uvp.createNewContainer(PlannerFrame.TAB_TRIGGER,  
+						pc -> attachNewContainerToParent(PlannerFrame.TAB_TRIGGER, "searchtrigger", pc));							
 			}
 			else {					
-				createNewContainer(PlannerFrame.TAB_TEXT, "textid");					
+				uvp.createNewContainer(PlannerFrame.TAB_TEXT,
+						pc -> attachNewContainerToParent(PlannerFrame.TAB_TEXT, "textid", pc));					
 			}
 		}
 		
 	}
 	
-	private void createNewContainer(int tabIdx, String mapObjectString) {
-		PlannerContainer newPC = uvp.getTabsWithMapRefs().get(tabIdx).addNewContainer();
-		if (newPC != null) {
-			 uvp.showScrollableOptionPane(new SingleEditPanel(newPC), false);
-			// Must be a search area
-			if (mo != null) {
-				mo.getParams().put(mapObjectString, "" + ( uvp.getTabsWithMapRefs().get(tabIdx).getListPC().size() - 1));
-			} else if (pl != null) {
-				pl.getValues().set(idx, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
-			} else if (pc != null) {
-				pc.getDefLine().getValues().set(idx, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
-			} else {
-				JOptionPane.showMessageDialog(uvp.getRenderPanel(), "Due to the complexity of the 'Run Triggers' command you will need to set the newly created trigger yourself");
-			}
-			
-			for (PlannerLine pl : newPC.getLines()) {
-				pl.commitChanges();
-			}
-			newPC.getDefLine().commitChanges();
-			
-			uvp.setupPanel((String)  uvp.getDrivers().getSelectedItem());
-		}	
+	public void attachNewContainerToParent(int tabIdx, String mapObjectString, PlannerContainer newPC) {
+		// Must be a search area
+		if (mo != null) {
+			mo.getParams().put(mapObjectString, "" + ( uvp.getTabsWithMapRefs().get(tabIdx).getListPC().size() - 1));
+		} else if (pl != null) {
+			pl.getValues().set(idx, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
+		} else if (pc != null) {
+			pc.getDefLine().getValues().set(idx, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
+		} else {
+			JOptionPane.showMessageDialog(uvp.getRenderPanel(), "Due to the complexity of the 'Run Triggers' command you will need to set the newly created trigger yourself");
+		}
 	}
 
 	@Override

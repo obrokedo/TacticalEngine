@@ -3,19 +3,22 @@ package tactical.utils.planner.unified;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,7 +33,7 @@ import tactical.utils.planner.PlannerReference;
 import tactical.utils.planner.PlannerTab;
 import tactical.utils.planner.mapedit.MapEditorPanel;
 
-public class UnifiedViewPanel extends JPanel implements ItemListener, MouseListener {
+public class UnifiedViewPanel extends JPanel implements ActionListener, ItemListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 
 	private UnifiedViewRenderPanel renderPanel;
@@ -54,15 +57,17 @@ public class UnifiedViewPanel extends JPanel implements ItemListener, MouseListe
 		renderPanel = new UnifiedViewRenderPanel();
 		renderPanel.addMouseListener(this);
 		
+		JPanel topPanel = new JPanel();
+		topPanel.add(new JLabel("Select Driving Action: "));
 		drivers = new JComboBox<>();
 		drivers.addItemListener(this);
-		drivers.addItem("Condition1");
-		drivers.addItem("Condition2");
-		drivers.addItem("NPC1");
-		drivers.addItem("NPC2");
-		drivers.addItem("Search");
-		
-		add(drivers, BorderLayout.PAGE_START);
+		topPanel.add(drivers);
+		topPanel.add(new JLabel(" Or "));
+		JButton newCondButton = new JButton("Create New Condition");
+		newCondButton.setActionCommand("createcond");
+		newCondButton.addActionListener(this);
+		topPanel.add(newCondButton);
+		add(topPanel, BorderLayout.PAGE_START);
 		add(new JScrollPane(renderPanel), BorderLayout.CENTER);
 	}
 	
@@ -83,17 +88,17 @@ public class UnifiedViewPanel extends JPanel implements ItemListener, MouseListe
 		}
 	}
 			
-	public int showScrollableOptionPane(JPanel panel, boolean confirm) {
+	public void showScrollableOptionPane(JPanel panel, boolean forNewItem) {
 		JScrollPane jsp = new JScrollPane(panel);
 		
-		jsp.setPreferredSize(new Dimension(jsp.getPreferredSize().width + 50, 
+		if (forNewItem)
+			jsp.setPreferredSize(new Dimension(600, 400));
+		else
+			jsp.setPreferredSize(new Dimension(jsp.getPreferredSize().width + 50, 
 				Math.min((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 200), jsp.getPreferredSize().height)));			
 		
-		if (confirm)
-			return JOptionPane.showConfirmDialog(renderPanel, jsp, "Edit", JOptionPane.OK_OPTION);
-		else
-			JOptionPane.showMessageDialog(renderPanel, jsp, "Edit", JOptionPane.PLAIN_MESSAGE);
-		return 0;
+		
+		JOptionPane.showMessageDialog(renderPanel, jsp, "Edit", JOptionPane.PLAIN_MESSAGE);
 	}	
 	
 	public interface UnifiedRenderable {
@@ -463,5 +468,37 @@ public class UnifiedViewPanel extends JPanel implements ItemListener, MouseListe
 
 	public List<UnifiedRenderable> getRenderables() {
 		return renderables;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if ("createcond".equalsIgnoreCase(e.getActionCommand())) {
+			PlannerContainer pc = createNewContainer(PlannerFrame.TAB_CONDITIONS, null);
+			if (pc != null) {
+				String newEntry = "Condition: " + (String) pc.getDefLine().getValues().get(0);
+				drivers.addItem(newEntry);
+				drivers.setSelectedItem("Condition: " + (String) pc.getDefLine().getValues().get(0));
+			}
+		}
+		
+	}
+	
+	public PlannerContainer createNewContainer(int tabIdx, Consumer<PlannerContainer> callBack) {
+		PlannerContainer newPC = getTabsWithMapRefs().get(tabIdx).addNewContainer();
+		if (newPC != null) {
+			showScrollableOptionPane(new SingleEditPanel(newPC), true);
+			
+			if (callBack != null) {
+				callBack.accept(newPC);
+			}
+						
+			for (PlannerLine pl : newPC.getLines()) {
+				pl.commitChanges();
+			}
+			newPC.getDefLine().commitChanges();
+			
+			setupPanel((String)  getDrivers().getSelectedItem());
+		}
+		return newPC;
 	}
 }
