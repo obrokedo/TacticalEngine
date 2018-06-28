@@ -319,6 +319,28 @@ public class Trigger
 			return true;
 		}
 	}
+	
+	public class TriggerRemoveHero implements Triggerable
+	{
+		private int heroId;
+
+		public TriggerRemoveHero(int heroId)
+		{
+			this.heroId = heroId;
+		}
+
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			Iterator<CombatSprite> heroItr = stateInfo.getPersistentStateInfo().getClientProfile().getHeroes().iterator(); 
+			while (heroItr.hasNext()) {
+				CombatSprite hero = heroItr.next();
+				if (hero.getId() == heroId) {
+					heroItr.remove();
+				}
+			}
+			return true;
+		}
+	}
 
 	public class TriggerById implements Triggerable
 	{

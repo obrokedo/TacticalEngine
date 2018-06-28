@@ -10,8 +10,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
 
-import tactical.engine.config.DefaultEngineConfiguration;
 import tactical.engine.config.EngineConfigurator;
+import tactical.engine.config.provided.DefaultEngineConfiguration;
 import tactical.engine.log.FileLogger;
 import tactical.engine.state.BattleState;
 import tactical.engine.state.CinematicState;
@@ -32,6 +32,7 @@ import tactical.loading.LoadingScreenRenderer;
 import tactical.loading.LoadingState;
 import tactical.loading.ResourceManager;
 import tactical.loading.TextParser;
+import tactical.utils.planner.PlannerFrame;
 
 /**
  * Entry point to the Tactical Engine
@@ -99,7 +100,9 @@ public abstract class TacticalGame extends StateBasedGame   {
 	
 	public static TextParser TEXT_PARSER = new TextParser();
 	
-	public static EngineConfigurator ENGINE_CONFIGURATIOR = new DefaultEngineConfiguration();	
+	public static EngineConfigurator ENGINE_CONFIGURATIOR = new DefaultEngineConfiguration();
+	
+	private boolean plannerMode = false;
 	
 	public TacticalGame(String gameTitle, String version, boolean devMode, String[] gameArgs)
 	{
@@ -108,40 +111,47 @@ public abstract class TacticalGame extends StateBasedGame   {
 		VERSION = version;
 		DEV_MODE_ENABLED = devMode;
 		
+		TacticalGame.ENGINE_CONFIGURATIOR = getEngineConfigurator();
+		
 		if (gameArgs.length > 0) {
 			if (gameArgs[0].equalsIgnoreCase("injar")) {
 				System.out.println("Running in jar");
 				LoadingState.inJar = true;
+			} else if (gameArgs[0].equalsIgnoreCase("planner")) {
+				plannerMode = true;
+				PlannerFrame pf = new PlannerFrame(null);
+				pf.setVisible(true);
 			}
 		}
-		
-		TacticalGame.ENGINE_CONFIGURATIOR = getEngineConfigurator();
 		
 		Log.setLogSystem(new FileLogger());
 	}
 	
 	public abstract EngineConfigurator getEngineConfigurator();
 	
-	public void setup() {
-			// Setup a game container: set it's display mode and target
-			// frame rate
-			Log.debug("Starting engine version " + VERSION) ;
-			
-			try
-			{
-				PaddedGameContainer container = new PaddedGameContainer(this);
-								
-				container.setIcons(new String[] {"image/engine/SomeIcon16.png", "image/engine/SomeIcon32.png"});
-				container.determineScreenSize();	
-				createOrLoadPersistantState(container);												
-				setRenderSettings(container);
-				container.start();
-			}
-			catch (Throwable ex)
-			{
-				JOptionPane.showMessageDialog(null, "An error has occurred: " + ex.getMessage());
-				ex.printStackTrace();
-			}
+	public void setup() 
+	{
+		if (plannerMode)
+			return;
+		// Setup a game container: set it's display mode and target
+		// frame rate
+		Log.debug("Starting engine version " + VERSION) ;
+		
+		try
+		{
+			PaddedGameContainer container = new PaddedGameContainer(this);
+							
+			container.setIcons(new String[] {"image/engine/SomeIcon16.png", "image/engine/SomeIcon32.png"});
+			container.determineScreenSize();	
+			createOrLoadPersistantState(container);												
+			setRenderSettings(container);
+			container.start();
+		}
+		catch (Throwable ex)
+		{
+			JOptionPane.showMessageDialog(null, "An error has occurred: " + ex.getMessage());
+			ex.printStackTrace();
+		}
 	}
 
 	public void setRenderSettings(GameContainer container) {
@@ -291,5 +301,9 @@ public abstract class TacticalGame extends StateBasedGame   {
 	public static int getTestMultiplier()
 	{
 		return 1000;
+	}
+	
+	public void setTextParser(TextParser parser) {
+		this.TEXT_PARSER = parser;
 	}
 }

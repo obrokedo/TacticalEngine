@@ -53,11 +53,11 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 		boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.PAGE_AXIS));
 		PlannerContainerDef pcdef = pc.getPcdef();		
 		PlannerLine plDef = pc.getDefLine();
-		plDef.setupUI(pcdef.getAllowableLines(), this, 0, pcdef.getListOfLists(), true, true, null);
+		plDef.setupUI(pcdef.getAllowableLines(), this, 0, pcdef.getListOfLists(), true, null);
 		boxPanel.add(plDef.getUiAspect());
 		int cnt = 1;
 		for (PlannerLine pl : pc.getLines()) {
-			pl.setupUI(pcdef.getAllowableLines(), this, cnt++, pcdef.getListOfLists(), true, true, null);
+			pl.setupUI(pcdef.getAllowableLines(), this, cnt++, pcdef.getListOfLists(), true, null);
 			boxPanel.add(pl.getUiAspect());
 		}						
 		jcb = new JComboBox<>();

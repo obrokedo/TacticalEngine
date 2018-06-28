@@ -1822,49 +1822,49 @@ public class PlannerDefinitions {
 				"Starting Speed for the enemy"));
 		// Fire Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"fireAffin", false, "Fire Affinitiy",
 				"The enemies base fire affinity. Items can modify this value."));
 
 		// Elec Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"elecAffin", false, "Electricity Affinitiy",
 				"The enemies base electricity affinity. Items can modify this value."));
 
 		// Cold Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"coldAffin", false, "Cold Affinitiy",
 				"The enemies base cold affinity. Items can modify this value."));
 
 		// Dark Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"darkAffin", false, "Dark Affinitiy",
 				"The enemies base dark affinity. Items can modify this value."));
 
 		// Water Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"waterAffin", false, "Water Affinitiy",
 				"The enemies base water affinity. Items can modify this value."));
 
 		// Earth Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"earthAffin", false, "Earth Affinitiy",
 				"The enemies base earth affinity. Items can modify this value."));
 
 		// Wind Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"windAffin", false, "Wind Affinitiy",
 				"The enemies base wind affinity. Items can modify this value."));
 
 		// Light Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"lightAffin", false, "Light Affinitiy",
 				"The enemies base light affinity. Items can modify this value."));
 
@@ -1872,37 +1872,37 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(
 				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"bodyStrength", false, "Body Strength",
-				"Determines the base body value for the hero."));
+				"Determines the base body value for the enemy."));
 
 		// Mind Strength
 		definingValues.add(new PlannerValueDef(
 				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"mindStrength", false, "Mind Strength",
-				"Determines the base mind value for the hero."));
+				"Determines the base mind value for the enemy."));
 
 		// Counter Strength
 		definingValues.add(new PlannerValueDef(
 				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"counterStrength", false, "Counter Chance Strength",
-				"Determines the base counter value for the hero."));
+				"Determines the base counter value for the enemy."));
 
 		// Evade Strength
 		definingValues.add(new PlannerValueDef(
 				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"evadeStrength", false, "Evade Chance Strength",
-				"Determines the base evade value for the hero."));
+				"Determines the base evade value for the enemy."));
 
 		// Double Strength
 		definingValues.add(new PlannerValueDef(
 				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"doubleStrength", false, "Double Chance Strength",
-				"Determines the base body value for the hero."));
+				"Determines the base body value for the enemy."));
 
 		// Crit Strength
 		definingValues.add(new PlannerValueDef(
 				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"critStrength", false, "Critical Strength",
-				"Determines the base critical value for the hero."));
+				"Determines the base critical value for the enemy."));
 
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "level", false, "Level",
@@ -2542,6 +2542,14 @@ public class PlannerDefinitions {
 				"The ID of the hero that should be added to the force"));
 		allowableLines.add(new PlannerLineDef("addhero", "Add Hero",
 				"Adds a new hero to the force", definingValues));
+		
+		// Remove hero
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+				PlannerValueDef.TYPE_STRING, "heroid", false, "Hero ID",
+				"The ID of the hero that should be removed from the force"));
+		allowableLines.add(new PlannerLineDef("removehero", "Remove Hero",
+				"Removes the specified hero from the force. If this is called during a battle, then the hero will remain in the battle until the battle is ended.", definingValues));
 
 		// Hide Roof
 		/*
@@ -2734,9 +2742,9 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_STRING, "description", false,
 				"Description", "Description"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
-				PlannerValueDef.TYPE_INT, "triggerid", false, "Trigger ID",
-				"The ID of the trigger that should be activated upon condition completion. If multiple conditions"
-				+ " are specified then ALL of the conditions must be met simultaneously for this trigger to be executed."));
+				PlannerValueDef.TYPE_MULTI_INT, "triggerid", false, "Trigger ID",
+				"The IDs of thes trigger that should be activated upon condition completion. If multiple conditions"
+				+ " are specified then ALL of the conditions must be met simultaneously for these triggers to be executed."));
 
 		PlannerLineDef definingLine = new PlannerLineDef("condition", "Condition",
 				"", definingValues);

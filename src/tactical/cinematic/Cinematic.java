@@ -785,10 +785,22 @@ public class Cinematic {
 				stateInfo.getPersistentStateInfo().getClientProfile().addHero(addHeroSprite);
 				break;
 			default:
+				handleCustomEvent(ce, stateInfo);
 				break;
 		}
 	}
 	
+	/**
+	 * Allows for custom Cinematic events to be handled. Those looking to create their own events
+	 * should extend this class and put new CinematicEvents here
+	 * 
+	 * @param ce A CinematicEvent that contains information of what event should be shown and it's parameters
+	 * @param stateInfo A StateInfo containing information about the current game state
+	 */
+	protected void handleCustomEvent(CinematicEvent ce, StateInfo stateInfo) {
+		
+	}
+		
 	private void moveActorToLocation(CinematicActor ca, int moveToLocX, int moveToLocY, float speed, boolean haltingMove, 
 			int direction, boolean moveHorFirst, boolean moveDiag, StateInfo stateInfo)
 	{

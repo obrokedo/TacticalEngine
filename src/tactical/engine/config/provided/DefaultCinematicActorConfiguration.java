@@ -1,4 +1,6 @@
-package tactical.engine.config;
+package tactical.engine.config.provided;
+
+import tactical.engine.config.CinematicActorConfiguration;
 
 public class DefaultCinematicActorConfiguration implements CinematicActorConfiguration {
 

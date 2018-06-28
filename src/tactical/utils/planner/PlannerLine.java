@@ -8,11 +8,11 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -61,15 +61,14 @@ public class PlannerLine
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, PlannerTab parentTab)
 	{
 		setupUI(allowableValues, aListener,
-				index, referenceListByReferenceType, true, true, parentTab);
+				index, referenceListByReferenceType, false, parentTab);
 	}
 
 	public void setupUI(ArrayList<PlannerLineDef> allowableValues, ActionListener aListener,
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
-			boolean displayButtons, boolean commitChanges, PlannerTab parentTab)
+			boolean displayButtons, PlannerTab parentTab)
 	{
-		if (commitChanges)
-			this.commitChanges();
+		this.commitChanges();
 		components.clear();
 		uiAspect.removeAll();
 		JPanel headDescPanel = new JPanel(new BorderLayout());
@@ -115,16 +114,6 @@ public class PlannerLine
 				saveButton.addActionListener(aListener);
 				headerPanel.add(saveButton);
 			}
-
-			JTextArea descriptionArea = new JTextArea(this.plDef.getDescription());
-			descriptionArea.setOpaque(false);
-			descriptionArea.setFont(descriptionArea.getFont().deriveFont(Font.BOLD));
-			descriptionArea.setForeground(Color.black);
-			//descriptionArea.setLineWrap(true);
-			//descriptionArea.setWrapStyleWord(true);
-			descriptionArea.setEditable(false);
-			descriptionArea.setBackground(Color.LIGHT_GRAY);
-			descriptionArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			
 			JLabel descriptionLabel = new JLabel(convertToConstantWidth(this.plDef.getDescription()));
 			
@@ -167,7 +156,7 @@ public class PlannerLine
 						c = new JSpinner(snm);
 						((JSpinner.NumberEditor) ((JSpinner) c).getEditor()).getTextField().setHorizontalAlignment(JTextField.LEFT);
 
-						((NumberFormatter) ((JSpinner.NumberEditor) ((JSpinner) c).getEditor()).getTextField().getFormatter()).setAllowsInvalid(false);
+						((NumberFormatter) ((JSpinner.NumberEditor) ((JSpinner) c).getEditor()).getTextField().getFormatter()).setAllowsInvalid(true);
 					}
 					else
 					{
@@ -195,22 +184,32 @@ public class PlannerLine
 					rb.addActionListener((MultiIntPanel) c);
 					rb.setActionCommand("REMOVE");
 					c.add(rb);
+					boolean hadAValue = false;
 					if (values.size() > i)
 					{
 						@SuppressWarnings("unchecked")
-						ArrayList<PlannerReference> vals = ((ArrayList<PlannerReference>) values.get(i));
+						Iterator<PlannerReference> vals = ((ArrayList<PlannerReference>) values.get(i)).iterator();
 
-						for (PlannerReference plannerRef : vals)
+						while (vals.hasNext())
 						{
+							PlannerReference plannerRef = vals.next();
 							JComboBox<String> jcb = new JComboBox<String>(mitems);
-							if (plannerRef.getName().length() > 0)
+							if (plannerRef.getName().length() > 0) {
 								jcb.setSelectedItem(plannerRef.getName());
-							c.add(jcb);
+								c.add(jcb);
+								hadAValue = true;
+							} else {
+								vals.remove();
+							}
 						}
+						
+						// Make sure at least one box is displayed even if it's empty
+						if (!hadAValue)
+							c.add(new JComboBox<String>(mitems));
 					}
 					else
 						c.add(new JComboBox<String>(mitems));
-
+					
 					break;
 				case PlannerValueDef.TYPE_BOOLEAN:
 					c = new JCheckBox();
@@ -419,16 +418,33 @@ public class PlannerLine
 					case PlannerValueDef.TYPE_MULTI_INT:
 						multi = "";
 						mip = (MultiIntPanel) components.get(i);
+						
 						for (int j = 2; j < mip.getComponentCount(); j++)
 						{
+							// If there is a deleted reference in the list, then just skip this entry
+							if (values != null && values.size() > i && values.get(i) instanceof ArrayList) {
+								ArrayList<PlannerReference> prs = (ArrayList<PlannerReference>) values.get(i);
+								if (prs.size() > j - 2) {
+									if (prs.get(j - 2).getName().equalsIgnoreCase("")) {
+										mip.remove(mip.getComponent(j));
+										prs.remove(j - 2);
+										j--;
+										continue;
+									}
+								}
+							}
+							
 							multi = multi + ((JComboBox<?>)mip.getComponent(j)).getSelectedIndex();
 							if (j + 1 != mip.getComponentCount())
 								multi = multi + ",";
 						}
+						
+						if (multi.length() == 0)
+							multi = "0";
 
 						if (i >= values.size())
 							values.add(multi);
-						else
+						else							
 							values.set(i, multi);
 
 						break;
@@ -447,6 +463,8 @@ public class PlannerLine
 			}
 		}
 		
+		// Clear out my components so I don't 're-commit'
+		this.components.clear();
 		ArrayList<String> badReferences = new ArrayList<>();
 		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
 	}

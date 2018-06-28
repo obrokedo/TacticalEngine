@@ -45,4 +45,6 @@ public interface EngineConfigurator {
 	public LoadingScreenRenderer getLoadScreenRenderer(GameContainer container);
 	
 	public AttackCinematicState getAttackCinematicState();
+	
+	public BattleStatisticConfigration getBattleStatisticsConfiguration(); 
 }

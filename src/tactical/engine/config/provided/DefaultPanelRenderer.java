@@ -1,8 +1,9 @@
-package tactical.engine.config;
+package tactical.engine.config.provided;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
+import tactical.engine.config.PanelRenderer;
 import tactical.loading.ResourceManager;
 
 public class DefaultPanelRenderer implements PanelRenderer {

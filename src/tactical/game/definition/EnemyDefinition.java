@@ -9,115 +9,93 @@ import tactical.game.resource.ItemResource;
 import tactical.game.sprite.CombatSprite;
 import tactical.utils.XMLParser.TagArea;
 
-public class EnemyDefinition
+public abstract class EnemyDefinition
 {
-	private static int ENEMY_COUNT = -1;
+	protected static int ENEMY_COUNT = -1;
 
-	private int id;
-	private String name;
-	private boolean leader = false;
-	private int hp;
-	private int mp;
-	private int attack;
-	private int defense;
-	private int speed;
-	private int move;
-	private int maxFireAffin, maxElecAffin,
-		maxColdAffin, maxDarkAffin, maxWaterAffin, maxEarthAffin, maxWindAffin,
-		maxLightAffin, maxBody, maxMind, maxCounter, maxEvade,
-		maxDouble, maxCrit;
-	private String movementType;
-	private int level;
-	private String animations;
-	private String effectId = null;
-	private String paletteName;
-	private int effectChance = -1, effectLevel = -1;
-	private int goldDropped;
+	protected int id;
+	protected String name;
+	protected boolean leader = false;
+	protected int hp;
+	protected int mp;
+	protected int attack;
+	protected int defense;
+	protected int speed;
+	protected int move;	
+	protected String movementType;
+	protected int level;
+	protected String animations;
+	protected String effectId = null;
+	protected String paletteName;
+	protected int effectChance = -1, effectLevel = -1;
+	protected int goldDropped;
 
-	private ArrayList<Integer> spellsPerLevel;
-	private ArrayList<String> spellIds;
+	protected ArrayList<Integer> spellsPerLevel;
+	protected ArrayList<String> spellIds;
 
-	private ArrayList<Integer> items;
-	private ArrayList<Boolean> itemsEquipped;
+	protected ArrayList<Integer> items;
+	protected ArrayList<Boolean> itemsEquipped;
 
-	private EnemyDefinition() {}
+	public EnemyDefinition(TagArea tagArea) {
+		parseEnemyDefinition(tagArea);
+	}
 
-	public static EnemyDefinition parseEnemyDefinition(TagArea tagArea)
+	public void parseEnemyDefinition(TagArea tagArea)
 	{
-		EnemyDefinition hd = new EnemyDefinition();
+		name = tagArea.getAttribute("name");
+		id = Integer.parseInt(tagArea.getAttribute("id"));
+		hp = Integer.parseInt(tagArea.getAttribute("hp"));
+		mp = Integer.parseInt(tagArea.getAttribute("mp"));
+		attack = Integer.parseInt(tagArea.getAttribute("attack"));
+		defense = Integer.parseInt(tagArea.getAttribute("defense"));
+		speed = Integer.parseInt(tagArea.getAttribute("speed"));
+		level = Integer.parseInt(tagArea.getAttribute("level"));
+		move = Integer.parseInt(tagArea.getAttribute("move"));
+		movementType = tagArea.getAttribute("movementtype");
+		animations = tagArea.getAttribute("animations");
 
-		hd.name = tagArea.getAttribute("name");
-		hd.id = Integer.parseInt(tagArea.getAttribute("id"));
-		hd.hp = Integer.parseInt(tagArea.getAttribute("hp"));
-		hd.mp = Integer.parseInt(tagArea.getAttribute("mp"));
-		hd.attack = Integer.parseInt(tagArea.getAttribute("attack"));
-		hd.defense = Integer.parseInt(tagArea.getAttribute("defense"));
-		hd.speed = Integer.parseInt(tagArea.getAttribute("speed"));
-		hd.level = Integer.parseInt(tagArea.getAttribute("level"));
-		hd.move = Integer.parseInt(tagArea.getAttribute("move"));
-		hd.movementType = tagArea.getAttribute("movementtype");
-		hd.animations = tagArea.getAttribute("animations");
-
-		if (hd.paletteName == null || hd.paletteName.trim().length() == 0)
-			hd.paletteName = null;
+		if (paletteName == null || paletteName.trim().length() == 0)
+			paletteName = null;
 		else
-			hd.animations = hd.animations + "-" + hd.paletteName;
+			animations = animations + "-" + paletteName;
 
-		// Load affinities
-		hd.maxFireAffin = Integer.parseInt(tagArea.getAttribute("fireAffin"));
-		hd.maxElecAffin = Integer.parseInt(tagArea.getAttribute("elecAffin"));
-		hd.maxColdAffin = Integer.parseInt(tagArea.getAttribute("coldAffin"));
-		hd.maxDarkAffin = Integer.parseInt(tagArea.getAttribute("darkAffin"));
-		hd.maxWaterAffin = Integer.parseInt(tagArea.getAttribute("waterAffin"));
-		hd.maxEarthAffin = Integer.parseInt(tagArea.getAttribute("earthAffin"));
-		hd.maxWindAffin = Integer.parseInt(tagArea.getAttribute("windAffin"));
-		hd.maxLightAffin = Integer.parseInt(tagArea.getAttribute("lightAffin"));
-
-		// Load body/mind
-		hd.maxBody = Integer.parseInt(tagArea.getAttribute("bodyStrength"));
-		hd.maxMind = Integer.parseInt(tagArea.getAttribute("mindStrength"));
-
-		// Load battle stats
-		hd.maxCounter = Integer.parseInt(tagArea.getAttribute("counterStrength"));
-		hd.maxEvade = Integer.parseInt(tagArea.getAttribute("evadeStrength"));
-		hd.maxDouble = Integer.parseInt(tagArea.getAttribute("doubleStrength"));
-		hd.maxCrit = Integer.parseInt(tagArea.getAttribute("critStrength"));
-
+		parseCustomEnemyDefinition(tagArea);
+		
 		if (tagArea.getAttribute("leader") != null)
-			hd.leader = Boolean.parseBoolean(tagArea.getAttribute("leader"));
+			leader = Boolean.parseBoolean(tagArea.getAttribute("leader"));
 
-		hd.spellsPerLevel = new ArrayList<Integer>();
-		hd.spellIds = new ArrayList<String>();
-		hd.items = new ArrayList<Integer>();
-		hd.itemsEquipped = new ArrayList<Boolean>();
-		hd.effectId = null;
-		hd.goldDropped = Integer.parseInt(tagArea.getAttribute("gold"));
+		spellsPerLevel = new ArrayList<Integer>();
+		spellIds = new ArrayList<String>();
+		items = new ArrayList<Integer>();
+		itemsEquipped = new ArrayList<Boolean>();
+		effectId = null;
+		goldDropped = Integer.parseInt(tagArea.getAttribute("gold"));
 
 		for (TagArea childTagArea : tagArea.getChildren())
 		{
 			if (childTagArea.getTagType().equalsIgnoreCase("spell"))
 			{
-				hd.spellIds.add(childTagArea.getAttribute("spellid"));
-				hd.spellsPerLevel.add(Integer.parseInt(childTagArea.getAttribute("level")));
+				spellIds.add(childTagArea.getAttribute("spellid"));
+				spellsPerLevel.add(Integer.parseInt(childTagArea.getAttribute("level")));
 			}
 			else if (childTagArea.getTagType().equalsIgnoreCase("item"))
 			{
-				hd.items.add(ItemResource.getItemIdByName(childTagArea.getAttribute("itemid")));
+				items.add(ItemResource.getItemIdByName(childTagArea.getAttribute("itemid")));
 				if (childTagArea.getAttribute("equipped") != null)
-					hd.itemsEquipped.add(Boolean.parseBoolean(childTagArea.getAttribute("equipped")));
+					itemsEquipped.add(Boolean.parseBoolean(childTagArea.getAttribute("equipped")));
 				else
-					hd.itemsEquipped.add(false);
+					itemsEquipped.add(false);
 			}
 			else if (childTagArea.getTagType().equalsIgnoreCase("attackeffect"))
 			{
-				hd.effectId = childTagArea.getAttribute("effectid");
-				hd.effectChance = Integer.parseInt(childTagArea.getAttribute("effectchance"));
-				hd.effectLevel = Integer.parseInt(childTagArea.getAttribute("effectlevel"));
+				effectId = childTagArea.getAttribute("effectid");
+				effectChance = Integer.parseInt(childTagArea.getAttribute("effectchance"));
+				effectLevel = Integer.parseInt(childTagArea.getAttribute("effectlevel"));
 			}
 		}
-
-		return hd;
 	}
+
+	
 
 	public CombatSprite getEnemy(int myId)
 	{
@@ -129,12 +107,7 @@ public class EnemyDefinition
 		}
 
 		// Create a CombatSprite from default stats, hero progression and spells known
-		CombatSprite cs = new CombatSprite(leader, name, animations, hp, mp, attack, defense,
-				speed, move, movementType, maxFireAffin, maxElecAffin,
-				maxColdAffin, maxDarkAffin, maxWaterAffin, maxEarthAffin, maxWindAffin,
-				maxLightAffin, maxBody, maxMind, maxCounter, maxEvade,
-				maxDouble, maxCrit, level, myId, knownSpells, ENEMY_COUNT--,
-				effectId, effectChance, effectLevel);
+		CombatSprite cs = createNewCombatSprite(myId, knownSpells);
 
 		// Add items to the combat sprite
 		for (int i = 0; i < items.size(); i++)
@@ -147,6 +120,10 @@ public class EnemyDefinition
 
 		return cs;
 	}
+
+	protected abstract void parseCustomEnemyDefinition(TagArea tagArea);
+	
+	protected abstract CombatSprite createNewCombatSprite(int myId, ArrayList<KnownSpell> knownSpells);
 
 	public int getId() {
 		return id;

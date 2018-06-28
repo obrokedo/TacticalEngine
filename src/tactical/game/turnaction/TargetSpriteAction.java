@@ -1,10 +1,13 @@
 package tactical.game.turnaction;
 
+import java.util.ArrayList;
+
+import tactical.engine.state.StateInfo;
 import tactical.game.battle.command.BattleCommand;
+import tactical.game.manager.TurnManager;
 import tactical.game.sprite.CombatSprite;
 
-public class TargetSpriteAction extends TurnAction
-{
+public class TargetSpriteAction extends TurnAction {
 	private static final long serialVersionUID = 1L;
 
 	private BattleCommand battleCommand;
@@ -23,7 +26,12 @@ public class TargetSpriteAction extends TurnAction
 		return null;
 	}
 
-	public BattleCommand getBattleCommand() {
-		return battleCommand;
+	@Override
+	public boolean perform(int delta, TurnManager turnManager, StateInfo stateInfo, ArrayList<TurnAction> turnActions) {
+		turnManager.setBattleCommand(battleCommand);
+		turnManager.determineAttackableSpace(false);
+		turnManager.getAttackableSpace().setTargetSprite(getTargetSprite(stateInfo.getCombatSprites()), stateInfo);
+		turnManager.setDisplayAttackable(true);
+		return true;
 	}
 }

@@ -27,7 +27,8 @@ public class PlannerReference {
 	 */
 	
 	public static void removeReferences(int referenceType, int referenceIndex) {
-		PlannerFrame.referenceListByReferenceType.get(referenceType - 1).remove(referenceIndex).setName("");
+		PlannerReference remove = PlannerFrame.referenceListByReferenceType.get(referenceType - 1).remove(referenceIndex);
+		remove.setName("");
 	}
 	
 	public static List<String> getBadReferences(List<PlannerTab> tabsWithReferences) {

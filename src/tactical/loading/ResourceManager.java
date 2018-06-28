@@ -159,7 +159,7 @@ public class ResourceManager {
 
 			for (TagArea ta : tagAreas)
 			{
-				HeroDefinition hd = HeroDefinition.parseHeroDefinition(ta);
+				HeroDefinition hd = TacticalGame.ENGINE_CONFIGURATIOR.getBattleStatisticsConfiguration().parseHeroDefinition(ta);
 				heroDefinitionsById.put(hd.getId(), hd);
 			}
 
@@ -185,7 +185,7 @@ public class ResourceManager {
 
 			for (TagArea ta : tagAreas)
 			{
-				EnemyDefinition ed = EnemyDefinition.parseEnemyDefinition(ta);
+				EnemyDefinition ed = TacticalGame.ENGINE_CONFIGURATIOR.getBattleStatisticsConfiguration().parseEnemyDefinition(ta);
 				enemyDefinitionsById.put(ed.getId(), ed);
 			}
 

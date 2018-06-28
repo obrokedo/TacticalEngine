@@ -19,7 +19,7 @@ public class XMLParser
         private String tagType;
         private String originalLine;
 
-        public TagArea(String line) throws IOException
+        public TagArea(String line)
         {
         	originalLine = line;
             int open = 0;

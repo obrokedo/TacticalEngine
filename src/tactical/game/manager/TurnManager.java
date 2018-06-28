@@ -46,19 +46,22 @@ import tactical.game.move.MoveableSpace;
 import tactical.game.move.MovingSprite;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.turnaction.AttackSpriteAction;
+import tactical.game.turnaction.CheckDeathAction;
+import tactical.game.turnaction.EndTurnAction;
+import tactical.game.turnaction.ManualCursorMoveAction;
+import tactical.game.turnaction.MoveCursorToActorAction;
 import tactical.game.turnaction.MoveToTurnAction;
 import tactical.game.turnaction.PerformAttackAction;
-import tactical.game.turnaction.TargetSpriteAction;
 import tactical.game.turnaction.TurnAction;
 import tactical.game.turnaction.WaitAction;
 
 public class TurnManager extends Manager implements KeyboardListener
 {
-	private static final int UPDATE_TIME = 20;
-	private static final int SPIN_TIME = 1500;
+	public static final int UPDATE_TIME = 20;
+	public static final int SPIN_TIME = 1500;
 	
 	/**
-	 * So if AI is command people it just manually adds entries to the turn actions that determine
+	 * So if a Combatant is AI controlled it just manually adds entries to the turn actions that determine
 	 * what type of battle command should be contained in the AttackSpriteAction. If this is being controlled
 	 * by someone then we need to keep track of what kind of BattleCommand has been chosen via the menus
 	 */
@@ -138,8 +141,9 @@ public class TurnManager extends Manager implements KeyboardListener
 			updated = true;
 		}
 
+		// To smooth out movement we allow updating of movement outside of the timestep
 		if (!updated && turnActions.size() > 0 && turnActions.get(0).action == TurnAction.ACTION_MOVE_TO) {
-			handleSpriteMovement(delta, turnActions.get(0));
+			processTurnActions(delta, game);
 		}
 
 		if (turnManagerHasFocus)
@@ -193,361 +197,10 @@ public class TurnManager extends Manager implements KeyboardListener
 		if (turnActions.size() == 0)
 			return;
 		TurnAction a = turnActions.get(0);
-		outer: switch (a.action)
-		{
-			case TurnAction.ACTION_MANUAL_MOVE_CURSOR:
-
-				// Get any combat sprite at the cursors location
-				if (stateInfo.getCombatSpriteAtMapLocation(cursorTargetX, cursorTargetY, null) != null)
-				{
-					displayOverCursor = false;
-				}
-
-				if (cursor.getX() < cursorTargetX)
-					cursor.setX(cursor.getX() + stateInfo.getTileWidth() / 6);
-				else if (cursor.getX() > cursorTargetX)
-					cursor.setX(cursor.getX() - stateInfo.getTileWidth() / 6);
-
-				if (cursor.getY() < cursorTargetY)
-					cursor.setY(cursor.getY() + stateInfo.getTileHeight() / 6);
-				else if (cursor.getY() > cursorTargetY)
-					cursor.setY(cursor.getY() - stateInfo.getTileHeight() / 6);
-
-				stateInfo.getCamera().centerOnPoint((int) cursor.getX(), (int) cursor.getY(), stateInfo.getCurrentMap());
-
-				if (cursorTargetX == cursor.getX() && cursorTargetY == cursor.getY())
-				{
-					// Get any combat sprite at the cursors location
-					CombatSprite cs = stateInfo.getCombatSpriteAtMapLocation((int) cursor.getX(), (int) cursor.getY(), null);
-
-					// if there is a combat sprite here display it's health panel
-					if (cs != null)
-					{
-						stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
-						cs.triggerOverEvent(stateInfo);
-						landEffectPanel.setLandEffect(stateInfo.getCurrentMap().getLandEffectByTile(cs.getMovementType(),
-								cs.getTileX(), cs.getTileY()));
-						stateInfo.removePanel(landEffectPanel);
-						stateInfo.addSingleInstancePanel(landEffectPanel);
-					}
-					else
-					{
-						displayOverCursor = true;
-						stateInfo.removePanel(landEffectPanel);
-						// Remove any health bar panels that may have been displayed from a sprite that we were previously over
-						stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
-					}
-					turnActions.remove(0);
-				}
-				break;
-			case TurnAction.ACTION_MOVE_CURSOR_TO_ACTOR:
-				this.displayOverCursor = true;
-
-				if (cursor.getX() == currentSprite.getLocX() &&
-					cursor.getY() == currentSprite.getLocY())
-				{
-					if (ownsSprite)
-					{
-						stateInfo.addKeyboardListener(ms);
-					}
-					landEffectPanel.setLandEffect(stateInfo.getCurrentMap().getLandEffectByTile(currentSprite.getMovementType(),
-							currentSprite.getTileX(), currentSprite.getTileY()));
-					stateInfo.addSingleInstancePanel(landEffectPanel);
-					displayMoveable = true;
-					// The display cursor will toggled via the wait
-					turnActions.remove(0);
-
-					stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
-					currentSprite.triggerOverEvent(stateInfo);
-
-					if (turnActions.size() == 0)
-						displayCursor = false;
-				}
-
-				// Move the cursor back to the target sprite
-				if (cursor.getX() < currentSprite.getLocX())
-				{
-					if (currentSprite.getLocX() - cursor.getX() > stateInfo.getTileWidth() / 4)
-						cursor.setX(cursor.getX() + stateInfo.getTileWidth() / 4);
-					else
-						cursor.setX(currentSprite.getLocX());
-				}
-				else if (cursor.getX() > currentSprite.getLocX())
-				{
-					if (cursor.getX() - currentSprite.getLocX() > stateInfo.getTileWidth() / 4)
-						cursor.setX(cursor.getX() - stateInfo.getTileWidth() / 4);
-					else
-						cursor.setX(currentSprite.getLocX());
-				}
-				if (cursor.getY() < currentSprite.getLocY())
-				{
-					if (currentSprite.getLocY() - cursor.getY() > stateInfo.getTileWidth() / 4)
-						cursor.setY(cursor.getY() + stateInfo.getTileHeight() / 4);
-					else
-						cursor.setY(currentSprite.getLocY());
-				}
-				else if (cursor.getY() > currentSprite.getLocY())
-				{
-					if (cursor.getY() - currentSprite.getLocY() > stateInfo.getTileWidth() / 4)
-						cursor.setY(cursor.getY() - stateInfo.getTileHeight() / 4);
-					else
-						cursor.setY(currentSprite.getLocY());
-				}
-
-				stateInfo.getCamera().centerOnPoint((int) cursor.getX(), (int) cursor.getY(), stateInfo.getCurrentMap());
-				break;
-			case TurnAction.ACTION_MOVE_TO:
-				handleSpriteMovement(delta, a);
-				break;
-			case TurnAction.ACTION_WAIT:
-				WaitAction wait = (WaitAction) a;
-				if (wait.waitAmt > 0)
-				{
-					wait.waitAmt -= delta;
-				}
-				else
-				{
-					displayCursor = false;
-					turnActions.remove(0);
-				}
-				break;
-			case TurnAction.ACTION_END_TURN:
-				// This moveable space is no longer needed to destroy it
-				turnActions.remove(0);
-				if (currentSprite.getCurrentHP() > 0)
-				{
-					currentSprite.setFacing(Direction.DOWN);
-	
-					if (currentSprite.isHero())
-					{
-						stateInfo.checkTriggersMovement((int) currentSprite.getLocX(), (int) currentSprite.getLocY(), false);
-					}
-	
-					if (currentSprite.getBattleEffects().size() > 0)
-					{
-						String text = "";
-						for (int i = 0; i < currentSprite.getBattleEffects().size(); i++)
-						{
-							String effectText = null;
-							BattleEffect be = currentSprite.getBattleEffects().get(i);
-	
-							 
-							Log.debug("The battle effect: " + be.getBattleEffectId() + " was performed on " + currentSprite);
-							effectText = be.getPerformEffectText(currentSprite);
-							
-							// If the sprite is still alive and the effect is done
-							// then remove the effect and indicate such
-							if (currentSprite.getCurrentHP() > 0 && be.isDone())
-							{
-								Log.debug("The battle effect: " + be.getBattleEffectId() + " has ended on " + currentSprite);
-								currentSprite.getBattleEffects().remove(i--);
-								be.effectEnded(currentSprite);
-								effectText = effectText + "} " + be.effectEndedText(currentSprite);
-								currentSprite.removeBattleEffect(be);
-							}
-							
-							// If the current sprite is dead, there will be no more text added after this
-							// so just end here
-							if (currentSprite.getCurrentHP() <= 0) {
-								if (effectText != null)
-									text = text + effectText + "]";
-								break;
-							}
-							
-							if (effectText != null) {
-								text = text + effectText;
-								if (i + 1 == currentSprite.getBattleEffects().size())
-									text += "]";
-								else
-									text += "} ";
-							}
-						}
-	
-						stateInfo.addMenu(new SpeechMenu(text, stateInfo));
-						turnActions.add(new TurnAction(TurnAction.ACTION_WAIT_FOR_SPEECH));
-						turnActions.add(new TurnAction(TurnAction.ACTION_PERFORM_EFFECTS));
-						break;
-					}
-				}
-	
-				turnActions.add(new TurnAction(TurnAction.ACTION_WAIT_FOR_SPEECH));
-				turnActions.add(new TurnAction(TurnAction.ACTION_CHECK_SPEECH_END_TURN));
-				break;
-			case TurnAction.ACTION_HIDE_MOVE_AREA:
-				displayMoveable = false;
-				turnActions.remove(0);
-				break;
-			case TurnAction.ACTION_TARGET_SPRITE:
-				TargetSpriteAction tsa = (TargetSpriteAction) a;
-				this.battleCommand = tsa.getBattleCommand();
-				this.determineAttackableSpace(false);
-				as.setTargetSprite(tsa.getTargetSprite(stateInfo.getCombatSprites()), stateInfo);
-				displayAttackable = true;
-				turnActions.remove(0);
-				break;
-			case TurnAction.ACTION_ATTACK_SPRITE:
-				if (a.perform(delta, this, stateInfo))
-					turnActions.remove(0);
-				break;
-			case TurnAction.ACTION_PERFORM_ATTACK:
-				displayMoveable = false;
-				stateInfo.removePanel(landEffectPanel);
-				a.perform(delta, this, stateInfo);
-				turnActions.remove(0);
-				break;
-			case TurnAction.ACTION_CHECK_DEATH:
-				if (battleResults.death)
-				{
-					for (CombatSprite cs : stateInfo.getCombatSprites()) {
-						if (cs.getCurrentHP() <= 0) {							
-							turnActions.add(0, new WaitAction(0));
-							break outer;
-						}
-					}
-				}
-				turnActions.add(new TurnAction(TurnAction.ACTION_END_TURN));
-				turnActions.remove(0);
-				break;
-			case TurnAction.ACTION_PERFORM_EFFECTS:
-				turnActions.remove(0);
-				for (int i = 0; i < currentSprite.getBattleEffects().size(); i++)
-				{
-					BattleEffect be = currentSprite.getBattleEffects().get(i);
-					be.performEffect(currentSprite);
-					//TODO Add a new message saying the hero has died?
-					if (currentSprite.getCurrentHP() <= 0) {
-						// Wait for the "death spin"
-						turnActions.add(new WaitAction(SPIN_TIME / UPDATE_TIME));
-						turnActions.add(new TurnAction(TurnAction.ACTION_CURRENT_SPRITE_DEATH));
-						break;
-					}
-					be.incrementTurn();
-				}
-				
-				turnActions.add(new TurnAction(TurnAction.ACTION_WAIT_FOR_SPEECH));
-				turnActions.add(new TurnAction(TurnAction.ACTION_CHECK_SPEECH_END_TURN));
-				break;
-			case TurnAction.ACTION_CURRENT_SPRITE_DEATH:
-				turnActions.remove(0);
-				stateInfo.addMenu(new SpeechMenu(TacticalGame.ENGINE_CONFIGURATIOR.getBattleFunctionConfiguration().getCombatantDeathText(null, currentSprite), stateInfo));
-				break;
-			case TurnAction.ACTION_CHECK_SPEECH_END_TURN:
-				turnActions.remove(0);
-				/*
-				 * This path is ALWAYS taken at the end of the of a turn
-				 * so although it seems to be strange that we remove panels here
-				 * it makes sense as long as we want them on the screen while
-				 * text is displayed
-				 */
-				stateInfo.removePanel(landEffectPanel);
-				stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
-				stateInfo.removePanel(PanelType.PANEL_ENEMY_HEALTH_BAR);
-				stateInfo.removeKeyboardListeners();
-				stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, 
-						TacticalGame.ENGINE_CONFIGURATIOR.getMusicConfiguration().getMenuRemovedSoundEffect(), 1f, false));
-				displayAttackable = false;
-				displayMoveable = false;
-				
-				if (!cinWasDisplayed)
-					cursor.setLocation(currentSprite.getLocX(), currentSprite.getLocY());
-				
-				
-				stateInfo.sendMessage(MessageType.NEXT_TURN, true);
-				break;
-			case TurnAction.ACTION_WAIT_FOR_SPEECH:
-				if (!stateInfo.isMenuDisplayed(PanelType.PANEL_SPEECH))
-				{
-					turnActions.remove(0);
-				}
-				break;
-		}
+		if (a.perform(delta, this, stateInfo, turnActions))
+			turnActions.remove(0);		
 	}
 
-	private void handleSpriteMovement(int delta, TurnAction turnAction)
-	{
-		if (movingSprite == null)
-		{
-			MoveToTurnAction move = (MoveToTurnAction) turnAction;
-
-			Direction dir = Direction.UP;
-
-			if (move.locX > currentSprite.getLocX())
-				dir = Direction.RIGHT;
-			else if (move.locX < currentSprite.getLocX())
-				dir = Direction.LEFT;
-			else if (move.locY > currentSprite.getLocY())
-				dir = Direction.DOWN;
-			else if (move.locY < currentSprite.getLocY())
-				dir = Direction.UP;
-
-
-			// This check catches enemies movement being ended and heroes location being "reset"
-			if (move.locX == currentSprite.getLocX() && move.locY == currentSprite.getLocY())
-			{
-				turnActions.remove(0);
-				if (!resetSpriteLoc)
-					ms.setCheckEvents(true);
-				if (turnActions.size() == 0)
-				{
-					// ms.setCheckEvents(true);
-					if (resetSpriteLoc)
-					{
-						resetSpriteLoc = false;
-						currentSprite.setFacing(Direction.DOWN);
-						// If we are already reset then switch to cursor mode
-						setToCursorMode();
-					}
-				}
-				landEffectPanel.setLandEffect(stateInfo.getCurrentMap().getLandEffectByTile(currentSprite.getMovementType(),
-						currentSprite.getTileX(), currentSprite.getTileY()));
-				movingSprite = null;
-				return;
-			}
-
-
-			movingSprite = new MovingSprite(currentSprite, dir, stateInfo);
-		}
-
-		// Check to see if we have arrived at our destination, if so
-		// then we just remove this action and allow input for the moveablespace
-		if (movingSprite.update(delta, resetSpriteLoc))
-		{
-			turnActions.remove(0);
-
-			// If this a sprite resetting location then we don't end our movement
-			// until they are actually at the start
-			if (!resetSpriteLoc || (spriteStartPoint.getX() == currentSprite.getTileX() &&
-				spriteStartPoint.getY() == currentSprite.getTileY()))
-			{
-				ms.setCheckEvents(true);
-				// ms.handleKeyboardInput(stateInfo.getInput(), stateInfo);
-				if (resetSpriteLoc)
-					stateInfo.getInput().clear();
-			}
-
-			int movingRemainder = movingSprite.getMoveRemainder();
-			movingSprite = null;
-
-			if (turnActions.size() == 0)
-			{
-
-				if (resetSpriteLoc)
-				{
-					resetSpriteLoc = false;
-					currentSprite.setFacing(Direction.DOWN);
-					// If we are already reset then switch to cursor mode
-					setToCursorMode();
-				}
-			}
-			else if (turnActions.get(0).action == TurnAction.ACTION_MOVE_TO) {
-				handleSpriteMovement(movingRemainder, turnActions.get(0));
-			}
-
-			landEffectPanel.setLandEffect(stateInfo.getCurrentMap().getLandEffectByTile(currentSprite.getMovementType(),
-					currentSprite.getTileX(), currentSprite.getTileY()));
-
-		}
-	}
 
 	private void determineMoveableSpaces()
 	{
@@ -585,7 +238,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		determineMoveableSpaces();
 
 
-		turnActions.add(new TurnAction(TurnAction.ACTION_MOVE_CURSOR_TO_ACTOR));
+		turnActions.add(new MoveCursorToActorAction());
 		turnActions.add(new WaitAction(150));
 
 		boolean turnPrevented = false;
@@ -612,7 +265,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				stateInfo.addKeyboardListener(this);
 		} else {
 			stateInfo.addMenu(new SpeechMenu(sprite.getName() + " was unable to act due to the " + effectName, stateInfo));
-			turnActions.add(new TurnAction(TurnAction.ACTION_END_TURN));
+			turnActions.add(new EndTurnAction());
 		}
 
 		if (!cinWasDisplayed)
@@ -621,7 +274,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		displayOverCursor = false;
 	}
 
-	private void determineAttackableSpace(boolean playerAttacking)
+	public void determineAttackableSpace(boolean playerAttacking)
 	{
 		displayMoveable = false;
 
@@ -697,7 +350,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		}
 	}
 
-	private void setToCursorMode()
+	public void setToCursorMode()
 	{
 		if (!ownsSprite)
 			return;
@@ -768,7 +421,7 @@ public class TurnManager extends Manager implements KeyboardListener
 								targetSprite.getName() + ".<hardstop>", stateInfo));
 						currentSprite.removeItem(item);
 						targetSprite.addItem(item);
-						turnActions.add(new TurnAction(TurnAction.ACTION_END_TURN));
+						turnActions.add(new EndTurnAction());
 					} else {
 						stateInfo.addMenu(new SpeechMenu(targetSprite.getName() + " has no room!<hardstop>", stateInfo));
 					}
@@ -851,10 +504,10 @@ public class TurnManager extends Manager implements KeyboardListener
 				turnActions.add(new PerformAttackAction(battleResults));				
 				break;
 			case RETURN_FROM_ATTACK_CIN:
-				turnActions.add(new TurnAction(TurnAction.ACTION_CHECK_DEATH));
+				turnActions.add(new CheckDeathAction());
 				break;
 			case PLAYER_END_TURN:
-				turnActions.add(new TurnAction(TurnAction.ACTION_END_TURN));
+				turnActions.add(new EndTurnAction());
 				break;
 			case TURN_ACTIONS:
 				TurnActionsMessage tam = (TurnActionsMessage) message;
@@ -924,7 +577,7 @@ public class TurnManager extends Manager implements KeyboardListener
 			{
 				this.turnManagerHasFocus = false;
 				currentSprite.setVisible(true);
-				turnActions.add(new TurnAction(TurnAction.ACTION_MOVE_CURSOR_TO_ACTOR));
+				turnActions.add(new MoveCursorToActorAction());
 				stateInfo.removePanel(landEffectPanel);
 				stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
 				return true;
@@ -997,7 +650,7 @@ public class TurnManager extends Manager implements KeyboardListener
 
 			if (moved)
 			{
-				turnActions.add(new TurnAction(TurnAction.ACTION_MANUAL_MOVE_CURSOR));
+				turnActions.add(new ManualCursorMoveAction());
 			}
 		}
 
@@ -1010,5 +663,81 @@ public class TurnManager extends Manager implements KeyboardListener
 
 	public void setDisplayAttackable(boolean displayAttackable) {
 		this.displayAttackable = displayAttackable;
+	}
+
+	public boolean isDisplayOverCursor() {
+		return displayOverCursor;
+	}
+
+	public void setDisplayOverCursor(boolean displayOverCursor) {
+		this.displayOverCursor = displayOverCursor;
+	}
+
+	public int getCursorTargetX() {
+		return cursorTargetX;
+	}
+
+	public int getCursorTargetY() {
+		return cursorTargetY;
+	}
+
+	public Rectangle getCursor() {
+		return cursor;
+	}
+
+	public LandEffectPanel getLandEffectPanel() {
+		return landEffectPanel;
+	}
+
+	public BattleResults getBattleResults() {
+		return battleResults;
+	}
+
+	public void setDisplayMoveable(boolean displayMoveable) {
+		this.displayMoveable = displayMoveable;
+	}
+
+	public boolean isCinWasDisplayed() {
+		return cinWasDisplayed;
+	}
+
+	public void setDisplayCursor(boolean displayCursor) {
+		this.displayCursor = displayCursor;
+	}
+
+	public MoveableSpace getMoveableSpace() {
+		return ms;
+	}
+
+	public boolean isOwnsSprite() {
+		return ownsSprite;
+	}
+
+	public MovingSprite getMovingSprite() {
+		return movingSprite;
+	}
+
+	public void setMovingSprite(MovingSprite movingSprite) {
+		this.movingSprite = movingSprite;
+	}
+
+	public boolean isResetSpriteLoc() {
+		return resetSpriteLoc;
+	}
+
+	public void setResetSpriteLoc(boolean resetSpriteLoc) {
+		this.resetSpriteLoc = resetSpriteLoc;
+	}
+	
+	public Point getSpriteStartPoint() {
+		return spriteStartPoint;
+	}
+
+	public AttackableSpace getAttackableSpace() {
+		return as;
+	}
+
+	public void setBattleCommand(BattleCommand battleCommand) {
+		this.battleCommand = battleCommand;
 	}
 }

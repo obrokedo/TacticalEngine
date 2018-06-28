@@ -3,7 +3,6 @@ package tactical.loading;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -81,7 +80,7 @@ public class PlannerMap extends Map {
 				{
 					if (k == 0 || getMapLayer(k).getTiles()[j][i] != 0)
 						g.drawImage(getPlannerSprite(getMapLayer(k).getTiles()[j][i]), i * getTileRenderWidth(), j * getTileRenderHeight(), panel);
-				}
+				}				
 			}
 		}
 	}
@@ -201,33 +200,113 @@ public class PlannerMap extends Map {
 		this.mapObjects.add(mo);
 		tagAreaByMapObject.put(mo, ta);
 	}
+	
+	public void removeMapObject(MapObject mo) {
+		this.mapObjects.remove(mo);
+		tagAreaByMapObject.remove(mo);
+	}
 
 	public String outputNewMap()
 	{
 		TagArea newRootTA = new TagArea(this.rootTagArea);
 
+		TagArea metaTagArea = null;
+		TagArea terrainTagArea = null;
+		TagArea battleTagArea = null;
+		TagArea triggerRegionsTagArea = null;
+		for (int i = 0; i < newRootTA.getChildren().size(); i++)
+		{
+			TagArea rootChildTA = newRootTA.getChildren().get(i);
+			// We want to make a copy of this TagArea
+			// because the shallow copy we did for the root does not extend into its'
+			// children. So modifying this without a copy would mess up the original TAs
+			if ("objectgroup".equalsIgnoreCase(rootChildTA.getTagType())) {
+				if ("meta".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {					
+					metaTagArea = new TagArea(rootChildTA);
+					newRootTA.getChildren().remove(i);
+					newRootTA.getChildren().add(i, metaTagArea);
+			} else if ("battle".equalsIgnoreCase(rootChildTA.getParams().get("name"))) { 
+					battleTagArea = new TagArea(rootChildTA);
+					newRootTA.getChildren().remove(i);
+					newRootTA.getChildren().add(i, battleTagArea);
+				} else if ("terrain".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
+					terrainTagArea = new TagArea(rootChildTA);
+					newRootTA.getChildren().remove(i);
+					newRootTA.getChildren().add(i, terrainTagArea);
+				} else if ("trigger regions".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
+					triggerRegionsTagArea = new TagArea(rootChildTA);
+					newRootTA.getChildren().remove(i);
+					newRootTA.getChildren().add(i, triggerRegionsTagArea);
+				}
+			}
+		}
+		
+		if (metaTagArea == null) {
+			metaTagArea = new TagArea("<objectgroup name=\"Meta\" visible=\"1\">");
+			newRootTA.getChildren().add(metaTagArea);
+		}
+		if (terrainTagArea == null) {
+			terrainTagArea = new TagArea("<objectgroup name=\"Terrain\" visible=\"1\">");
+			newRootTA.getChildren().add(terrainTagArea);
+		}
+		if (battleTagArea == null) {
+			battleTagArea = new TagArea("<objectgroup name=\"Battle\" visible=\"1\">");
+			newRootTA.getChildren().add(battleTagArea);
+		}
+		if (triggerRegionsTagArea == null) {
+			triggerRegionsTagArea = new TagArea("<objectgroup name=\"Trigger Region\" visible=\"1\">");
+			newRootTA.getChildren().add(triggerRegionsTagArea);
+		}
+		triggerRegionsTagArea.getChildren().clear();
+		battleTagArea.getChildren().clear();
+		metaTagArea.getChildren().clear();
+		terrainTagArea.getChildren().clear();
+		
 		for (MapObject mo : this.mapObjects)
 		{
 			TagArea childTA = getNewChild(mo);
-
-			for (int i = 0; i < newRootTA.getChildren().size(); i++)
-			{
-				TagArea rootChildTA = newRootTA.getChildren().get(i);
-				// If the child is contained then we want to make a copy of this TagArea
-				// because the shallow copy we did for the root does not extend into its'
-				// children. So modifying this without a copy would mess up the original TAs
-				if (rootChildTA.getChildren().contains(tagAreaByMapObject.get(mo)))
-				{
-					// Create the new object
-					rootChildTA = new TagArea(rootChildTA);
-
-					rootChildTA.getChildren().remove(tagAreaByMapObject.get(mo));
-					rootChildTA.getChildren().add(childTA);
-					newRootTA.getChildren().remove(i);
-					newRootTA.getChildren().add(i, rootChildTA);
-					break;
-				}
+			TagArea parentArea;
+			
+			if ("BabyMan".equalsIgnoreCase(mo.getName()))
+				System.out.println();
+			
+			if ("npc".equalsIgnoreCase(mo.getKey()) || 
+					"door".equalsIgnoreCase(mo.getKey()) || 
+					"roof".equalsIgnoreCase(mo.getKey()) ||
+					"stairs".equalsIgnoreCase(mo.getKey()) ||
+					"chest".equalsIgnoreCase(mo.getKey()) || 
+					"sprite".equalsIgnoreCase(mo.getKey())) {
+				parentArea = metaTagArea;
+				battleTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				triggerRegionsTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				terrainTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+			} else if ("enemy".equalsIgnoreCase(mo.getKey()) ||
+					"battleregion".equalsIgnoreCase(mo.getKey())) {
+				parentArea = battleTagArea;
+				metaTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				triggerRegionsTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				terrainTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+			} else if ("terrain".equalsIgnoreCase(mo.getKey())) {
+				parentArea = terrainTagArea;
+				battleTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				triggerRegionsTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				metaTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+			} else {
+				// start, searchtrigger, unlabled
+				parentArea = triggerRegionsTagArea;
+				battleTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				metaTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
+				terrainTagArea.getChildren().remove(tagAreaByMapObject.get(mo));
 			}
+			
+			if (parentArea.getChildren().contains(tagAreaByMapObject.get(mo)))
+			{
+				parentArea.getChildren().remove(tagAreaByMapObject.get(mo));				
+				parentArea.getChildren().add(childTA);
+			}
+			else
+				parentArea.getChildren().add(childTA);
+			
 		}
 
 		return newRootTA.getOriginalText();
@@ -247,25 +326,22 @@ public class PlannerMap extends Map {
 		}
 
 
-		try {
-			TagArea propTA = new TagArea("<properties>");
-			String generatedProperty = "<property name=\"" + mo.getKey() + "\" value=\"";
+		TagArea propTA = new TagArea("<properties>");
+		String generatedProperty = "<property name=\"" + mo.getKey() + "\" value=\"";
 
-			if (mo.getParams().size() > 0)
+		if (mo.getParams().size() > 0)
+		{
+			for (Entry<String, String> param : mo.getParams().entrySet())
 			{
-				for (Entry<String, String> param : mo.getParams().entrySet())
-				{
-					generatedProperty = generatedProperty + param.getKey() + "=" + param.getValue() + " ";
-				}
+				generatedProperty = generatedProperty + param.getKey() + "=" + param.getValue() + " ";
 			}
-
-			generatedProperty = generatedProperty.trim();
-
-			generatedProperty = generatedProperty + "\"/>";
-			propTA.getChildren().add(new TagArea(generatedProperty));
-			ta.getChildren().add(0, propTA);
-		} catch (IOException e) {
 		}
+
+		generatedProperty = generatedProperty.trim();
+
+		generatedProperty = generatedProperty + "\"/>";
+		propTA.getChildren().add(new TagArea(generatedProperty));
+		ta.getChildren().add(0, propTA);
 
 		return ta;
 	}

@@ -156,9 +156,10 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		currentActionPanel.setMinimumSize(new Dimension(100, 400));
 		actionPanel.add(currentActionPanel);
 		editActionButton.addActionListener(this);
-		nextActionButton.addActionListener(this);
-		nextActionButton.setActionCommand("nextaction");
 		editActionButton.setActionCommand("editaction");
+		editActionButton.setPreferredSize(new Dimension(actionPanel.getWidth(), 30));
+		nextActionButton.addActionListener(this);
+		nextActionButton.setActionCommand("nextaction");		
 		prevActionButton.addActionListener(this);
 		prevActionButton.setActionCommand("prevaction");
 		duplicateButton.addActionListener(this);
@@ -408,7 +409,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 		PlannerLine pl = pt.getCurrentPC().getLines().get(selectedCinIndex);
 		PlannerContainerDef pcdef = pt.getPlannerContainerDef();
-		pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, true, null);
+		pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, null);
 		int rc = JOptionPane.showConfirmDialog(uiAspect, pl.getUiAspect(), "Edit cinematic action", JOptionPane.OK_OPTION);
 		if (rc == JOptionPane.NO_OPTION)
 			return false;
@@ -439,7 +440,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 			pl.getValues().add(xLoc);
 			pl.getValues().add(yLoc);
 		}
-		pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, true, null);
+		pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, null);
 		// pl.getUiAspect().setPreferredSize(new Dimension(480, pl.getUiAspect().getPreferredSize().height + 50));
 		//JScrollPane jsp = new JScrollPane(pl.getUiAspect());
 		//jsp.setPreferredSize(new Dimension(600, jsp.getPreferredSize().height));

@@ -1,9 +1,10 @@
-package tactical.engine.config;
+package tactical.engine.config.provided;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.config.SpellMenuRenderer;
 import tactical.engine.state.StateInfo;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.hudmenu.Panel;

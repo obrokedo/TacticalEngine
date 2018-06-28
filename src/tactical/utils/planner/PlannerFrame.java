@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -134,8 +135,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		/*******************/
 		/* Set up triggers */
 		/*******************/
-		PlannerDefinitions.setupDefintions(referenceListByReferenceType, containersByName);
-
+		PlannerDefinitions.setupDefintions(referenceListByReferenceType, containersByName);		
+		
 		initUI();
 
 		getSavedData();
@@ -752,6 +753,10 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			playCinematicMenuItem.setEnabled(true);
 		} else if (jtp.getSelectedIndex() == TAB_UNIFIED_VIEW) {
 			unifiedViewPanel.panelSelected();
+		}
+		
+		if (jtp.getSelectedIndex() <= TAB_QUEST) {
+			plannerTabs.get(jtp.getSelectedIndex()).setNewValues();
 		}
 	}
 

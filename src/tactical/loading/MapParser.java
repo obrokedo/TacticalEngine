@@ -22,6 +22,8 @@ import tactical.utils.XMLParser.TagArea;
 
 public class MapParser
 {
+	private static float tileResize = 1;
+	
 	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser,
 			ResourceManager frm) throws IOException, SlickException
 	{
@@ -40,7 +42,7 @@ public class MapParser
 
 
 		float desiredTileSize = Map.DESIRED_TILE_WIDTH;
-		float tileResize = 1;
+		tileResize = 1;
 		if (tileWidth != desiredTileSize && tileWidth != desiredTileSize / 2)
 		{
 			if (tileWidth < desiredTileSize)
@@ -166,49 +168,7 @@ public class MapParser
 			{
 				for (TagArea objectTag : childArea.getChildren())
 				{
-					MapObject mapObject = new MapObject();
-					mapObject.setName(objectTag.getAttribute("name"));
-					mapObject.setX((int) (Integer.parseInt(objectTag.getAttribute("x")) * tileResize));
-					mapObject.setY((int) (Integer.parseInt(objectTag.getAttribute("y")) * tileResize));
-					if (objectTag.getAttribute("width") != null)
-						mapObject.setWidth((int) (Integer.parseInt(objectTag.getAttribute("width")) * tileResize));
-					if (objectTag.getAttribute("height") != null)
-						mapObject.setHeight((int) (Integer.parseInt(objectTag.getAttribute("height"))  * tileResize));
-					for (TagArea propArea : objectTag.getChildren())
-					{
-						if (propArea.getTagType().equalsIgnoreCase("properties"))
-						{
-							mapObject.setKey(propArea.getChildren().get(0).getAttribute("name"));
-							mapObject.setValue(propArea.getChildren().get(0).getAttribute("value"));
-
-							if (mapObject.getKey().equalsIgnoreCase("sprite"))
-							{
-								String image = mapObject.getParam("image");
-								if (image != null)
-									spriteToLoad.add(image);
-							}
-						}
-						else if (propArea.getTagType().equalsIgnoreCase("polyline"))
-						{
-							String[] points = propArea.getAttribute("points").split(" ");
-							ArrayList<Point> pointList = new ArrayList<Point>();
-							for (String point : points)
-							{
-								String[] p = point.split(",");
-								pointList.add(new Point((int) (Integer.parseInt(p[0])  * tileResize),
-										(int) (Integer.parseInt(p[1])  * tileResize)));
-							}
-
-							mapObject.setPolyPoints(pointList);
-						}
-					}
-
-					mapObject.determineShape();
-
-					if (map instanceof PlannerMap)
-						((PlannerMap) map).addMapObject(mapObject, objectTag);
-					else
-						map.addMapObject(mapObject);
+					parseMapObject(map, spriteToLoad, objectTag);
 				}
 			}
 			else if (childArea.getTagType().equalsIgnoreCase("properties"))
@@ -261,6 +221,54 @@ public class MapParser
 			frm.addSpriteResource(resource);
 		for (String resource : animToLoad)
 			frm.addAnimResource(resource);*/
+	}
+
+	protected static void parseMapObject(Map map, HashSet<String> spriteToLoad, TagArea objectTag) {
+		MapObject mapObject = new MapObject();
+		mapObject.setName(objectTag.getAttribute("name"));
+		if (objectTag.getAttribute("x") != null)
+			mapObject.setX((int) (Integer.parseInt(objectTag.getAttribute("x")) * tileResize));
+		if (objectTag.getAttribute("y") != null)
+			mapObject.setY((int) (Integer.parseInt(objectTag.getAttribute("y")) * tileResize));
+		if (objectTag.getAttribute("width") != null)
+			mapObject.setWidth((int) (Integer.parseInt(objectTag.getAttribute("width")) * tileResize));
+		if (objectTag.getAttribute("height") != null)
+			mapObject.setHeight((int) (Integer.parseInt(objectTag.getAttribute("height"))  * tileResize));
+		for (TagArea propArea : objectTag.getChildren())
+		{
+			if (propArea.getTagType().equalsIgnoreCase("properties"))
+			{
+				mapObject.setKey(propArea.getChildren().get(0).getAttribute("name"));
+				mapObject.setValue(propArea.getChildren().get(0).getAttribute("value"));
+
+				if (mapObject.getKey().equalsIgnoreCase("sprite"))
+				{
+					String image = mapObject.getParam("image");
+					if (image != null)
+						spriteToLoad.add(image);
+				}
+			}
+			else if (propArea.getTagType().equalsIgnoreCase("polyline"))
+			{
+				String[] points = propArea.getAttribute("points").split(" ");
+				ArrayList<Point> pointList = new ArrayList<Point>();
+				for (String point : points)
+				{
+					String[] p = point.split(",");
+					pointList.add(new Point((int) (Integer.parseInt(p[0])  * tileResize),
+							(int) (Integer.parseInt(p[1])  * tileResize)));
+				}
+
+				mapObject.setPolyPoints(pointList);
+			}
+		}
+
+		mapObject.determineShape();
+
+		if (map instanceof PlannerMap)
+			((PlannerMap) map).addMapObject(mapObject, objectTag);
+		else
+			map.addMapObject(mapObject);
 	}
 
 	/** The code used to decode Base64 encoding */

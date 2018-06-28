@@ -1,8 +1,23 @@
-package tactical.engine.config;
+package tactical.engine.config.provided;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Music;
 
+import tactical.engine.config.BattleEffectFactory;
+import tactical.engine.config.BattleFunctionConfiguration;
+import tactical.engine.config.BattleStatisticConfigration;
+import tactical.engine.config.CinematicActorConfiguration;
+import tactical.engine.config.DfAnimationParser;
+import tactical.engine.config.EngineConfigurationValues;
+import tactical.engine.config.EngineConfigurator;
+import tactical.engine.config.HealthPanelRenderer;
+import tactical.engine.config.LevelProgressionConfiguration;
+import tactical.engine.config.MenuConfiguration;
+import tactical.engine.config.MusicConfiguration;
+import tactical.engine.config.PanelRenderer;
+import tactical.engine.config.SpellFactory;
+import tactical.engine.config.SpellMenuRenderer;
+import tactical.engine.config.YesNoMenuRenderer;
 import tactical.engine.config.intr.AnimationParser;
 import tactical.engine.state.AttackCinematicState;
 import tactical.engine.state.DefaultAttackCinematicState;
@@ -18,6 +33,7 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 			new DefaultCinematicActorConfiguration();
 	protected AttackCinematicState attackCinState = new DefaultAttackCinematicState();
 	protected PanelRenderer panelRenderer = new DefaultPanelRenderer();
+	protected BattleStatisticConfigration battleStatsConfig = new DefaultBattleStatisticsConfiguration();
 	
 	@Override
 	public void getAttackCinematic() {
@@ -126,5 +142,10 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 	@Override
 	public AttackCinematicState getAttackCinematicState() {
 		return attackCinState;
+	}
+	
+	@Override
+	public BattleStatisticConfigration getBattleStatisticsConfiguration() {
+		return battleStatsConfig;
 	}
 }

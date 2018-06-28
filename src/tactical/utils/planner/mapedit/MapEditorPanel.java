@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import tactical.loading.PlannerMap;
 import tactical.map.MapObject;
@@ -64,15 +65,25 @@ public class MapEditorPanel implements ActionListener {
 		JPanel locationVisiblePanel = new JPanel();
 		locationVisiblePanel.setBackground(Color.DARK_GRAY);
 
+		JButton createLocation = new JButton("Create Map Location");
+		createLocation.addActionListener(this);
+		createLocation.setActionCommand("createloc");
+		locationVisiblePanel.add(createLocation);
+		
+		JButton deleteLocation = new JButton("Delete Map Location");
+		deleteLocation.addActionListener(this);
+		deleteLocation.setActionCommand("deleteloc");
+		locationVisiblePanel.add(deleteLocation);
+		
 		locationVisiblePanel.add(createCheckBox("Enemies", COMMAND_DISPLAY_ENEMY));
 		locationVisiblePanel.add(createCheckBox("Terrain", COMMAND_DISPLAY_TERRAIN));
 		locationVisiblePanel.add(createCheckBox("Triggerables", COMMAND_DISPLAY_INTERACTABLE));
 		locationVisiblePanel.add(createCheckBox("Others", COMMAND_DISPLAY_OTHER));
-		locationVisiblePanel.add(createCheckBox("Untyped/Locations", COMMAND_DISPLAY_UNUSED));
+		locationVisiblePanel.add(createCheckBox("Untyped/Locations", COMMAND_DISPLAY_UNUSED));		
 
 		backPanel.add(locationVisiblePanel, BorderLayout.PAGE_START);
 		this.plannerFrame = plannerFrame;
-		this.listOfLists = listOfLists;
+		this.listOfLists = listOfLists;		
 	}
 
 	private JCheckBox createCheckBox(String text, String actionCommand)
@@ -159,8 +170,11 @@ public class MapEditorPanel implements ActionListener {
 		PlannerContainerDef pcdef = this.plannerFrame.getContainerDefByName("mapedit");
 		PlannerLineDef plannerLineDef = getLineDefByName(pcdef, mo.getKey());
 
+		Object[][] tableData = new Object[plannerLineDef.getPlannerValues().size()][2];
+		
 		if (plannerLineDef != null)
 		{
+			int count = 0;
 			for (PlannerValueDef val : plannerLineDef.getPlannerValues())
 			{
 				String valueSet = null;
@@ -177,10 +191,23 @@ public class MapEditorPanel implements ActionListener {
 				else
 					valueSet = mo.getParam(val.getTag());
 	
-				JLabel entLabel = new JLabel(" " + val.getTag() + " = " + valueSet);
-				sidePanel.add(entLabel);
-				entLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+				tableData[count][0] = val.getTag();
+				tableData[count][1] = valueSet;
+				//JLabel entLabel = new JLabel(" " + val.getTag() + " = " + valueSet);
+				//entLabel.setPreferredSize(new Dimension(200, 25));
+				//sidePanel.add(entLabel);
+				//entLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+				count++;
 			}
+			JTable table = new JTable(tableData, new String[] {"Key", "Value"});
+			table.setFont(table.getFont().deriveFont(Font.BOLD));
+			table.setAlignmentX(Component.LEFT_ALIGNMENT);
+			table.getTableHeader().setAlignmentX(Component.LEFT_ALIGNMENT);
+			table.setEnabled(false);
+			sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+			sidePanel.add(table.getTableHeader());
+			sidePanel.add(table);
+			sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		}
 
 
@@ -199,6 +226,7 @@ public class MapEditorPanel implements ActionListener {
 			comboItems.add(pld.getName());
 		}
 		moCombo = new JComboBox<>(comboItems);
+		moCombo.setPreferredSize(new Dimension(200, 30));
 		moCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
 		moCombo.setMaximumSize(new Dimension(moCombo.getPreferredSize().width, 30));
 		if (mo.getKey() != null && mo.getKey().length() > 0)
@@ -206,6 +234,7 @@ public class MapEditorPanel implements ActionListener {
 		
 		sidePanel.add(moCombo);
 		JButton editButton = new JButton("Edit Values");
+		editButton.setPreferredSize(new Dimension(400,  30));
 		editButton.addActionListener(this);
 		editButton.setActionCommand("editmo");
 
@@ -261,6 +290,10 @@ public class MapEditorPanel implements ActionListener {
 		else if ("editmo".equalsIgnoreCase(command))
 		{
 			editMapObject();
+		} else if ("createloc".equalsIgnoreCase(command)) {
+			mapPanel.startCreatingLocation();
+		} else if ("deleteloc".equalsIgnoreCase(command)) {
+			mapPanel.deleteLocation();
 		}
 	}
 
@@ -331,7 +364,7 @@ public class MapEditorPanel implements ActionListener {
 
 		try
 		{
-			pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, true, null);
+			pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, null);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

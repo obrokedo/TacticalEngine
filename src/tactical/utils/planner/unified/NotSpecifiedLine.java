@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,6 +20,7 @@ public class NotSpecifiedLine implements UnifiedRenderable {
 
 	public boolean forTrigger = false;
 	public boolean optional = false;
+	public boolean additional = false;
 	public Group parentGroup;
 	// This is ugly as shit, but I don't wanna deal with it otherwise
 	public int indent, y;
@@ -29,10 +31,11 @@ public class NotSpecifiedLine implements UnifiedRenderable {
 	public UnifiedViewPanel uvp;
 
 	public NotSpecifiedLine(boolean forTrigger, boolean optional, 
-			MapObject mo, PlannerContainer pc, PlannerLine pl, int idx, UnifiedViewPanel uvp) {
+			boolean additional, MapObject mo, PlannerContainer pc, PlannerLine pl, int idx, UnifiedViewPanel uvp) {
 		super();
 		this.forTrigger = forTrigger;
 		this.optional = optional;
+		this.additional = additional;
 		this.mo = mo;
 		this.pc = pc;
 		this.pl = pl;
@@ -50,13 +53,19 @@ public class NotSpecifiedLine implements UnifiedRenderable {
 		
 		if (forTrigger) {
 			if (optional) {
-				renderUndefinedString("You may provide an optional trigger for the previous action or", 230, 170, panelWidth, y, g);
+				if (additional)
+					renderUndefinedString("You may provide an additional trigger for the previous action or", 240, 170, panelWidth, y, g);
+				else
+					renderUndefinedString("You may provide an optional trigger for the previous action or", 230, 170, panelWidth, y, g);
 			} else {
 				renderUndefinedString("Please specifiy a trigger for the previous action or", 215, 110, panelWidth, y, g);					
 			}
 				
 		} else {
 			if (optional) {
+				if (additional)
+					renderUndefinedString("You may provide an additional speech for the previous action or", 175, 98, panelWidth, y, g);
+				else
 				renderUndefinedString("You may provide an optional speech for the previous action or", 175, 98, panelWidth, y, g);					
 			} else {
 				renderUndefinedString("Please specifiy a speech for the previous action or", 210, 115, panelWidth, y, g);
@@ -100,11 +109,23 @@ public class NotSpecifiedLine implements UnifiedRenderable {
 		if (mo != null) {
 			mo.getParams().put(mapObjectString, "" + ( uvp.getTabsWithMapRefs().get(tabIdx).getListPC().size() - 1));
 		} else if (pl != null) {
-			pl.getValues().set(idx, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
+			updateReference(pl, idx, newPC);
 		} else if (pc != null) {
-			pc.getDefLine().getValues().set(idx, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
+			updateReference(pc.getDefLine(), idx, newPC);
 		} else {
 			JOptionPane.showMessageDialog(uvp.getRenderPanel(), "Due to the complexity of the 'Run Triggers' command you will need to set the newly created trigger yourself");
+		}
+	}
+	
+	private void updateReference(PlannerLine pl, int index, PlannerContainer newPC) {
+		if (pl.getValues().get(idx) instanceof PlannerReference) {
+			pl.getValues().set(idx, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
+		} else {
+			ArrayList<PlannerReference> values = (ArrayList<PlannerReference>) pl.getValues().get(idx);
+			if (values.size() == 1 && values.get(0).getName().length() == 0)
+				values.set(0, new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
+			else
+				values.add(new PlannerReference((String) newPC.getDefLine().getValues().get(0)));
 		}
 	}
 

@@ -19,8 +19,6 @@ public class Group implements UnifiedRenderable {
 		groupRenderables = new ArrayList<>();
 	}
 
-
-
 	@Override
 	public void render(int indent, int y, int panelWidth, Graphics g) {
 		int height = getHeight();

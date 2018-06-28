@@ -10,7 +10,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
-import tactical.engine.config.LevelProgressionConfiguration;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.state.StateInfo;
@@ -35,69 +34,48 @@ public class CombatSprite extends AnimatedSprite
 	private static final long serialVersionUID = 1L;
 	public static final int MAXIMUM_ITEM_AMOUNT = 4;
 
-	private transient Color fadeColor = new Color(255, 255, 255, 255);
+	protected transient Color fadeColor = new Color(255, 255, 255, 255);
 
-	private int currentHP, maxHP,
+	protected int currentHP, maxHP,
 				currentMP, maxMP,
 				currentInit,
 				currentSpeed, maxSpeed,
 				currentMove, maxMove,
 				currentAttack, maxAttack,
 				currentDefense, maxDefense,
-				level, exp;
+				level, exp;	
 
-	// TODO In order to make the engine more generic these stats should probably be moved somewhere else
-	//Elemental Affinity Stats
-	private int currentFireAffin, maxFireAffin,
-				currentElecAffin, maxElecAffin,
-				currentColdAffin, maxColdAffin,
-				currentDarkAffin, maxDarkAffin,
-				currentWaterAffin, maxWaterAffin,
-				currentEarthAffin, maxEarthAffin,
-				currentWindAffin, maxWindAffin,
-				currentLightAffin, maxLightAffin;
+	protected AI ai;
 
-	// Defense stats
-	private int currentBody, maxBody,
-				currentMind, maxMind;
-
-
-	private int baseCounter, maxCounter,
-				baseEvade, maxEvade,
-				baseDouble, maxDouble,
-				baseCrit, maxCrit;
-
-	private AI ai;
-
-	private boolean isHero = false;
-	private boolean isLeader = false;
-	private boolean isPromoted = false;
+	protected boolean isHero = false;
+	protected boolean isLeader = false;
+	protected boolean isPromoted = false;
 
 	// This value provides a mean of differentiating between multiple enemies of the same name,
 	// in addition this value can be user specified for enemies so that they may be the target
 	// of triggers
-	private int uniqueEnemyId = -1;
-	private int clientId = 0;
+	protected int uniqueEnemyId = -1;
+	protected int clientId = 0;
 
-	private ArrayList<KnownSpell> spells;
-	private ArrayList<Item> items;
-	private ArrayList<Boolean> equipped;
-	private int[] usuableWeapons;
-	private int[] usuableArmor;
-	private HeroProgression heroProgression;
+	protected ArrayList<KnownSpell> spells;
+	protected ArrayList<Item> items;
+	protected ArrayList<Boolean> equipped;
+	protected int[] usuableWeapons;
+	protected int[] usuableArmor;
+	protected HeroProgression heroProgression;
 	// -1 when not promoted, 0 when promoted by generic, > 0 when special promotion where
 	// promotionPath - 1 = index of the special promotion
-	private int promotionPath = -1;
-	private String movementType;
-	private int kills;
-	private int defeat;
-	private ArrayList<BattleEffect> battleEffects;
-	private transient Image currentWeaponImage = null;
-	private String attackEffectId;
-	private int attackEffectChance;
-	private int attackEffectLevel;
-	private boolean drawShadow = true;
-	private transient String customMusic = null;
+	protected int promotionPath = -1;
+	protected String movementType;
+	protected int kills;
+	protected int defeat;
+	protected ArrayList<BattleEffect> battleEffects;
+	protected transient Image currentWeaponImage = null;
+	protected String attackEffectId;
+	protected int attackEffectChance;
+	protected int attackEffectLevel;
+	protected boolean drawShadow = true;
+	protected transient String customMusic = null;
 
 
 	/**
@@ -110,10 +88,7 @@ public class CombatSprite extends AnimatedSprite
 	 */
 	public CombatSprite(boolean isLeader,
 			String name, String imageName, int hp, int mp, int attack, int defense, int speed, int move,
-				String movementType, int maxFireAffin, int maxElecAffin,
-				int maxColdAffin, int maxDarkAffin, int maxWaterAffin, int maxEarthAffin, int maxWindAffin,
-				int maxLightAffin, int maxBody, int maxMind, int maxCounter, int maxEvade,
-				int maxDouble, int maxCrit, int level,
+				String movementType, int level,
 				int enemyId, ArrayList<KnownSpell> spells, int id,
 				String attackEffectId, int attackEffectChance, int attackEffectLevel)
 	{
@@ -139,22 +114,6 @@ public class CombatSprite extends AnimatedSprite
 		maxAttack = attack;
 		currentDefense = defense;
 		maxDefense = defense;
-
-		// Set non-standard stats
-		this.maxFireAffin = this.currentFireAffin = maxFireAffin;
-		this.maxElecAffin = this.currentElecAffin = maxElecAffin;
-		this.maxColdAffin = this.currentColdAffin = maxColdAffin;
-		this.maxDarkAffin = this.currentDarkAffin = maxDarkAffin;
-		this.maxWaterAffin = this.currentWaterAffin = maxWaterAffin;
-		this.maxEarthAffin = this.currentEarthAffin = maxEarthAffin;
-		this.maxWindAffin = this.currentWindAffin = maxWindAffin;
-		this.maxLightAffin = this.currentLightAffin = maxLightAffin;
-		this.maxBody = this.currentBody = maxBody;
-		this.maxMind = this.currentMind = maxMind;
-		this.maxCounter = this.baseCounter = maxCounter;
-		this.maxEvade = this.baseEvade = maxEvade;
-		this.maxDouble = this.baseDouble = maxDouble;
-		this.maxCrit = this.baseCrit = maxCrit;
 		this.battleEffects = new ArrayList<>();
 	}
 
@@ -229,27 +188,8 @@ public class CombatSprite extends AnimatedSprite
 
 
 	public void setNonRandomStats() {
-		// Load non standard stats
-		LevelProgressionConfiguration levelProgPython = TacticalGame.ENGINE_CONFIGURATIOR.getLevelProgression();
-		this.maxCounter = levelProgPython.getBaseBattleStat(this.getCurrentProgression().getCounterStrength(), this);
-		this.maxEvade = levelProgPython.getBaseBattleStat(this.getCurrentProgression().getEvadeStrength(), this);
-		this.maxDouble = levelProgPython.getBaseBattleStat(this.getCurrentProgression().getDoubleStrength(), this);
-		this.maxCrit = levelProgPython.getBaseBattleStat(this.getCurrentProgression().getCritStrength(), this);
-		this.maxBody = levelProgPython.getBaseBodyMindStat(this.getCurrentProgression().getBodyStrength(), this);
-		this.maxMind = levelProgPython.getBaseBodyMindStat(this.getCurrentProgression().getMindStrength(), this);
-		// TODO PROMOTED PROGRESSION OF BATTLE ATTRIBUTES
-		this.maxFireAffin = this.getCurrentProgression().getFireAffin();
-		this.maxElecAffin = this.getCurrentProgression().getElecAffin();
-		this.maxColdAffin = this.getCurrentProgression().getColdAffin();
-		this.maxDarkAffin = this.getCurrentProgression().getDarkAffin();
-		this.maxWaterAffin = this.getCurrentProgression().getWaterAffin();
-		this.maxEarthAffin = this.getCurrentProgression().getEarthAffin();
-		this.maxWindAffin = this.getCurrentProgression().getWindAffin();
-		this.maxLightAffin = this.getCurrentProgression().getLightAffin();
-		
 		this.usuableWeapons = this.getCurrentProgression().getUsuableWeapons();
 		this.usuableArmor = this.getCurrentProgression().getUsuableArmor();
-		
 		setSpellsKnownByProgression();
 	}
 
@@ -331,21 +271,6 @@ public class CombatSprite extends AnimatedSprite
 		}
 
 		this.currentMove = this.maxMove;
-
-		this.currentFireAffin = maxFireAffin;
-		this.currentElecAffin = maxElecAffin;
-		this.currentColdAffin = maxColdAffin;
-		this.currentDarkAffin = maxDarkAffin;
-		this.currentWaterAffin = maxWaterAffin;
-		this.currentEarthAffin = maxEarthAffin;
-		this.currentWindAffin = maxWindAffin;
-		this.currentLightAffin = maxLightAffin;
-		this.currentBody = maxBody;
-		this.currentMind = maxMind;
-		this.baseCounter = maxCounter;
-		this.baseEvade = maxEvade;
-		this.baseDouble = maxDouble;
-		this.baseCrit = maxCrit;
 		
 		// Clear out non-persistent battle effects
 		Iterator<BattleEffect> beItr = this.battleEffects.iterator();
@@ -550,7 +475,7 @@ public class CombatSprite extends AnimatedSprite
 		this.equipped.set(index, false);
 	}
 
-	private void toggleEquipWeapon(EquippableItem item, boolean equip)
+	protected void toggleEquipWeapon(EquippableItem item, boolean equip)
 	{
 		// Non extended stats
 		this.currentAttack += ((equip ? 1 : -1) * item.getAttack());
@@ -559,29 +484,6 @@ public class CombatSprite extends AnimatedSprite
 		this.maxAttack += ((equip ? 1 : -1) * item.getAttack());
 		this.maxDefense += ((equip ? 1 : -1) * item.getDefense());
 		this.maxSpeed += ((equip ? 1 : -1) * item.getSpeed());
-
-		// Extended Stats
-		/*
-		 * incmindam=7 inccrit=0 inccounter=0 incdouble=0 incevade=0 maxhpreg=0 minhpreg=0 maxmpreg=0 minhpreg=0
-	 * effect="" efflvl=-1 effchc=0 csteff=false dmgaff="NORMAL" ohko=0 ohkooc=0
-		 */
-
-		this.maxFireAffin += ((equip ? 1 : -1) * item.getFireAffinity());
-		this.maxElecAffin += ((equip ? 1 : -1) * item.getElecAffinity());
-		this.maxColdAffin += ((equip ? 1 : -1) * item.getColdAffin());
-		this.maxDarkAffin += ((equip ? 1 : -1) * item.getDarkAffin());
-		this.maxWaterAffin += ((equip ? 1 : -1) * item.getWaterAffin());
-		this.maxEarthAffin += ((equip ? 1 : -1) * item.getEarthAffin());
-		this.maxWindAffin += ((equip ? 1 : -1) * item.getWindAffin());
-		this.maxLightAffin += ((equip ? 1 : -1) * item.getLightAffin());
-		this.currentFireAffin += ((equip ? 1 : -1) * item.getFireAffinity());
-		this.currentElecAffin += ((equip ? 1 : -1) * item.getElecAffinity());
-		this.currentColdAffin += ((equip ? 1 : -1) * item.getColdAffin());
-		this.currentDarkAffin += ((equip ? 1 : -1) * item.getDarkAffin());
-		this.currentWaterAffin += ((equip ? 1 : -1) * item.getWaterAffin());
-		this.currentEarthAffin += ((equip ? 1 : -1) * item.getEarthAffin());
-		this.currentWindAffin += ((equip ? 1 : -1) * item.getWindAffin());
-		this.currentLightAffin += ((equip ? 1 : -1) * item.getLightAffin());
 	}
 
 	public Range getAttackRange()
@@ -595,6 +497,11 @@ public class CombatSprite extends AnimatedSprite
 	/*******************************************/
 	/* MUTATOR AND ACCESSOR METHODS START HERE */
 	/*******************************************/
+	public String levelUpCustomStatistics()
+	{
+		return "";
+	}
+	
 	public void setFadeAmount(int amt) {
 		currentHP = amt;
 		fadeColor.a = (255 + currentHP) / 255.0f;
@@ -826,39 +733,6 @@ public class CombatSprite extends AnimatedSprite
 		this.level = level;
 	}
 
-	public String levelUpHiddenStatistics()
-	{
-		LevelProgressionConfiguration jlp = TacticalGame.ENGINE_CONFIGURATIOR.getLevelProgression();
-		String text = jlp.levelUpHero(this);
-
-		Log.debug("Leveling up heroes non-displayed stats: " + this.getName());
-
-		int increase = jlp.getLevelUpBattleStat(this.getCurrentProgression().getCounterStrength(), this, level, isPromoted, this.maxCounter);
-		maxCounter += increase;
-		baseCounter += increase;
-
-		increase = jlp.getLevelUpBattleStat(this.getCurrentProgression().getCritStrength(), this, level, isPromoted, this.maxCrit);
-		maxCrit += increase;
-		baseCrit += increase;
-
-		increase = jlp.getLevelUpBattleStat(this.getCurrentProgression().getDoubleStrength(), this, level, isPromoted, this.maxDouble);
-		maxDouble += increase;
-		baseDouble += increase;
-
-		increase = jlp.getLevelUpBattleStat(this.getCurrentProgression().getEvadeStrength(), this, level, isPromoted, this.maxEvade);
-		maxEvade += increase;
-		baseEvade += increase;
-
-		increase = jlp.getLevelUpBodyMindStat(this.getCurrentProgression().getBodyProgression(), this, level, isPromoted);
-		maxBody += increase;
-		currentBody += increase;
-
-		increase = jlp.getLevelUpBodyMindStat(this.getCurrentProgression().getMindProgression(), this, level, isPromoted);
-		maxMind += increase;
-		currentMind += increase;
-		return text;
-	}
-
 	public int getExp() {
 		return exp;
 	}
@@ -982,85 +856,6 @@ public class CombatSprite extends AnimatedSprite
 		this.clientId = clientId;
 	}
 
-	public int getCurrentFireAffin() {
-		return currentFireAffin;
-	}
-
-	public int getMaxFireAffin() {
-		return maxFireAffin;
-	}
-
-	public int getCurrentElecAffin() {
-		return currentElecAffin;
-	}
-
-	public int getMaxElecAffin() {
-		return maxElecAffin;
-	}
-
-	public int getCurrentColdAffin() {
-		return currentColdAffin;
-	}
-
-	public int getMaxColdAffin() {
-		return maxColdAffin;
-	}
-
-	public int getCurrentDarkAffin() {
-		return currentDarkAffin;
-	}
-
-	public int getMaxDarkAffin() {
-		return maxDarkAffin;
-	}
-
-	public int getCurrentWaterAffin() {
-		return currentWaterAffin;
-	}
-
-	public int getMaxWaterAffin() {
-		return maxWaterAffin;
-	}
-
-	public int getCurrentEarthAffin() {
-		return currentEarthAffin;
-	}
-
-	public int getMaxEarthAffin() {
-		return maxEarthAffin;
-	}
-
-	public int getCurrentWindAffin() {
-		return currentWindAffin;
-	}
-
-	public int getMaxWindAffin() {
-		return maxWindAffin;
-	}
-
-	public int getCurrentLightAffin() {
-		return currentLightAffin;
-	}
-
-	public int getMaxLightAffin() {
-		return maxLightAffin;
-	}
-
-	public int getCurrentBody() {
-		return currentBody;
-	}
-
-	public int getMaxBody() {
-		return maxBody;
-	}
-
-	public int getCurrentMind() {
-		return currentMind;
-	}
-
-	public int getMaxMind() {
-		return maxMind;
-	}
 
 	/**
 	 * Returns a boolean indicating whether this CombatSprite should have a shadow drawn for it
@@ -1071,150 +866,6 @@ public class CombatSprite extends AnimatedSprite
 	 */
 	public boolean isDrawShadow() {
 		return drawShadow;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "counter" chance modified by
-	 * it's equipped items
-	 * 
-	 * @return an integer value representing this CombatSprite's base "counter" chance modified by
-	 * it's equipped items
-	 */
-	public int getModifiedCounter()
-	{
-		int mod = 0;
-		for (int i = 0; i < this.equipped.size(); i++)
-			if (this.equipped.get(i))
-				mod += ((EquippableItem) this.getItem(i)).getIncreasedCounter();
-		return getBaseCounter() + mod;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "counter" chance (not 
-	 * modified by equipment)
-	 * 
-	 * @return an integer value representing this CombatSprite's base "counter" chance (not 
-	 * modified by equipment)
-	 */
-	public int getBaseCounter() {
-		return baseCounter;
-	}
-
-	/**
-	 * Sets this CombatSprite's base counter chance
-	 * 
-	 * @param currentCounter an integer to be used as the CombatSprites new base counter stat
-	 */
-	public void setBaseCounter(int currentCounter) {
-		this.baseCounter = currentCounter;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "evade" chance modified by
-	 * it's equipped items
-	 * 
-	 * @return an integer value representing this CombatSprite's base "evade" chance modified by
-	 * it's equipped items
-	 */
-	public int getModifiedEvade()
-	{
-		int mod = 0;
-		for (int i = 0; i < this.equipped.size(); i++)
-			if (this.equipped.get(i))
-				mod += ((EquippableItem) this.getItem(i)).getIncreasedEvade();
-		return getBaseEvade() + mod;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "evade" chance (not 
-	 * modified by equipment)
-	 * 
-	 * @return an integer value representing this CombatSprite's base "evade" chance (not 
-	 * modified by equipment)
-	 */
-	public int getBaseEvade() {
-		return baseEvade;
-	}
-
-	/**
-	 * Sets this CombatSprite's base evade chance
-	 * 
-	 * @param currentCounter an integer to be used as the CombatSprites new base evade stat
-	 */
-	public void setBaseEvade(int currentEvade) {
-		this.baseEvade = currentEvade;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "double" chance modified by
-	 * it's equipped items
-	 * 
-	 * @return an integer value representing this CombatSprite's base "double" chance modified by
-	 * it's equipped items
-	 */
-	public int getModifiedDouble()
-	{
-		int mod = 0;
-		for (int i = 0; i < this.equipped.size(); i++)
-			if (this.equipped.get(i))
-				mod += ((EquippableItem) this.getItem(i)).getIncreasedDouble();
-		return getBaseDouble() + mod;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "double" chance (not 
-	 * modified by equipment)
-	 * 
-	 * @return an integer value representing this CombatSprite's base "double" chance (not 
-	 * modified by equipment)
-	 */
-	public int getBaseDouble() {
-		return baseDouble;
-	}
-
-	/**
-	 * Sets this CombatSprite's base double chance
-	 * 
-	 * @param currentCounter an integer to be used as the CombatSprites new base double stat
-	 */
-	public void setBaseDouble(int currentDouble) {
-		this.baseDouble = currentDouble;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "critical" chance modified by
-	 * it's equipped items
-	 * 
-	 * @return an integer value representing this CombatSprite's base "critical" chance modified by
-	 * it's equipped items
-	 */
-	public int getModifiedCrit()
-	{
-		int mod = 0;
-		for (int i = 0; i < this.equipped.size(); i++)
-			if (this.equipped.get(i))
-				mod += ((EquippableItem) this.getItem(i)).getIncreasedCrit();
-		return getBaseCrit() + mod;
-	}
-
-	/**
-	 * Returns an integer value representing this CombatSprite's base "critical" chance (not 
-	 * modified by equipment)
-	 * 
-	 * @return an integer value representing this CombatSprite's base "critical" chance (not 
-	 * modified by equipment)
-	 */
-	public int getBaseCrit() {
-		return baseCrit;
-	}
-
-	/**
-	 * Sets this CombatSprite's base critical chance
-	 * 
-	 * @param currentCounter an integer to be used as the CombatSprites new base critical stat
-	 */
-	public void setBaseCrit(int currentCrit) {
-		this.baseCrit = currentCrit;
 	}
 
 	public String getCustomMusic() {
@@ -1231,7 +882,5 @@ public class CombatSprite extends AnimatedSprite
 	public String toString() {
 		return "CombatSprite [name=" + name+ " level=" + level + ", isHero=" + isHero + ", isLeader=" + isLeader + ", isPromoted="
 				+ isPromoted + ", uniqueEnemyId=" + uniqueEnemyId + ", id=" + id + ", tileX=" + this.getTileX() + ", tileY=" + this.getTileY() + "]";
-	}
-	
-	
+	}	
 }

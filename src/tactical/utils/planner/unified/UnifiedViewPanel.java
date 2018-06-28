@@ -178,13 +178,14 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 				else {				
 					PlannerContainer pc = plannerMap.getPCReferencingMapObject(mo);
 					
+					/*
 					PlannerLine pl = pc.getDefLine();
 					PlannerContainerDef pcdef = pc.getPcdef();
-					pl.setupUI(pcdef.getAllowableLines(), null, 1, pcdef.getListOfLists(), false, true, null);
+					pl.setupUI(pcdef.getAllowableLines(), null, 1, pcdef.getListOfLists(), false, null);
 					int rc = JOptionPane.showConfirmDialog(this, pl.getUiAspect(), "Edit cinematic action", JOptionPane.OK_OPTION);
 					if (rc == JOptionPane.NO_OPTION)
 						return;
-					
+					*/
 					
 					if (pc != null)
 						valueToSelect = "Condition: " + (String) pc.getDefLine().getValues().get(0);
@@ -234,7 +235,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	}
 
 	private void addBadSearchTriggerLine(MapObject mo) {
-		renderables.add(new NotSpecifiedLine(true, false, mo, null, null, 0, this));
+		renderables.add(new NotSpecifiedLine(true, false, false, mo, null, null, 0, this));
 	}
 	
 	private void setupNPC(MapObject mo) {
@@ -265,7 +266,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	}
 
 	private void addBadTextId(MapObject mo) {
-		renderables.add(new NotSpecifiedLine(false, false, mo, null, null, 0, this));
+		renderables.add(new NotSpecifiedLine(false, false, false, mo, null, null, 0, this));
 	}
 	
 	private void setupCondition(PlannerContainer pc) {		
@@ -275,12 +276,24 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 				pc.getDefLine().getValues().get(0), null, pc, null, this));		
 		renderables.add(group);
 		renderables.add(new ArrowLine());
-		PlannerReference trigger = (PlannerReference) pc.getDefLine().getValues().get(1);
+		ArrayList<PlannerReference> triggers = (ArrayList<PlannerReference>) pc.getDefLine().getValues().get(1);
+		PlannerReference trigger = triggers.get(0);
 		if (trigger.getName().trim().length() == 0) {
-			renderables.add(new NotSpecifiedLine(true, false, null, pc, null, 1, this));
+			renderables.add(new NotSpecifiedLine(true, false, false, null, pc, null, 1, this));
+			return;
 		} else {
 			renderables.add(setupTrigger(trigger));
 		}
+		
+		for (int i = 1; i < triggers.size(); i++) {
+			trigger = triggers.get(i);
+			if (trigger.getName().trim().length() > 0) {
+				renderables.add(new ArrowLine());
+				renderables.add(setupTrigger(trigger));
+			}
+		}
+		renderables.add(new ArrowLine());
+		renderables.add(new NotSpecifiedLine(true, true, true, null, pc, null, 1, this));
 	}
 	
 	private Group setupTrigger(PlannerReference ref) {
@@ -291,7 +304,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		
 		if (ref.getName().trim().length() == 0) {
 			group.groupRenderables.add(new ArrowLine());
-			group.groupRenderables.add(new NotSpecifiedLine(true, false, null, null, null, 0, this));
+			group.groupRenderables.add(new NotSpecifiedLine(true, false, false, null, null, null, 0, this));
 			return group;
 		}
 		
@@ -306,7 +319,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 					group.groupRenderables.add(new ArrowLine());
 					group.groupRenderables.add(new Line("A 'Show Text' action causes...", null, pc, pl, this));
 					group.groupRenderables.add(new ArrowLine());
-					group.groupRenderables.add((new NotSpecifiedLine(false, false, null, pc, pl, 0, this)));
+					group.groupRenderables.add((new NotSpecifiedLine(false, false, true, null, pc, pl, 0, this)));
 				}
 			} else if (pl.getPlDef().getName().equalsIgnoreCase("Run Triggers")) {
 				if (pl.getValues().size() > 0 && ((ArrayList<PlannerReference>) pl.getValues().get(0)).get(0).getName().trim().length() > 0) {
@@ -315,11 +328,13 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 						addArrowLineArrowGroup(group.groupRenderables, "A 'Run Triggers' action causes...", pc, pl, 
 								pr -> setupTrigger(pr), plannerRef);
 					}
+					group.groupRenderables.add(new ArrowLine());
+					group.groupRenderables.add((new NotSpecifiedLine(true, true, true, null, pc, pl, 0, this)));
 				} else {
 					group.groupRenderables.add(new ArrowLine());
 					group.groupRenderables.add(new Line("A 'Run Triggers' action causes...", null, pc, pl, this));
 					group.groupRenderables.add(new ArrowLine());
-					group.groupRenderables.add((new NotSpecifiedLine(false, false, null, null, null, 0, this)));
+					group.groupRenderables.add((new NotSpecifiedLine(true, false, false, null, pc, pl, 0, this)));
 				}
 			}
 		}
@@ -344,7 +359,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		
 		if (ref.getName().trim().length() == 0) {
 			group.groupRenderables.add(new ArrowLine());
-			group.groupRenderables.add(new NotSpecifiedLine(false, false, null, null, null, 0, this));
+			group.groupRenderables.add(new NotSpecifiedLine(false, false, false, null, null, null, 0, this));
 			return group;
 		}
 		
@@ -388,7 +403,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		else
 			speechRef = (PlannerReference) pl.getValues().get(idx);
 		if (speechRef.getName().trim().length() == 0) {
-			speechGroup.groupRenderables.add(new NotSpecifiedLine(true, true, null, pc, pl, idx, this));
+			speechGroup.groupRenderables.add(new NotSpecifiedLine(true, true, false, null, pc, pl, idx, this));
 		} else {			
 			speechGroup.groupRenderables.add(new Line("A 'Run Trigger on Text end' causes...", null, pc, pl, this));
 			speechGroup.groupRenderables.add(new ArrowLine());

@@ -8,13 +8,17 @@ import tactical.game.sprite.CombatSprite;
 import tactical.map.MapObject;
 
 public class TriggerCondition {
-	private int triggerId;
+	private int[] triggerIds;
 	private String description;
 	private List<Conditional> conditions = new ArrayList<>();
 	
 	public TriggerCondition(int triggerId, String description) {
+		this(new int[] {triggerId}, description);
+	}
+	
+	public TriggerCondition(int[] triggerIds, String description) {
 		super();
-		this.triggerId = triggerId;
+		this.triggerIds = triggerIds;
 		this.description = description;
 	}
 
@@ -29,7 +33,8 @@ public class TriggerCondition {
 		for (Conditional c : conditions)
 			if (!c.conditionIsMet(location, locationEntered, immediate, onMapLoad, searching, stateInfo))
 				return false;
-		stateInfo.getResourceManager().getTriggerEventById(triggerId).perform(stateInfo, immediate);
+		for (Integer i : triggerIds)
+			stateInfo.getResourceManager().getTriggerEventById(i).perform(stateInfo, immediate);
 		return true;
 	}
 	

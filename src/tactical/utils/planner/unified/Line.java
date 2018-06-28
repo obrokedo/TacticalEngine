@@ -4,13 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-
-import javax.swing.JOptionPane;
+import java.util.ArrayList;
 
 import tactical.map.MapObject;
 import tactical.utils.planner.PlannerContainer;
 import tactical.utils.planner.PlannerContainerDef;
 import tactical.utils.planner.PlannerLine;
+import tactical.utils.planner.PlannerReference;
 import tactical.utils.planner.unified.UnifiedViewPanel.UnifiedRenderable;
 
 public class Line implements UnifiedRenderable {
@@ -36,14 +36,34 @@ public class Line implements UnifiedRenderable {
 	@Override
 	public void render(int indent, int y, int panelWidth, Graphics g) {
 		// g.drawLine(20 + 50 * indent, yOffset + (y + 1) * 50, panelWidth - 20 - 50 * indent, yOffset + (y + 1) * 50);
+		boolean conditional = false;
+		if (pc != null && pc.getPcdef().getDefiningLine().getName().equalsIgnoreCase("trigger")) {
+			conditional = hasValuesSpecified(1) || hasValuesSpecified(2);			
+		}
+		
 		g.setFont(g.getFont().deriveFont(Font.BOLD, 13));
+		
 		g.setColor(Color.white);
 		g.fillRect(11 + 50 * indent, y * 50 + UnifiedViewPanel.yOffset + 1, panelWidth - 22 - 50 * indent, 48);
 		g.setColor(Color.black);
-		g.drawString(text, 30 + 50 * indent, UnifiedViewPanel.yOffset + y * 50 + 30);
+		if (!conditional)
+			g.drawString(text, 30 + 50 * indent, UnifiedViewPanel.yOffset + y * 50 + 30);
+		else {
+			g.drawString(text, 30 + 50 * indent, UnifiedViewPanel.yOffset + y * 50 + 18);
+			g.drawString("(This trigger may not run because it has required/excluded quests)", 30 + 50 * indent, UnifiedViewPanel.yOffset + y * 50 + 40);
+		}
 		
 		this.indent = indent;
 		this.y = y;
+	}
+
+	protected boolean hasValuesSpecified(int valueIdx) {
+		boolean conditional = false;
+		ArrayList<PlannerReference> quests = (ArrayList<PlannerReference>) pc.getDefLine().getValues().get(valueIdx);
+		if (quests.size() > 1 || quests.get(0).getName().length() > 0) {
+			conditional = true;
+		}
+		return conditional;
 	}
 
 	@Override
@@ -76,7 +96,7 @@ public class Line implements UnifiedRenderable {
 
 	private void editPL(PlannerLine pl) {
 		PlannerContainerDef pcdef = pc.getPcdef();			
-		pl.setupUI(pcdef.getAllowableLines(), null, 1, pcdef.getListOfLists(), false, true, null);
+		pl.setupUI(pcdef.getAllowableLines(), null, 1, pcdef.getListOfLists(), false, null);
 
 		uvp.showScrollableOptionPane(pl.getUiAspect(), false);
 		
@@ -84,5 +104,9 @@ public class Line implements UnifiedRenderable {
 		
 		uvp.setupPanel((String) uvp.getDrivers().getSelectedItem());
 
+	}
+	
+	public boolean isMayNotRun() {
+		return hasValuesSpecified(1) || hasValuesSpecified(2);
 	}
 }

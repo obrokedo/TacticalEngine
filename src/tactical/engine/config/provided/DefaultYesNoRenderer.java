@@ -1,8 +1,9 @@
-package tactical.engine.config;
+package tactical.engine.config.provided;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
+import tactical.engine.config.YesNoMenuRenderer;
 import tactical.engine.state.StateInfo;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.game.ui.RectUI;

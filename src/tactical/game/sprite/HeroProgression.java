@@ -171,7 +171,7 @@ public class HeroProgression implements Serializable
 		cs.setMaxMP(cs.getMaxMP() + level.magicpointGain);
 
 		// Level up non-displayed stats
-		cs.levelUpHiddenStatistics();
+		cs.levelUpCustomStatistics();
 		
 		ArrayList<int[]> spellLevels = cs.getCurrentProgression().getSpellLevelLearned();
 		ArrayList<String> spellIds = cs.getCurrentProgression().getSpellIds();

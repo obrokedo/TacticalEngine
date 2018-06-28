@@ -1,11 +1,12 @@
 package tactical.game.turnaction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import tactical.engine.state.StateInfo;
 import tactical.game.manager.TurnManager;
 
-public class TurnAction implements Serializable
+public abstract class TurnAction implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -35,5 +36,5 @@ public class TurnAction implements Serializable
 		this.action = action;
 	}
 
-	public boolean perform(int delta, TurnManager turnManager, StateInfo stateInfo) {return false;}
+	public boolean perform(int delta, TurnManager turnManager, StateInfo stateInfo, ArrayList<TurnAction> turnActions) {return false;}
 }

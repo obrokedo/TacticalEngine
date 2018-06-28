@@ -144,12 +144,15 @@ public class TextParser
 						animToLoad, musicToLoad, soundToLoad);
 
 
-				cinematicById.put(cinematicId, new Cinematic(initEvents, events, cameraX, cameraY));
+				cinematicById.put(cinematicId, createNewCinematic(cameraX, cameraY, initEvents, events));
 			}
 			else if (tagArea.getTagType().equalsIgnoreCase("condition"))
 			{
-				TriggerCondition condition = new TriggerCondition(tagArea.getIntAttribute("triggerid"),
+				TriggerCondition condition = new TriggerCondition(parseMultiString("triggerid", tagArea.getParams(), s -> Integer.parseInt(s)),
 						tagArea.getAttribute("description"));
+				
+				
+				
 				for (TagArea ta : tagArea.getChildren())
 				{
 					if (ta.getTagType().equalsIgnoreCase("enemydeath"))
@@ -231,7 +234,7 @@ public class TextParser
 		
 		return mapName;
 	}
-
+	
 	private void parseTrigger(Hashtable<Integer, Trigger> triggerEventById, HashSet<String> soundToLoad,
 			HashSet<String> musicToLoad, HashSet<String> spriteToLoad, TagArea tagArea) {
 		int id = Integer.parseInt(tagArea.getAttribute("id"));
@@ -317,6 +320,10 @@ public class TextParser
 				else if (tagType.equalsIgnoreCase("addhero"))
 				{
 					te.addTriggerable(te.new TriggerAddHero(HeroResource.getHeroIdByName(actionParams.get("heroid"))));
+				}
+				else if (tagType.equalsIgnoreCase("removehero"))
+				{
+					te.addTriggerable(te.new TriggerRemoveHero(HeroResource.getHeroIdByName(actionParams.get("heroid"))));
 				}
 				else if (tagType.equalsIgnoreCase("playmusic"))
 				{
@@ -675,18 +682,23 @@ public class TextParser
 		}
 	}
 	
-	public CinematicEvent handleCustomCinematic(String tag, Hashtable<String, String> params)
+	protected CinematicEvent handleCustomCinematic(String tag, Hashtable<String, String> params)
 	{
 		return null;
 	}
 	
-	public Triggerable handleCustomTrigger(String tag, Hashtable<String, String> params)
+	protected Triggerable handleCustomTrigger(String tag, Hashtable<String, String> params)
 	{
 		return null;
 	}
 	
-	public Conditional handleCustomCondition(String tag, Hashtable<String, String> params)
+	protected Conditional handleCustomCondition(String tag, Hashtable<String, String> params)
 	{
 		return null;
+	}
+	
+	protected Cinematic createNewCinematic(int cameraX, int cameraY, ArrayList<CinematicEvent> initEvents,
+			ArrayList<CinematicEvent> events) {
+		return new Cinematic(initEvents, events, cameraX, cameraY);
 	}
 }

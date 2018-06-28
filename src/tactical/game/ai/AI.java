@@ -12,6 +12,8 @@ import tactical.game.move.MoveableSpace;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.Sprite;
 import tactical.game.turnaction.AttackSpriteAction;
+import tactical.game.turnaction.EndTurnAction;
+import tactical.game.turnaction.HideMoveAreaAction;
 import tactical.game.turnaction.TargetSpriteAction;
 import tactical.game.turnaction.TurnAction;
 import tactical.game.turnaction.WaitAction;
@@ -193,9 +195,9 @@ public abstract class AI implements Serializable
 		else
 		{
 			turnActions.add(new WaitAction(250));
-			turnActions.add(new TurnAction(TurnAction.ACTION_HIDE_MOVE_AREA));
+			turnActions.add(new HideMoveAreaAction());
 			turnActions.add(new WaitAction(250));
-			turnActions.add(new TurnAction(TurnAction.ACTION_END_TURN));
+			turnActions.add(new EndTurnAction());
 		}
 
 

@@ -1,10 +1,12 @@
-package tactical.engine.config;
+package tactical.engine.config.provided;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.UnicodeFont;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.config.HealthPanelRenderer;
+import tactical.engine.config.HealthPanelRenderer.PanelLocation;
 import tactical.game.hudmenu.Panel;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.PaddedGameContainer;
