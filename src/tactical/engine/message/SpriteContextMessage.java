@@ -1,7 +1,6 @@
 package tactical.engine.message;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;

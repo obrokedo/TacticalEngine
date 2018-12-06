@@ -18,7 +18,6 @@ import tactical.engine.state.CinematicState;
 import tactical.engine.state.CreditsState;
 import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
-import tactical.engine.state.PlannerState;
 import tactical.engine.state.TownState;
 import tactical.engine.state.devel.DevelAnimationViewState;
 import tactical.engine.state.devel.DevelBattleAnimViewState;
