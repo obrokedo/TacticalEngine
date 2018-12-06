@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.Graphics;
 
+import tactical.engine.message.AudioMessage;
+import tactical.engine.message.MessageType;
 import tactical.engine.state.StateInfo;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
@@ -90,6 +92,7 @@ public class HeroesBuyMenu extends HeroesStatMenu
 
 	@Override
 	protected MenuUpdate onConfirm(StateInfo stateInfo) {
+		stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
 		return MenuUpdate.MENU_CLOSE;
 	}
 

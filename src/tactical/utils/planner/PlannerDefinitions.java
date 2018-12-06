@@ -2543,6 +2543,13 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("addhero", "Add Hero",
 				"Adds a new hero to the force", definingValues));
 		
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+				PlannerValueDef.TYPE_MULTI_STRING, "heroids", false, "Hero IDs",
+				"The ID of the hero that should be added to the force"));
+		allowableLines.add(new PlannerLineDef("addmultihero", "Add Hero from Selection",
+				"Displays a menu that allows the user to select one of the specified heroes to the party", definingValues));
+		
 		// Remove hero
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,

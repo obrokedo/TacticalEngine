@@ -42,9 +42,14 @@ public class HeroesStatMenu extends Menu
 
 	public HeroesStatMenu(StateInfo stateInfo, MenuListener listener)
 	{
-		super(PanelType.PANEL_HEROS_OVERVIEW);
+		this(PanelType.PANEL_HEROS_OVERVIEW, stateInfo.getAllHeroes(), listener);
+		
+	}
+	
+	protected HeroesStatMenu(PanelType panelType, Iterable<CombatSprite> chooseableSprites, MenuListener listener) {
+		super(panelType);
 		heroes = new ArrayList<>();
-		for (CombatSprite cs : stateInfo.getAllHeroes())
+		for (CombatSprite cs : chooseableSprites)
 			heroes.add(cs);
 		updateCurrentHero();
 		this.listener = listener;
@@ -231,13 +236,11 @@ public class HeroesStatMenu extends Menu
 	public MenuUpdate handleUserInput(UserInput input, StateInfo stateInfo)
 	{
 		if (input.isKeyDown(KeyMapping.BUTTON_UP))
-		{
-			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
+		{			
 			return onUp(stateInfo);
 		}
 		else if (input.isKeyDown(KeyMapping.BUTTON_DOWN))
 		{
-			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
 			return onDown(stateInfo);
 		}
 		else if (input.isKeyDown(KeyMapping.BUTTON_LEFT))
@@ -251,8 +254,7 @@ public class HeroesStatMenu extends Menu
 			return onRight(stateInfo);
 		}
 		else if (input.isKeyDown(KeyMapping.BUTTON_2))
-		{
-			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
+		{			
 			return onBack(stateInfo);
 		}
 		else if (input.isKeyDown(KeyMapping.BUTTON_1) || input.isKeyDown(KeyMapping.BUTTON_3))
@@ -283,6 +285,7 @@ public class HeroesStatMenu extends Menu
 
 	protected MenuUpdate onBack(StateInfo stateInfo)
 	{
+		stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
 		selectedHero = null;
 		return MenuUpdate.MENU_CLOSE;
 	}
@@ -297,6 +300,7 @@ public class HeroesStatMenu extends Menu
 	{
 		if (selectedIndex > 0)
 		{
+			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
 			selectedIndex--;
 			updateCurrentHero();
 			return MenuUpdate.MENU_ACTION_LONG;
@@ -308,6 +312,7 @@ public class HeroesStatMenu extends Menu
 	{
 		if (selectedIndex < heroes.size() - 1)
 		{
+			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
 			selectedIndex++;
 			updateCurrentHero();
 			return MenuUpdate.MENU_ACTION_LONG;

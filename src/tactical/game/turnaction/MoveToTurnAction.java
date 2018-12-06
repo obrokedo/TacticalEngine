@@ -35,7 +35,6 @@ public class MoveToTurnAction extends TurnAction
 			else if (locY < turnManager.getCurrentSprite().getLocY())
 				dir = Direction.UP;
 
-
 			// This check catches enemies movement being ended and heroes location being "reset"
 			if (locX == turnManager.getCurrentSprite().getLocX() && locY == turnManager.getCurrentSprite().getLocY())
 			{
@@ -94,7 +93,7 @@ public class MoveToTurnAction extends TurnAction
 			}
 			else if (turnActions.get(1).action == TurnAction.ACTION_MOVE_TO) {
 				turnActions.remove(0);
-				this.perform(movingRemainder, turnManager, stateInfo, turnActions);
+				turnActions.get(0).perform(movingRemainder, turnManager, stateInfo, turnActions);
 				return false;				
 			}
 

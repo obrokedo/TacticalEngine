@@ -2,6 +2,8 @@ package tactical.game.trigger;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.newdawn.slick.util.Log;
@@ -14,6 +16,7 @@ import tactical.engine.message.MessageType;
 import tactical.engine.message.ShopMessage;
 import tactical.engine.message.ShowCinMessage;
 import tactical.engine.message.SpeechMessage;
+import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.StringMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.ai.AI;
@@ -316,6 +319,22 @@ public class Trigger
 		@Override
 		public boolean perform(StateInfo stateInfo) {
 			stateInfo.getPersistentStateInfo().getClientProfile().addHero(HeroResource.getHero(heroId));
+			return true;
+		}
+	}
+	
+	public class TriggerAddMultiHero implements Triggerable
+	{
+		private int[] heroIds;
+
+		public TriggerAddMultiHero(int[] heroIds)
+		{
+			this.heroIds = heroIds;
+		}
+
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			stateInfo.sendMessage(new SpriteContextMessage(MessageType.SHOW_PANEL_MULTI_JOIN_CHOOSE, heroIds, null));
 			return true;
 		}
 	}

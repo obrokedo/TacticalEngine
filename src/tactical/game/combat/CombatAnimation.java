@@ -2,6 +2,7 @@ package tactical.game.combat;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 import tactical.engine.state.DefaultAttackCinematicState;
 import tactical.game.battle.BattleEffect;
@@ -21,19 +22,20 @@ public class CombatAnimation
 	protected boolean blocks = true;
 	protected CombatSprite parentSprite;
 	protected boolean displayPlatform = false;
+	protected Image platformIm = null;
 
 	public CombatAnimation() {}
 
-	public CombatAnimation(AnimationWrapper animationWrapper, CombatSprite combatSprite, boolean isMissile) {
-		this(animationWrapper, combatSprite, -1, (isMissile ? true : null));
+	public CombatAnimation(AnimationWrapper animationWrapper, CombatSprite combatSprite, boolean isMissile, Image platformIm) {
+		this(animationWrapper, combatSprite, -1, (isMissile ? true : null), platformIm);
 	}
 
-	public CombatAnimation(AnimationWrapper animationWrapper, CombatSprite combatSprite, int minimumTimePassed)
+	public CombatAnimation(AnimationWrapper animationWrapper, CombatSprite combatSprite, int minimumTimePassed, Image platformIm)
 	{
-		this(animationWrapper, combatSprite, minimumTimePassed, null);
+		this(animationWrapper, combatSprite, minimumTimePassed, null, platformIm);
 	}
 
-	private CombatAnimation(AnimationWrapper animationWrapper, CombatSprite combatSprite, int minimumTimePassed, Boolean showPlatform) {
+	private CombatAnimation(AnimationWrapper animationWrapper, CombatSprite combatSprite, int minimumTimePassed, Boolean showPlatform, Image platformIm) {
 		super();
 		this.animationWrapper = animationWrapper;
 		this.minimumTimePassed = minimumTimePassed;
@@ -41,6 +43,8 @@ public class CombatAnimation
 		if (animationWrapper != null)
 			minimumTimePassed = animationWrapper.getAnimationLength();
 
+		this.platformIm = platformIm;
+		
 		if (showPlatform == null)
 			displayPlatform = (parentSprite.isHero() && parentSprite.isDrawShadow());
 	}
@@ -67,7 +71,7 @@ public class CombatAnimation
 		int y = yDrawPos + yOffset;
 
 		if (displayPlatform)
-			g.drawImage(DefaultAttackCinematicState.FLOOR_IMAGE, x + 135, y - 15);
+			g.drawImage(platformIm, x + 135, y - 15);
 
 		if (renderColor != null || parentSprite.getCurrentHP() > 0) {
 			animationWrapper.drawAnimation(x, y, renderColor, scale, g);

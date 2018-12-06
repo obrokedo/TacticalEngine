@@ -1,5 +1,6 @@
 package tactical.engine.state;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import org.newdawn.slick.GameContainer;
@@ -13,6 +14,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
+import tactical.engine.message.SpriteContextMessage;
 import tactical.game.input.KeyMapping;
 import tactical.game.manager.CinematicManager;
 import tactical.game.manager.MenuManager;

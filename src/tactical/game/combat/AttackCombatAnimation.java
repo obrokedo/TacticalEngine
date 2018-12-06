@@ -1,5 +1,7 @@
 package tactical.game.combat;
 
+import org.newdawn.slick.Image;
+
 import tactical.game.battle.BattleResults;
 import tactical.game.battle.command.BattleCommand;
 import tactical.game.sprite.CombatSprite;
@@ -14,24 +16,24 @@ public class AttackCombatAnimation extends CombatAnimation
 	 * @param animationWrapper
 	 * @param parentSprite
 	 */
-	public AttackCombatAnimation(AnimationWrapper animationWrapper, CombatSprite parentSprite)
+	public AttackCombatAnimation(AnimationWrapper animationWrapper, CombatSprite parentSprite, Image platformIm)
 	{
-		super(animationWrapper, parentSprite, true);
+		super(animationWrapper, parentSprite, true, platformIm);
 		minimumTimePassed = animationWrapper.getAnimationLength();
 	}
 
 	public AttackCombatAnimation(CombatSprite parentSprite, BattleResults battleResults, boolean blockingAnimation,
-			boolean critted)
+			boolean critted, Image platformIm)
 	{
-		this(parentSprite, battleResults, blockingAnimation, false, critted);
+		this(parentSprite, battleResults, blockingAnimation, false, critted, platformIm);
 	}
 
 	public AttackCombatAnimation(CombatSprite parentSprite, BattleResults battleResults, boolean blockingAnimation,
-			boolean rangedAttack, boolean critted)
+			boolean rangedAttack, boolean critted, Image platformIm)
 	{
 		super(new HeroAnimationWrapper(parentSprite,
 				(rangedAttack ? "Ranged" : "Attack")),
-				parentSprite, false);
+				parentSprite, false, platformIm);
 
 		if (critted && animationWrapper.hasAnimation("Crit"))
 			this.animationWrapper.setAnimation("Crit", false);

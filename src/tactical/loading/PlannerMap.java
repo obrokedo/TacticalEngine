@@ -56,6 +56,8 @@ public class PlannerMap extends Map {
 		}
 
 		public Image getPlannerSprite(int index) {
+			if (index == 1610612957)
+				return null;
 			return sprites[index - startIndex];
 		}
 	}

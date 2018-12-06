@@ -3,6 +3,8 @@ package tactical.loading;
 import java.awt.Point;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -27,7 +29,8 @@ public class MapParser
 	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser,
 			ResourceManager frm) throws IOException, SlickException
 	{
-
+		long startTime = System.currentTimeMillis();
+		long newTime;
 		HashSet<String> spriteToLoad = new HashSet<String>();
 		ArrayList<TagArea> tagAreas = XMLParser.process(mapFile);
 
@@ -64,11 +67,17 @@ public class MapParser
 		AnimatedSprite.SHADOW_COLOR = AnimatedSprite.DEFAULT_SHADOW_COLOR;
 
 
+		newTime = System.currentTimeMillis();
+		System.out.println("Parsed first part in " + (newTime - startTime) / 1000.0f);
+		startTime = newTime;
+		
 		if (map instanceof PlannerMap)
 			((PlannerMap) map).setRootTagArea(tagArea);
 
 		for (TagArea childArea : tagArea.getChildren())
-		{
+		{			
+			startTime = System.currentTimeMillis();
+			
 			if (childArea.getTagType().equalsIgnoreCase("tileset"))
 			{
 				tileSet = childArea.getChildren().get(0).getAttribute("source");
@@ -96,13 +105,20 @@ public class MapParser
 						Integer.parseInt(trans.substring(2, 4), 16),
 						Integer.parseInt(trans.substring(4, 6), 16)),
 						tileWidth, tileHeight, startIndex, map, landEffectByTileId, tileResize);
+				
+				newTime = System.currentTimeMillis();
+				System.out.println("Parsed tileset part in " + (newTime - startTime) / 1000.0f);
 			}
 			else if (childArea.getTagType().equalsIgnoreCase("layer"))
 			{
 				MapLayer layer = null;
 				try
 				{
+					long decodeTime = System.currentTimeMillis();
 					layer = decodeLayer(childArea, width, height); // new int[height][width];
+					newTime = System.currentTimeMillis();
+					System.out.println("Decode in " + (newTime - decodeTime) / 1000.0f);
+					
 					if (childArea.getParams().get("name").startsWith("walk") ||
 							childArea.getParams().get("name").startsWith("Walk") ||
 							layer.containsParam("walk"))
@@ -163,6 +179,9 @@ public class MapParser
 					index++;
 				}
 				*/
+				
+				newTime = System.currentTimeMillis();
+				System.out.println("Parsed layer in " + (newTime - startTime) / 1000.0f);
 			}
 			else if (childArea.getTagType().equalsIgnoreCase("objectgroup"))
 			{
@@ -170,6 +189,8 @@ public class MapParser
 				{
 					parseMapObject(map, spriteToLoad, objectTag);
 				}
+				newTime = System.currentTimeMillis();
+				System.out.println("Parsed objectgroup in " + (newTime - startTime) / 1000.0f);
 			}
 			else if (childArea.getTagType().equalsIgnoreCase("properties"))
 			{
@@ -185,6 +206,17 @@ public class MapParser
 						catch (Throwable t)
 						{
 							throw new BadMapException("The map " + mapFile + " had a non-integer value specified for the battle background. Value was: " + prop.getAttribute("value"));
+						}
+					}
+					else if (propName.equalsIgnoreCase("platform"))
+					{
+						try
+						{
+							map.setDefaultAttackPlatform(prop.getAttribute("value"));
+						}
+						catch (Throwable t)
+						{
+							throw new BadMapException("The map " + mapFile + " had a bad platorm name specified for the default platform. Value was: " + prop.getAttribute("value"));
 						}
 					}
 					else if (propName.equalsIgnoreCase("shadow"))
@@ -211,6 +243,9 @@ public class MapParser
 						}
 					}
 				}
+				
+				newTime = System.currentTimeMillis();
+				System.out.println("Parsed properties in " + (newTime - startTime) / 1000.0f);
 			}
 		}
 		
@@ -339,7 +374,7 @@ public class MapParser
 
 		return out;
 	}
-
+	
 	public static MapLayer decodeLayer(TagArea tagArea, int layerWidth, int layerHeight)
 	{
 		int[][] layer = new int[layerHeight][layerWidth];
@@ -363,17 +398,21 @@ public class MapParser
 					String cdata = childTagArea.getValue();
 					char[] enc = cdata.toCharArray();
 					byte[] dec = decodeBase64(enc);
+					byte[] gOut = new byte[layerHeight * layerWidth * 4];				
+					
 					GZIPInputStream is = new GZIPInputStream(
 							new ByteArrayInputStream(dec));
-		
+					int read = 0;
+					int start = 0;
+					while ((read = is.read(gOut, start, gOut.length - start)) > 0) {
+						start += read;
+					}
+					
+					ByteBuffer bb = ByteBuffer.wrap(gOut);
+					bb.order(ByteOrder.LITTLE_ENDIAN);
 					for (int y = 0; y < layerHeight; y++) {
-						for (int x = 0; x < layerWidth; x++) {
-							int tileId = 0;
-							tileId |= is.read();
-							tileId |= is.read() << 8;
-							tileId |= is.read() << 16;
-							tileId |= is.read() << 24;
-							layer[y][x] = tileId;
+						for (int x = 0; x < layerWidth; x++) {							
+							layer[y][x] = bb.getInt();
 						}
 					}
 				}

@@ -146,7 +146,7 @@ public class MenuManager extends Manager
 				ArrayList<CombatSprite> heroesToChooseList = new ArrayList<>();
 				((SpriteContextMessage) message).getSpriteIds().forEach(id -> heroesToChooseList.add(HeroResource.getHero(id)));
 				heroesToChooseList.forEach(cs -> { cs.initializeSprite(stateInfo.getResourceManager()); cs.initializeStats(); });
-				stateInfo.addMenu(new MultiHeroJoinMenu(heroesToChooseList, stateInfo));
+				stateInfo.addSingleInstanceMenu(new MultiHeroJoinMenu(heroesToChooseList, stateInfo));
 				break;
 			case SHOW_DEBUG:
 				stateInfo.addMenu(new DebugMenu(stateInfo));

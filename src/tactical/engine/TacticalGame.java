@@ -18,6 +18,7 @@ import tactical.engine.state.CinematicState;
 import tactical.engine.state.CreditsState;
 import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
+import tactical.engine.state.PlannerState;
 import tactical.engine.state.TownState;
 import tactical.engine.state.devel.DevelAnimationViewState;
 import tactical.engine.state.devel.DevelBattleAnimViewState;
@@ -73,6 +74,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 	
 	public static final int STATE_GAME_BATTLE_ANIM_VIEW = 11;
 	public static final int STATE_GAME_CREDITS = 12;
+	public static final int STATE_GAME_PLANNER = 13;
 
 	/**
 	 * A global random number generator
@@ -282,7 +284,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 						new LoadingScreenRenderer(gameContainer));
 		// RELEASE MODE
 		else
-		loadingState.setLoadingInfo("/menu/MainMenu", false, true,
+			loadingState.setLoadingInfo("/menu/MainMenu", false, true,
 				new ResourceManager(),
 					(LoadableGameState) this.getState(STATE_GAME_MENU),
 						TacticalGame.ENGINE_CONFIGURATIOR.getLogoLoadScreenRenderer(gameContainer));
@@ -294,7 +296,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		*/
 		
 						
-
+		// addState(new PlannerState());
 		this.enterState(STATE_GAME_LOADING);
 	}
 	

@@ -1,6 +1,7 @@
 package tactical.engine.message;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;
@@ -19,6 +20,14 @@ public class SpriteContextMessage extends Message
 
 	private ArrayList<Integer> sprites;
 
+	public SpriteContextMessage(MessageType messageType, int[] heroIds, Object erasureSucks)
+	{
+		super(messageType);
+		this.sprites = new ArrayList<Integer>();
+		for (int hId : heroIds)
+			sprites.add(hId);
+	}
+	
 	public SpriteContextMessage(MessageType messageType, CombatSprite sprite)
 	{
 		super(messageType);

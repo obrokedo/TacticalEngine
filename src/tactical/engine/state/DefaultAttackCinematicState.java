@@ -88,7 +88,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 	private Music music;
 	private Music introMusic;
 	public static final int SPELL_FLASH_DURATION = 480;
-	public static Image FLOOR_IMAGE;
+	public static String DEFAULT_FLOOR_IMAGE = "attackplatform";
 	
 	public void setBattleInfo(CombatSprite attacker, ResourceManager frm,
 			BattleResults battleResults, PaddedGameContainer gc, int exitState) {
@@ -189,10 +189,6 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		bgYPos = (PaddedGameContainer.GAME_SCREEN_SIZE.height - backgroundImage.getHeight()) / 2;
 		combatAnimationYOffset = bgYPos + backgroundImage.getHeight();
 		
-		// Get the land tile image for the current target
-		// TODO Change this on a by-target basis
-		FLOOR_IMAGE = frm.getImage("attackplatform").getScaledCopy(backgroundScale);
-		
 		/*****************************/
 		/** Setup battle animations **/
 		/*****************************/
@@ -237,7 +233,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		}
 		
 		BattleSceneCreator bsc = BattleSceneCreator.initializeBattleScene(attacker, frm, battleResults, gc, 
-				targetsAllies, bgXPos, bgYPos, backgroundImage);
+				targetsAllies, bgXPos, bgYPos, backgroundImage, backgroundScale);
 		heroCombatAnimations = bsc.getHeroCombatAnimations();
 		enemyCombatAnimations = bsc.getEnemyCombatAnimations();
 		textToDisplay = bsc.getTextToDisplay();

@@ -1,6 +1,7 @@
 package tactical.game.combat;
 
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.PaddedGameContainer;
@@ -10,8 +11,8 @@ public class CompoundCombatAnimation extends CombatAnimation {
 
 	private CombatAnimation secondAnimation;
 	public CompoundCombatAnimation(AnimationWrapper animationWrapper, CombatSprite combatSprite, 
-			CombatAnimation secondAnimation) {
-		super(animationWrapper, combatSprite, animationWrapper.getAnimationLength());
+			CombatAnimation secondAnimation, Image platformIm) {
+		super(animationWrapper, combatSprite, animationWrapper.getAnimationLength(), platformIm);
 		this.secondAnimation = secondAnimation;
 	}
 	@Override

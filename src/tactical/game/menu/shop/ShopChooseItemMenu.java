@@ -5,6 +5,7 @@ import org.newdawn.slick.Graphics;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.MenuConfiguration;
+import tactical.engine.message.AudioMessage;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.ShopMessage;
 import tactical.engine.message.SpeechMessage;
@@ -96,6 +97,7 @@ public class ShopChooseItemMenu extends HeroesStatMenu implements MenuListener
 
 	@Override
 	protected MenuUpdate onBack(StateInfo stateInfo) {
+		stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
 		if (selectingItemState)
 		{
 			selectingItemState = false;

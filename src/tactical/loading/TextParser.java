@@ -321,6 +321,10 @@ public class TextParser
 				{
 					te.addTriggerable(te.new TriggerAddHero(HeroResource.getHeroIdByName(actionParams.get("heroid"))));
 				}
+				else if (tagType.equalsIgnoreCase("addmultihero"))
+				{
+					te.addTriggerable(te.new TriggerAddMultiHero(parseMultiString("heroids", actionParams, heid -> HeroResource.getHeroIdByName(heid))));
+				}
 				else if (tagType.equalsIgnoreCase("removehero"))
 				{
 					te.addTriggerable(te.new TriggerRemoveHero(HeroResource.getHeroIdByName(actionParams.get("heroid"))));

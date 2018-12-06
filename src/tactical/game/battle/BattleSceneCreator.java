@@ -1,9 +1,11 @@
 package tactical.game.battle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.newdawn.slick.Image;
 
+import tactical.engine.state.DefaultAttackCinematicState;
 import tactical.game.battle.command.BattleCommand;
 import tactical.game.combat.AttackCombatAnimation;
 import tactical.game.combat.CombatAnimation;
@@ -35,11 +37,14 @@ public class BattleSceneCreator {
 	private ResourceManager frm;
 	private int bgXPos, bgYPos;
 	private Image backgroundImage;
+	private int backgroundScale;
+	private HashMap<CombatSprite, Image> platformBySprite;
 	
 	public static BattleSceneCreator initializeBattleScene(CombatSprite attacker, ResourceManager frm,
 			BattleResults battleResults, PaddedGameContainer gc, boolean targetsAllies,
-			int bgXPos, int bgYPos, Image backgroundImage) {
+			int bgXPos, int bgYPos, Image backgroundImage, int backgroundScale) {
 		BattleSceneCreator bsc = new BattleSceneCreator();
+		bsc.backgroundScale = backgroundScale;
 		bsc.setBattleInfo(attacker, frm, battleResults, gc, targetsAllies, bgXPos, bgYPos, backgroundImage);
 		return bsc;
 	}
@@ -47,7 +52,7 @@ public class BattleSceneCreator {
 	private void setBattleInfo(CombatSprite attacker, ResourceManager frm,
 			BattleResults battleResults, PaddedGameContainer gc, boolean targetsAllies,
 			int bgXPos, int bgYPos, Image backgroundImage)
-	{
+	{		
 		heroCombatAnimations = new ArrayList<>();
 		enemyCombatAnimations = new ArrayList<>();
 		textToDisplay = new ArrayList<>();
@@ -58,9 +63,19 @@ public class BattleSceneCreator {
 		this.bgYPos = bgYPos;
 		this.backgroundImage = backgroundImage;
 		
+		platformBySprite = new HashMap<>();
+		
+		String defaultPlatform;
+		if ((defaultPlatform = frm.getMap().getDefaultAttackPlatform()) == null)
+			defaultPlatform = DefaultAttackCinematicState.DEFAULT_FLOOR_IMAGE;
+		
+		platformBySprite.put(attacker, getPlatformBySprite(attacker, defaultPlatform));
+		for (CombatSprite target : battleResults.targets)
+			platformBySprite.put(target, getPlatformBySprite(target, defaultPlatform));
+		
 		//////////////////////////////////////////////////////////////////////////
 		// The attacker will be standing in any case
-		addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker));
+		addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
 
 		CombatSprite target = battleResults.targets.get(0);
 
@@ -111,7 +126,8 @@ public class BattleSceneCreator {
 					battleResults.mpDamage.add(0, battleResults.mpDamage.remove(selfIndex));
 					battleResults.targetEffects.add(0, battleResults.targetEffects.remove(selfIndex));
 
-					AttackCombatAnimation aca = new AttackCombatAnimation(attacker, battleResults, true, battleResults.critted.get(0));
+					AttackCombatAnimation aca = new AttackCombatAnimation(attacker, battleResults, true, battleResults.critted.get(0),
+							platformBySprite.get(attacker));
 					aca.setDrawSpell(isSpell);
 					addCombatAnimationWithNoSpeechNoReaction(attacker.isHero(), aca);
 					if (battleResults.targets.size() > 1)
@@ -135,7 +151,7 @@ public class BattleSceneCreator {
 
 				if (selfIndex == -1 || battleResults.targets.size() > 1)
 				{
-					StandCombatAnimation attackerStand = new StandCombatAnimation(attacker);
+					StandCombatAnimation attackerStand = new StandCombatAnimation(attacker, platformBySprite.get(attacker));
 					addCombatAnimationWithNoSpeechNoReaction(attacker.isHero(), new TransCombatAnimation(attackerStand, false));
 				}
 			}
@@ -150,21 +166,21 @@ public class BattleSceneCreator {
 					int attackCount = 0;
 
 					// If the targets aren't allies then they should stand
-					addCombatAnimation(target.isHero(), new StandCombatAnimation(target));
+					addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
 					addAttackAction(attacker, target, battleResults, attackCount++, isSpell, false);
 
 					if (battleResults.countered)
 					{
-						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker));
-						addCombatAnimation(target.isHero(), new StandCombatAnimation(target));
+						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
+						addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
 						textToDisplay.add(target.getName() + "'s counter attack!");
 						addAttackAction(target, attacker, battleResults, attackCount++, isSpell, false);
 					}
 
 					if (battleResults.doubleAttack)
 					{
-						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker));
-						addCombatAnimation(target.isHero(), new StandCombatAnimation(target));
+						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
+						addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
 						textToDisplay.add(attacker.getName() + "'s second attack!");
 						addAttackAction(attacker, target, battleResults, attackCount++, isSpell, false);
 					}
@@ -177,7 +193,7 @@ public class BattleSceneCreator {
 
 					if (battleResults.doubleAttack)
 					{
-						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker));
+						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
 						addCombatAnimation(target.isHero(), null);
 						textToDisplay.add(attacker.getName() + "'s second attack!"  + TextSpecialCharacters.CHAR_HARD_STOP);
 						addRangedAttack(attacker, target, 1);
@@ -188,7 +204,7 @@ public class BattleSceneCreator {
 				// in their final attack frame (or spell)
 				if (battleResults.targets.size() > 1)
 				{
-					StandCombatAnimation targetStand = new StandCombatAnimation(target);
+					StandCombatAnimation targetStand = new StandCombatAnimation(target, platformBySprite.get(target));
 					TransCombatAnimation transOut = new TransCombatAnimation(targetStand, true);
 					addCombatAnimationWithNoSpeechNoReaction(target.isHero(), transOut);
 					
@@ -208,7 +224,7 @@ public class BattleSceneCreator {
 			
 			if (isSpell && attacker.hasAnimation("SpellWinddown")) {
 				AnimationWrapper aw = new HeroAnimationWrapper(attacker, "SpellWinddown");
-				addCombatAnimationWithNoSpeechNoReaction(attacker.isHero(), new CombatAnimation(aw, attacker, aw.getAnimationLength()));
+				addCombatAnimationWithNoSpeechNoReaction(attacker.isHero(), new CombatAnimation(aw, attacker, aw.getAnimationLength(), platformBySprite.get(attacker)));
 			}
 
 			/*
@@ -217,7 +233,7 @@ public class BattleSceneCreator {
 			 */
 			// Check to see if the attacker is still alive
 			if (!battleResults.attackerDeath)
-				addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker));
+				addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
 			else
 				addCombatAnimation(attacker.isHero(), null);
 
@@ -230,7 +246,7 @@ public class BattleSceneCreator {
 						|| (battleResults.battleCommand.getCommand() != BattleCommand.COMMAND_ATTACK && battleResults.remainingHP.get(lastIndex) > 0))
 				{
 					addCombatAnimation(!attacker.isHero(), new StandCombatAnimation(
-						battleResults.targets.get(lastIndex)));
+						battleResults.targets.get(lastIndex), platformBySprite.get(battleResults.targets.get(lastIndex))));
 				}
 				else
 				{
@@ -259,14 +275,14 @@ public class BattleSceneCreator {
 			if (!targetsAllies && Math.abs(attacker.getTileX() - target.getTileX()) +
 					Math.abs(attacker.getTileY() - target.getTileY()) == 1)
 			{
-				addCombatAnimation(target.isHero(), new StandCombatAnimation(target));
+				addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
 			}
 		}
 	}
 
 	private void addRangedAttack(CombatSprite attacker, CombatSprite target, int index)
 	{
-		StandCombatAnimation sca = new StandCombatAnimation(target);
+		StandCombatAnimation sca = new StandCombatAnimation(target, platformBySprite.get(target));
 		addActionAndTransitionOut(attacker, battleResults, false, true);
 		addCombatAnimationWithNoSpeechNoReaction(attacker.isHero(), new TransBGCombatAnimation(backgroundImage, bgXPos, bgYPos,
 				PaddedGameContainer.GAME_SCREEN_SIZE.width, null, false, attacker.isHero()));
@@ -274,7 +290,7 @@ public class BattleSceneCreator {
 				PaddedGameContainer.GAME_SCREEN_SIZE.width, sca, true, !attacker.isHero()));
 		
 		addCombatAnimation(attacker.isHero(), new InvisibleCombatAnimation());
-		addCombatAnimation(target.isHero(), new StandCombatAnimation(target, 0));
+		addCombatAnimation(target.isHero(), new StandCombatAnimation(target, 0, platformBySprite.get(target)));
 		textToDisplay.add(null);
 		
 		addAttackAction(attacker, target, battleResults, index, false, true);
@@ -285,7 +301,7 @@ public class BattleSceneCreator {
 		// Create a attack combat combat animation that is at it's final frame so that it can
 		// be displayed when the attack transitions back in
 		AttackCombatAnimation aca = new AttackCombatAnimation(attacker,
-				battleResults, true, true, false);
+				battleResults, true, true, false, platformBySprite.get(attacker));
 		aca.update(aca.getAnimationLength());
 		addCombatAnimationWithNoSpeechNoReaction(target.isHero(), new TransBGCombatAnimation(backgroundImage, bgXPos, bgYPos,
 				PaddedGameContainer.GAME_SCREEN_SIZE.width, aca, true, !target.isHero()));
@@ -296,7 +312,7 @@ public class BattleSceneCreator {
 		}
 
 		addCombatAnimation(target.isHero(), new InvisibleCombatAnimation());
-		addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker));
+		addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
 		textToDisplay.add(null);
 		
 	}
@@ -308,15 +324,15 @@ public class BattleSceneCreator {
 
 		if (!rangedAttack)
 			aca = new AttackCombatAnimation(attacker,
-				battleResults, false, battleResults.critted.get(index));
+				battleResults, false, battleResults.critted.get(index), platformBySprite.get(attacker));
 		else
 		{
 			if (attacker.isHero())
 				aca = new AttackCombatAnimation(new AnimationWrapper(frm.getSpriteAnimation("Ranged"),
-					"Ranged", false, attacker.getCurrentWeaponImage()), attacker);
+					"Ranged", false, attacker.getCurrentWeaponImage()), attacker, platformBySprite.get(attacker));
 			else
 				aca = new AttackCombatAnimation(new AnimationWrapper(frm.getSpriteAnimation("EnemyRanged"),
-						"Ranged", false, attacker.getCurrentWeaponImage()), attacker);
+						"Ranged", false, attacker.getCurrentWeaponImage()), attacker, platformBySprite.get(attacker));
 		}
 		aca.setDrawSpell(isSpell);
 		
@@ -329,7 +345,7 @@ public class BattleSceneCreator {
 		{
 			addCombatAnimation(attacker.isHero(), aca);
 			StandCombatAnimation targetStand = new StandCombatAnimation(target,
-					(isSpell ? aca.getAnimationLength() + 200 : aca.getAnimationLengthMinusLast()));
+					(isSpell ? aca.getAnimationLength() + 200 : aca.getAnimationLengthMinusLast()), platformBySprite.get(target));
 			addCombatAnimation(target.isHero(), targetStand);
 			textToDisplay.add(null);
 
@@ -348,7 +364,7 @@ public class BattleSceneCreator {
 			else
 			{
 				addCombatAnimation(attacker.isHero(), null);
-				addCombatAnimation(target.isHero(), new StandCombatAnimation(target));
+				addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
 			}
 			textToDisplay.add(battleResults.text.get(index));
 
@@ -361,14 +377,14 @@ public class BattleSceneCreator {
 
 	private void addAttackerWinddown(CombatSprite attacker, CombatSprite target, CombatAnimation targetAction) {
 		AnimationWrapper aw = new HeroAnimationWrapper(attacker, "Winddown");
-		addCombatAnimation(attacker.isHero(), new CombatAnimation(aw, attacker, aw.getAnimationLength()));
+		addCombatAnimation(attacker.isHero(), new CombatAnimation(aw, attacker, aw.getAnimationLength(), platformBySprite.get(attacker)));
 		addCombatAnimation(target.isHero(), targetAction);
 		textToDisplay.add(null);
 	}
 
 	private void addDodgeAnimations(CombatSprite attacker, CombatSprite target, BattleResults battleResults, int index,
 			AttackCombatAnimation aca, boolean isRanged) {
-		DodgeCombatAnimation targetDodge = new DodgeCombatAnimation(target, frm, null);
+		DodgeCombatAnimation targetDodge = new DodgeCombatAnimation(target, frm, null, platformBySprite.get(target));
 		int dodgeDiff = aca.getAnimationLength() - targetDodge.getAnimationLength();
 		
 		// Start the longer animation of the two (attack vs dodge) and have the other animation
@@ -393,7 +409,7 @@ public class BattleSceneCreator {
 			if (!isRanged && attacker.hasAnimation("Winddown"))
 			{
 				AnimationWrapper aw = new HeroAnimationWrapper(attacker, "Winddown");
-				attackerCA = new CombatAnimation(aw, attacker, aw.getAnimationLength());
+				attackerCA = new CombatAnimation(aw, attacker, aw.getAnimationLength(), platformBySprite.get(attacker));
 			}
 			
 			if (target.hasAnimation("DodgeWinddown") || spellShieldCA != null)
@@ -404,13 +420,13 @@ public class BattleSceneCreator {
 					aw = new HeroAnimationWrapper(target, "DodgeWinddown");
 				// Have both winddown and spell winddown
 				if (spellShieldCA != null && aw != null) {
-					targetCA = new CompoundCombatAnimation(aw, target, spellShieldCA);
+					targetCA = new CompoundCombatAnimation(aw, target, spellShieldCA, platformBySprite.get(target));
 				// Have just a winddown
 				} else if (aw != null){
-					targetCA = new CombatAnimation(aw, target, aw.getAnimationLength());
+					targetCA = new CombatAnimation(aw, target, aw.getAnimationLength(), platformBySprite.get(target));
 				// Have just a spell winddown
 				} else {
-					targetCA = new CompoundCombatAnimation(new HeroAnimationWrapper(target, "Stand"), target, spellShieldCA);
+					targetCA = new CompoundCombatAnimation(new HeroAnimationWrapper(target, "Stand"), target, spellShieldCA, platformBySprite.get(target));
 					
 				}
 			}
@@ -466,7 +482,7 @@ public class BattleSceneCreator {
 			SpriteAnims spriteAnims = frm.getSpriteAnimation(animName);
 			if (spriteAnims.hasAnimation("DodgeWinddown")) {
 				AnimationWrapper animationWrapper = new AnimationWrapper(spriteAnims, "DodgeWinddown");
-				return new CombatAnimation(animationWrapper, sprite, animationWrapper.getAnimationLength());
+				return new CombatAnimation(animationWrapper, sprite, animationWrapper.getAnimationLength(), platformBySprite.get(sprite));
 			}
 		}
 		return null;
@@ -476,7 +492,7 @@ public class BattleSceneCreator {
 			boolean ranged)
 	{
 		AttackCombatAnimation aca = new AttackCombatAnimation(transitioner,
-				battleResults, true, ranged, false);
+				battleResults, true, ranged, false, platformBySprite.get(transitioner));
 		addCombatAnimationWithNoSpeechNoReaction(transitioner.isHero(), aca);
 		TransCombatAnimation tca = new TransCombatAnimation(aca, true);
 		tca.setDrawSpell(isSpell);
@@ -488,7 +504,7 @@ public class BattleSceneCreator {
 			BattleResults battleResults, int index, boolean lastTransitioner)
 	{
 		StandCombatAnimation sca = new StandCombatAnimation(transitioner,
-				TransCombatAnimation.TRANSITION_TIME + WAIT_TIME_FOR_DMG_AFTER_TRANS);
+				TransCombatAnimation.TRANSITION_TIME + WAIT_TIME_FOR_DMG_AFTER_TRANS, platformBySprite.get(transitioner));
 		TransCombatAnimation tca = new TransCombatAnimation(sca, false);
 		sca.setDrawSpell(showSpell);
 		tca.setDrawSpell(showSpell);
@@ -552,6 +568,16 @@ public class BattleSceneCreator {
 			heroCombatAnimations.add(combatAnimation);
 		else
 			enemyCombatAnimations.add(combatAnimation);
+	}
+	
+	private Image getPlatformBySprite(CombatSprite sprite, String defaultPlatform) {
+		if (!sprite.isHero())
+			return null;
+		String platfromImString = frm.getMap().getAttackPlatformByTile(sprite.getTileX(), sprite.getTileY());
+		if (platfromImString == null) {
+			return frm.getImage(defaultPlatform).getScaledCopy(backgroundScale);
+		}
+		return frm.getImage(platfromImString).getScaledCopy(backgroundScale);
 	}
 
 	public ArrayList<CombatAnimation> getHeroCombatAnimations() {

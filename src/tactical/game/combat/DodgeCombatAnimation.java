@@ -1,6 +1,7 @@
 package tactical.game.combat;
 
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 import tactical.game.exception.BadResourceException;
 import tactical.game.sprite.CombatSprite;
@@ -15,9 +16,9 @@ public class DodgeCombatAnimation extends CombatAnimation
 	private int timeToStartSecondAnimation = 0;
 	private boolean animationSwapped = false;
 	
-	public DodgeCombatAnimation(CombatSprite parentSprite, ResourceManager fcrm, Integer minimumTimePassed)
+	public DodgeCombatAnimation(CombatSprite parentSprite, ResourceManager fcrm, Integer minimumTimePassed, Image platformIm)
 	{
-		super(new HeroAnimationWrapper(parentSprite, getAnimationName(parentSprite)), parentSprite, false);
+		super(new HeroAnimationWrapper(parentSprite, getAnimationName(parentSprite)), parentSprite, false, platformIm);
 		if (minimumTimePassed == null)
 			this.minimumTimePassed = this.animationWrapper.getAnimationLength();
 		else

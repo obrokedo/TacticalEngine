@@ -110,6 +110,8 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	public void itemStateChanged(ItemEvent e) {
 		if (e.getStateChange() == ItemEvent.SELECTED) {
 			String item = ((String) e.getItem());
+			if (item == null)
+				return;
 			setupPanel(item);			
 		}
 	}
@@ -149,6 +151,12 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	public void loadMap(PlannerMap plannerMap, ArrayList<PlannerTab> tabsWithMapRefs) {
 		this.plannerMap = plannerMap;
 		this.tabsWithMapRefs = tabsWithMapRefs;
+	}
+	
+	public void resetPanel() {
+		drivers.removeAllItems();
+		drivers.setSelectedIndex(-1);
+		panelSelected();
 	}
 	
 	public void panelSelected() {

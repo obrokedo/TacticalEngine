@@ -55,12 +55,13 @@ public class Map
 	protected ArrayList<TileSet> tileSets = new ArrayList<TileSet>();
 	protected ArrayList<MapObject> mapObjects = new ArrayList<MapObject>();
 	protected Hashtable<Integer, Integer> landEffectByTileId = new Hashtable<Integer, Integer>();
-	private Hashtable<TerrainTypeIndicator, String> overriddenTerrain = new Hashtable<TerrainTypeIndicator, String>();
+	private Hashtable<Point, Terrain> overriddenTerrain = new Hashtable<Point, Terrain>();
 	private Hashtable<Integer, Roof> roofsById = new Hashtable<Integer, Roof>();
 	private Hashtable<Integer, ArrayList<MapLayer>> flashingLayersByPosition = new Hashtable<>();
 	private Shape battleRegion = null;
 	private int roofCount = -1;
 	private int backgroundImageIndex;
+	private String defaultAttackPlatform = null;
 	private EngineConfigurationValues jConfigValues;
 	private boolean disableRoofs = false;
 	private List<Stairs> stairs = new ArrayList<>();
@@ -178,7 +179,7 @@ public class Map
 					{
 						if (mo.getShape().contains(x + 1, y + 1))
 						{
-							overriddenTerrain.put(new TerrainTypeIndicator(x / getTileEffectiveWidth(), y / getTileEffectiveHeight()), mo.getParam("type"));
+							overriddenTerrain.put(new Point(x / getTileEffectiveWidth(), y / getTileEffectiveHeight()), new Terrain(mo.getParam("type"), mo.getParam("platform")));
 						}
 					}
 				}
@@ -292,17 +293,17 @@ public class Map
 	{
 		String tile;
 
-		TerrainTypeIndicator tti = new TerrainTypeIndicator(tileX, tileY);
+		Point tti = new Point(tileX, tileY);
 		if (overriddenTerrain.containsKey(tti))
 		{
 			try
 			{
-				tile = overriddenTerrain.get(tti);
+				tile = overriddenTerrain.get(tti).name;
 				return movementCostsByType.get(moverType).getMovementCost(tile);
 			}
 			catch (NullPointerException e)
 			{
-				tile = overriddenTerrain.get(tti);
+				tile = overriddenTerrain.get(tti).name;
 				throw new BadResourceException("The specified map has incorrect terrain cost types or the enemy/hero "
 						+ "has an invalid movement type: Tile X "
 						+ tileX + " Tile Y " + tileY + " Mover Type " + moverType);
@@ -329,6 +330,16 @@ public class Map
 			return 10000;
 		}
 	}
+	
+	public String getAttackPlatformByTile(int tileX, int tileY)
+	{
+		Point locationOnMap = new Point(tileX, tileY);
+		if (overriddenTerrain.containsKey(locationOnMap))
+		{
+			return overriddenTerrain.get(locationOnMap).platform;
+		}
+		return null;
+	}
 
 	public int getLandEffectByTile(String moverType, int tileX, int tileY)
 	{
@@ -339,10 +350,10 @@ public class Map
 
 		String tileTerrainType;
 
-		TerrainTypeIndicator tti = new TerrainTypeIndicator(tileX, tileY);
-		if (overriddenTerrain.containsKey(tti))
+		Point locationOnMap = new Point(tileX, tileY);
+		if (overriddenTerrain.containsKey(locationOnMap))
 		{
-			tileTerrainType = overriddenTerrain.get(tti);
+			tileTerrainType = overriddenTerrain.get(locationOnMap).name;
 			return terrainEffectByType.get(tileTerrainType);
 		}
 		else
@@ -370,10 +381,10 @@ public class Map
 	}
 	
 	public String getTerrainTypeByTile(int tileX, int tileY) {
-		TerrainTypeIndicator tti = new TerrainTypeIndicator(tileX, tileY);
-		if (overriddenTerrain.containsKey(tti))
+		Point locationOnMap = new Point(tileX, tileY);
+		if (overriddenTerrain.containsKey(locationOnMap))
 		{
-			return overriddenTerrain.get(tti);
+			return overriddenTerrain.get(locationOnMap).name;
 		} else {
 			return null;
 		}
@@ -459,49 +470,6 @@ public class Map
 		}
 	}
 
-	private class TerrainTypeIndicator
-	{
-		private int tileX;
-		private int tileY;
-
-		public TerrainTypeIndicator(int tileX, int tileY) {
-			super();
-			this.tileX = tileX;
-			this.tileY = tileY;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + tileX;
-			result = prime * result + tileY;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			TerrainTypeIndicator other = (TerrainTypeIndicator) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (tileX != other.tileX)
-				return false;
-			if (tileY != other.tileY)
-				return false;
-			return true;
-		}
-		private Map getOuterType() {
-			return Map.this;
-		}
-	}
-
 	public void checkRoofs(int mapX, int mapY)
 	{
 		for (Roof r : getRoofIterator())
@@ -538,6 +506,14 @@ public class Map
 
 	public void setBackgroundImageIndex(int index) {
 		this.backgroundImageIndex = index;
+	}
+
+	public String getDefaultAttackPlatform() {
+		return defaultAttackPlatform;
+	}
+
+	public void setDefaultAttackPlatform(String defaultAttackPlatform) {
+		this.defaultAttackPlatform = defaultAttackPlatform;
 	}
 
 	private class MovementCost
@@ -696,7 +672,20 @@ public class Map
 		return tileRatio;
 	}
 	
+	public class Terrain {
+		public String name;
+		public String platform;
+		
+		public Terrain(String name, String platform) {
+			super();
+			this.name = name;
+			this.platform = platform;
+		}		
+	}
+	
 	public class Stairs implements Serializable {
+		private static final long serialVersionUID = 1L;
+		
 		private Point leftPoint, rightPoint;
 
 		public Stairs(Point leftPoint, Point rightPoint) {

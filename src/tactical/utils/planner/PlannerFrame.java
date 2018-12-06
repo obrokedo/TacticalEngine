@@ -330,13 +330,18 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					plannerTabs.get(TAB_TEXT).clearValues();
 					plannerTabs.get(TAB_CONDITIONS).clearValues();
 				}
-
+				
+				jtp.setEnabledAt(TAB_CIN_MAP, false);
+				jtp.setEnabledAt(TAB_EDIT_MAP, false);
+				plannerMap = null;
 				triggerFile = fc.getSelectedFile();
 
 				this.setTitle("Planner: " + triggerFile.getName() + " " + version);
 
 				try {
 					triggerFile.createNewFile();
+					openFile(triggerFile);
+					saveTriggers(true);					
 				} catch (IOException e) {
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "An error occurred while trying to save the trigger file:"
@@ -671,6 +676,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			
 			PlannerReference.establishReferences(getTabsWithMapReferences(), referenceListByReferenceType);
 			updateErrorList(PlannerReference.getBadReferences(getDataInputTabs()));
+			
+			unifiedViewPanel.resetPanel();
 		} catch (Throwable e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "An error occurred while trying to open the file:"
