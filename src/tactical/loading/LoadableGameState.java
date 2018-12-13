@@ -5,6 +5,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -122,6 +123,8 @@ public abstract class LoadableGameState extends BasicGameState
 			pauseMenu.update(delta, null);
 			// uiDebugMenu.update(container, game, delta);
 		}
+		
+		SoundStore.get().poll(delta);
 	}
 	
 	protected abstract Menu getPauseMenu();

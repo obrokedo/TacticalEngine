@@ -29,8 +29,6 @@ public class MapParser
 	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser,
 			ResourceManager frm) throws IOException, SlickException
 	{
-		long startTime = System.currentTimeMillis();
-		long newTime;
 		HashSet<String> spriteToLoad = new HashSet<String>();
 		ArrayList<TagArea> tagAreas = XMLParser.process(mapFile);
 
@@ -66,18 +64,12 @@ public class MapParser
 		AnimatedSprite.SHADOW_OFFSET = AnimatedSprite.DEFAULT_SHADOW_OFFSET;
 		AnimatedSprite.SHADOW_COLOR = AnimatedSprite.DEFAULT_SHADOW_COLOR;
 
-
-		newTime = System.currentTimeMillis();
-		System.out.println("Parsed first part in " + (newTime - startTime) / 1000.0f);
-		startTime = newTime;
 		
 		if (map instanceof PlannerMap)
 			((PlannerMap) map).setRootTagArea(tagArea);
 
 		for (TagArea childArea : tagArea.getChildren())
 		{			
-			startTime = System.currentTimeMillis();
-			
 			if (childArea.getTagType().equalsIgnoreCase("tileset"))
 			{
 				tileSet = childArea.getChildren().get(0).getAttribute("source");
@@ -105,19 +97,13 @@ public class MapParser
 						Integer.parseInt(trans.substring(2, 4), 16),
 						Integer.parseInt(trans.substring(4, 6), 16)),
 						tileWidth, tileHeight, startIndex, map, landEffectByTileId, tileResize);
-				
-				newTime = System.currentTimeMillis();
-				System.out.println("Parsed tileset part in " + (newTime - startTime) / 1000.0f);
-			}
+							}
 			else if (childArea.getTagType().equalsIgnoreCase("layer"))
 			{
 				MapLayer layer = null;
 				try
 				{
-					long decodeTime = System.currentTimeMillis();
 					layer = decodeLayer(childArea, width, height); // new int[height][width];
-					newTime = System.currentTimeMillis();
-					System.out.println("Decode in " + (newTime - decodeTime) / 1000.0f);
 					
 					if (childArea.getParams().get("name").startsWith("walk") ||
 							childArea.getParams().get("name").startsWith("Walk") ||
@@ -179,9 +165,6 @@ public class MapParser
 					index++;
 				}
 				*/
-				
-				newTime = System.currentTimeMillis();
-				System.out.println("Parsed layer in " + (newTime - startTime) / 1000.0f);
 			}
 			else if (childArea.getTagType().equalsIgnoreCase("objectgroup"))
 			{
@@ -189,8 +172,6 @@ public class MapParser
 				{
 					parseMapObject(map, spriteToLoad, objectTag);
 				}
-				newTime = System.currentTimeMillis();
-				System.out.println("Parsed objectgroup in " + (newTime - startTime) / 1000.0f);
 			}
 			else if (childArea.getTagType().equalsIgnoreCase("properties"))
 			{
@@ -243,9 +224,6 @@ public class MapParser
 						}
 					}
 				}
-				
-				newTime = System.currentTimeMillis();
-				System.out.println("Parsed properties in " + (newTime - startTime) / 1000.0f);
 			}
 		}
 		

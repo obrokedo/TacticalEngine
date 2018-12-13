@@ -98,6 +98,21 @@ public class ResourceManager {
 		TextParser.parseText("/text/" + text, speechesById, triggerEventById, cinematicById);
 	}
 	*/
+	
+	/*
+	public <T> void a(String file, Function<TagArea, T> tagAreaParser, Consumer<Hashtable<Integer, T>> initializeResource) throws IOException {
+		ArrayList<TagArea> tagAreas = XMLParser.process(file);
+		Hashtable<Integer, T> enemyDefinitionsById = new Hashtable<Integer,T>();
+
+		for (TagArea ta : tagAreas)
+		{
+			T ed = tagAreaParser.apply(ta);
+			enemyDefinitionsById.put(ed.getId(), ed);
+		}
+
+		initializeResource.accept(enemyDefinitionsById);
+	}
+	*/
 
 	@SuppressWarnings("unchecked")
 	public void addResource(String resource, EngineConfigurator configurator) throws IOException, SlickException {
@@ -193,7 +208,7 @@ public class ResourceManager {
 		}
 		else if (split[0].equalsIgnoreCase("music"))
 		{
-			musicByTitle.put(split[1], new Music(split[2]));
+			musicByTitle.put(split[1], new Music(split[2], true));
 		}
 		else if (split[0].equalsIgnoreCase("sound"))
 		{
@@ -388,9 +403,27 @@ public class ResourceManager {
 
 	public Music getMusicByName(String name)
 	{
-		if (!musicByTitle.containsKey(name))
+		if (musicByTitle.containsKey(name))
+			return musicByTitle.get(name);
+		try {
+			return new Music("music/" + name + ".ogg", true);
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			throw new BadResourceException("Unable to find music: " + name);
-		return musicByTitle.get(name);
+		}
+	}
+	
+	public void addMusicByName(String name) {
+		if (musicByTitle.containsKey(name))
+			return;
+		try {
+			musicByTitle.put(name, new Music("music/" + name + ".ogg"));
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new BadResourceException("Unable to find music: " + name);
+		}
 	}
 
 	public Map getMap()

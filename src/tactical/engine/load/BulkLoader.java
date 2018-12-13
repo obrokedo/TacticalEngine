@@ -49,7 +49,7 @@ public class BulkLoader {
 			if (split[0].equalsIgnoreCase("musicdir"))
 			{
 				allLines.remove(i); i--;
-				loadSoundOrMusic(split, "music");
+				//loadSoundOrMusic(split, "music");
 			}
 			else if (split[0].equalsIgnoreCase("sounddir"))
 			{

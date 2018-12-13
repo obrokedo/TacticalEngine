@@ -21,6 +21,8 @@ public abstract class AttackCinematicState extends LoadableGameState {
 		setBattleInfo(attacker, frm, battleResults, gc, TacticalGame.STATE_GAME_BATTLE);
 		this.exitState = exitState;
 	}
+	
+	
 
 	protected abstract void setBattleInfo(CombatSprite attacker, ResourceManager frm,
 			BattleResults battleResults, PaddedGameContainer gc);

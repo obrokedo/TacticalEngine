@@ -393,6 +393,10 @@ public class Trigger
 			stateInfo.sendMessage(new AudioMessage(MessageType.PLAY_MUSIC, song, volume / 100.f, true));
 			return true;
 		}
+
+		public String getSong() {
+			return song;
+		}
 	}
 	
 	public class TriggerPauseMusic implements Triggerable
@@ -934,6 +938,10 @@ public class Trigger
 			return true;
 		}
 		
+	}
+
+	public ArrayList<Triggerable> getTriggerables() {
+		return triggerables;
 	}
 
 	public String getName() {

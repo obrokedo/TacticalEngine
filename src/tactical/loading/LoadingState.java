@@ -1,5 +1,7 @@
 package tactical.loading;
 
+import java.util.ArrayList;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -16,6 +18,8 @@ import tactical.engine.TacticalGame;
 import tactical.engine.load.BulkLoader;
 import tactical.game.hudmenu.Panel;
 import tactical.game.resource.SpellResource;
+import tactical.game.trigger.Trigger;
+import tactical.game.trigger.Triggerable;
 
 public class LoadingState extends BasicGameState
 {
@@ -107,8 +111,9 @@ public class LoadingState extends BasicGameState
 					// blast through loading the map data in one go
 					if (!loadResources)
 					{
-						while (!bulkLoader.isDone())
-							bulkLoader.update();
+						while (!bulkLoader.isDone()) {
+							bulkLoader.update();							
+						}
 						loadIndex = 0;
 					}
 
@@ -146,6 +151,17 @@ public class LoadingState extends BasicGameState
 		
 		if (bulkLoader.isDone())
 		{
+			if (nextState.getID() == TacticalGame.STATE_GAME_BATTLE && resourceManager.getTriggerEventById(0) != null) {
+				ArrayList<Triggerable> trigs = resourceManager.getTriggerEventById(0).getTriggerables();
+				for (Triggerable trig : trigs) {
+					if (trig instanceof Trigger.TriggerPlayMusic) {
+						String mus = ((Trigger.TriggerPlayMusic) trig).getSong();
+						resourceManager.addMusicByName(mus);
+					}
+				}
+			}
+			
+			
 			loadingRenderer.doneLoading();
 			
 			if (intermediateImage != null || loadingRenderer.canTransition(delta)) {

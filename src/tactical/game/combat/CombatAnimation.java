@@ -71,7 +71,7 @@ public class CombatAnimation
 		int y = yDrawPos + yOffset;
 
 		if (displayPlatform)
-			g.drawImage(platformIm, x + 135, y - 15);
+			g.drawImage(platformIm, x + 135, y - 10);
 
 		if (renderColor != null || parentSprite.getCurrentHP() > 0) {
 			animationWrapper.drawAnimation(x, y, renderColor, scale, g);

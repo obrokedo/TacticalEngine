@@ -6,6 +6,7 @@ import org.newdawn.slick.Sound;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.message.AudioMessage;
+import tactical.engine.message.BooleanMessage;
 import tactical.engine.message.IntMessage;
 import tactical.engine.message.Message;
 
@@ -51,9 +52,7 @@ public class SoundManager extends Manager implements MusicListener
 		}
 		
 		Music playingMusic = stateInfo.getResourceManager().getMusicByName(name);
-		playingMusic.stop();
-		playingMusic.setPosition(position);
-		playingMusic.loop(1, 0);
+		playingMusic.loop(1, 0);		
 		playingMusic.fade(2000, volume * GLOBAL_VOLUME, false);
 		this.playingMusicName = name;
 		this.playingVolume = volume;
@@ -65,7 +64,8 @@ public class SoundManager extends Manager implements MusicListener
 		if (playingMusic != null)
 		{
 			this.playingMusicPosition = this.playingMusic.getPosition();
-			playingMusic.stop();
+			playingMusic.pause();
+			// playingMusic.stop();
 		}
 	}
 
@@ -73,8 +73,16 @@ public class SoundManager extends Manager implements MusicListener
 	{
 		if (playingMusic != null)
 		{
-			playMusicByName(playingMusicName, playingVolume, playingMusicPosition);
+			playingMusic.resume();
 		}
+	}
+	
+	public void resumeAfterNewMusic() {
+		Music playingMusic = stateInfo.getResourceManager().getMusicByName(playingMusicName);
+		playingMusic.stop();
+		playingMusic.setPosition(playingMusicPosition);
+		playingMusic.loop(1, 0);		
+		playingMusic.fade(2000, playingVolume * GLOBAL_VOLUME, false);
 	}
 
 	public void stopMusic()
@@ -110,11 +118,17 @@ public class SoundManager extends Manager implements MusicListener
 				pauseMusic();
 				break;
 			case RESUME_MUSIC:
+				if (message instanceof BooleanMessage) {
+					if (((BooleanMessage) message).isBool()) {
+						resumeAfterNewMusic();
+						break;
+					}
+				}
 				resumeMusic();
 				break;
 			case PLAY_MUSIC:
 				am = (AudioMessage) message;
-				playMusicByName(am.getAudio(), am.getVolume(), am.getPosition());
+				playMusicByName(am.getAudio(), am.getVolume(), -1);
 				break;
 			case FADE_MUSIC:
 				IntMessage im = (IntMessage) message;

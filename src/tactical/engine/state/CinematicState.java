@@ -134,6 +134,7 @@ public class CinematicState extends LoadableGameState
 			menuManager.update(delta);
 			// cinematic.update((int) (delta * cinematicSpeed), stateInfo.getCamera(), stateInfo.getInput(), stateInfo.getResourceManager().getMap(), stateInfo);
 			cinematicManager.update(delta);
+			soundManager.update(delta);
 			stateInfo.getCurrentMap().update(delta);
 		}
 		stateInfo.getInput().update(delta, container.getInput());

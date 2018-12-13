@@ -39,6 +39,7 @@ import tactical.loading.ResourceManager;
 import tactical.loading.TilesetParser;
 import tactical.map.Map;
 import tactical.map.MapObject;
+import tactical.utils.FrontOptionPane;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.PlannerFrame;
@@ -259,8 +260,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	
 			if (key == Input.KEY_F2 || key == Input.KEY_P)
 			{
-				if (!plannerFrame.isVisible())
+				if (!plannerFrame.isVisible()) {
 					plannerFrame.setVisible(true);
+					plannerFrame.requestFocus();
+				}
 			}
 	
 			if (key == Input.KEY_F3)
@@ -384,10 +387,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					
 				}
 				if (loadBattleButton.handleUserInput(x, y, true)) {
-					if (new File(textSelector.getSelectedResource()).exists()) {
-						if (JOptionPane.showConfirmDialog(null, 
+					if (new File(textSelector.getSelectedResource()).exists()) {									
+						if (FrontOptionPane.showConfirmDialog(
 								"A battle configuration was found for this battle, would you like to apply it?", 
-								"Load Configuration", JOptionPane.YES_NO_OPTION)
+								"Load Configuration")
 								== JOptionPane.YES_OPTION) {
 							DevParams devParams = DevParams.parseDevParams(textSelector.getSelectedResource());
 							if (devParams != null)
@@ -472,5 +475,5 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		
 		loadCinButton.setEnabled(false);
 		return false;
-	}
+	}	
 }

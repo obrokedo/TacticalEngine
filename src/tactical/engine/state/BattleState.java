@@ -6,6 +6,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.message.BooleanMessage;
 import tactical.engine.message.MessageType;
 import tactical.game.manager.CinematicManager;
 import tactical.game.manager.InitiativeManager;
@@ -114,7 +115,7 @@ public class BattleState extends LoadableGameState
 			container.getInput().addKeyListener(stateInfo.getInput());
 			this.stateInfo.setInputDelay(System.currentTimeMillis() + 200);
 			stateInfo.setShowAttackCinematic(false);
-			stateInfo.sendMessage(MessageType.RESUME_MUSIC);
+			stateInfo.sendMessage(new BooleanMessage(MessageType.RESUME_MUSIC, true));
 			stateInfo.sendMessage(MessageType.RETURN_FROM_ATTACK_CIN);
 		}
 	}
