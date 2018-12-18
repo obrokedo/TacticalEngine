@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import tactical.engine.state.StateInfo;
+import tactical.game.manager.TurnManager;
 import tactical.game.move.MoveableSpace;
 import tactical.game.sprite.CombatSprite;
 
@@ -37,7 +38,7 @@ public class AIGroup {
 	{
 		// Check to see if we can kill someone
 		// Check to see if we need to heal people
-		AIConfidence aiConf = currentSprite.getAi().getBestConfidence(stateInfo, ms, currentSprite);
+		AIConfidence aiConf = currentSprite.getAi().getBestConfidence(stateInfo, ms, currentSprite, null);
 		if (aiConf.willKill || aiConf.willHeal)
 		{
 

@@ -3,6 +3,7 @@ package tactical.game.ai;
 import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.newdawn.slick.util.Log;
 
@@ -58,10 +59,18 @@ public abstract class AI implements Serializable
 
 	public ArrayList<TurnAction> performAI(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite)
 	{
-		return performTheAI(stateInfo, ms, currentSprite);
+		return performAI(stateInfo, ms, currentSprite, null);
+	}
+	
+	public ArrayList<TurnAction> performAI(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite, List<AIConfidence> debugConfidences)
+	{
+		AIConfidence conf = this.getBestConfidence(stateInfo, ms, currentSprite, debugConfidences);
+		if (debugConfidences != null)
+			debugConfidences.add(0, conf);
+		return this.getActions(stateInfo, ms, currentSprite, conf);
 	}
 
-	public AIConfidence getBestConfidence(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite)
+	public AIConfidence getBestConfidence(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite, List<AIConfidence> confidenceDebugList)
 	{
 		this.initialize();
 
@@ -72,7 +81,7 @@ public abstract class AI implements Serializable
 
 		Log.debug("------ " + currentSprite.getName());
 
-		// People that can heal should have an oppurtunity to heal themselves
+		// People that can heal should have an opportunity to heal themselves
 		if (canHeal)
 		{
 			attackableSprites.add(new AttackableEntity(currentSprite, getBestPoint(stateInfo, tileWidth, tileHeight, currentSprite, ms, true, 2), 0));
@@ -99,13 +108,23 @@ public abstract class AI implements Serializable
 				for (int i = 0; i < as.getAttackablePoints().size(); i++)
 				{
 					Point attackPoint = as.getAttackablePoints().get(i);
+					
 					int distance = as.getDistances().get(i);
 					AIConfidence currentConfidence = getConfidence(currentSprite, as.getCombatSprite(), tileWidth, tileHeight,
-							attackPoint, distance, stateInfo);
+							attackPoint, distance, stateInfo);					
 					
+					// Don't let land effect make a bad decision better
 					if (currentConfidence.confidence > 0)
 					{
 						currentConfidence.confidence += this.getLandEffectConfidence(attackPoint, currentSprite, stateInfo);
+					}
+					
+					if (confidenceDebugList != null) {
+						currentConfidence.attackPoint = attackPoint;
+						currentConfidence.target = as.getCombatSprite();
+						currentConfidence.potentialAttackSpriteAction = getPerformedTurnAction(as.getCombatSprite());
+						currentConfidence.foundHero = true;
+						confidenceDebugList.add(currentConfidence);
 					}
 
 					if (currentConfidence.confidence > maxConfidence.confidence)
@@ -146,10 +165,12 @@ public abstract class AI implements Serializable
 		ArrayList<TurnAction> turnActions = new ArrayList<TurnAction>();
 
 
-		// If we have no confidence in what we're going to do then we want to move away from the enemies
-		// to try and split them up.
+		// We found no reasonable target, either because none was in range OR the available spaces were
+		// really poor
 		if (confidence.confidence == 0)
 		{
+			// If we have no confidence in what we're going to do then we want to move away from the enemies
+			// to try and split them up.
 			if (confidence.foundHero)
 			{
 				Point bestPoint = this.getBestPoint(stateInfo, tileWidth, tileHeight, currentSprite, ms, true, 2);
@@ -181,6 +202,7 @@ public abstract class AI implements Serializable
 			}
 		}
 
+		// If we found someone to target then add actions to affect that target
 		if (confidence.target != null)
 		{
 			Log.debug("Move to attack the target from attack point " + confidence.attackPoint.x + ", " + confidence.attackPoint.y);
@@ -202,20 +224,6 @@ public abstract class AI implements Serializable
 
 
 		return turnActions;
-	}
-
-
-	/**
-	 *
-	 * @param stateInfo The StateInfo for the current game state
-	 * @param ms
-	 * @param currentSprite
-	 * @return
-	 */
-	private ArrayList<TurnAction> performTheAI(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite)
-	{
-		AIConfidence conf = this.getBestConfidence(stateInfo, ms, currentSprite);
-		return this.getActions(stateInfo, ms, currentSprite, conf);
 	}
 
 	private void performKamikazeeApproach(StateInfo stateInfo, int tileWidth, int tileHeight, CombatSprite currentSprite, MoveableSpace ms, ArrayList<TurnAction> turnActions)

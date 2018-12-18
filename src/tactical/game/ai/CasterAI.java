@@ -11,6 +11,7 @@ import tactical.game.battle.command.BattleCommand;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.item.EquippableItem;
+import tactical.game.move.AttackableSpace;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.turnaction.AttackSpriteAction;
 
@@ -23,9 +24,11 @@ public abstract class CasterAI extends AI
 	protected KnownSpell bestKnownSpell;
 	protected int spellLevel;
 	protected ArrayList<CombatSprite> targets;
+	protected float maxKillConfidenceAmt;
 
-	public CasterAI(int approachType, boolean canHeal) {
+	public CasterAI(int approachType, boolean canHeal, float maxKillConfidenceAmt) {
 		super(approachType, canHeal);
+		this.maxKillConfidenceAmt = maxKillConfidenceAmt;
 	}
 
 	@Override
@@ -49,7 +52,9 @@ public abstract class CasterAI extends AI
 		bestKnownSpell = null;
 		
 		boolean couldAttackTarget = false;
-		int baseConfidence = determineBaseConfidence(currentSprite, targetSprite, tileWidth, tileHeight, attackPoint, stateInfo);
+		AIConfidence aiC = new AIConfidence(mostConfident);
+		int baseConfidence = determineBaseConfidence(currentSprite, targetSprite, 
+				tileWidth, tileHeight, attackPoint, stateInfo, aiC);
 		Log.debug("Base Caster confidence " + baseConfidence + " name " + targetSprite.getName());
 		int currentConfidence = baseConfidence;
 
@@ -61,7 +66,9 @@ public abstract class CasterAI extends AI
 		{
 			couldAttackTarget = true;
 			int damage = Math.max(1, currentSprite.getCurrentAttack() - targetSprite.getCurrentDefense());
-			currentConfidence += Math.min(30, (int)(30.0 * damage / targetSprite.getMaxHP()));
+			int damageInfluence = Math.min(30, (int)(30.0 * damage / targetSprite.getMaxHP()));
+			currentConfidence += damageInfluence;
+			aiC.damageInfluence = damageInfluence;
 
 			// If this attack would kill the target then add 50 confidence
 			if (targetSprite.getCurrentHP() <= damage)
@@ -72,38 +79,45 @@ public abstract class CasterAI extends AI
 
 			Log.debug("Caster Attack confidence " + currentConfidence + " name " + targetSprite.getName());
 
+			// This will always be most confident provided that the confidence is greater then 0
 			mostConfident = checkForMaxConfidence(mostConfident, currentConfidence, null, null, 0, null, willKill, false);
 		}
 
 
-		this.checkSpells(currentSprite, targetSprite, tileWidth, tileHeight, attackPoint, distance, stateInfo, baseConfidence);
-		AIConfidence aiC = new AIConfidence(mostConfident);
+		this.checkSpells(currentSprite, targetSprite, tileWidth, tileHeight, attackPoint, distance, stateInfo, baseConfidence, aiC);
+		aiC.confidence = mostConfident;
 		aiC.willKill = willKill;
 		aiC.willHeal = willHeal;
 
 		// If we're not healing (good effecting) the target and it's the same
 		// as you hero/enemy-wise then just return negative
-		if (!willHeal && targetSprite.isHero() == currentSprite.isHero())
-			return new AIConfidence(Integer.MIN_VALUE);
+		if (!willHeal && targetSprite.isHero() == currentSprite.isHero()) {
+			AIConfidence minConf = new AIConfidence(Integer.MIN_VALUE);
+			minConf.aiSpellConfs = aiC.aiSpellConfs;
+		}
 
 		// If we're not casting a spell and couldn't reach the target then
 		// we can't actually attack this person. In this case just
 		// return the minimum value
-		if (this.bestSpell == null && !couldAttackTarget)
-			return new AIConfidence(Integer.MIN_VALUE);
+		if (this.bestSpell == null && !couldAttackTarget) {
+			AIConfidence minConf = new AIConfidence(Integer.MIN_VALUE);
+			minConf.aiSpellConfs = aiC.aiSpellConfs;
+			return minConf;
+		}
 
 		return aiC;
 	}
 
 	protected void checkSpells(CombatSprite currentSprite,
 			CombatSprite targetSprite, int tileWidth, int tileHeight,
-			Point attackPoint, int distance, StateInfo stateInfo, int baseConfidence)
+			Point attackPoint, int distance, StateInfo stateInfo, int baseConfidence, AIConfidence aiConf)
 	{
 		/**********************************************************/
 		/* Check each of the spells to see if they should be cast */
 		/**********************************************************/
 		if (currentSprite.getSpellsDescriptors() != null)
 		{
+			ArrayList<AISpellConfidence> spellConfs = new ArrayList<>();
 			for (KnownSpell sd : currentSprite.getSpellsDescriptors())
 			{
 				SpellDefinition spell = sd.getSpell();
@@ -123,16 +137,132 @@ public abstract class CasterAI extends AI
 					// Check to see if the target is in range of this spell
 					if (!spell.getRange()[i - 1].isInDistance(distance) &&
 							(spell.isTargetsEnemy() || currentSprite != targetSprite))
-						continue;
+						continue;					
 
 					Log.debug(sd.getSpellId() + " level " + i + " can be cast, checking it now.");
-					handleSpell(spell, sd, i, tileWidth, tileHeight, currentSprite,
-							targetSprite, stateInfo, baseConfidence, cost, attackPoint, distance);
+					AISpellConfidence aisc = new AISpellConfidence(spell.getName(), i);
+					if (spell.getDamage() != null && spell.getDamage().length >= spellLevel && spell.getDamage()[0] < 0)
+					{
+						handleDamagingSpell(spell, sd, i, tileWidth, tileHeight, currentSprite,
+								targetSprite, stateInfo, baseConfidence, cost, attackPoint, distance, aisc);
+					} else {
+						handleSpell(spell, sd, i, tileWidth, tileHeight, currentSprite,
+							targetSprite, stateInfo, baseConfidence, cost, attackPoint, distance, aisc);
+					}
+					spellConfs.add(aisc);
 				}
 			}
+			aiConf.aiSpellConfs = spellConfs;
 		}
 	}
+	
+	protected void handleDamagingSpell(SpellDefinition spell,  KnownSpell knownSpell, int spellLevel, 
+			int tileWidth, int tileHeight, CombatSprite currentSprite,
+			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, 
+			Point attackPoint, int distance, AISpellConfidence aiSpellConf)
+	{
+		boolean willKill = false;
+		int currentConfidence = 0;
+		int area = spell.getArea()[spellLevel - 1];
+		ArrayList<CombatSprite> targetsInArea;
+		if (area > 1 || area == AttackableSpace.AREA_ALL_INDICATOR)
+		{
+			int killed = 0;
 
+			// If there are multiple targets then get the total percent damage done and then divide it by the area amount
+			// this will hopefully prevent wizards from casting higher level spells then they need to
+			if (area != AttackableSpace.AREA_ALL_INDICATOR) {
+			targetsInArea = getNearbySprites(stateInfo, (currentSprite.isHero() ? !spell.isTargetsEnemy() : spell.isTargetsEnemy()),
+					tileWidth, tileHeight,
+					new Point(targetSprite.getTileX(), targetSprite.getTileY()), spell.getArea()[spellLevel - 1] - 1,
+						currentSprite);
+			// If this is area all then just add all of the correct targets
+			} else {
+				targetsInArea = new ArrayList<>();
+				boolean targetHero = false;
+				if (spell.isTargetsEnemy())
+					targetHero = !currentSprite.isHero();
+				for (CombatSprite cs : stateInfo.getCombatSprites())
+				{
+					if (targetHero == cs.isHero())
+					{
+						targetsInArea.add(cs);
+					}
+				}
+			}
+
+			for (CombatSprite ts : targetsInArea)
+			{
+				if (ts.getCurrentHP() + spell.getEffectiveDamage(currentSprite, ts, spellLevel - 1) <= 0)
+				{
+					killed++;
+					willKill = true;
+				}
+				else
+				{
+					// TODO WHY ARE WE USING THEIR MAX HEALTH HERE? PERCENTAGE OF CURRENT HEALTH IS SUFFICIENT WITH
+					// A MAX PERCENT OF -1. OTHERWISE WE WILL ALMOST ALWAYS USE HIGHER LEVEL SPELLS
+					// ALSO, WHY DO WE HAVE CURRENT CONFIDENCE BE MAXED TO -50? IT SHOULD BE MINNED TO 0
+					currentConfidence += Math.min(maxKillConfidenceAmt, (int)(-maxKillConfidenceAmt * spell.getEffectiveDamage(currentSprite, ts, spellLevel - 1) / ts.getMaxHP()));
+				}
+			}
+
+			if (area != AttackableSpace.AREA_ALL_INDICATOR) {
+				// currentConfidence /= area;
+				aiSpellConf.targetAmtDivisor = area;
+			}
+			else {
+				// currentConfidence /= targetsInArea.size();
+				aiSpellConf.targetAmtDivisor = targetsInArea.size();
+			}
+
+			// Add a confidence equal to the amount killed + 50
+			currentConfidence += killed * maxKillConfidenceAmt;
+		}
+		// Only a single target
+		else
+		{
+			if (targetSprite.getCurrentHP() + spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1) <= 0)
+			{
+				currentConfidence += maxKillConfidenceAmt;
+				willKill = true;
+			}
+			else
+				currentConfidence += Math.min(maxKillConfidenceAmt, (int)(-maxKillConfidenceAmt * spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1) / targetSprite.getMaxHP()));
+			targetsInArea = null;
+			aiSpellConf.targetAmtDivisor = 1;
+		}
+
+		aiSpellConf.damageInfluence = currentConfidence;
+		
+		currentConfidence += baseConfidence;
+		
+		// Maximize distance from target
+		currentConfidence += distance - 1;
+		aiSpellConf.distanceFromTarget = distance - 1;
+
+		// Subtract the mp cost of the spell
+		currentConfidence -= cost;
+		aiSpellConf.mpCost = -cost;
+
+		Log.debug("Caster Spell confidence " + currentConfidence + " name " + targetSprite.getName() + " spell " + spell.getName() + " level " + spellLevel);
+
+		// Check to see if this is the most confident
+		mostConfident = checkForMaxConfidence(mostConfident, currentConfidence, spell, knownSpell, spellLevel, targetsInArea, willKill, false);
+	}
+
+	/**
+	 * 
+	 * @param mostConfident
+	 * @param confidence
+	 * @param currentSpell
+	 * @param currentKnownSpell
+	 * @param level
+	 * @param targets any additional targets that would be included in the area
+	 * @param willKill
+	 * @param willHeal
+	 * @return
+	 */
 	protected int checkForMaxConfidence(int mostConfident, int confidence, SpellDefinition currentSpell, KnownSpell currentKnownSpell,
 			int level, ArrayList<CombatSprite> targets, boolean willKill, boolean willHeal)
 	{
@@ -197,11 +327,11 @@ public abstract class CasterAI extends AI
 	}
 
 	protected abstract void handleSpell(SpellDefinition spell,  KnownSpell knownSpell, int i, int tileWidth, int tileHeight, CombatSprite currentSprite,
-			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, int distance);
+			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, int distance, AISpellConfidence aiSpellConf);
 
 	protected abstract int determineBaseConfidence(CombatSprite currentSprite,
 			CombatSprite targetSprite, int tileWidth, int tileHeight,
-			Point attackPoint, StateInfo stateInfo);
+			Point attackPoint, StateInfo stateInfo, AIConfidence aiConf);
 
 	@Override
 	protected int getLandEffectWeight(int landEffect) {

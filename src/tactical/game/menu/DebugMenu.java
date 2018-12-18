@@ -14,6 +14,7 @@ import tactical.engine.state.StateInfo;
 import tactical.game.Camera;
 import tactical.game.constants.Direction;
 import tactical.game.input.UserInput;
+import tactical.game.manager.TurnManager;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.trigger.Trigger;
 import tactical.game.ui.Button;
@@ -44,6 +45,7 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 	
 	private Button setDisplayAttributes = new Button(15, 600, 140, 20, "Display Options");
 	
+	private Button debugAI = new Button(270, 85, 140, 20, (TurnManager.enableAIDebug ? "Disable" : "Enable") + " AI Debug");
 	private Button chooseSprite = new Button(270, 55, 140, 20, "Choose Sprite");
 	private Button showQuests = new Button(270, 25, 200, 20, "Show Completed Quests");
 	private int inputTimer = 0;
@@ -287,6 +289,12 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 				triggerStatus = null;
 				timerReset();
 			}
+			if (stateInfo.isCombat() && debugAI.handleUserInput(x, y, leftClick)) {
+				TurnManager.enableAIDebug = !TurnManager.enableAIDebug; 
+				triggerStatus = null;
+				timerReset();
+			}
+			
 			if (showQuests.handleUserInput(x, y, leftClick)) {
 				state = DebugMenuState.SHOW_QUESTS;
 				triggerStatus = null;
@@ -339,8 +347,10 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 		} 
 		
 		if (state == DebugMenuState.CHOOSE_TRIGGER) {
-			if (stateInfo.isCombat())
+			if (stateInfo.isCombat()) {
 				chooseSprite.render(graphics);
+				debugAI.render(graphics);
+			}
 			showQuests.render(graphics);
 		}
 		graphics.drawString("Right Click to Go Back", 5, 650);

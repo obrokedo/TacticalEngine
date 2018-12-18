@@ -31,12 +31,14 @@ public class WarriorAI extends AI
 			return new AIConfidence(Integer.MIN_VALUE);
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
-		int currentConfidence = 5 +
-				getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5 -
-				getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5 +
-				// Get the percent of damage that will be done to the hero
-				Math.min(50, (int)(50.0 * damage / targetSprite.getMaxHP()));
-
+		int currentConfidence = 5;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
+		
+		// Get the percent of damage that will be done to the hero
+		int damageDone = Math.min(50, (int)(50.0 * damage / targetSprite.getMaxHP()));
+		currentConfidence += nearbyAlly - nearbyEnemy + damageDone;
+		
 		boolean willKill = false;
 
 		// If this attack would kill the target then add 50 confidence
@@ -47,6 +49,9 @@ public class WarriorAI extends AI
 		}
 
 		AIConfidence aiC = new AIConfidence(currentConfidence);
+		aiC.allyInfluence = nearbyAlly;
+		aiC.enemyInfluence = nearbyEnemy;
+		aiC.damageInfluence = damageDone;
 		aiC.willKill = willKill;
 
 		return aiC;

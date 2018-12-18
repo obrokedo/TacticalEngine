@@ -14,24 +14,21 @@ import tactical.game.sprite.CombatSprite;
 public class ClericAI extends CasterAI
 {
 	public ClericAI(int approachType) {
-		super(approachType, true);
+		super(approachType, true, 30f);
 	}
 
 	@Override
 	protected void handleSpell(SpellDefinition spell, KnownSpell knownSpell, int i, int tileWidth, int tileHeight, CombatSprite currentSprite,
-			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, int distance)
+			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, int distance, AISpellConfidence aiSpellConf)
 	{
-		// Check to see if this spell does damage, if so then use the damage to determine the confidence
-		if (spell.getDamage() != null && spell.getDamage().length >= i && spell.getDamage()[0] < 0)
-			handleDamagingSpell(spell, knownSpell, i, tileWidth, tileHeight, currentSprite, targetSprite, stateInfo, baseConfidence, cost, distance);
-		else
-			handleHealingSpell(spell, knownSpell, i, tileWidth, tileHeight, currentSprite, targetSprite, stateInfo, baseConfidence, cost, attackPoint);
+		handleHealingSpell(spell, knownSpell, i, tileWidth, tileHeight, currentSprite, 
+				targetSprite, stateInfo, baseConfidence, cost, attackPoint, aiSpellConf);
 	}
 
 	// TODO Lots to do here, they aren't really smart enough to move and target them self, kind of need it's own AI for that?
 	// Somehow there is never a time when aura can get 2 people in it
 	private void handleHealingSpell(SpellDefinition spell, KnownSpell knownSpell, int spellLevel, int tileWidth, int tileHeight, CombatSprite currentSprite,
-			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint)
+			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, AISpellConfidence aiSpellConf)
 	{
 		boolean healSelf = false;
 		if (1.0 * currentSprite.getCurrentHP() / currentSprite.getMaxHP() < .65)
@@ -96,12 +93,14 @@ public class ClericAI extends CasterAI
 				if (effectiveDamage != 0 && (ts.getCurrentHP() * 1.0 / ts.getMaxHP() < .5
 						|| (ts.getMaxHP() - ts.getCurrentHP()) / (1.0 * maxDamage) > .75))
 				{
-					currentConfidence += Math.min(50, (int)(50.0 *
-							// Get the percent of the max health that the spell can heal for and the percent of damage that
-							// the target is hurt for and the take the smaller of the two numbers. This prevents spells that
-							// can technically heal for a higher percent of max health getting a higher value (causing low
-							// level heal spells never to be used)
-							Math.min(1.0 * (ts.getMaxHP() - ts.getCurrentHP()) / ts.getMaxHP(), 1.0 * effectiveDamage / ts.getMaxHP())));
+					// Get the percent of the max health that the spell can heal for and the percent of damage that
+					// the target is hurt for and the take the smaller of the two numbers. This prevents spells that
+					// can technically heal for a higher percent of max health getting a higher value (causing low
+					// level heal spells never to be used)
+					float healing = Math.min(ts.getMaxHP() - ts.getCurrentHP(), effectiveDamage) * 1.0f;
+					int healingConf = Math.min(50, (int)(50.0 *					
+							healing / targetSprite.getMaxHP()));					
+					currentConfidence += healingConf;
 				}
 				//TODO ADD A CHECK TO SEE IF IT WILL CURE A CONDITION
 				// If this target isn't hurt but will be in the spell area we just add a small amount of confidence,
@@ -109,6 +108,8 @@ public class ClericAI extends CasterAI
 				else
 					incidentalHealed++;
 			}
+			
+			aiSpellConf.damageInfluence = currentConfidence;
 
 			// Only add the base confidence if we have found someone to heal
 			if (currentConfidence > 0)
@@ -118,11 +119,14 @@ public class ClericAI extends CasterAI
 				// currentConfidence /= area;
 				// If this action will end up healing the cleric as well,
 				// then add an additional 20 points
-				if (healedSelf && healSelf)
+				if (healedSelf && healSelf) {
 					currentConfidence += 20;
+					aiSpellConf.selfHealBonus = 20;
+				}
 				currentConfidence += baseConfidence;
 			}
 		}
+		// Single target healing
 		else
 		{
 			int effectiveDamage = spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1);
@@ -133,16 +137,21 @@ public class ClericAI extends CasterAI
 					(targetSprite.getMaxHP() - targetSprite.getCurrentHP()) /
 						(1.0 * maxDamage) > .75)
 			{
-				currentConfidence += Math.min(50, (int)(50.0 *
-					// Get the percent of the max health that the spell can heal for and the percent of damage that
-					// the target is hurt for and the take the smaller of the two numbers. This prevents spells that
-					// can technically heal for a higher percent of max health getting a higher value (causing low
-					// level heal spells never to be used)
-					Math.min(1.0 * (targetSprite.getMaxHP() - targetSprite.getCurrentHP()) / targetSprite.getMaxHP(),
-							1.0 * effectiveDamage / targetSprite.getMaxHP())));
+				// Get the actual amount that can be healed (can't heal more then max)
+				// Get the percent of the max health that the spell can heal for and the percent of damage that
+				// the target is hurt for and the take the smaller of the two numbers. This prevents spells that
+				// can technically heal for a higher percent of max health getting a higher value (causing low
+				// level heal spells never to be used)
+				float healing = Math.min(targetSprite.getMaxHP() - targetSprite.getCurrentHP(), effectiveDamage) * 1.0f;
+				int healingConf = Math.min(50, (int)(50.0 *					
+						healing / targetSprite.getMaxHP()));
+				aiSpellConf.damageInfluence = healingConf;
+				currentConfidence += healingConf;
 
-				if (targetSprite == currentSprite && healSelf)
+				if (targetSprite == currentSprite && healSelf) {
 					currentConfidence += 20;
+					aiSpellConf.selfHealBonus = 20;
+				}
 
 				// Only add the base confidence if we have found someone to heal
 				currentConfidence += baseConfidence;
@@ -154,6 +163,8 @@ public class ClericAI extends CasterAI
 
 		// Subtract the mp cost of the spell
 		currentConfidence -= cost;
+		
+		aiSpellConf.mpCost = cost;
 
 		Log.debug(" Cleric Spell confidence " + currentConfidence + " name " +
 		targetSprite.getName() + " " + targetSprite.getUniqueEnemyId() + " spell " + spell.getName() + " level " + spellLevel);
@@ -162,91 +173,10 @@ public class ClericAI extends CasterAI
 		mostConfident = checkForMaxConfidence(mostConfident, currentConfidence, spell, knownSpell, spellLevel, targetsInArea, false, true);
 	}
 
-	private void handleDamagingSpell(SpellDefinition spell, KnownSpell knownSpell, int spellLevel, int tileWidth, int tileHeight, CombatSprite currentSprite,
-			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, int distance)
-	{
-		boolean willKill = false;
-		int currentConfidence = 0;
-		int area = spell.getArea()[spellLevel - 1];
-		ArrayList<CombatSprite> targetsInArea;
-		if (area > 1 || area == AttackableSpace.AREA_ALL_INDICATOR)
-		{
-			int killed = 0;
-
-			// If there are multiple targets then get the total percent damage done and then divide it by the area amount
-			// this will hopefully prevent wizards from casting higher level spells then they need to
-			if (area != AttackableSpace.AREA_ALL_INDICATOR) {
-				targetsInArea = getNearbySprites(stateInfo, (currentSprite.isHero() ? !spell.isTargetsEnemy() : spell.isTargetsEnemy()),
-						tileWidth, tileHeight,
-						new Point(targetSprite.getTileX(), targetSprite.getTileY()), spell.getArea()[spellLevel - 1] - 1,
-							currentSprite);
-			// If this is area all then just add all of the correct targets
-			} else {
-				targetsInArea = new ArrayList<>();
-				boolean targetHero = false;
-				if (spell.isTargetsEnemy())
-					targetHero = !currentSprite.isHero();
-				for (CombatSprite cs : stateInfo.getCombatSprites())
-				{
-					if (targetHero == cs.isHero())
-					{
-						targetsInArea.add(cs);
-					}
-				}
-			}
-
-			for (CombatSprite ts : targetsInArea)
-			{
-				if (ts.getCurrentHP() + spell.getEffectiveDamage(currentSprite, ts, spellLevel - 1) <= 0)
-				{
-					killed++;
-					willKill = true;
-				}
-				else
-				{
-					currentConfidence += Math.min(30, (int)(-30.0 * spell.getEffectiveDamage(currentSprite, ts, spellLevel - 1) / ts.getMaxHP()));
-				}
-
-			}
-
-			if (area != AttackableSpace.AREA_ALL_INDICATOR)
-				currentConfidence /= area;
-			else
-				currentConfidence /= targetsInArea.size();
-
-			// Add a confidence equal to the amount killed + 50
-			currentConfidence += killed * 50;
-		}
-		else
-		{
-
-			if (targetSprite.getCurrentHP() + spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1) <= 0)
-			{
-				currentConfidence += 50;
-				willKill = true;
-			}
-			else
-				currentConfidence += Math.min(30, (int)(-30.0 * spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1) / targetSprite.getMaxHP()));
-			targetsInArea = null;
-		}
-
-		currentConfidence += baseConfidence;
-
-		// Subtract the mp cost of the spell
-		currentConfidence -= cost;
-
-		currentConfidence += distance - 1;
-
-		Log.debug("Cleric Spell confidence " + currentConfidence + " name " + targetSprite.getName() + " " + targetSprite.getUniqueEnemyId() + " spell " + spell.getName() + " level " + spellLevel);
-
-		// Check to see if this is the most confident
-		mostConfident = checkForMaxConfidence(mostConfident, currentConfidence, spell, knownSpell, spellLevel, targetsInArea, willKill, false);
-	}
-
 	@Override
 	protected int determineBaseConfidence(CombatSprite currentSprite,
 			CombatSprite targetSprite, int tileWidth, int tileHeight,
-			Point attackPoint, StateInfo stateInfo)
+			Point attackPoint, StateInfo stateInfo, AIConfidence aiConf)
 	{
 		/*
 		int damage = 0;
@@ -255,11 +185,14 @@ public class ClericAI extends CasterAI
 			*/
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
-		int currentConfidence = 5 +
-				getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5 -
-				getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
-				// Adding the attackers damage to this person causes us to flee way to much
-		 		// -Math.min(20, (int)(20.0 * damage / currentSprite.getMaxHP()));
+		int currentConfidence = 5;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
+		currentConfidence += nearbyAlly - nearbyEnemy;
+		aiConf.allyInfluence = nearbyAlly;
+		aiConf.enemyInfluence = nearbyEnemy;
+		// Adding the attackers damage to this person causes us to flee way to much
+ 		// -Math.min(20, (int)(20.0 * damage / currentSprite.getMaxHP()));
 		return currentConfidence;
 	}
 }

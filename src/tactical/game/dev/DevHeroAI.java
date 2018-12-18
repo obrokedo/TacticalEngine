@@ -3,6 +3,7 @@ package tactical.game.dev;
 import java.awt.Point;
 
 import tactical.engine.state.StateInfo;
+import tactical.game.ai.AIConfidence;
 import tactical.game.ai.ClericAI;
 import tactical.game.sprite.CombatSprite;
 
@@ -16,7 +17,7 @@ public class DevHeroAI extends ClericAI {
 	@Override
 	protected int determineBaseConfidence(CombatSprite currentSprite,
 			CombatSprite targetSprite, int tileWidth, int tileHeight,
-			Point attackPoint, StateInfo stateInfo)
+			Point attackPoint, StateInfo stateInfo, AIConfidence aiConf)
 	{
 		/*
 		int damage = 0;

@@ -173,9 +173,10 @@ public class ClientProfile implements Serializable
 			// these are the heroes that the force will initially contain
 			for (String heroName : TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getStartingHeroIds()) {
 				addHero(HeroResource.getHero(heroName));			
-			}
-			applyDevParams(fcrm);
+			}			
 		}
+		
+		applyDevParams(fcrm);
 	}
 	
 	private void applyDevParams(ResourceManager fcrm)

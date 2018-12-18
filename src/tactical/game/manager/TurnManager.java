@@ -1,10 +1,19 @@
 package tactical.game.manager;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
@@ -23,6 +32,7 @@ import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.TurnActionsMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.Range;
+import tactical.game.ai.AIConfidence;
 import tactical.game.battle.BattleEffect;
 import tactical.game.battle.BattleResults;
 import tactical.game.battle.command.BattleCommand;
@@ -54,6 +64,8 @@ import tactical.game.turnaction.MoveToTurnAction;
 import tactical.game.turnaction.PerformAttackAction;
 import tactical.game.turnaction.TurnAction;
 import tactical.game.turnaction.WaitAction;
+import tactical.game.ui.PaddedGameContainer;
+import tactical.utils.StringUtils;
 
 public class TurnManager extends Manager implements KeyboardListener
 {
@@ -99,6 +111,11 @@ public class TurnManager extends Manager implements KeyboardListener
 	// displayed at the end of the last turn, in that
 	// case do NOT show the cursor when it moves to the next character
 	private boolean cinWasDisplayed = false;
+	
+	
+	// DEBUG Variables
+	public static boolean enableAIDebug = false;
+	private List<AIConfidence> debugConfidences;
 
 	@Override
 	public void initialize() {
@@ -156,6 +173,69 @@ public class TurnManager extends Manager implements KeyboardListener
 				currentSprite.setVisible(!currentSprite.isVisible());
 			}
 		}
+		
+		if (enableAIDebug)
+			handleDebugInput(game);
+	}
+
+	protected void handleDebugInput(StateBasedGame game) {
+		if (debugConfidences != null && game.getContainer().getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+			Input input = game.getContainer().getInput();
+			int mx = (int)(input.getMouseX() / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationX()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
+			int my = (int)(input.getMouseY()  / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationY()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
+			JPanel panel = null;
+			for (AIConfidence aic : debugConfidences) {
+				if (aic.attackPoint != null && aic.attackPoint.x == mx && aic.attackPoint.y == my) {
+					if (panel == null) {
+						panel = new JPanel();
+						panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+						
+						String approach = null;
+						/*
+						 *  public final static int APPROACH_REACTIVE = 0;
+							public final static int APPROACH_KAMIKAZEE = 1;
+							public final static int APPROACH_HESITANT = 2;
+							public final static int APPROACH_FOLLOW = 3;
+							public final static int APPROACH_MOVE_TO_POINT = 4;
+							public final static int APPROACH_TARGET = 5;
+						 */
+						switch (currentSprite.getAi().getApproachType()) {
+							case 0:
+								approach = "Reactive";
+								break;
+							case 1:
+								approach = "Kamikazee";
+								break;
+							case 2:
+								approach = "Hesitant";
+								break;
+							case 3:
+								approach = "Follow";
+								break;
+							case 4:
+								approach = "Move to point";
+								break;
+							case 5:
+								approach = "Approach target";
+								break;
+						}
+						panel.add(new JLabel("Approach: " + approach));
+					}
+					JLabel label = new JLabel("<html><body style='width: 600px'>" + aic.toString() + "</body></html>");
+					panel.add(label);					
+				}
+			}
+			
+			if (panel != null) {
+				JFrame debugFrame = new JFrame("AI Debug");
+				debugFrame.setContentPane(panel);
+				debugFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				debugFrame.setMinimumSize(new Dimension(600, 400));
+				debugFrame.pack();
+				debugFrame.setVisible(true);
+				debugFrame.toFront();
+			}
+		}
 	}
 
 	public void render(Graphics graphics)
@@ -164,6 +244,10 @@ public class TurnManager extends Manager implements KeyboardListener
 		if (displayMoveable)
 			ms.renderMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);
 
+		if (enableAIDebug) {
+			renderDebugConfidences(graphics);
+		}
+		
 		if (displayCursor)
 		{
 			cursorImage.draw(cursor.getX() - stateInfo.getCamera().getLocationX(),
@@ -174,6 +258,45 @@ public class TurnManager extends Manager implements KeyboardListener
 					cursor.getY() - stateInfo.getCamera().getLocationY(),
 						stateInfo.getTileWidth() - 1, stateInfo.getTileHeight() - 1);
 						*/
+		}
+	}
+	
+	private void renderDebugConfidences(Graphics graphics) {
+		if (debugConfidences != null && currentSprite != null) {		
+			Hashtable<java.awt.Point, Integer> amtPerSpace = new Hashtable<>();
+			for (AIConfidence aic : debugConfidences) {
+				int amt = 0;
+				
+				if (aic.attackPoint != null) {
+					graphics.setColor(Color.green);
+					float x = aic.attackPoint.x * stateInfo.getCurrentMap().getTileEffectiveWidth() - 
+							stateInfo.getCamera().getLocationX();
+					float y = aic.attackPoint.y * stateInfo.getCurrentMap().getTileEffectiveHeight() - 
+							stateInfo.getCamera().getLocationY();
+					graphics.drawRect(x, y, stateInfo.getCurrentMap().getTileEffectiveWidth(), stateInfo.getCurrentMap().getTileEffectiveHeight());
+					graphics.setColor(Color.white);
+										
+					if (amtPerSpace.containsKey(aic.attackPoint)) {
+						amt = amtPerSpace.get(aic.attackPoint);
+					}
+					
+					if (aic.confidence != Integer.MIN_VALUE)
+						StringUtils.drawString("" + aic.confidence, (int) x + (10 * (amt / 4)), (int) y + (amt % 4) * 6, graphics);
+					else
+						StringUtils.drawString("L", (int) x + (10 * (amt / 4)), (int) y + (amt % 4) * 6, graphics);
+					if (aic.target != null) {
+						graphics.setColor(Color.orange);
+						float tx = aic.target.getLocX() -  stateInfo.getCamera().getLocationX();
+						float ty = aic.target.getLocY() -  stateInfo.getCamera().getLocationY();
+						graphics.drawRect(tx, ty, 
+								stateInfo.getCurrentMap().getTileEffectiveWidth(), stateInfo.getCurrentMap().getTileEffectiveHeight());
+						graphics.drawRect(tx + 1, ty + 1, 
+								stateInfo.getCurrentMap().getTileEffectiveWidth() - 2, stateInfo.getCurrentMap().getTileEffectiveHeight() - 2);
+					}
+					
+					amtPerSpace.put(aic.attackPoint, new Integer(amt + 1));
+				}
+			}
 		}
 	}
 
@@ -212,6 +335,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		stateInfo.removeKeyboardListeners();
 		currentSprite = sprite;
 		stateInfo.setCurrentSprite(currentSprite);
+		debugConfidences = null;
 
 		as = null;
 		this.battleResults = null;
@@ -258,7 +382,13 @@ public class TurnManager extends Manager implements KeyboardListener
 			if (sprite.getAi() != null)
 			{
 				Log.debug("Perform AI for " + sprite.getName());
-				stateInfo.sendMessage(new TurnActionsMessage(false, sprite.getAi().performAI(stateInfo, ms, currentSprite)), true);
+				if (!TurnManager.enableAIDebug)
+					stateInfo.sendMessage(new TurnActionsMessage(false, sprite.getAi().performAI(stateInfo, ms, currentSprite)), true);
+				else {
+					debugConfidences = new ArrayList<>();
+					sprite.getAi().performAI(stateInfo, ms, currentSprite, debugConfidences);
+					stateInfo.addKeyboardListener(this);
+				}
 			}
 			// If we own this sprite then we add keyboard input listener
 			else if (ownsSprite)
@@ -562,10 +692,30 @@ public class TurnManager extends Manager implements KeyboardListener
 		}
 		return area;
 	}
+	
+	private boolean handleDebugKeyboardInput(UserInput input) {
+		if (input.isKeyDown(KeyMapping.BUTTON_3))
+		{
+			stateInfo.removeKeyboardListeners();
+			stateInfo.sendMessage(new TurnActionsMessage(false, currentSprite.getAi().performAI(stateInfo, ms, currentSprite)), true);
+			return true;
+		}
+		else if (input.isKeyDown(KeyMapping.BUTTON_2))
+		{
+			debugConfidences = new ArrayList<>();
+			currentSprite.getAi().performAI(stateInfo, ms, currentSprite, debugConfidences);
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public boolean handleKeyboardInput(UserInput input, StateInfo stateInfo)
 	{
+		if (enableAIDebug && debugConfidences != null) {
+			return handleDebugKeyboardInput(input);
+		}
+		
 		if (turnActions.size() == 0)
 		{
 			boolean moved = false;

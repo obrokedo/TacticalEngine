@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import javax.swing.JOptionPane;
 
@@ -14,6 +16,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
@@ -25,6 +28,8 @@ import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
 import tactical.game.dev.DevParams;
 import tactical.game.exception.BadResourceException;
+import tactical.game.hudmenu.Panel;
+import tactical.game.menu.Menu.MenuUpdate;
 import tactical.game.resource.SpellResource;
 import tactical.game.ui.Button;
 import tactical.game.ui.ListUI;
@@ -39,7 +44,6 @@ import tactical.loading.ResourceManager;
 import tactical.loading.TilesetParser;
 import tactical.map.Map;
 import tactical.map.MapObject;
-import tactical.utils.FrontOptionPane;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.PlannerFrame;
@@ -67,6 +71,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	protected int totalResources = 0;
 	private ResourceManager mainGameFCRM = null;
 	protected BulkLoader mainGameBulkLoader = null;
+	protected AlertPanel alertPanel = null;
 
 
 	public DevelMenuState(PersistentStateInfo persistentStateInfo) {
@@ -208,8 +213,8 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			g.resetTransform();
 		}
 		
-		if (initialized) {
-			
+		if (alertPanel != null) {			
+			alertPanel.render(g);
 		}
 	}
 
@@ -217,6 +222,12 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	public void update(GameContainer container, StateBasedGame game, int delta)
 			throws SlickException
 	{
+		if (alertPanel != null) {
+			if (alertPanel.update(container.getInput()) == MenuUpdate.MENU_CLOSE)
+				alertPanel = null;
+			return;
+		}
+		
 		int x = container.getInput().getMouseX();
 		int y = container.getInput().getMouseY();
 
@@ -241,7 +252,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		}
 		
 		if (initialized)
-			mainGameBulkLoader.update();
+			mainGameBulkLoader.update();		
 	}
 	
 	@Override
@@ -263,6 +274,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				if (!plannerFrame.isVisible()) {
 					plannerFrame.setVisible(true);
 					plannerFrame.requestFocus();
+					plannerFrame.toFront();
 				}
 			}
 	
@@ -303,10 +315,9 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					((PaddedGameContainer) this.gc).toggleFullScreen();
 				} catch (SlickException e) {
 					Log.error("Unable to toggle fullscreen mode: " + e.getMessage());
-					JOptionPane.showMessageDialog(null, "Unable to toggle fullscreen mode: " + e.getMessage());
+					alertPanel = new AlertPanel("Unable to toggle fullscreen mode: " + e.getMessage());
 				}
 				updateDelta = 200;
-				System.out.println("TOGGLE");
 			}
 			
 			if (key == Input.KEY_F8)
@@ -382,33 +393,17 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 						
 						startCinematic(textSelector.getSelectedResource(), iId);
 					} catch (NumberFormatException e) {
-						JOptionPane.showMessageDialog(null, "The value must be a number");
+						alertPanel = new AlertPanel("The value must be a number: " + e.getMessage());
 					}
 					
 				}
 				if (loadBattleButton.handleUserInput(x, y, true)) {
 					if (new File(textSelector.getSelectedResource()).exists()) {									
-						if (FrontOptionPane.showConfirmDialog(
-								"A battle configuration was found for this battle, would you like to apply it?", 
-								"Load Configuration")
-								== JOptionPane.YES_OPTION) {
-							DevParams devParams = DevParams.parseDevParams(textSelector.getSelectedResource());
-							if (devParams != null)
-								persistentStateInfo.getClientProfile().setDevParams(devParams);
-						}
+						alertPanel = new AlertPanel("A battle configuration was found for this battle, would you \\n like to apply it?",
+								()-> setDevParamStartBattle(), ()-> startBattle());
 					}
-					
-					// This whole line of logic is somewhat terrifying... We set the resource manager
-					// of the psi to the one that the bulkloader is using it is NOT set in the
-					// state info at this point. It will be set in the state info and PSI (again)
-					// once the town/cin/battle state loads. What's more concerning is that we manually
-					// set the loading states bulk loader here and it we will use the same bulk loader
-					// for the rest of the game after we get past the menu state. Ideally it would be nice
-					// to pass the bulkloader along on these load* calls (below), but there currently isn't
-					// a use case for that now
-					persistentStateInfo.setResourceManager(mainGameFCRM);
-					((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
-					start(LoadTypeEnum.BATTLE, textSelector.getSelectedResource(), entranceSelector.getSelectedResource());
+					else					
+						startBattle();
 				}
 				
 				this.textSelector.handleInput(x, y, true);
@@ -416,6 +411,29 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					entranceSelector.handleInput(x, y, true);
 			}
 		}
+	}
+	
+	private boolean setDevParamStartBattle() {
+		DevParams devParams = DevParams.parseDevParams(textSelector.getSelectedResource());
+		if (devParams != null)
+			persistentStateInfo.getClientProfile().setDevParams(devParams);
+		
+		return startBattle();
+	}
+	
+	private boolean startBattle() {
+		// This whole line of logic is somewhat terrifying... We set the resource manager
+		// of the psi to the one that the bulkloader is using it is NOT set in the
+		// state info at this point. It will be set in the state info and PSI (again)
+		// once the town/cin/battle state loads. What's more concerning is that we manually
+		// set the loading states bulk loader here and it we will use the same bulk loader
+		// for the rest of the game after we get past the menu state. Ideally it would be nice
+		// to pass the bulkloader along on these load* calls (below), but there currently isn't
+		// a use case for that now
+		persistentStateInfo.setResourceManager(mainGameFCRM);
+		((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
+		start(LoadTypeEnum.BATTLE, textSelector.getSelectedResource(), entranceSelector.getSelectedResource());
+		return false;
 	}
 
 
@@ -441,14 +459,14 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				ArrayList<TagArea> tagArea = XMLParser.process(Collections.singletonList(firstLine));
 				currentMap = tagArea.get(0).getAttribute("file");
 			} else {
-				JOptionPane.showMessageDialog(null, "The selected map data has not had a map associated with it yet.\n Load the mapdata in the planner to assign a map");
+				alertPanel = new AlertPanel("The selected map data has not had a map associated with it yet.\\n Load the mapdata in the planner to assign a map");
 				return false;
 			}
 		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(null, "The selected file could not be found");
+			alertPanel = new AlertPanel("The selected file could not be found: " + e.getMessage());
 			return false;
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "The selected file could not be read or is improperly formatted: " + e.getMessage());
+			alertPanel = new AlertPanel("The selected file could not be read or is improperly formatted: " + e.getMessage());
 			return false;
 		}
 		
@@ -469,11 +487,66 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 
 		} catch (Throwable t) {
 			t.printStackTrace();
-			JOptionPane.showMessageDialog(null, "The selected map " + currentMap + " contains errors and may not be loaded: " + t.getMessage());
+			alertPanel = new AlertPanel("The selected map " + currentMap + " contains errors \\n and may not be loaded: " + t.getMessage());
 			entranceSelector = null;
 		}
 		
 		loadCinButton.setEnabled(false);
 		return false;
 	}	
+	
+	private class AlertPanel {
+
+		private List<Button> buttons = new ArrayList<Button>();
+		private List<BooleanSupplier> reactions = new ArrayList<>();
+		private String[] text;
+		
+		public AlertPanel(String text) {
+			this.text = text.split("\\\\n");
+			Button b1 = new Button(300, 270, 80, 20, "Ok");
+			buttons.add(b1);
+			reactions.add(null);
+			// b1 = new Button(400, 270, 80, 20, "Ok");
+			// buttons.add(b1);			
+		}
+		
+		public AlertPanel(String text, BooleanSupplier bs1, BooleanSupplier bs2) {
+			this.text = text.split("\\\\n");
+			Button b1 = new Button(300, 270, 80, 20, "Yes");
+			buttons.add(b1);
+			reactions.add(bs1);
+			b1 = new Button(400, 270, 80, 20, "No");
+			buttons.add(b1);
+			reactions.add(bs2);
+		}
+
+		public void render(Graphics graphics) {
+			graphics.setColor(Color.white);
+			Panel.fillRect(new Rectangle(270, 200, 400, 100), graphics);
+			graphics.setColor(Color.blue);
+			Panel.drawRect(new Rectangle(270, 200, 400, 100), graphics);
+			graphics.setColor(Color.black);
+			for (int i = 0; i < text.length; i++) {
+				graphics.drawString(text[i], 280, 210 + 25 * i);
+			}			
+			for (Button b : buttons)
+				b.render(graphics);
+		}
+
+		public MenuUpdate update(Input inp) {
+			boolean pressed = inp.isMousePressed(Input.MOUSE_LEFT_BUTTON);
+			for (int i = 0; i < buttons.size(); i++) {
+				Button b = buttons.get(i);
+				if (b.handleUserInput(inp.getMouseX(), inp.getMouseY(), pressed))
+				{
+					if (reactions.get(i) != null) {
+						reactions.get(i).getAsBoolean();
+					}
+					
+					return MenuUpdate.MENU_CLOSE;
+				}
+			}
+			return MenuUpdate.MENU_NO_ACTION;
+		}		
+	}
 }
