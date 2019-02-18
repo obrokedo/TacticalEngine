@@ -89,6 +89,10 @@ public class CinematicState extends LoadableGameState
 	public void leave(GameContainer container, StateBasedGame game)
 			throws SlickException {
 		super.leave(container, game);
+		cleanupState();
+	}
+	
+	public void cleanupState() {
 		stateInfo.setInitialized(false);
 		stateInfo.getResourceManager().reinitialize();
 	}
@@ -160,5 +164,10 @@ public class CinematicState extends LoadableGameState
 	protected void pauseMenuClosed() {
 		super.pauseMenuClosed();
 		stateInfo.sendMessage(MessageType.RESUME_MUSIC);
+	}
+
+	@Override
+	public void exceptionInState() {
+		cleanupState();
 	}
 }

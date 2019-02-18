@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.newdawn.slick.util.Log;
 
@@ -83,6 +84,16 @@ public class ClientProfile implements Serializable
 			hs.addAll(networkHeroes);
 		Collections.sort(hs, new HeroComparator());
 		return hs;
+	}
+	
+	public void removeHeroById(int heroId) {
+		Iterator<CombatSprite> heroItr = heroes.iterator(); 
+		while (heroItr.hasNext()) {
+			CombatSprite hero = heroItr.next();
+			if (hero.getId() == heroId) {
+				heroItr.remove();
+			}
+		}
 	}
 	
 	public ArrayList<CombatSprite> getHeroesInParty()
@@ -218,6 +229,8 @@ public class ClientProfile implements Serializable
 				}
 			}
 		}
+		
+		devParams = null;
 	}
 
 	public String getName() {

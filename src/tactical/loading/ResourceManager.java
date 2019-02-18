@@ -361,19 +361,19 @@ public class ResourceManager {
     }
 
 	public Image getImage(String image) {
-		if (!images.containsKey(image))
+		if (image == null || !images.containsKey(image))
 			throw new BadResourceException("Unable to find image: " + image);
 		return images.get(image);
 	}
 
 	public SpriteSheet getSpriteSheet(String name) {
-		if (!spriteSheets.containsKey(name))
+		if (name == null || !spriteSheets.containsKey(name))
 			throw new BadResourceException("Unable to find  sprite sheet: " + name);
 		return spriteSheets.get(name);
 	}
 
 	public SpriteAnims getSpriteAnimation(String spriteAnim) {
-		if (!spriteAnimations.containsKey(spriteAnim))
+		if (spriteAnim == null || !spriteAnimations.containsKey(spriteAnim))
 			throw new BadResourceException("Unable to find animation: " + spriteAnim);
 		return spriteAnimations.get(spriteAnim);
 	}
@@ -384,14 +384,14 @@ public class ResourceManager {
 
 	public UnicodeFont getFontByName(String name)
 	{
-		if (!unicodeFonts.containsKey(name))
+		if (name == null || !unicodeFonts.containsKey(name))
 			throw new BadResourceException("Unable to find font: " + name);
 		return unicodeFonts.get(name);
 	}
 
 	public Sound getSoundByName(String name)
 	{
-		if (!soundByTitle.containsKey(name))
+		if (name == null || !soundByTitle.containsKey(name))
 			throw new BadResourceException("Unable to find sound: " + name);
 		return soundByTitle.get(name);
 	}

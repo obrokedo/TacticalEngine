@@ -125,12 +125,16 @@ public class BattleState extends LoadableGameState
 			throws SlickException {
 		if (!stateInfo.isShowAttackCinematic())
 		{
-			stateInfo.getResourceManager().reinitialize();
-			stateInfo.setInitialized(false);
-			stateInfo.getInput().clear();
+			cleanupState();
 		}
 
 		super.leave(container, game);
+	}
+
+	protected void cleanupState() {
+		stateInfo.getResourceManager().reinitialize();
+		stateInfo.setInitialized(false);
+		stateInfo.getInput().clear();
 	}
 
 	@Override
@@ -143,6 +147,7 @@ public class BattleState extends LoadableGameState
 			tileMapRenderer.render(xOffset, yOffset, stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer());
 			turnManager.render(g);
 			spriteRenderer.render(g);
+			stateInfo.getCurrentSprite().render(stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer(), stateInfo.getTileHeight());
 			cinematicManager.render(g);
 			tileMapRenderer.renderForeground(xOffset, yOffset, stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer());
 			turnManager.renderCursor(g);
@@ -207,5 +212,10 @@ public class BattleState extends LoadableGameState
 	protected void pauseMenuClosed() {
 		stateInfo.getCamera().centerOnSprite(stateInfo.getCurrentSprite(), stateInfo.getCurrentMap());
 		stateInfo.sendMessage(MessageType.RESUME_MUSIC);
+	}
+
+	@Override
+	public void exceptionInState() {
+		cleanupState();
 	}
 }

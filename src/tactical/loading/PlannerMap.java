@@ -8,9 +8,11 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import tactical.map.Map;
+import tactical.map.MapLayer;
 import tactical.map.MapObject;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.PlannerContainer;
@@ -385,4 +387,26 @@ public class PlannerMap extends Map {
 			} catch (NumberFormatException e) {}
 		}
 	}
+	
+	public boolean hasMoveableLayer() {
+		return moveableLayer != null;
+	}
+
+	@Override
+	public void addLayer(String layerName, MapLayer layer) {
+		if (getMapLayerAmount() <= 3) {
+			if (!layerName.startsWith("BG") && !layerName.startsWith("MG") &&
+					!layerName.startsWith("Back") && !layerName.startsWith("Mid") && 
+					!layerName.startsWith("bg") && !layerName.startsWith("mg") && 
+					!layerName.startsWith("back") && !layerName.startsWith("mid")) {
+				JOptionPane.showMessageDialog(null, "The loaded map contains strangely named map layers. Keep in mind that the four bottom layers\n"
+						+ "on the map will be rendered behind sprites and any additional layers will be rendered above sprites.\n"
+						+ "Expected first four layers BG,BG Shadow,MG Shadow.\n"
+						+ "Found layer: " + layerName + " this layer will be rendered BELOW sprites");
+			}
+		}
+		super.addLayer(layerName, layer);
+	}
+	
+	
 }

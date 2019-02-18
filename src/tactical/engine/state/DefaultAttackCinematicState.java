@@ -679,4 +679,10 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		if (this.music != null)
 			this.music.resume();
 	}
+
+	@Override
+	public void exceptionInState() {
+		// TODO Auto-generated method stub
+		
+	}
 }

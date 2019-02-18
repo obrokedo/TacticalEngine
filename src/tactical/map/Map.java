@@ -49,7 +49,7 @@ public class Map
 	 */
 	private String name;
 	private ArrayList<MapLayer> mapLayer = new ArrayList<>();
-	private MapLayer moveableLayer;
+	protected MapLayer moveableLayer;
 	private MapLayer roofLayer;
 	protected int tileWidth, tileHeight;
 	protected ArrayList<TileSet> tileSets = new ArrayList<TileSet>();
@@ -209,7 +209,7 @@ public class Map
 		this.mapObjects.add(mo);
 	}
 
-	public void addLayer(MapLayer layer)
+	public void addLayer(String layerName, MapLayer layer)
 	{
 		mapLayer.add(layer);
 	}
@@ -441,6 +441,8 @@ public class Map
 			// System.out.println("Bounds: " + spriteSheet.getHorizontalCount() + " " + spriteSheet.getVerticalCount());
 			//spriteSheet.renderInUse(x, y, 
 				//	(index - startIndex) % ssWidth, (index - startIndex) / ssWidth);
+			if ((index - startIndex) / ssWidth > 100000)
+				System.out.println();
 			spriteSheet.getSubImage((index - startIndex) % ssWidth, (index - startIndex) / ssWidth).
 				drawEmbedded(x, y, tileWidth, tileHeight);
 		}
@@ -665,7 +667,7 @@ public class Map
 	}
 
 	public int getMapLayerAmount() {
-		return mapLayer.size();
+		return (mapLayer == null ? 0 : mapLayer.size());
 	}
 
 	public float getTileRatio() {

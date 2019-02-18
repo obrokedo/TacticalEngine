@@ -350,13 +350,7 @@ public class Trigger
 
 		@Override
 		public boolean perform(StateInfo stateInfo) {
-			Iterator<CombatSprite> heroItr = stateInfo.getPersistentStateInfo().getClientProfile().getHeroes().iterator(); 
-			while (heroItr.hasNext()) {
-				CombatSprite hero = heroItr.next();
-				if (hero.getId() == heroId) {
-					heroItr.remove();
-				}
-			}
+			stateInfo.getPersistentStateInfo().getClientProfile().removeHeroById(heroId);
 			return true;
 		}
 	}

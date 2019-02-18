@@ -129,6 +129,8 @@ public abstract class LoadableGameState extends BasicGameState
 	
 	protected abstract Menu getPauseMenu();
 	
+	public abstract void exceptionInState();
+	
 	protected void pauseMenuClosed() {
 		
 	}

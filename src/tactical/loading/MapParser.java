@@ -149,7 +149,7 @@ public class MapParser
 					}
 					else
 					{
-						map.addLayer(layer);
+						map.addLayer(childArea.getParams().get("name"), layer);
 					}
 				}
 				catch (BadMapException ex)

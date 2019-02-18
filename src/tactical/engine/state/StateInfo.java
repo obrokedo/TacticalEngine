@@ -70,13 +70,15 @@ public class StateInfo
 	private CombatSprite currentSprite;
 
 	private long inputDelay = 0;
+	
+
+	private boolean showAttackCinematic = false;
 
 	/**************************************************/
 	/* These values are retrieved from the persistent */
 	/* state info									  */
 	/**************************************************/
 	private ArrayList<CombatSprite> heroes;
-	private boolean showAttackCinematic = false;
 
 	public StateInfo(PersistentStateInfo psi, boolean isCombat, boolean isCinematic)
 	{
@@ -93,7 +95,7 @@ public class StateInfo
 		this.messagesToProcess = new ArrayList<Message>();
 		this.newMessages = new ArrayList<Message>();
 		this.fcInput = new UserInput();
-		this.heroes = new ArrayList<>();
+		this.heroes = new ArrayList<>();		
 	}
 
 	/************************/
@@ -106,6 +108,7 @@ public class StateInfo
 		psi.setCurrentStateInfo(this);
 
 		this.initialized = false;
+		this.showAttackCinematic = false;
 		setWaiting();
 		
 		psi.getClientProfile().initialize(getResourceManager());

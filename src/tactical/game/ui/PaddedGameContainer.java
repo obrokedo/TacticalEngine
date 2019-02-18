@@ -13,6 +13,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
+import tactical.loading.LoadableGameState;
 
 public class PaddedGameContainer extends AppGameContainer
 {
@@ -51,6 +52,7 @@ public class PaddedGameContainer extends AppGameContainer
 			try {
 				updateAndRender(delta);
 			} catch (Throwable e) {
+				((LoadableGameState) ((TacticalGame) game).getCurrentState()).exceptionInState();
 				((TacticalGame) game).enterState(TacticalGame.STATE_GAME_MENU_DEVEL);
 				JOptionPane.showMessageDialog(null, "An error occurred during execution " + e.getMessage());
 				return;

@@ -352,5 +352,13 @@ public class MenuState extends LoadableGameState
 		return null;
 	}
 
+
+
+	@Override
+	public void exceptionInState() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 }

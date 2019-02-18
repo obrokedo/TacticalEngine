@@ -312,6 +312,12 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 	protected Menu getPauseMenu() {
 		return null;
 	}
+
+	@Override
+	public void exceptionInState() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

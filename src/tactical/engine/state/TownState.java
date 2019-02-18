@@ -125,11 +125,15 @@ public class TownState extends LoadableGameState
 	public void leave(GameContainer container, StateBasedGame game)
 			throws SlickException {
 
+		cleanupState();
+
+		super.leave(container, game);
+	}
+
+	protected void cleanupState() {
 		stateInfo.getResourceManager().reinitialize();
 		stateInfo.setInitialized(false);
 		stateInfo.getInput().clear();
-
-		super.leave(container, game);
 	}
 
 	@Override
@@ -297,5 +301,10 @@ public class TownState extends LoadableGameState
 	protected void pauseMenuClosed() {
 		super.pauseMenuClosed();
 		stateInfo.sendMessage(MessageType.RESUME_MUSIC);
+	}
+
+	@Override
+	public void exceptionInState() {
+		cleanupState();
 	}
 }

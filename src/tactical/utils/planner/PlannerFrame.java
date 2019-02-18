@@ -592,6 +592,17 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 		try {
 			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), plannerMap, new PlannerTilesetParser(), null);
+			
+			if (plannerMap.getMapLayerAmount() < 4) {
+				JOptionPane.showMessageDialog(this, "The selected map has too few layers to be compatible with the engine.\n "
+						+ "Add at least 5 layers 'BG, BG Shadow, MG, MG Shadow, Walkable' to prevent errors.");
+			}
+			
+			if (!plannerMap.hasMoveableLayer()) {
+				JOptionPane.showMessageDialog(this, "The selected map contains no 'walkable' layer definition and is not compatible with the engine.\n "
+						+ "Add a 'Walkable' layer to prevent errors");
+			}
+			
 			for (MapObject mo : plannerMap.getMapObjects())
 			{
 				if (mo.getName() != null)

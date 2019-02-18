@@ -181,4 +181,10 @@ public class CreditsState extends LoadableGameState{
 		
 		drawMusicContributions(y - scrollY, g);
 	}
+
+	@Override
+	public void exceptionInState() {
+		// TODO Auto-generated method stub
+		
+	}
 }

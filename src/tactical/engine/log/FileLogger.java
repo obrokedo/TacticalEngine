@@ -5,11 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import org.newdawn.slick.util.DefaultLogSystem;
 
@@ -32,8 +34,8 @@ public class FileLogger extends DefaultLogSystem
 	@Override
 	public void error(Throwable e) {
 		super.error(e);
-
-		JOptionPane.showMessageDialog(null, "An error occurred during execution: " + e.getMessage());
+		
+		displayError(e);
 
 		try {
 			PrintWriter pw = new PrintWriter(new FileOutputStream(
@@ -46,6 +48,22 @@ public class FileLogger extends DefaultLogSystem
 			JOptionPane.showMessageDialog(null, "An error occurred trying to write to the error log:" + e.getMessage(), "Error writing to error log", JOptionPane.ERROR_MESSAGE);
 		}
 		writeError("-------");
+	}
+	
+	private void displayError(Throwable ex) {
+		JTextArea jta = new JTextArea(5, 50);
+		StringWriter sw = new StringWriter();
+		sw.append(ex.getMessage() + "\n");
+		
+		sw.append("---------- Stack trace ----------\n");
+		sw.append(ex.toString() + "\n");
+		for (StackTraceElement e : ex.getStackTrace())
+			sw.append(e.toString() + "\n");
+		jta.setText(sw.toString());
+		jta.setEditable(false);
+		jta.setWrapStyleWord(true);
+		jta.setLineWrap(true);
+		JOptionPane.showMessageDialog(null, jta, "An error has occurred", JOptionPane.ERROR_MESSAGE);	
 	}
 
 	@Override

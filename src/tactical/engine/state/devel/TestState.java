@@ -128,4 +128,10 @@ public class TestState extends LoadableGameState
 		return null;
 	}
 
+	@Override
+	public void exceptionInState() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

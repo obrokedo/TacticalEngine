@@ -218,7 +218,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 			t.printStackTrace();
 			System.exit(0);
 		}
-	}
+	}	
 
 	/**
 	 * Initialize all of the game states. This is called automatically
