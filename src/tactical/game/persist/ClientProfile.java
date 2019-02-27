@@ -230,6 +230,7 @@ public class ClientProfile implements Serializable
 			}
 		}
 		
+		System.out.println("Removing dev params");
 		devParams = null;
 	}
 

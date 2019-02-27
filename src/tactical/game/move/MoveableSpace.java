@@ -49,7 +49,8 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 	private String spriteMovementType;
 	int mapWidth, mapHeight;
 	private static final int UNMOVEABLE_TILE = 99;
-	private final Color MOVEABLE_COLOR = new Color(0, 0, 255, 40);
+	private boolean oscillateUp = true;
+	private final Color MOVEABLE_COLOR = new Color(128, 128, 255, 40);
 	private boolean checkMoveable = true;
 	private ArrayList<Point> spritePoints = new ArrayList<Point>();
 
@@ -150,6 +151,19 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 
 	public void renderMoveable(PaddedGameContainer gc, Camera camera, Graphics graphics)
 	{
+		if (oscillateUp) {
+			MOVEABLE_COLOR.a += (1.5 / 255.0f);
+			if (MOVEABLE_COLOR.a > (100 / 255.0f)) {
+				oscillateUp = false;
+			}
+		}
+		else {
+			MOVEABLE_COLOR.a -= (1.5 / 255.0f);
+			if (MOVEABLE_COLOR.a < (40 / 255.0f)) {
+				oscillateUp = true;
+			}
+		}
+			
 		renderMoveable(gc, camera, graphics, false);
 	}
 	
@@ -179,11 +193,11 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 						
 						graphics.fillRect((i + topX) * tileWidth - camX,
 								(j + topY) * tileHeight - camY,
-								tileWidth - 1, tileHeight - 1);												
+								tileWidth, tileHeight);												
 					} else if (!showOnlyForeground && isKeyTileEmpty) {
 						graphics.fillRect((i + topX) * tileWidth - camX,
 								(j + topY) * tileHeight - camY,
-								tileWidth - 1, tileHeight - 1);	
+								tileWidth, tileHeight);	
 					}
 				}
 			

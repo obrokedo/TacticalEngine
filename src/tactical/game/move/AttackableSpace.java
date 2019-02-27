@@ -101,6 +101,8 @@ public class AttackableSpace implements KeyboardListener, MouseListener
 		this.setTargetSprite(currentSprite, stateInfo);
 		this.targetsInRange.clear();
 		this.targetsInRange.add(currentSprite);
+		targetSelectX = -1;
+		targetSelectY = -1;
 	}
 
 	public AttackableSpace(StateInfo stateInfo, CombatSprite currentSprite, boolean targetsHero,

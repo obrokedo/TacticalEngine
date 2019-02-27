@@ -91,7 +91,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 
 	public static boolean TEST_MODE_ENABLED = false; //true;
 
-	public static boolean DEV_MODE_ENABLED = true;
+	public static boolean DEV_MODE_ENABLED = false;
 	
 	public static boolean BATTLE_MODE_OPTIMIZE = false;
 	
@@ -118,6 +118,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 			if (gameArgs[0].equalsIgnoreCase("injar")) {
 				System.out.println("Running in jar");
 				LoadingState.inJar = true;
+				DEV_MODE_ENABLED = false;
 			} else if (gameArgs[0].equalsIgnoreCase("planner")) {
 				plannerMode = true;
 				PlannerFrame pf = new PlannerFrame(null);

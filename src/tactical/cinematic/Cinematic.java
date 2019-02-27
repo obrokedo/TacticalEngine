@@ -274,6 +274,7 @@ public class Cinematic {
 				else
 				{
 					fadingColor.a = Math.min(1, fadingColor.a + fadeSpeed);
+					/*
 					if (fadingColor.a == 1)
 					{
 						if (fadeToBlack)
@@ -281,6 +282,7 @@ public class Cinematic {
 						else
 							fadeIn = true;
 					}
+					*/
 				}
 			}
 		}
@@ -901,5 +903,7 @@ public class Cinematic {
 		stateInfo.sendMessage(new SpriteContextMessage(MessageType.CIN_END, associated));
 	}
 	
-	
+	public Color getFadingColor() {
+		return fadingColor;
+	}
 }
