@@ -180,8 +180,7 @@ public class StateInfo
 		if (psi.isOnline())
 			sendMessage(MessageType.WAIT);
 		else
-		{
-			initialized = true;
+		{			
 			if (isCombat)
 			{
 				// If the battle initialized just restart the current turn
@@ -195,6 +194,7 @@ public class StateInfo
 					sendMessage(MessageType.NEXT_TURN);
 				}
 			}
+			initialized = true;
 		}
 	}
 

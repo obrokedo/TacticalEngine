@@ -155,7 +155,7 @@ public class MapEditorPanel implements ActionListener {
 		sidePanel.removeAll();
 		JLabel type;
 
-		if (mo.getKey() != null && mo.getKey().length() > 0)
+		if (mo.getKey() != null && mo.getKey().length() > 0 && !mo.getKey().equalsIgnoreCase("null"))
 			type = new JLabel(" " + mo.getKey().toUpperCase() + " (" + (mo.getName() == null ? "Unnamed" : mo.getName()) + ")");
 		else
 			type = new JLabel(" UNASSIGNED TYPE (" + (mo.getName() == null ? "Unnamed" : mo.getName()) + ")");
@@ -169,11 +169,11 @@ public class MapEditorPanel implements ActionListener {
 		// add the value to the panel
 		PlannerContainerDef pcdef = this.plannerFrame.getContainerDefByName("mapedit");
 		PlannerLineDef plannerLineDef = getLineDefByName(pcdef, mo.getKey());
-
-		Object[][] tableData = new Object[plannerLineDef.getPlannerValues().size()][2];
 		
 		if (plannerLineDef != null)
 		{
+			Object[][] tableData = new Object[plannerLineDef.getPlannerValues().size()][2];
+			
 			int count = 0;
 			for (PlannerValueDef val : plannerLineDef.getPlannerValues())
 			{

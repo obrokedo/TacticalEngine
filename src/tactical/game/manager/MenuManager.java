@@ -108,7 +108,8 @@ public class MenuManager extends Manager
 						stateInfo.addMenu(new SpeechMenu(speech, stateInfo));
 					else {
 						YesNoSpeech yns = (YesNoSpeech) speech;
-						stateInfo.addMenu(new YesNoMenu(speech.getMessage(), yns.getYesTrigger(), yns.getNoTrigger(), stateInfo));
+						stateInfo.addMenu(new YesNoMenu(speech.getMessage(), yns.getYesTrigger(), 
+								yns.getNoTrigger(), yns.getPortrait(stateInfo), stateInfo));
 					}
 				}
 				break;

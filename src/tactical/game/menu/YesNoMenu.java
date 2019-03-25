@@ -28,23 +28,22 @@ public class YesNoMenu extends SpeechMenu
 	private YesNoMenuRenderer renderer;
 
 	public YesNoMenu(String text, int yesTrigger, int noTrigger, StateInfo stateInfo) {
-		this(replaceLastHardstop(text), Trigger.TRIGGER_NONE, null, stateInfo, null);
+		this(text, Trigger.TRIGGER_NONE, null, stateInfo, null);
+		this.yesTrigger = yesTrigger;
+		this.noTrigger = noTrigger;
+	}
+	
+	public YesNoMenu(String text, int yesTrigger, int noTrigger, Portrait portrait, StateInfo stateInfo) {
+		this(text, Trigger.TRIGGER_NONE, portrait, stateInfo, null);
 		this.yesTrigger = yesTrigger;
 		this.noTrigger = noTrigger;
 	}
 	
 	public YesNoMenu(String text, int yesTrigger, int noTrigger, StateInfo stateInfo, boolean showGold) {
-		this(replaceLastHardstop(text), Trigger.TRIGGER_NONE, null, stateInfo, null, showGold);
+		this(text, Trigger.TRIGGER_NONE, null, stateInfo, null, showGold);
 		this.yesTrigger = yesTrigger;
 		this.noTrigger = noTrigger;
 		
-	}
-	
-	private static String replaceLastHardstop(String text) {
-		if (text.endsWith("<hardstop>")) {
-			return text.substring(0, text.length() - 10);
-		}
-		return text;
 	}
 	
 	public YesNoMenu(String text, StateInfo stateInfo, MenuListener listener) {
@@ -53,12 +52,12 @@ public class YesNoMenu extends SpeechMenu
 	
 	public YesNoMenu(String text, int triggerId,
 			Portrait portrait, StateInfo stateInfo, MenuListener listener) {
-		this(replaceLastHardstop(text), triggerId, portrait, stateInfo, listener, false);	
+		this(text, triggerId, portrait, stateInfo, listener, false);	
 	}
 
 	public YesNoMenu(String text, int triggerId,
 			Portrait portrait, StateInfo stateInfo, MenuListener listener, boolean showGold) {
-		super(text, stateInfo.getPaddedGameContainer(),triggerId, portrait, listener);
+		super(replaceLastHardstop(text), stateInfo.getPaddedGameContainer(),triggerId, portrait, listener);
 		
 		renderer = TacticalGame.ENGINE_CONFIGURATIOR.getYesNoMenuRenderer();
 		renderer.initialize(stateInfo);
@@ -69,11 +68,21 @@ public class YesNoMenu extends SpeechMenu
 			goldAmountText = new TextUI(stateInfo.getClientProfile().getGold() + "", 249, 156);
 		}
 	}	
+	
+	private static String replaceLastHardstop(String text) {
+		if (text.endsWith("<hardstop>")) {
+			return text.substring(0, text.length() - 10);
+		}
+		return text;
+	}
 
 	@Override
 	public MenuUpdate handleUserInput(UserInput input, StateInfo stateInfo) {
 		super.handleUserInput(input, stateInfo);
 		if (isDone) {
+			// This makes sure that if the user is holding down button 1 or 3
+			// to speed up text that they don't accidently make a selection before
+			// actually seeing the menu
 			if (consumeInput) {
 				input.clear();
 				consumeInput = false;

@@ -274,15 +274,11 @@ public class Cinematic {
 				else
 				{
 					fadingColor.a = Math.min(1, fadingColor.a + fadeSpeed);
-					/*
 					if (fadingColor.a == 1)
 					{
-						if (fadeToBlack)
-							fadingColor = null;
-						else
-							fadeIn = true;
-					}
-					*/
+						if (!fadeToBlack)
+							fadeIn = true;							
+					}					
 				}
 			}
 		}
@@ -743,7 +739,7 @@ public class Cinematic {
 					break;
 				}
 
-				fadeToBlack = true;
+				fadeToBlack = false;
 				fadeIn = true;
 				fadingColor = new Color(0f, 0f, 0f, 1f);
 				fadeDelta = 0;
@@ -752,7 +748,7 @@ public class Cinematic {
 					this.waitTime = (int) ce.getParam(0);
 				break;
 			case FADE_TO_BLACK:
-				fadeToBlack = false;
+				fadeToBlack = true;
 				fadeIn = false;
 				fadingColor = new Color(0f, 0f, 0f, 0f);
 				fadeDelta = 0;
