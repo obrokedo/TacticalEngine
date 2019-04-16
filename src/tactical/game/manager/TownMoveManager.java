@@ -241,7 +241,7 @@ public class TownMoveManager extends Manager
 				else
 					sprite.doneMoving(stateInfo);
 				break;
-			case INTIIALIZE:
+			case INTIIALIZE_MANAGERS:
 				stateInfo.getCurrentMap().checkRoofs(
 						(int) stateInfo.getCurrentSprite().getLocX(), (int) stateInfo.getCurrentSprite().getLocY());
 				break;

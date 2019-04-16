@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -23,18 +24,27 @@ import org.newdawn.slick.util.DefaultLogSystem;
  */
 public class FileLogger extends DefaultLogSystem
 {
+	private LinkedList<String> recentMessages = new LinkedList<>();
+	
 	@Override
 	public void error(String message, Throwable e) {
 		super.error(message, e);
 		writeError(message);
-		writeError("-------");
 		error(e);
+	}
+
+	@Override
+	public void debug(String message) {
+		super.debug(message);
+		recentMessages.push(message);
+		if (recentMessages.size() > 100)
+			recentMessages.removeLast();
 	}
 
 	@Override
 	public void error(Throwable e) {
 		super.error(e);
-		
+		writeError(e.getMessage());
 		displayError(e);
 
 		try {
@@ -47,7 +57,6 @@ public class FileLogger extends DefaultLogSystem
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "An error occurred trying to write to the error log:" + e.getMessage(), "Error writing to error log", JOptionPane.ERROR_MESSAGE);
 		}
-		writeError("-------");
 	}
 	
 	private void displayError(Throwable ex) {
@@ -70,19 +79,25 @@ public class FileLogger extends DefaultLogSystem
 	public void error(String message) {
 		super.error(message);
 		writeError(message);
-		writeError("-------");
 	}
 
 	private void writeError(String message)
-	{
-		if (message == null)
-			return;
-
-		message += "\n";
+	{		
+		StringWriter sw = new StringWriter();
+		for (String recent : recentMessages) { 
+			sw.append(recent);
+			sw.append("\n");
+		}
+		sw.append("Exception Message:");
+		sw.append("\n");
+		sw.append(message);
+		sw.append("\n");
+		sw.append("------");
+		sw.append("\n");
 
 		try {
 			Files.write(FileSystems.getDefault().getPath(".", "ErrorLog"),
-					message.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+					sw.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "An error occurred trying to write to the error log:" + e.getMessage(), "Error writing to error log", JOptionPane.ERROR_MESSAGE);

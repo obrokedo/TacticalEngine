@@ -44,9 +44,10 @@ public class Message implements Serializable
 			case SHOW_SPELLMENU:
 			case SHOW_ITEM_MENU:
 			case SHOW_ITEM_OPTION_MENU:
+			case INITIALIZE_STATE_INFO:
 				internal = true;
 				break;
-			case INTIIALIZE:
+			case INTIIALIZE_MANAGERS:
 				immediate = true;
 				internal = true;
 				break;

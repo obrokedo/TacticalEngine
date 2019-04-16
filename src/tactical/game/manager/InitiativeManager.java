@@ -108,8 +108,9 @@ public class InitiativeManager extends Manager
 							cs.getCurrentSpeed() > nextTurn.getCurrentInit()))
 					{
 							nextTurn = cs;
-							if (stateInfo.getCurrentSprite() == null)
+							if (stateInfo.getCurrentSprite() == null) {								
 								stateInfo.getCamera().centerOnSprite(cs, stateInfo.getCurrentMap());
+							}
 					}
 				}
 			}

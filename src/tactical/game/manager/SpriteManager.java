@@ -287,7 +287,7 @@ public class SpriteManager extends Manager
 	{
 		switch (message.getMessageType())
 		{
-			case INTIIALIZE:
+			case INTIIALIZE_MANAGERS:
 				initializeAfterSprites(((BooleanMessage) message).isBool());
 				break;
 			case INVESTIGATE:

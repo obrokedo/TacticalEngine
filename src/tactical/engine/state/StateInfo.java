@@ -163,7 +163,7 @@ public class StateInfo
 			Log.debug("Initializing NEW battle");
 		}
 
-		sendMessage(new BooleanMessage(MessageType.INTIIALIZE, isBattleInitialized));
+		sendMessage(new BooleanMessage(MessageType.INTIIALIZE_MANAGERS, isBattleInitialized));
 
 		if (this.getClientProgress().getRetriggerablesByMap() != null)
 			for (Integer triggerId : this.getClientProgress().getRetriggerablesByMap())
@@ -187,14 +187,17 @@ public class StateInfo
 				if (isBattleInitialized)
 				{
 					sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, currentSprite), true);
+					initialized = true;
 				}
 				else
 				{
 					// Start the whole battle
 					sendMessage(MessageType.NEXT_TURN);
+					sendMessage(MessageType.INITIALIZE_STATE_INFO);
 				}
 			}
-			initialized = true;
+			else
+				initialized = true;
 		}
 	}
 
@@ -290,6 +293,9 @@ public class StateInfo
 			Message m = messagesToProcess.remove(i);
 			switch (m.getMessageType())
 			{
+				case INITIALIZE_STATE_INFO:
+					this.initialized = true;
+					break;
 				case LOAD_MAP:
 					// sendMessage(MessageType.PAUSE_MUSIC);
 
