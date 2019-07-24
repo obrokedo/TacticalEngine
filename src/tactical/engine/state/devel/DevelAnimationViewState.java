@@ -44,7 +44,10 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 			throws SlickException {
 		animationFileSelector = new ResourceSelector("Animations", 0, true, ResourceManager.ANIMATIONS_FOLDER, ResourceManager.ANIMATIONS_EXTENSION, container);
 		animationFileSelector.setListener(this);
-		weaponSelector = new ResourceSelector("Weapons", 300, true, ResourceManager.WEAPONS_FOLDER, ResourceManager.WEAPONS_EXTENSION, container);
+		weaponSelector = new ResourceSelector(
+				"Weapons", 300, true, ResourceManager.WEAPONS_FOLDER, ResourceManager.WEAPONS_EXTENSION, container);
+		weaponSelector.addResourceFromDir(
+				ResourceManager.WEAPONS_ANIMATIONS_FOLDER, ResourceManager.ANIMATIONS_EXTENSION, container);
 		weaponSelector.setListener(this);
 		//spellSelector = new ResourceSelector("Spells",  0,  false, "scripts/Spellz", ".py", container);
 		//spellSelector.setListener(this);
@@ -59,6 +62,7 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 		try {
 			frm.addResource(ResourceManager.ANIMATIONS_FOLDER_IDENTIFIER + "," + ResourceManager.ANIMATIONS_FOLDER, TacticalGame.ENGINE_CONFIGURATIOR);
 			frm.addResource(ResourceManager.IMAGES_FOLDER_IDENTIFIER + "," + ResourceManager.WEAPONS_FOLDER, TacticalGame.ENGINE_CONFIGURATIOR);
+			frm.addResource(ResourceManager.ANIMATIONS_FOLDER_IDENTIFIER + "," + ResourceManager.WEAPONS_ANIMATIONS_FOLDER, TacticalGame.ENGINE_CONFIGURATIOR);
 			frm.addResource("spritedir,sprite", TacticalGame.ENGINE_CONFIGURATIOR);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -80,11 +84,12 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 			g.draw(loopRect);
 			g.drawString("Play", 380,  680);
 			g.drawString("Loop", 530,  680);
-			currentAnimation.drawAnimation(drawX, drawY, g);
+			g.scale(2, 2);
+			currentAnimation.drawAnimationIgnoreOffset(drawX, drawY, g);
 		}
 		
 		g.translate(100, 100);
-		g.scale(2, 2);
+		
 		if (rainParticleSystem != null)
 			rainParticleSystem.render();
 		g.resetTransform();
@@ -163,7 +168,7 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 						TacticalGame.ENGINE_CONFIGURATIOR);
 				currentAnimation = new AnimationWrapper(frm.getSpriteAnimation(selectedItem));
 				ArrayList<String> animNames = new ArrayList<>(currentAnimation.getAnimations());
-				animationSelector = new ListUI("Anim", 550, animNames);
+				animationSelector = new ListUI("Anim", 650, animNames);
 				animationSelector.setListener(this);
 				weaponSelector.setSelectedIndex(-1);
 			} catch (Throwable t ) {
@@ -178,22 +183,32 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 			currentAnimation.setAnimation(selectedItem, false);
 			Point p = currentAnimation.getCurrentAnimation().getFirstFramePosition();
 
-			if (Math.abs(p.getX()) < 100 && Math.abs(p.getY()) < 100)
-			{
-				drawX = 400;
-				drawY = 450;
+			System.out.println(p.getX() + " " + p.getY());
+			if (p.getX() > 50) {
+				drawX = 200;
+				drawY = 125;
+				System.out.println("HERO");
+			} else if (p.getX() < 0) {
+				drawX = 200;
+				drawY = 125;
+				System.out.println("NOT ATTACK");
+			} else {
+				drawX = 150;
+				drawY = 300;
+				System.out.println("ENEMY");
 			}
-			else
-			{
-				drawX = 0;
-				drawY = 650;
-			}
+			drawX = 125;
+			drawY = 180;
+			
 		}
 		else if (parentSelector == weaponSelector)
 		{
 			if (currentAnimation != null)
-			{
-				currentAnimation.setWeapon(frm.getImage(selectedItem.replace(ResourceManager.WEAPONS_EXTENSION, "")));
+			{				
+				if (selectedItem.endsWith(ResourceManager.WEAPONS_EXTENSION))
+					currentAnimation.setWeapon(frm.getImage(selectedItem.replace(ResourceManager.WEAPONS_EXTENSION, "")));
+				else
+					currentAnimation.setWeaponAnim(frm.getSpriteAnimation(selectedItem.replace(ResourceManager.ANIMATIONS_EXTENSION, "")));
 			}
 		}
 		/*

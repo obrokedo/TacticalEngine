@@ -158,7 +158,7 @@ public class Camera
 			setY(Math.max(0, locY - getViewportHeight() / 2));
 	}
 	
-	public Point getCenterOfCamera(Map map)
+	public Point getCenterOfCamera()
 	{
 		return new Point(this.getLocationX() + getViewportWidth() / 2,
 				this.getLocationY() + getViewportHeight() / 2);

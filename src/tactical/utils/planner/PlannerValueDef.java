@@ -39,6 +39,7 @@ public class PlannerValueDef
 	public static final int REFERS_MAPDATA = 31;
 	public static final int REFERS_MUSIC = 32;
 	public static final int REFERS_SOUND = 33;
+	public static final int REFERS_WEAPON_ANIMATIONS = 34;
 
 	public static final int TYPE_STRING = 0;
 	public static final int TYPE_INT = 1;

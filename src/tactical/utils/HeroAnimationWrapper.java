@@ -15,6 +15,12 @@ public class HeroAnimationWrapper extends AnimationWrapper
 	{
 		super(combatSprite.getSpriteAnims());
 		this.weapon = combatSprite.getCurrentWeaponImage();
+		if (combatSprite.getCurrentWeaponAnim() != null) {
+			this.weaponAnim = new AnimationWrapper(combatSprite.getCurrentWeaponAnim(), "attack");
+			this.weaponAnim.loops = true;
+		}
+		else
+			this.weaponAnim = null;
 		this.combatSprite = combatSprite;
 		this.setAnimation(animationName, loops);
 	}

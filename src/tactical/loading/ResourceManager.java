@@ -53,6 +53,7 @@ public class ResourceManager {
 
 	public static final String ANIMATION_IDENTIFIER = "anim";
 
+	public static final String WEAPONS_ANIMATIONS_FOLDER = "animations/weaponanim";
 	public static final String WEAPONS_FOLDER = "image/weapons";
 	public static final String WEAPONS_EXTENSION = ".png";
 

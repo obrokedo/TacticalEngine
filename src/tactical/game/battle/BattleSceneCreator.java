@@ -329,10 +329,10 @@ public class BattleSceneCreator {
 		{
 			if (attacker.isHero())
 				aca = new AttackCombatAnimation(new AnimationWrapper(frm.getSpriteAnimation("Ranged"),
-					"Ranged", false, attacker.getCurrentWeaponImage()), attacker, platformBySprite.get(attacker));
+					"Ranged", false, attacker.getCurrentWeaponImage(), attacker.getCurrentWeaponAnim()), attacker, platformBySprite.get(attacker));
 			else
 				aca = new AttackCombatAnimation(new AnimationWrapper(frm.getSpriteAnimation("EnemyRanged"),
-						"Ranged", false, attacker.getCurrentWeaponImage()), attacker, platformBySprite.get(attacker));
+						"Ranged", false, attacker.getCurrentWeaponImage(), attacker.getCurrentWeaponAnim()), attacker, platformBySprite.get(attacker));
 		}
 		aca.setDrawSpell(isSpell);
 		

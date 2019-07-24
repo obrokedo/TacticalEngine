@@ -32,8 +32,8 @@ public class CinematicManager extends Manager
 	{
 		if (cinematic != null)
 		{
-			stateInfo.getCurrentMap().checkRoofs((int) stateInfo.getCamera().getCenterOfCamera(stateInfo.getCurrentMap()).getX(),
-					(int) stateInfo.getCamera().getCenterOfCamera(stateInfo.getCurrentMap()).getY());
+			stateInfo.getCurrentMap().checkRoofs((int) stateInfo.getCamera().getCenterOfCamera().getX(),
+					(int) stateInfo.getCamera().getCenterOfCamera().getY());
 			
 			if (cinematic.update(delta, stateInfo.getCamera(),
 				stateInfo.getInput(), stateInfo.getCurrentMap(), stateInfo)) {

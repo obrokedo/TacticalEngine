@@ -652,7 +652,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				as.setTargetSprite(scm.getCombatSprite(stateInfo.getCombatSprites()), stateInfo);
 				break;
 			case CIN_END:
-				Point currCam = stateInfo.getCamera().getCenterOfCamera(stateInfo.getCurrentMap());
+				Point currCam = stateInfo.getCamera().getCenterOfCamera();
 				cursor.setLocation(currCam.getX(), currCam.getY());
 				cinWasDisplayed = true;
 				break;

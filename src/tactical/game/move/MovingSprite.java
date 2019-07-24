@@ -24,7 +24,7 @@ public class MovingSprite
 	private Stairs stairs = null;
 	private float yMovedForStairs;
 	// public static int MOVE_SPEED = 11;
-	public static int MOVE_SPEED = 220;
+	public static int MOVE_SPEED = 198;
 	public static int STAND_ANIMATION_SPEED = 10;
 	public static int WALK_ANIMATION_SPEED = 4;
 
@@ -106,7 +106,7 @@ public class MovingSprite
 			animatedSprite.setFacing(direction);
 
 			if (animatedSprite == stateInfo.getCurrentSprite())
-				stateInfo.getCamera().centerOnSprite(animatedSprite, stateInfo.getCurrentMap());
+				// stateInfo.getCamera().centerOnSprite(animatedSprite, stateInfo.getCurrentMap());
 
 			// Check to see if we have queued moves, if so start the next move
 			if (nextMoveQueue != null && nextMoveQueue.size() > 0)
@@ -149,7 +149,7 @@ public class MovingSprite
 				break;
 		}
 
-		if (animatedSprite == stateInfo.getCurrentSprite()) {
+		if (stateInfo.isCombat() && animatedSprite == stateInfo.getCurrentSprite()) {
 			stateInfo.getCamera().centerOnSprite(animatedSprite, stateInfo.getCurrentMap());
 		}
 

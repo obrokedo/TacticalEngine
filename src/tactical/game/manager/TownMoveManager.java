@@ -3,9 +3,12 @@ package tactical.game.manager;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.newdawn.slick.geom.Point;
+
 import tactical.engine.message.Message;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.SpriteMoveMessage;
+import tactical.game.Camera;
 import tactical.game.constants.Direction;
 import tactical.game.input.KeyMapping;
 import tactical.game.move.MovingSprite;
@@ -35,6 +38,9 @@ public class TownMoveManager extends Manager
 		updateDelta += delta;
 		boolean currentSpriteJustFinishedMoving = false;
 		int moveRemainder = 0;
+		
+		float currentSpritePrevX = stateInfo.getCurrentSprite().getLocX();
+		float currentSpritePrevY = stateInfo.getCurrentSprite().getLocY();
 
 		for (int i = 0; i < movers.size(); i++)
 		{
@@ -85,7 +91,65 @@ public class TownMoveManager extends Manager
 			checkInput();
 		}
 
-		stateInfo.getCamera().centerOnSprite(stateInfo.getCurrentSprite(), stateInfo.getCurrentMap());
+		// stateInfo.getCamera().centerOnSprite(stateInfo.getCurrentSprite(), stateInfo.getCurrentMap());
+		
+		moveTrailingCamera(delta);
+		
+	}
+
+	protected void moveTrailingCamera(int delta) {
+		Camera cam = stateInfo.getCamera();
+		Point camCenter = cam.getCenterOfCamera();
+		int tileEffectiveWidth = stateInfo.getCurrentMap().getTileEffectiveWidth();
+		int maxCameraOffset = tileEffectiveWidth * 3;
+		float currX = stateInfo.getCurrentSprite().getLocX();
+		float currY = stateInfo.getCurrentSprite().getLocY();		
+		
+		boolean lockedX = true;
+		boolean lockedY = true;
+		
+		// Check to see if we are at the max distance that the camera should get, if so lock it to this distance
+		if (camCenter.getX() + maxCameraOffset < currX) {
+			cam.centerOnPoint(currX - maxCameraOffset, camCenter.getY(), stateInfo.getCurrentMap());
+		} else if (camCenter.getX() - maxCameraOffset > currX) {
+			cam.centerOnPoint(currX + maxCameraOffset, camCenter.getY(), stateInfo.getCurrentMap());
+		} else
+			lockedX = false;
+		
+		if (camCenter.getY() + maxCameraOffset < currY) {
+			cam.centerOnPoint(camCenter.getX(), currY - maxCameraOffset, stateInfo.getCurrentMap());
+		} else if (camCenter.getY() - maxCameraOffset > currY) {
+			cam.centerOnPoint(camCenter.getX(), currY + maxCameraOffset, stateInfo.getCurrentMap());
+		} else
+			lockedY = false;
+		
+		camCenter = cam.getCenterOfCamera();
+		
+		// If we're not at the max distance then move it towards the current sprite, not directly centered
+		// but within one square of centered in any direction
+		boolean camToFarRight = camCenter.getX() > currX + tileEffectiveWidth;
+		boolean camToFarLeft = camCenter.getX() < currX - tileEffectiveWidth;
+		if (!lockedX && (camToFarRight || camToFarLeft)) {
+			float move = delta / (MovingSprite.MOVE_SPEED * 1.0f) * stateInfo.getTileHeight() * .8f;
+			// Need to move camera right
+			if (camToFarRight) {
+				cam.centerOnPoint(Math.max(camCenter.getX() - move, currX + tileEffectiveWidth), camCenter.getY(), stateInfo.getCurrentMap());
+			} else {
+				cam.centerOnPoint(Math.min(camCenter.getX() + move, currX - tileEffectiveWidth), camCenter.getY(), stateInfo.getCurrentMap());
+			}			
+		}				
+		
+		boolean camToFarDown = camCenter.getY() > currY + tileEffectiveWidth;
+		boolean camToFarUp = camCenter.getY() < currY - tileEffectiveWidth;
+		if (!lockedY && (camToFarUp || camToFarDown)) {
+			float move = delta / (MovingSprite.MOVE_SPEED * 1.0f) * stateInfo.getTileHeight() * .8f;
+			// Need to move camera down
+			if (camToFarDown) {
+				cam.centerOnPoint(cam.getCenterOfCamera().getX(), Math.max(camCenter.getY() - move, currY + tileEffectiveWidth), stateInfo.getCurrentMap());
+			} else {
+				cam.centerOnPoint(cam.getCenterOfCamera().getX(), Math.min(camCenter.getY() + move, currY - tileEffectiveWidth), stateInfo.getCurrentMap());
+			}			
+		}
 	}
 
 	private void checkInput()

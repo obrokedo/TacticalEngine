@@ -17,6 +17,7 @@ public class AnimationWrapper
 	protected int animationDelta;
 	protected boolean loops;
 	protected Image weapon = null;
+	protected AnimationWrapper weaponAnim;
 
 	public AnimationWrapper(SpriteAnims spriteAnims)
 	{
@@ -35,11 +36,20 @@ public class AnimationWrapper
 		setAnimation(animationName, loops);
 	}
 
-	public AnimationWrapper(SpriteAnims spriteAnims, String animationName, boolean loops, Image weapon)
+	public AnimationWrapper(SpriteAnims spriteAnims, String animationName, boolean loops, Image weapon, SpriteAnims weaponAnim)
 	{
-		this.spriteAnims = spriteAnims;
+		this(spriteAnims, animationName, loops);
 		this.weapon = weapon;
-		setAnimation(animationName, loops);
+		if (weaponAnim != null)
+			this.weaponAnim = new AnimationWrapper(weaponAnim, "attack");
+	}
+	
+	public AnimationWrapper(SpriteAnims spriteAnims, String animationName, boolean loops, SpriteAnims weaponAnims)
+	{
+		this(spriteAnims, animationName, loops);
+		this.weapon = null;
+		if (weaponAnim != null)
+			this.weaponAnim = new AnimationWrapper(weaponAnims, "attack");
 	}
 
 	/**
@@ -69,8 +79,17 @@ public class AnimationWrapper
 		animationDelta = 0;
 	}
 
+	/**
+	 * 
+	 * @param delta
+	 * @return true if finished, false otherwise
+	 */
 	public boolean update(long delta)
 	{
+		if (weaponAnim != null) {
+			weaponAnim.update(delta);
+		}
+		
 		animationDelta += delta;
 		while (animationDelta >= animation.frames.get(animationIndex).delay)
 		{
@@ -91,6 +110,7 @@ public class AnimationWrapper
 				animationIndex++;
 			}
 		}
+		
 		return false;
 	}
 
@@ -117,14 +137,20 @@ public class AnimationWrapper
 	{
 		if (animation != null)
 		{
+			int ignoredX = 0;
+			int ignoredY = 0;
+			if (animation.frames.get(animationIndex).sprites.size() > 1) {
+				ignoredX = animation.frames.get(animationIndex).sprites.get(1).x;
+				ignoredY = animation.frames.get(animationIndex).sprites.get(1).y;
+			}
 			for (AnimSprite as : animation.frames.get(animationIndex).sprites)
 			{
 				if (as.imageIndex != -1)
 				{
 					g.drawImage(getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, null), x, y);
 				}
-				else
-					drawWeapon(as, x, y, null, 1f, g);
+				else					
+					drawWeapon(as, x - ignoredX, y - ignoredY, null, 1f, g);
 			}
 		}
 	}
@@ -229,6 +255,10 @@ public class AnimationWrapper
 
 	protected void drawWeapon(AnimSprite as, int x, int y, Color filter, Float scale, Graphics g)
 	{
+		if (weaponAnim != null) {
+			weapon = weaponAnim.spriteAnims.getImageAtIndex(weaponAnim.getCurrentAnimation().frames.get(weaponAnim.animationIndex).sprites.get(0).imageIndex);
+		}
+		
 		if (weapon != null)
 		{
 			if (filter == null)
@@ -298,6 +328,11 @@ public class AnimationWrapper
 
 	public void setWeapon(Image weapon) {
 		this.weapon = weapon;
+	}
+
+	public void setWeaponAnim(SpriteAnims weaponSpriteAnims) {
+		this.weaponAnim = new AnimationWrapper(weaponSpriteAnims, "attack");
+		this.weaponAnim.loops = true;
 	}
 
 	public void copyAnimationLocation(AnimationWrapper wrapper) {

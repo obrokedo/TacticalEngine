@@ -191,7 +191,7 @@ public class TownState extends LoadableGameState
 
 			if (System.currentTimeMillis() > stateInfo.getInputDelay())
 			{
-				if (container.getInput().isKeyDown(KeyMapping.BUTTON_3) && !stateInfo.areMenusDisplayed())
+				if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_3) && !stateInfo.areMenusDisplayed())
 				{
 					if (!menuManager.isBlocking() && !cinematicManager.isBlocking())
 					{
@@ -201,7 +201,7 @@ public class TownState extends LoadableGameState
 						checkSearchLocation();
 					}
 				}
-				else if (container.getInput().isKeyDown(KeyMapping.BUTTON_1) && !stateInfo.areMenusDisplayed())
+				else if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) && !stateInfo.areMenusDisplayed())
 				{
 					stateInfo.sendMessage(new Message(MessageType.SHOW_HEROES));
 				}

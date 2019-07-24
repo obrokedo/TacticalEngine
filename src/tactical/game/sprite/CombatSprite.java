@@ -28,6 +28,7 @@ import tactical.game.resource.ItemResource;
 import tactical.loading.ResourceManager;
 import tactical.utils.AnimSprite;
 import tactical.utils.Animation;
+import tactical.utils.SpriteAnims;
 
 public class CombatSprite extends AnimatedSprite
 {
@@ -71,6 +72,7 @@ public class CombatSprite extends AnimatedSprite
 	protected int defeat;
 	protected ArrayList<BattleEffect> battleEffects;
 	protected transient Image currentWeaponImage = null;
+	protected transient SpriteAnims currentWeaponAnim = null;
 	protected String attackEffectId;
 	protected int attackEffectChance;
 	protected int attackEffectLevel;
@@ -243,11 +245,6 @@ public class CombatSprite extends AnimatedSprite
 		for (Item item : items)
 		{
 			ItemResource.initializeItem(item, fcrm);
-		}
-
-		if (this.getEquippedWeapon() != null && this.getEquippedWeapon().getWeaponImage() != null)
-		{
-			currentWeaponImage = fcrm.getImage(this.getEquippedWeapon().getWeaponImage());
 		}
 
 		fadeColor = new Color(255, 255, 255, 255);
@@ -806,6 +803,10 @@ public class CombatSprite extends AnimatedSprite
 		return currentWeaponImage;
 	}
 
+	public SpriteAnims getCurrentWeaponAnim() {
+		return currentWeaponAnim;
+	}
+
 	public BattleEffect getAttackEffect()
 	{
 		BattleEffect eff = null;
@@ -831,8 +832,13 @@ public class CombatSprite extends AnimatedSprite
 		
 		if (this.getEquippedWeapon() == null) {
 			this.currentWeaponImage = null;
-		} else {
-			currentWeaponImage = frm.getImage(this.getEquippedWeapon().getWeaponImage());
+			this.currentWeaponAnim = null;
+		} else if (this.getEquippedWeapon().getWeaponAnim() != null) {
+			this.currentWeaponImage = null;
+			this.currentWeaponAnim = frm.getSpriteAnimation(this.getEquippedWeapon().getWeaponAnim());
+		} else {			
+			this.currentWeaponAnim = null;
+			currentWeaponImage = frm.getImage(this.getEquippedWeapon().getWeaponImage());			
 		}
 	}
 

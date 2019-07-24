@@ -213,5 +213,5 @@ public class ListUI {
 
 	public void setIgnoreClicksInUpdate(boolean ignoreClicksInUpdate) {
 		this.ignoreClicksInUpdate = ignoreClicksInUpdate;
-	}
+	}	
 }

@@ -30,7 +30,7 @@ public class ItemDefinition
 					increasedEvade = 0, minHPRegen = 0, maxHPRegen = 0, minMPRegen = 0, maxMPRegen = 0, 
 					effectLevel = 0, effectChance = 0, fireAffinity = 0, elecAffinity = 0, coldAffin = 0, 
 					darkAffin = 0, waterAffin = 0, earthAffin = 0, windAffin = 0, lightAffin = 0, ohko = 0, ohkoOnCrit = 0;
-			String weaponImage = null, effectName = null, damageAffinity = null;
+			String weaponImage = null, weaponAnim = null, effectName = null, damageAffinity = null;
 			boolean equippable = false;
 			boolean useDamagesItem = false;
 			boolean isCustomEffect = false;
@@ -51,7 +51,7 @@ public class ItemDefinition
 					type = Integer.parseInt(childTagArea.getAttribute("type"));
 					range = Integer.parseInt(childTagArea.getAttribute("range"));
 					weaponImage = childTagArea.getAttribute("weaponimage");
-					
+					weaponAnim = childTagArea.getAttribute("weaponanim");
 					
 					// Extended item statistics
 					increasedMinDam = childTagArea.getIntAttribute("incmindam");
@@ -84,6 +84,9 @@ public class ItemDefinition
 					
 					if (StringUtils.isEmpty(weaponImage))
 						weaponImage = null;
+					
+					if (StringUtils.isEmpty(weaponAnim))
+						weaponAnim = null;
 				}
 				else if (childTagArea.getTagType().equalsIgnoreCase("use"))
 				{
@@ -125,7 +128,7 @@ public class ItemDefinition
 						minMPRegen, maxMPRegen, effectLevel, effectChance, 
 						fireAffinity, elecAffinity, coldAffin, darkAffin, waterAffin, 
 						earthAffin, windAffin, lightAffin, ohko, ohkoOnCrit, range, 
-						isCustomEffect, weaponImage, effectName, damageAffinity);
+						isCustomEffect, weaponImage, weaponAnim, effectName, damageAffinity);
 			else {
 				id.item = new Item(tagArea.getAttribute("name"), 
 						Integer.parseInt(tagArea.getAttribute("cost")), tagArea.getAttribute("description"),

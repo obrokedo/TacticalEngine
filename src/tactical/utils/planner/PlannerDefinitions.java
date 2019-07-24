@@ -11,6 +11,7 @@ import tactical.utils.DirectoryLister;
 
 public class PlannerDefinitions {
 	private static String PATH_ANIMATIONS = "animations/animationsheets";
+	private static String PATH_WEAPON_ANIMATIONS = "animations/weaponanim";
 	private static String PATH_SPRITE_IMAGE = "sprite";
 	private static String PATH_PALETTE = "palette";
 	private static String PATH_MAPDATA = "mapdata";
@@ -92,6 +93,8 @@ public class PlannerDefinitions {
 
 		// Animation files
 		setupRefererListFromDir(PATH_ANIMATIONS, PlannerValueDef.REFERS_ANIMATIONS, listOfLists, ".anim");
+		
+		setupRefererListFromDir(PATH_WEAPON_ANIMATIONS, PlannerValueDef.REFERS_WEAPON_ANIMATIONS, listOfLists, ".anim");
 
 		// Sprite image files
 		setupRefererListFromDir(PATH_SPRITE_IMAGE, PlannerValueDef.REFERS_SPRITE_IMAGE, listOfLists, ".png");
@@ -1345,7 +1348,7 @@ public class PlannerDefinitions {
 				"The x index of the items image"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "imageindexy", false, "Y Index",
-				"The y index of the items image"));
+				"The y index of the items image"));		
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "droppable", false, "Is Quest Item",
 				"Whether this item can be dropped or sold (used for 'quest' items)"));
@@ -1380,7 +1383,10 @@ public class PlannerDefinitions {
 						"The range this weapon can attack from, use any value for rings"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "weaponimage", false, "Weapon Attack Image",
-					"The name of the weapon image that should be used for this weapon (should exist in the images/weapons folder). Use any value for rings"));
+					"The name of the weapon image that should be used for this weapon (should exist in the images/weapons folder). Use any value for rings. If an animation is specified then this value will be ignored."));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_WEAPON_ANIMATIONS,
+				PlannerValueDef.TYPE_STRING, "weaponanim", true, "Weapon Animation",
+				"The animation file that should be used for animating the weapon. Selecting this value will override any weapon attack image."));
 		allowableLines.add(new PlannerLineDef("equippable", "Equippable Item",
 				"Marks this item as equippable and defines stats for it",
 				definingValues));

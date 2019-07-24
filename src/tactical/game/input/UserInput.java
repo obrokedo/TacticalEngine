@@ -38,11 +38,15 @@ public class UserInput implements KeyListener
 			// There are some shitty timing windows where a
 			// key can get in a pressed state even after release.
 			// Make sure keys held are still held
+			/*
 			Iterator<Integer> keysHeldId = keysHeld.iterator();
 			while(keysHeldId.hasNext()) {
-				if (!realInput.isKeyDown(keysHeldId.next()))
+				if (!realInput.isKeyDown(keysHeldId.next())) {
 					keysHeldId.remove();
+					System.out.println("REMOVED ME");
+				}
 			}
+			*/
 		}
 	}
 	

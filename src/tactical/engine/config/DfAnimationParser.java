@@ -35,10 +35,15 @@ public class DfAnimationParser implements AnimationParser {
 				 }
 				 catch (Exception e)
 				 {
-					 throw new BadResourceException("An error occurred while attempting to load the animation file " + animsFile + "\n"
+					 try {
+						 imageLocation =
+								 parseSprites("/animations/weaponanim/" + ta.getAttribute("spriteSheet"), imageNames, imageLocs);
+					 } catch (Exception e2) {
+						 throw new BadResourceException("An error occurred while attempting to load the animation file " + animsFile + "\n"
 					 		+ "The specified sprite sheet " + "/animations/animationsheets/" + ta.getAttribute("spriteSheet") + " does not exist.\n"
 					 		+ "Check the animationsheets folder to verify that the file exists.\n"
 					 		+ "Keep in mind that the names ARE case-sensitive");
+					 }
 				 }
 
 				 sa = new SpriteAnims(imageLocation, imageLocs);
