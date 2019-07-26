@@ -49,7 +49,7 @@ public class TextParser
 
 		String mapName = null;
 		
-		ArrayList<TagArea> tagAreas = XMLParser.process(file);
+		ArrayList<TagArea> tagAreas = XMLParser.process(file, true);
 		for (TagArea tagArea : tagAreas)
 		{
 			if (tagArea.getTagType().equalsIgnoreCase("text"))

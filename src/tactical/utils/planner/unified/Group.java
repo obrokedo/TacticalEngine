@@ -25,7 +25,7 @@ public class Group implements UnifiedRenderable {
 		g.setColor(Color.white);
 		// g.fillRect(10 + 50 * indent, y * 50 + yOffset, panelWidth - 20 - 50 * indent, (height + (editable ? 1 : 0)) * 50);
 		g.setColor(Color.black);
-		g.drawRect(10 + 50 * indent, y * 50 + UnifiedViewPanel.yOffset, panelWidth - 20 - 50 * indent, (height + (editable ? 1 : 0)) * 50);
+		g.drawRect(10 + 50 * indent, y * RENDERABLE_HEIGHT + UnifiedViewPanel.yOffset, panelWidth - 20 - 50 * indent, (height + (editable ? 1 : 0)) * RENDERABLE_HEIGHT);
 		
 		int idx = 0;
 		for (UnifiedRenderable ur : groupRenderables) {

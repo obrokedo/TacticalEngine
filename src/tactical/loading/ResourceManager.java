@@ -170,7 +170,7 @@ public class ResourceManager {
 		}
 		else if (split[0].equalsIgnoreCase("herodefs"))
 		{
-			ArrayList<TagArea> tagAreas = XMLParser.process(split[1]);
+			ArrayList<TagArea> tagAreas = XMLParser.process(split[1], true);
 			Hashtable<Integer, HeroDefinition> heroDefinitionsById = new Hashtable<Integer, HeroDefinition>();
 
 			for (TagArea ta : tagAreas)
@@ -183,7 +183,7 @@ public class ResourceManager {
 		}
 		else if (split[0].equalsIgnoreCase("itemdefs"))
 		{
-			ArrayList<TagArea> tagAreas = XMLParser.process(split[1]);
+			ArrayList<TagArea> tagAreas = XMLParser.process(split[1], true);
 			Hashtable<Integer, ItemDefinition> itemDefinitionsById = new Hashtable<Integer, ItemDefinition>();
 
 			for (TagArea ta : tagAreas)
@@ -196,7 +196,7 @@ public class ResourceManager {
 		}
 		else if (split[0].equalsIgnoreCase("enemydefs"))
 		{
-			ArrayList<TagArea> tagAreas = XMLParser.process(split[1]);
+			ArrayList<TagArea> tagAreas = XMLParser.process(split[1], true);
 			Hashtable<Integer, EnemyDefinition> enemyDefinitionsById = new Hashtable<Integer, EnemyDefinition>();
 
 			for (TagArea ta : tagAreas)

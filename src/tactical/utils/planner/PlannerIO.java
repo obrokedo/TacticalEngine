@@ -30,8 +30,8 @@ public class PlannerIO {
 	/* Export data methods 						*/
 	/********************************************/
 	public boolean exportDataToFile(ArrayList<PlannerContainer> containers,
-			String pathToFile, boolean append) {
-		ArrayList<String> buffer = export(containers);
+			String pathToFile, boolean append, String rootXMLTag) {
+		ArrayList<String> buffer = export(containers, rootXMLTag);
 
 		Path path = Paths.get(pathToFile);
 		try {
@@ -49,9 +49,11 @@ public class PlannerIO {
 		return true;
 	}
 
-	public static ArrayList<String> export(ArrayList<PlannerContainer> containers)
+	public static ArrayList<String> export(ArrayList<PlannerContainer> containers, String rootXMLTag)
 	{
 		ArrayList<String> buffer = new ArrayList<String>();
+		if (rootXMLTag != null)
+			buffer.add("<" + rootXMLTag + ">");
 		for (int i = 0; i < containers.size(); i++) {
 			PlannerContainer pc = containers.get(i);
 
@@ -63,6 +65,8 @@ public class PlannerIO {
 
 			buffer.add("</" + pc.getPcdef().getDefiningLine().getTag() + ">");
 		}
+		if (rootXMLTag != null)
+			buffer.add("</" + rootXMLTag + ">");
 		return buffer;
 	}
 
@@ -74,13 +78,13 @@ public class PlannerIO {
 			stringBuffer += "\t<" + pldef.getTag();
 
 		if (id != -1)
-			stringBuffer += " id=" + id;
+			stringBuffer += " id=\"" + id + "\"";
 
 		for (int i = 0; i < pldef.getPlannerValues().size(); i++) {
 			PlannerValueDef pvd = pldef.getPlannerValues().get(i);
 			stringBuffer += " " + pvd.getTag() + "=";
 			if (pvd.getValueType() == PlannerValueDef.TYPE_BOOLEAN)
-				stringBuffer += pl.getValues().get(i);
+				stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_STRING ||
 					pvd.getValueType() == PlannerValueDef.TYPE_LONG_STRING ||
 					pvd.getValueType() == PlannerValueDef.TYPE_MULTI_LONG_STRING)
@@ -91,9 +95,9 @@ public class PlannerIO {
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_INT
 					|| pvd.getValueType() == PlannerValueDef.TYPE_UNBOUNDED_INT) {
 				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE)
-					stringBuffer += pl.getValues().get(i);
+					stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 				else
-					stringBuffer += PlannerFrame.referenceListByReferenceType.get(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i));
+					stringBuffer += "\"" + PlannerFrame.referenceListByReferenceType.get(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i)) + "\"";
 					// stringBuffer += (int) pl.getValues().get(i) - 1;
 			} else if (pvd.getValueType() == PlannerValueDef.TYPE_MULTI_INT) {
 				String newVals = "";
@@ -115,7 +119,7 @@ public class PlannerIO {
 					}
 				}
 
-				stringBuffer += newVals;
+				stringBuffer += "\"" + newVals + "\"";
 			} else if (pvd.getValueType() == PlannerValueDef.TYPE_MULTI_STRING) {
 				String newVals = "";
 				ArrayList<PlannerReference> refs = (ArrayList<PlannerReference>) pl.getValues().get(i);
@@ -141,7 +145,7 @@ public class PlannerIO {
 			Hashtable<String, PlannerContainerDef> containersByName) throws IOException {
 		parseContainer(
 				XMLParser.process(Files.readAllLines(
-						Paths.get(path), StandardCharsets.UTF_8)),
+						Paths.get(path), StandardCharsets.UTF_8), true),
 				plannerTab, itemXmlTag, containersByName);
 	}
 

@@ -456,10 +456,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		
 		BufferedReader br;
 		try {			
-			String firstLine = ResourceManager.readAllLines("/mapdata/" + selectedItem).get(0);			
+			String firstLine = ResourceManager.readAllLines("/mapdata/" + selectedItem).get(1);			
 			
 			if (firstLine.startsWith("<map")) {
-				ArrayList<TagArea> tagArea = XMLParser.process(Collections.singletonList(firstLine));
+				ArrayList<TagArea> tagArea = XMLParser.process(Collections.singletonList(firstLine), false);
 				currentMap = tagArea.get(0).getAttribute("file");
 			} else {
 				alertPanel = new AlertPanel("The selected map data has not had a map associated with it yet.\\n Load the mapdata in the planner to assign a map");

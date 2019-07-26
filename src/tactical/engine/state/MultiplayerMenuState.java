@@ -118,8 +118,11 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 				index = (index + 1) % availableMenuItems.size();
 
 				selectedIndex = availableMenuItems.get(index);
-				if (selectedIndex == 0)
+				if (selectedIndex == 0) {
 					clientNameField.setFocus(true);
+					clientNameField.setAcceptingInput(true);
+					clientNameField.setInput(container.getInput());
+				}
 				else if (selectedIndex == 1)
 					ipField.setFocus(true);
 				else
@@ -290,7 +293,7 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 			case START_GAME:
 				persistentStateInfo.setClient(this.client);
 				persistentStateInfo.setServer(server);
-				this.start(LoadTypeEnum.TOWN, "eriumcastle", "north");
+				this.start(LoadTypeEnum.TOWN, "eriumcastle", "SouthWestHallStairsEntrance");
 				break;
 			case PLAYER_LIST:
 				this.players.clear();

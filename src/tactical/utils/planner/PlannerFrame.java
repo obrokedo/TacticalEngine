@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,7 +20,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -44,7 +44,6 @@ import tactical.engine.state.MenuState;
 import tactical.loading.MapParser;
 import tactical.loading.PlannerMap;
 import tactical.loading.PlannerTilesetParser;
-import tactical.map.MapObject;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.cinematic.CinematicCreatorPanel;
@@ -377,22 +376,22 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			plannerTabs.get(TAB_ENEMY).setNewValues();
 			boolean success = true;
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ENEMY).getListPC(),
-					PlannerIO.PATH_ENEMIES, false))
+					PlannerIO.PATH_ENEMIES, false, "enemies"))
 				success = false;
 
 			plannerTabs.get(TAB_HERO).setNewValues();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_HERO).getListPC(),
-					PlannerIO.PATH_HEROES, false))
+					PlannerIO.PATH_HEROES, false, "heroes"))
 				success = false;
 
 			plannerTabs.get(TAB_ITEM).setNewValues();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ITEM).getListPC(),
-					PlannerIO.PATH_ITEMS, false))
+					PlannerIO.PATH_ITEMS, false, "items"))
 				success = false;
 
 			plannerTabs.get(TAB_QUEST).setNewValues();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_QUEST).getListPC(),
-					PlannerIO.PATH_QUESTS, false))
+					PlannerIO.PATH_QUESTS, false, "quests"))
 				success = false;
 
 			saveTriggers(success);
@@ -482,7 +481,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			ArrayList<TagArea> tagAreas = null;
 			try {
 				tagAreas = XMLParser.process(Files.readAllLines(
-					Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8));
+					Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8), true);
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(this, 
 						"An error occurred while trying to parse file " + file.getPath() + " it will not be included in search results");
@@ -588,7 +587,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	}
 
 	private boolean loadPlannerMap(String fileName) {
-		plannerMap = new PlannerMap(fileName);
+		plannerMap = new PlannerMap(fileName, referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1));
 
 		try {
 			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), plannerMap, new PlannerTilesetParser(), null);
@@ -603,13 +602,6 @@ public class PlannerFrame extends JFrame implements ActionListener,
 						+ "Add a 'Walkable' layer to prevent errors");
 			}
 			
-			for (MapObject mo : plannerMap.getMapObjects())
-			{
-				if (mo.getName() != null)
-					referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1).add(new PlannerReference(mo.getName()));
-				else
-					referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1).add(new PlannerReference("Unamed Location"));
-			}
 			Collections.sort(referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1), new Comparator<PlannerReference>() {
 				@Override
 				public int compare(PlannerReference o1, PlannerReference o2) { return o1.getName().compareTo(o2.getName()); }});
@@ -640,7 +632,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	public void openFile(File triggerFile, boolean reportNoMap) {
 		try {
 			ArrayList<TagArea> tagAreas = XMLParser.process(Files.readAllLines(
-					Paths.get(triggerFile.getAbsolutePath()), StandardCharsets.UTF_8));
+					Paths.get(triggerFile.getAbsolutePath()), StandardCharsets.UTF_8), true);
 			String mapFile = null;
 			for (TagArea ta : tagAreas)
 				if (ta.getTagType().equalsIgnoreCase("map")) {
@@ -716,7 +708,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		if (triggerFile != null) {
 			LOGGER.fine("SAVE");
 			Path path = Paths.get(triggerFile.getAbsolutePath());
-			List<String> buffer = (List<String>) Collections.singletonList("<map file=\"" + plannerMap.getMapName() +"\"/>");
+			List<String> buffer = (List<String>) Collections.singletonList("<area><map file=\"" + plannerMap.getMapName() +"\"/>");
 			try {
 				Files.write(path, buffer, StandardCharsets.UTF_8);
 			} catch (IOException e) {
@@ -724,27 +716,39 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				JOptionPane.showMessageDialog(null, "An error occurred while trying to save the data:"
 						+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);
 				success = false;
+				return;
 			}
 			
 			plannerTabs.get(TAB_TRIGGER).setNewValues();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_TRIGGER).getListPC(),
-					triggerFile.getAbsolutePath(), true))
+					triggerFile.getAbsolutePath(), true, null))
 				success = false;
 
 			plannerTabs.get(TAB_TEXT).setNewValues();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_TEXT).getListPC(),
-					triggerFile.getAbsolutePath(), true))
+					triggerFile.getAbsolutePath(), true, null))
 				success = false;
 
 			plannerTabs.get(TAB_CIN).setNewValues();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_CIN).getListPC(),
-					triggerFile.getAbsolutePath(), true))
+					triggerFile.getAbsolutePath(), true, null))
 				success = false;
 			
 			plannerTabs.get(TAB_CONDITIONS).setNewValues();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_CONDITIONS).getListPC(),
-					triggerFile.getAbsolutePath(), true))
+					triggerFile.getAbsolutePath(), true, null))
 				success = false;
+			
+			buffer = (List<String>) Collections.singletonList("</area>");
+			try {
+				Files.write(path, buffer, StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+			} catch (IOException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "An error occurred while trying to save the data:"
+						+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);
+				success = false;
+				return;
+			}
 		}
 
 		if (success) {

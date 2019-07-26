@@ -35,7 +35,7 @@ import tactical.loading.ResourceManager;
 public class MapObject
 {
 	private int width, height, x, y;
-	private String name;
+	private String name = null;
 	private String key;
 	private ArrayList<Point> polyPoints = null;
 	private Hashtable<String, String> params;

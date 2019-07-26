@@ -47,9 +47,9 @@ public class NotSpecifiedLine implements UnifiedRenderable {
 	public void render(int indent, int y, int panelWidth, Graphics g) {
 		g.setColor(Color.LIGHT_GRAY);
 		g.setColor(Color.white);
-		g.fillRect(10 + 50 * indent, y * 50 + UnifiedViewPanel.yOffset, panelWidth - 20 - 50 * indent, 50);
+		g.fillRect(10 + 50 * indent, y * RENDERABLE_HEIGHT + UnifiedViewPanel.yOffset, panelWidth - 20 - 50 * indent, RENDERABLE_HEIGHT);
 		g.setColor(Color.black);
-		g.drawRect(10 + 50 * indent, y * 50 + UnifiedViewPanel.yOffset, panelWidth - 20 - 50 * indent, 50);		
+		g.drawRect(10 + 50 * indent, y * RENDERABLE_HEIGHT + UnifiedViewPanel.yOffset, panelWidth - 20 - 50 * indent, RENDERABLE_HEIGHT);		
 		
 		if (forTrigger) {
 			if (optional) {
@@ -78,16 +78,16 @@ public class NotSpecifiedLine implements UnifiedRenderable {
 	
 	public void renderUndefinedString(String text, int firstXOffset, int secondXOffset, int panelWidth, int y, Graphics g) {
 		g.drawString(text, 
-				panelWidth / 2 - firstXOffset, UnifiedViewPanel.yOffset + y * 50 + 30);
+				panelWidth / 2 - firstXOffset, UnifiedViewPanel.yOffset + y * RENDERABLE_HEIGHT + 20);
 		
 		g.setColor(Color.BLUE);
 		
 		g.drawString("Create one now", 
-				panelWidth / 2 + secondXOffset, UnifiedViewPanel.yOffset + y * 50 + 30);
+				panelWidth / 2 + secondXOffset, UnifiedViewPanel.yOffset + y * RENDERABLE_HEIGHT + 20);
 	}
 	
 	public void checkClick(int x, int y) {
-		Rectangle r = new Rectangle(11 + 50 * indent, this.y * 50 + UnifiedViewPanel.yOffset + 1, uvp.getRenderPanel().getWidth() - 22 - 50 * indent, 48);
+		Rectangle r = new Rectangle(11 + 50 * indent, this.y * RENDERABLE_HEIGHT + UnifiedViewPanel.yOffset + 1, uvp.getRenderPanel().getWidth() - 22 - 50 * indent, RENDERABLE_HEIGHT - 2);
 		JPanel p = new JPanel(new BorderLayout());
 		
 		

@@ -363,13 +363,13 @@ public class XMLParser
 		}
     }
 
-	public static ArrayList<TagArea> process(String file) throws IOException
+	public static ArrayList<TagArea> process(String file, boolean stripRootElement) throws IOException
 	{
-		return XMLParser.process(ResourceManager.readAllLines(file));
+		return XMLParser.process(ResourceManager.readAllLines(file), stripRootElement);
 	}
 
-	public static ArrayList<TagArea> process(List<String> allLines) throws IOException
-    {
+	public static ArrayList<TagArea> process(List<String> allLines, boolean stripRootElement) throws IOException
+    {		
         ArrayList<TagArea> parents = new ArrayList<TagArea>();
 
         Stack<TagArea> openTags = new Stack<TagArea>();
@@ -408,7 +408,13 @@ public class XMLParser
                 openTags.peek().value = s;
             }
         }
-        return parents;
+        if (stripRootElement) {
+        	if (parents.size() == 0)
+        		return new ArrayList<>();
+        	return parents.get(0).getChildren();
+        }
+        else
+        	return parents;
     }
 
     public interface XMLQueryMatcher

@@ -4,16 +4,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -34,8 +32,9 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	private MapEditorPanel parentPanel;
 	private ArrayList<PlannerTab> tabsWithMapReferences;
 	private ArrayList<Point> creatingShapePoints = new ArrayList<>();
-	private boolean creatingShape = false;
+	private boolean creatingShape = false, creatingStamp = false;
 	private Point lastMouse;
+	private float scale = 1.0f;
 
 	public MapEditorRenderPanel(MapEditorPanel parentPanel)
 	{
@@ -55,7 +54,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 		{
 			plannerMap.renderMap(g, this);
 			
-			if (creatingShape) {
+			if (creatingShape || creatingStamp) {
 				for (int i = 0; i < plannerMap.getMapWidth(); i++)
 				{			
 					g.setColor(Color.BLACK);
@@ -95,6 +94,9 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 					g.drawLine(p.x + 1, p.y + 1, lastMouse.x + 1, lastMouse.y + 1);
 					g.drawLine(p.x, p.y, lastMouse.x, lastMouse.y);
 				}
+			} else if (creatingStamp) {
+				g.setColor(Color.YELLOW);
+				g.fillRect(lastMouse.x, lastMouse.y, plannerMap.getTileEffectiveWidth(), plannerMap.getTileEffectiveHeight());
 			}
 		}
 	}
@@ -128,7 +130,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	public void mousePressed(MouseEvent m) {
 		if (m.getButton() == MouseEvent.BUTTON1 || m.getButton() == MouseEvent.BUTTON3)
 		{
-			if (!creatingShape) {
+			if (!creatingShape && !creatingStamp) {
 				MapObject selected = null;
 				int size = Integer.MAX_VALUE;
 	
@@ -189,8 +191,41 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 						
 				}
 			}
-			else {
+			else if (creatingShape) {
 				creatingShapeClicked(m);
+			} else if (creatingStamp) {
+				if (m.getButton() == MouseEvent.BUTTON1) {
+					MapObject stampMO = this.parentPanel.getStampMapObject();
+					MapObject mo = new MapObject();
+					mo.setKey(stampMO.getKey());
+					
+					for (Entry<String, String> param : stampMO.getParams().entrySet()) {
+						mo.getParams().put(param.getKey(), param.getValue());
+					}
+					
+					int count = 0;
+					outer: while (mo.getName() == null) {
+						for (MapObject existingMO : plannerMap.getMapObjects()) {
+							if (existingMO.getName() != null && existingMO.getName().equalsIgnoreCase(mo.getKey() + count)) {
+								count++;
+								continue outer;
+							}
+						}
+						mo.setName(mo.getKey() + count);
+					}
+					
+					mo.setX(lastMouse.x);
+					mo.setY(lastMouse.y);
+					mo.setWidth(plannerMap.getTileEffectiveWidth());
+					mo.setHeight(plannerMap.getTileEffectiveHeight());
+					mo.determineShape();
+					
+					plannerMap.addMapObject(mo);
+					
+				} else if (m.getButton() == MouseEvent.BUTTON3) {
+					this.stopStamping();
+					this.repaint();
+				}
 			}
 		}
 	}
@@ -203,11 +238,26 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 			if (creatingShapePoints.size() > 2 && p.x == creatingShapePoints.get(0).x && 
 					p.y == creatingShapePoints.get(0).y) {			
 				this.creatingShape = false;
-				String name = JOptionPane.showInputDialog("What is the name of this new location?");
-				if (name == null) {
-					this.repaint();
-					return;
-				}
+				String name = null;
+				do
+				{
+					name = JOptionPane.showInputDialog("What is the name of this new location (Cannot be empty)?");
+					if (name == null) {
+						this.repaint();
+						return;
+					}
+					
+					name = name.trim();
+					
+					for (MapObject mapObjectCheckForDups : plannerMap.getMapObjects()) {
+						if (name.equalsIgnoreCase(mapObjectCheckForDups.getName())) {
+							name = "";
+							JOptionPane.showMessageDialog(this, "A location with that name already exists");
+						}
+					}
+					
+				} while (name.length() == 0);
+				
 				MapObject mo = new MapObject();
 				mo.setPolyPoints(creatingShapePoints);
 				String tagAreaText = "<object name=\"" + name + "\" x=\"0\" y=\"0\">";
@@ -222,6 +272,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 				tagArea.getChildren().add(new TagArea(tagAreaText));
 				mo.determineShape();
 				mo.setName(name);
+				mo.setKey("");
 				plannerMap.addMapObject(mo, tagArea);
 				this.repaint();
 			}
@@ -248,6 +299,14 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	public void startCreatingLocation() {
 		this.creatingShapePoints = new ArrayList<>();
 		this.creatingShape = true;
+	}
+	
+	public void startStamping() {
+		this.creatingStamp = true;
+	}
+	
+	public void stopStamping() {
+		this.creatingStamp = false;
 	}
 	
 	public boolean deleteLocation() {
@@ -287,7 +346,11 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 			lastMouse = new Point(Math.round(e.getX() / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
 					Math.round(e.getY() / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
 			this.repaint();
-		}		
+		} else if (creatingStamp) {
+			lastMouse = new Point((int) Math.floor(e.getX() / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
+					(int) Math.floor(e.getY() / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
+			this.repaint();
+		}
 	}
 
 	@Override

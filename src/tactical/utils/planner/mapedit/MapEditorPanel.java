@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -33,7 +35,7 @@ import tactical.utils.planner.PlannerTab;
 import tactical.utils.planner.PlannerValueDef;
 
 
-public class MapEditorPanel implements ActionListener {
+public class MapEditorPanel implements ActionListener, ItemListener {
 	private static final String COMMAND_DISPLAY_ENEMY = "dispenemy";
 	private static final String COMMAND_DISPLAY_TERRAIN = "dispterrain";
 	private static final String COMMAND_DISPLAY_OTHER = "dispother";
@@ -50,6 +52,9 @@ public class MapEditorPanel implements ActionListener {
 	private ArrayList<ArrayList<PlannerReference>> listOfLists;
 	private boolean displayEnemy = true, displayTerrain = true,
 		displayOther = true, displayUnused = true, displayInteractable = true;
+	private boolean disableMapObjectTypeListener = false;
+	private MapObject stampMapObject;
+	
 	// private Hashtable<String, ArrayList<String>> entrancesByMap = new Hashtable<>();
 
 	public MapEditorPanel(PlannerFrame plannerFrame, ArrayList<ArrayList<PlannerReference>> listOfLists)
@@ -79,7 +84,20 @@ public class MapEditorPanel implements ActionListener {
 		locationVisiblePanel.add(createCheckBox("Terrain", COMMAND_DISPLAY_TERRAIN));
 		locationVisiblePanel.add(createCheckBox("Triggerables", COMMAND_DISPLAY_INTERACTABLE));
 		locationVisiblePanel.add(createCheckBox("Others", COMMAND_DISPLAY_OTHER));
-		locationVisiblePanel.add(createCheckBox("Untyped/Locations", COMMAND_DISPLAY_UNUSED));		
+		locationVisiblePanel.add(createCheckBox("Untyped/Locations", COMMAND_DISPLAY_UNUSED));
+		
+		JButton newDoor = new JButton("New Door");
+		newDoor.addActionListener(this);
+		newDoor.setActionCommand("newdoor");
+		locationVisiblePanel.add(newDoor);
+		
+		JButton newSearchArea = new JButton("New Search Area");
+		newSearchArea.addActionListener(this);
+		newSearchArea.setActionCommand("newsearcharea");
+		locationVisiblePanel.add(newSearchArea);
+		
+		locationVisiblePanel.add(newDoor);
+		locationVisiblePanel.add(newSearchArea);
 
 		backPanel.add(locationVisiblePanel, BorderLayout.PAGE_START);
 		this.plannerFrame = plannerFrame;
@@ -151,7 +169,7 @@ public class MapEditorPanel implements ActionListener {
 	}
 
 	public void mouseDown(MapObject mo)
-	{
+	{		
 		sidePanel.removeAll();
 		JLabel type;
 
@@ -228,9 +246,10 @@ public class MapEditorPanel implements ActionListener {
 		moCombo = new JComboBox<>(comboItems);
 		moCombo.setPreferredSize(new Dimension(200, 30));
 		moCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
-		moCombo.setMaximumSize(new Dimension(moCombo.getPreferredSize().width, 30));
+		moCombo.setMaximumSize(new Dimension(moCombo.getPreferredSize().width, 30));		
 		if (mo.getKey() != null && mo.getKey().length() > 0)
 			moCombo.setSelectedItem(mo.getKey());
+		moCombo.addItemListener(this);
 		
 		sidePanel.add(moCombo);
 		JButton editButton = new JButton("Edit Values");
@@ -294,38 +313,59 @@ public class MapEditorPanel implements ActionListener {
 			mapPanel.startCreatingLocation();
 		} else if ("deleteloc".equalsIgnoreCase(command)) {
 			mapPanel.deleteLocation();
+		} else if ("newdoor".equalsIgnoreCase(command)) {
+			MapObject mo = new MapObject();
+			mo.setKey("door");
+			JOptionPane.showMessageDialog(mapPanel, "Select the door image that will be used for this stamp");
+			if (editMapObject(mo)) {
+				stampMapObject = mo;
+				mapPanel.startStamping();
+			}
+		} else if ("newsearcharea".equalsIgnoreCase(command)) {
+			MapObject mo = new MapObject();
+			mo.setKey("searcharea");
+			JOptionPane.showMessageDialog(mapPanel, "Select the search area trigger that will be used for this stamp");
+			if (editMapObject(mo)) {
+				stampMapObject = mo;
+				mapPanel.startStamping();
+			}
 		}
 	}
 
-	public void setMapObject()
+	public boolean setMapObject()
 	{
 		MapObject mo = this.mapPanel.getSelectedMapObject();
 		if (mo.getKey() != null && mo.getKey().length() > 0)
 		{
 			if (mo.getKey().equalsIgnoreCase((String) moCombo.getSelectedItem()))
-					return;
+					return false;
 			int rc = JOptionPane.showConfirmDialog(mapPanel, "This map object already has a type set, if you continue the\n"
 					+ "the values that are currently saved in this object will be discarded.\n"
 					+ "Are you sure you want to continue?", "Confirm Old Value Override", JOptionPane.YES_NO_OPTION);
 			if (rc != JOptionPane.OK_OPTION)
 			{
-				return;
+				disableMapObjectTypeListener = true;
+				moCombo.setSelectedItem(mo.getKey());
+				disableMapObjectTypeListener = false;
+				return false;
 			}
 		}
 
-		mo.setKey((String) moCombo.getSelectedItem());
-		mo.getParams().clear();
+		plannerMap.updateMapObjectType(mo, (String) moCombo.getSelectedItem());
+
 		this.mouseDown(mo);
+		return true;
 	}
 	
 	public void editMapObject() {
 		setMapObject();
 
 		MapObject mo = this.mapPanel.getSelectedMapObject();
+		
 		editMapObject(mo);
 	}
 
-	public void editMapObject(MapObject mo)
+	public boolean editMapObject(MapObject mo)
 	{
 		PlannerContainerDef pcdef = this.plannerFrame.getContainerDefByName("mapedit");
 		PlannerLineDef pld = getLineDefByName(pcdef, mo.getKey());
@@ -334,7 +374,7 @@ public class MapEditorPanel implements ActionListener {
 		{
 			JOptionPane.showMessageDialog(mapPanel, "Unable to edit this location, either the object type has\n"
 					+ "not been set or it is set to an unsupported value.");
-			return;
+			return false;
 		}
 
 		PlannerLine pl = new PlannerLine(pld, false);
@@ -370,7 +410,7 @@ public class MapEditorPanel implements ActionListener {
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(this.getUIAspect(), "Unable to edit the selected location: have you loaded the associated text file yet?",
 					"Unable to load location", JOptionPane.ERROR_MESSAGE);
-			return;
+			return false;
 		}
 		int ret = JOptionPane.showConfirmDialog(mapPanel, pl.getUiAspect(), "Edit Map Location Attributes", JOptionPane.OK_CANCEL_OPTION);
 
@@ -399,7 +439,10 @@ public class MapEditorPanel implements ActionListener {
 				}
 			}
 			this.mouseDown(mo);
+		} else {
+			return false;
 		}
+		return true;
 	}
 
 	public boolean isDisplayEnemy() {
@@ -424,5 +467,26 @@ public class MapEditorPanel implements ActionListener {
 
 	public PlannerFrame getPlannerFrame() {
 		return plannerFrame;
+	}
+
+	/**
+	 * Fired when the mapobject type is changed
+	 * @param e
+	 */
+	@Override
+	public void itemStateChanged(ItemEvent e) {	
+		if (!disableMapObjectTypeListener && 
+				((String) e.getItem()).equalsIgnoreCase((String) moCombo.getSelectedItem())) {
+			if (!setMapObject())
+				return;
+
+			MapObject mo = this.mapPanel.getSelectedMapObject();
+			
+			editMapObject(mo);
+		}
+	}
+
+	public MapObject getStampMapObject() {
+		return stampMapObject;
 	}
 }

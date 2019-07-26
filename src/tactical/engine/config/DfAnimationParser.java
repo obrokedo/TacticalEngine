@@ -18,7 +18,7 @@ public class DfAnimationParser implements AnimationParser {
 	public SpriteAnims parseAnimations(String animsFile) throws IOException
 	{
 		// Parse Animations
-		 ArrayList<TagArea> rootTags = XMLParser.process(animsFile);
+		 ArrayList<TagArea> rootTags = XMLParser.process(animsFile, false);
 		 ArrayList<String> imageNames = new ArrayList<>();
 		 ArrayList<Rectangle> imageLocs = new ArrayList<>();
 		 SpriteAnims sa = null;
@@ -111,7 +111,7 @@ public class DfAnimationParser implements AnimationParser {
 
 	private static String parseSprites(String spritesFile, ArrayList<String> imageNames, ArrayList<Rectangle> imageLocs) throws IOException
 	{
-		ArrayList<TagArea> rootTags = XMLParser.process(spritesFile);
+		ArrayList<TagArea> rootTags = XMLParser.process(spritesFile, false);
 
 		// Parse Sprites
 		for (TagArea ta : rootTags)

@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
@@ -31,10 +32,12 @@ public class PlannerMap extends Map {
 	private TagArea rootTagArea;
 	private String mapName;
 	private ArrayList<PlannerTab> tabsWithMapReferences;
+	private ArrayList<PlannerReference> locationReferences;
 
-	public PlannerMap(String mapName) {
+	public PlannerMap(String mapName, ArrayList<PlannerReference> locationReferences) {
 		super();
 		this.mapName = mapName;
+		this.locationReferences = locationReferences;
 	}
 
 	public void addTileset(Image[] sprites, int tileStartIndex,
@@ -203,11 +206,46 @@ public class PlannerMap extends Map {
 	public void addMapObject(MapObject mo, TagArea ta) {
 		this.mapObjects.add(mo);
 		tagAreaByMapObject.put(mo, ta);
+		
+		addMapObjectReference(mo);
+	}
+	
+	private void addMapObjectReference(MapObject mo) {
+		if (mo.getKey().trim().equalsIgnoreCase("") || mo.getKey().equalsIgnoreCase("searcharea")) {
+			if (mo.getName() != null)
+				locationReferences.add(new PlannerReference(mo.getName()));
+			else
+				locationReferences.add(new PlannerReference("Unamed Location"));
+		}
+	}
+	
+	public void updateMapObjectType(MapObject mo, String newType) {
+		removeMapObjectReference(mo);
+		mo.setKey(newType);
+		addMapObjectReference(mo);
+		mo.getParams().clear();
 	}
 	
 	public void removeMapObject(MapObject mo) {
 		this.mapObjects.remove(mo);
 		tagAreaByMapObject.remove(mo);
+		
+		removeMapObjectReference(mo);
+	}
+
+	private void removeMapObjectReference(MapObject mo) {
+		if (mo.getKey().trim().equalsIgnoreCase("") || mo.getKey().equalsIgnoreCase("searcharea")) {
+			Iterator<PlannerReference> refIt = locationReferences.iterator();
+			
+			while (refIt.hasNext()) {
+				PlannerReference ref = refIt.next();
+				if (ref.getName().equalsIgnoreCase(mo.getName())) {
+					ref.setName("");
+					refIt.remove();
+					break;
+				}
+			}
+		}
 	}
 
 	public String outputNewMap()
@@ -229,7 +267,7 @@ public class PlannerMap extends Map {
 					metaTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, metaTagArea);
-			} else if ("battle".equalsIgnoreCase(rootChildTA.getParams().get("name"))) { 
+				} else if ("battle".equalsIgnoreCase(rootChildTA.getParams().get("name"))) { 
 					battleTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, battleTagArea);
@@ -241,6 +279,8 @@ public class PlannerMap extends Map {
 					triggerRegionsTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, triggerRegionsTagArea);
+				} else {
+					newRootTA.getChildren().remove(i);
 				}
 			}
 		}

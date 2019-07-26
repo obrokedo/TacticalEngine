@@ -30,7 +30,7 @@ public class MapParser
 			ResourceManager frm) throws IOException, SlickException
 	{
 		HashSet<String> spriteToLoad = new HashSet<String>();
-		ArrayList<TagArea> tagAreas = XMLParser.process(mapFile);
+		ArrayList<TagArea> tagAreas = XMLParser.process(mapFile, false);
 
 		TagArea tagArea = tagAreas.get(0);
 

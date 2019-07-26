@@ -41,7 +41,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	public static final int yOffset = 10;
 	private PlannerMap plannerMap;
 	private ArrayList<PlannerTab> tabsWithMapRefs;
-	private MapEditorPanel mapEditorPanel;
+	private MapEditorPanel mapEditorPanel;	
 	
 	private MapObject moToEdit;
 	
@@ -102,6 +102,8 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	}	
 	
 	public interface UnifiedRenderable {
+		public static int RENDERABLE_HEIGHT = 30;
+		
 		public void render(int indent, int y, int panelWidth, Graphics g);
 		public int getHeight();
 	}
@@ -145,7 +147,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			return 0;
 		for (UnifiedRenderable ur : renderables)
 			height += ur.getHeight();
-		return (height  + 1) * 50;
+		return (height  + 1) * UnifiedRenderable.RENDERABLE_HEIGHT;
 	}
 
 	public void loadMap(PlannerMap plannerMap, ArrayList<PlannerTab> tabsWithMapRefs) {
@@ -363,7 +365,8 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		PlannerContainer pc = tabsWithMapRefs.get(PlannerFrame.TAB_TEXT).
 				getPlannerContainerByReference(ref);
 		Group group = new Group(false, false);
-		group.groupRenderables.add(new Line("Show speech: " + ref.getName(), null, pc, null, this));
+		Line showSpeechLine = new Line("Show speech: " + ref.getName(), null, pc, null, this);
+		group.groupRenderables.add(showSpeechLine);
 		
 		if (ref.getName().trim().length() == 0) {
 			group.groupRenderables.add(new ArrowLine());
@@ -384,7 +387,10 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			} else
 				text = (String) pl.getValues().get(7);
 			
-			speechGroup.groupRenderables.add(new Line("Show " + pl.getPlDef().getName() + ": " + text, null, pc, pl, this));
+			Line subLine = new Line("Show " + pl.getPlDef().getName() + ": " + text, null, pc, pl, this); 
+			showSpeechLine.childSpeechLine.add(subLine);
+			
+			speechGroup.groupRenderables.add(subLine);
 			speechGroup.groupRenderables.add(new ArrowLine());						
 			
 			getSingleTriggerId(2, pc, pl, speechGroup);		
@@ -439,6 +445,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			} else if (ur instanceof NotSpecifiedLine)
 				((NotSpecifiedLine) ur).checkClick(x, y);
 		}
+		this.repaint();
 	}
 
 	@Override
