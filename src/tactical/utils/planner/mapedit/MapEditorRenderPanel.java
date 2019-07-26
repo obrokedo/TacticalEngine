@@ -9,6 +9,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
@@ -23,7 +25,7 @@ import tactical.utils.planner.PlannerFrame;
 import tactical.utils.planner.PlannerTab;
 import tactical.utils.planner.UIUtils;
 
-public class MapEditorRenderPanel extends JPanel implements MouseListener, MouseMotionListener, KeyListener
+public class MapEditorRenderPanel extends JPanel implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -41,6 +43,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.addKeyListener(this);
+		this.addMouseWheelListener(this);
 		this.parentPanel = parentPanel;
 		
 		UIUtils.addWindowKeyListener(this, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), () -> deleteLocation(), "delete");
@@ -52,51 +55,54 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 		super.paintComponent(g);
 		if (plannerMap != null)
 		{
-			plannerMap.renderMap(g, this);
+			plannerMap.renderMap(g, this, scale);
 			
 			if (creatingShape || creatingStamp) {
 				for (int i = 0; i < plannerMap.getMapWidth(); i++)
 				{			
 					g.setColor(Color.BLACK);
 					if (i % ((int) plannerMap.getTileRatio()) == 0)
-						g.drawLine(i * plannerMap.getTileRenderWidth(), 0, i * plannerMap.getTileRenderWidth(), plannerMap.getMapHeightInPixels());
+						g.drawLine((int) (i * plannerMap.getTileRenderWidth() * scale), 0, (int) (i * plannerMap.getTileRenderWidth() * scale), (int) (plannerMap.getMapHeightInPixels() * scale));
 				}
 				
 				for (int j = 0; j < plannerMap.getMapHeight(); j += (int) plannerMap.getTileRatio())
 				{
-					g.drawLine(0, j * plannerMap.getTileRenderHeight(), plannerMap.getMapWidthInPixels(), j * plannerMap.getTileRenderHeight());
+					g.drawLine(0, (int) (scale * j * plannerMap.getTileRenderHeight()), (int) (scale * plannerMap.getMapWidthInPixels()), (int) (scale * j * plannerMap.getTileRenderHeight()));
 				}
 			}
 			
 			plannerMap.renderMapLocations(g, selectedMapObject,
 					parentPanel.isDisplayEnemy(), parentPanel.isDisplayOther(), parentPanel.isDisplayTerrain(),
-					parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable());
+					parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable(), scale);
 			
 			if (creatingShape) {
 				if (creatingShapePoints.size() == 0) {
 					g.setColor(Color.YELLOW);
-					g.fillOval(lastMouse.x - 5, lastMouse.y - 5, 10, 10);
+					g.fillOval((int) (scale * lastMouse.x - 5), (int) (scale * lastMouse.y - 5), 
+							(int) (10), (int) (10));
 				} else {
 					Point p = null;
 					for (int i = 0; i < creatingShapePoints.size(); i++) {
 						p = creatingShapePoints.get(i);
 						g.setColor(Color.YELLOW);
-						g.fillOval(p.x - 5, p.y - 5, 10, 10);
+						g.fillOval((int) (scale * p.x - 5), (int) (scale * p.y - 5), 
+								(int) ( 10), (int) (10));
 						if (i != 0) {
 							Point p2 = creatingShapePoints.get(i - 1);
-							g.drawLine(p.x - 1, p.y - 1, p2.x - 1, p2.y - 1);
-							g.drawLine(p.x + 1, p.y + 1, p2.x + 1, p2.y + 1);
-							g.drawLine(p.x, p.y, p2.x, p2.y);
+							g.drawLine((int) (scale * p.x - 1), (int) (scale * p.y - 1), (int) (scale * p2.x - 1), (int) (scale * p2.y - 1));
+							g.drawLine((int) (scale * p.x + 1), (int) (scale * p.y + 1), (int) (scale * p2.x + 1), (int) (scale * p2.y + 1));
+							g.drawLine((int) (scale * p.x), (int) (scale * p.y), (int) (scale * p2.x), (int) (scale * p2.y));
 						}
 					}
 					
-					g.drawLine(p.x - 1, p.y - 1, lastMouse.x - 1, lastMouse.y - 1);
-					g.drawLine(p.x + 1, p.y + 1, lastMouse.x + 1, lastMouse.y + 1);
-					g.drawLine(p.x, p.y, lastMouse.x, lastMouse.y);
+					g.drawLine((int) (scale * p.x - 1), (int) (scale * p.y - 1), (int) (scale * lastMouse.x - 1), (int) (scale * lastMouse.y - 1));
+					g.drawLine((int) (scale * p.x + 1), (int) (scale * p.y + 1), (int) (scale * lastMouse.x + 1), (int) (scale * lastMouse.y + 1));
+					g.drawLine((int) (scale * p.x), (int) (scale * p.y), (int) (scale * lastMouse.x), (int) (scale * lastMouse.y));
 				}
 			} else if (creatingStamp) {
 				g.setColor(Color.YELLOW);
-				g.fillRect(lastMouse.x, lastMouse.y, plannerMap.getTileEffectiveWidth(), plannerMap.getTileEffectiveHeight());
+				g.fillRect((int) (scale * lastMouse.x), (int) (scale * lastMouse.y), 
+						(int) (scale * plannerMap.getTileEffectiveWidth()), (int) (scale * plannerMap.getTileEffectiveHeight()));
 			}
 		}
 	}
@@ -145,7 +151,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 								parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable(), interactable))
 							continue;					
 	
-						if (mo.getShape().contains(m.getX(), m.getY()))
+						if (mo.getShape().contains(m.getX() / scale, m.getY() / scale))
 						{
 							int newSize = mo.getWidth() * mo.getHeight();
 	
@@ -232,8 +238,8 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	
 	private void creatingShapeClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) { 
-			Point p = new Point(Math.round(e.getX() / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
-					Math.round(e.getY() / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
+			Point p = new Point(Math.round(e.getX() /scale / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
+					Math.round(e.getY() / scale / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
 			creatingShapePoints.add(p);			
 			if (creatingShapePoints.size() > 2 && p.x == creatingShapePoints.get(0).x && 
 					p.y == creatingShapePoints.get(0).y) {			
@@ -343,12 +349,12 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		if (creatingShape) {
-			lastMouse = new Point(Math.round(e.getX() / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
-					Math.round(e.getY() / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
+			lastMouse = new Point(Math.round(e.getX() /scale / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
+					Math.round(e.getY() / scale / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
 			this.repaint();
 		} else if (creatingStamp) {
-			lastMouse = new Point((int) Math.floor(e.getX() / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
-					(int) Math.floor(e.getY() / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
+			lastMouse = new Point((int) Math.floor(e.getX() / scale / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
+					(int) Math.floor(e.getY() / scale / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
 			this.repaint();
 		}
 	}
@@ -366,6 +372,27 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		
+		if (e.isControlDown()) {
+			if (e.getWheelRotation() < 0) {
+				scale = Math.min(4, scale + .5f);
+			} else {
+				scale = Math.max(.5f, scale - .5f);
+			}
+			
+			this.setPreferredSize(new Dimension((int) (plannerMap.getMapWidthInPixels() * scale), (int) (plannerMap.getMapHeightInPixels() * scale)));
+			this.repaint();
+			this.validate();
+			this.getParent().revalidate();
+			this.getParent().repaint();
+		} else {
+			this.getParent().dispatchEvent(e);
+		}
 		
 	}
 }

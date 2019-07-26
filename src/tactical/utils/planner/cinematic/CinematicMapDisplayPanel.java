@@ -237,11 +237,11 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 
 	@Override
 	protected void paintComponent(Graphics g) {
-		plannerMap.renderMap(g, this);
+		plannerMap.renderMap(g, this, 1);
 
 		if (PlannerFrame.SHOW_CIN_LOCATION)
 		{
-			plannerMap.renderMapLocations(g, selectedMO);
+			plannerMap.renderMapLocations(g, selectedMO, 1);
 		}
 
 		for (Point sp : spriteLocations)

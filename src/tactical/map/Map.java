@@ -51,6 +51,7 @@ public class Map
 	private ArrayList<MapLayer> mapLayer = new ArrayList<>();
 	protected MapLayer moveableLayer;
 	private MapLayer roofLayer;
+	private MapLayer roofShadowLayer;
 	protected int tileWidth, tileHeight;
 	protected ArrayList<TileSet> tileSets = new ArrayList<TileSet>();
 	protected ArrayList<MapObject> mapObjects = new ArrayList<MapObject>();
@@ -652,6 +653,16 @@ public class Map
 		if (!disableRoofs)
 			return roofLayer;
 		return null;
+	}
+
+	public MapLayer getRoofShadowLayer() {
+		if (!disableRoofs)			
+			return roofShadowLayer;
+		return null;
+	}
+
+	public void setRoofShadowLayer(MapLayer roofShadowLayer) {
+		this.roofShadowLayer = roofShadowLayer;
 	}
 
 	public void setDisableRoofs(boolean disableRoofs) {

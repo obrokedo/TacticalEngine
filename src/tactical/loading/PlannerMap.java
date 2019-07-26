@@ -75,7 +75,7 @@ public class PlannerMap extends Map {
 		return null;
 	}
 
-	public void renderMap(Graphics g, JPanel panel)
+	public void renderMap(Graphics g, JPanel panel, float scale)
 	{
 		g.setColor(Color.darkGray);
 		g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
@@ -85,21 +85,27 @@ public class PlannerMap extends Map {
 			{
 				for (int k = 0; k < 5; k++)
 				{
-					if (k == 0 || getMapLayer(k).getTiles()[j][i] != 0)
-						g.drawImage(getPlannerSprite(getMapLayer(k).getTiles()[j][i]), i * getTileRenderWidth(), j * getTileRenderHeight(), panel);
+					if (k == 0 || getMapLayer(k).getTiles()[j][i] != 0)	{			
+						g.drawImage(getPlannerSprite(getMapLayer(k).getTiles()[j][i]), 
+								(int) (scale * i * getTileRenderWidth()), (int) (scale * j * getTileRenderHeight()), 
+								(int) (scale * (i + 1) * getTileRenderWidth()), (int) (scale * (j + 1) * getTileRenderHeight()),
+								0, 0, getTileRenderWidth(), getTileRenderHeight(), panel);
+						
+					}
 				}				
 			}
+			
 		}
 	}
 
-	public void renderMapLocations(Graphics g, MapObject selectedMO)
+	public void renderMapLocations(Graphics g, MapObject selectedMO, float scale)
 	{
-		renderMapLocations(g, selectedMO, true, true, true, true, true);
+		renderMapLocations(g, selectedMO, true, true, true, true, true, scale);
 	}
 
 	public void renderMapLocations(Graphics g, MapObject selectedMO,
 			boolean displayEnemy, boolean displayOther, boolean displayTerrain,
-			boolean displayUnused, boolean displayInteractables)
+			boolean displayUnused, boolean displayInteractables, float scale)
 	{
 		for (MapObject mo : getMapObjects())
 		{
@@ -116,8 +122,8 @@ public class PlannerMap extends Map {
 			yP = new int[mo.getShape().getPointCount()];
 			for (int i = 0; i < xP.length; i++)
 			{
-				xP[i] = (int) mo.getShape().getPoint(i)[0];
-				yP[i] = (int) mo.getShape().getPoint(i)[1];
+				xP[i] = (int) (mo.getShape().getPoint(i)[0] * scale);
+				yP[i] = (int) (mo.getShape().getPoint(i)[1] * scale);
 			}
 						
 			if (mo != selectedMO) {
@@ -211,6 +217,9 @@ public class PlannerMap extends Map {
 	}
 	
 	private void addMapObjectReference(MapObject mo) {
+		if (mo.getKey() == null)
+			mo.setKey("");
+		
 		if (mo.getKey().trim().equalsIgnoreCase("") || mo.getKey().equalsIgnoreCase("searcharea")) {
 			if (mo.getName() != null)
 				locationReferences.add(new PlannerReference(mo.getName()));
@@ -262,7 +271,7 @@ public class PlannerMap extends Map {
 			// We want to make a copy of this TagArea
 			// because the shallow copy we did for the root does not extend into its'
 			// children. So modifying this without a copy would mess up the original TAs
-			if ("objectgroup".equalsIgnoreCase(rootChildTA.getTagType())) {
+			if ("objectgroup".equalsIgnoreCase(rootChildTA.getTagType())) {				
 				if ("meta".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {					
 					metaTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
@@ -281,6 +290,7 @@ public class PlannerMap extends Map {
 					newRootTA.getChildren().add(i, triggerRegionsTagArea);
 				} else {
 					newRootTA.getChildren().remove(i);
+					i--;
 				}
 			}
 		}

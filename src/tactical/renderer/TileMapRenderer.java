@@ -126,6 +126,12 @@ public class TileMapRenderer extends Manager
 									mapX * map.getTileRenderWidth() - camera.getLocationX(),
 										mapY * map.getTileRenderHeight() - camera.getLocationY());
 							}
+							if (map.getRoofShadowLayer() != null && map.getRoofShadowLayer().getTiles()[mapY][mapX] != 0)
+							{
+								map.renderSprite(map.getRoofShadowLayer().getTiles()[mapY][mapX],
+									mapX * map.getTileRenderWidth() - camera.getLocationX(),
+										mapY * map.getTileRenderHeight() - camera.getLocationY());
+							}
 						}
 					}
 				}

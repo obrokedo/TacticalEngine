@@ -708,7 +708,9 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		if (triggerFile != null) {
 			LOGGER.fine("SAVE");
 			Path path = Paths.get(triggerFile.getAbsolutePath());
-			List<String> buffer = (List<String>) Collections.singletonList("<area><map file=\"" + plannerMap.getMapName() +"\"/>");
+			List<String> buffer = new ArrayList<>();
+			buffer.add("<area>");
+			buffer.add("<map file=\"" + plannerMap.getMapName() +"\"/>");
 			try {
 				Files.write(path, buffer, StandardCharsets.UTF_8);
 			} catch (IOException e) {

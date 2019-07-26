@@ -112,7 +112,11 @@ public class MapParser
 					else if (childArea.getParams().get("name").startsWith("Roof") ||
 							childArea.getParams().get("name").startsWith("roof") ||
 							layer.containsParam("roof")) {
-						map.setRoofLayer(layer);
+						if (childArea.getParams().get("name").contains("shadow") || 
+								childArea.getParams().get("name").contains("Shadow"))
+							map.setRoofShadowLayer(layer);
+						else
+							map.setRoofLayer(layer);
 					}
 					else if (layer.containsParam("flash"))
 					{
