@@ -21,4 +21,6 @@ public abstract class EngineConfigurationValues implements Serializable {
 	public abstract int getHeroPromotionLevel();
 	public abstract int getBattleMusicVolume();
 	public abstract void clearPythonModules();
+	public abstract int getEmptyItemIndexX();
+	public abstract int getEmptyItemIndexY();
 }

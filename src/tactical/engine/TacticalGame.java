@@ -265,29 +265,32 @@ public abstract class TacticalGame extends StateBasedGame   {
 		/* Uncomment for multiplayer support */
 		/*************************************/
 		/*
-		this.addState(new MultiplayerMenuState());
-		loadingState.setLoadingInfo("/menu/MainMenu", null, false, true,
-				new FCResourceManager(),
+		this.addState(new MultiplayerMenuState(persistentStateInfo));
+		loadingState.setLoadingInfo("/menu/MainMenu", false, true,
+				new ResourceManager(),
 					(LoadableGameState) this.getState(STATE_GAME_MENU_MULTI),
-						new FCLoadingRenderSystem(gameContainer));
-						*/
-
+						TacticalGame.ENGINE_CONFIGURATIOR.getLogoLoadScreenRenderer(gameContainer));
+		*/
 		/******************************/
 		/* Comment during multiplayer */
 		/******************************/
 		
 		// DEVELOPMENT MODE
+		
 		if (DEV_MODE_ENABLED)
 			loadingState.setLoadingInfo("/menu/MainMenu", false, true,
 				new ResourceManager(),
 					(LoadableGameState) this.getState(STATE_GAME_MENU_DEVEL),
 						new LoadingScreenRenderer(gameContainer));
+						
 		// RELEASE MODE
+		/*
 		else
 			loadingState.setLoadingInfo("/menu/MainMenu", false, true,
 				new ResourceManager(),
 					(LoadableGameState) this.getState(STATE_GAME_MENU),
 						TacticalGame.ENGINE_CONFIGURATIOR.getLogoLoadScreenRenderer(gameContainer));
+						*/
 		
 		// TESTER ONLY MODE
 		/*

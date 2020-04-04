@@ -1,8 +1,11 @@
 package tactical.game.resource;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 
 import tactical.game.definition.ItemDefinition;
+import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
 import tactical.loading.ResourceManager;
 import tactical.utils.StringUtils;
@@ -27,9 +30,10 @@ public class ItemResource
 	}
 	
 	public static int getItemIdByName(String itemName) {
-		if (StringUtils.isNotEmpty(itemName))
+		if (StringUtils.isNotEmpty(itemName)) {
 			return itemDefinitionsById.values().stream().filter(
-				id -> id.getUnintializedItem().getName().equals(itemName)).findFirst().get().getId();
+				id -> id.getUnintializedItem().getName().equalsIgnoreCase(itemName)).findFirst().get().getId();
+		}
 		return -1;
 	}
 
@@ -46,5 +50,17 @@ public class ItemResource
 		// spell object can be loaded
 		if (item.getSpellUse() != null)
 			item.getSpellUse().initialize(fcrm);
+	}
+	
+	public static ArrayList<Item> getAllWeapons() {
+		ArrayList<Item> itemDefs = new ArrayList<>();
+		for (ItemDefinition id : itemDefinitionsById.values()) {
+			Item item = id.getUnintializedItem();
+			if (item.isEquippable() && 
+					((EquippableItem) item).getItemType() == EquippableItem.TYPE_WEAPON) {
+				itemDefs.add(item);
+			}
+		}
+		return itemDefs;
 	}
 }

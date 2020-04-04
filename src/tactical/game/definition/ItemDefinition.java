@@ -166,4 +166,9 @@ public class ItemDefinition
 	public int getId() {
 		return id;
 	}
+
+	@Override
+	public String toString() {
+		return "ItemDefinition [item=" + item + ", imageX=" + imageX + ", imageY=" + imageY + ", id=" + id + "]";
+	}
 }

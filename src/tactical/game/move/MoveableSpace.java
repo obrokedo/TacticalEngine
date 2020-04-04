@@ -189,15 +189,14 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 							
 						}
 					
-					if (showOnlyForeground && !isKeyTileEmpty) {
+					// showOnlyForeground = true;
+					// isKeyTileEmpty = false;
+					
+					if (showOnlyForeground != isKeyTileEmpty) {
 						
 						graphics.fillRect((i + topX) * tileWidth - camX,
 								(j + topY) * tileHeight - camY,
 								tileWidth, tileHeight);												
-					} else if (!showOnlyForeground && isKeyTileEmpty) {
-						graphics.fillRect((i + topX) * tileWidth - camX,
-								(j + topY) * tileHeight - camY,
-								tileWidth, tileHeight);	
 					}
 				}
 			

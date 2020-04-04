@@ -175,7 +175,7 @@ public class ClientProfile implements Serializable
 	    return null;
 	}
 	
-	public void initialize(ResourceManager fcrm)
+	public void initialize()
 	{
 		// Add starting heroes if they haven't been added yet
 		if (getHeroes().size() == 0)
@@ -187,10 +187,10 @@ public class ClientProfile implements Serializable
 			}			
 		}
 		
-		applyDevParams(fcrm);
+		applyDevParams();
 	}
 	
-	private void applyDevParams(ResourceManager fcrm)
+	private void applyDevParams()
 	{
 		if (devParams == null)
 			return;

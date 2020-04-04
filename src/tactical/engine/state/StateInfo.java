@@ -111,7 +111,7 @@ public class StateInfo
 		this.showAttackCinematic = false;
 		setWaiting();
 		
-		psi.getClientProfile().initialize(getResourceManager());
+		psi.getClientProfile().initialize();
 
 		initializeSystems();
 

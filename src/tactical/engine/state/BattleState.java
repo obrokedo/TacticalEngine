@@ -151,6 +151,12 @@ public class BattleState extends LoadableGameState
 				stateInfo.getCurrentSprite().render(stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer(), stateInfo.getTileHeight());
 			cinematicManager.render(g);
 			tileMapRenderer.renderForeground(xOffset, yOffset, stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer());
+			
+			stateInfo.getCurrentSprite().setFadeAmount(-155);
+			if (stateInfo.getCurrentSprite() != null && stateInfo.getCurrentSprite().isVisible())
+				stateInfo.getCurrentSprite().render(stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer(), stateInfo.getTileHeight());
+			stateInfo.getCurrentSprite().setFadeAmount(stateInfo.getCurrentSprite().getMaxHP());
+			
 			turnManager.renderCursor(g);
 			cinematicManager.renderPostEffects(g);
 			panelRenderer.render(g);

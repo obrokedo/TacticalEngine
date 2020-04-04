@@ -288,6 +288,10 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 				System.out.println("ADDED HEROES " + persistentStateInfo.getClientProfile().getHeroes().size());
 				break;
 			case GAME_READY:
+				persistentStateInfo.getClientProfile().initializeValues();
+				persistentStateInfo.getClientProgress().initializeValues();
+				persistentStateInfo.getClientProfile().initialize();
+				System.out.println("Send game ready " + persistentStateInfo.getClientProfile().getHeroes().size());
 				client.sendMessage(new BackedSpriteMessage(persistentStateInfo.getClientProfile().getHeroes()));
 				break;
 			case START_GAME:

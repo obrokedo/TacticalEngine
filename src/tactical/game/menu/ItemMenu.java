@@ -32,7 +32,8 @@ public class ItemMenu extends QuadMenu
 
 	public ItemMenu(StateInfo stateInfo) {
 		super(PanelType.PANEL_ITEM, null, false, stateInfo);
-		emptySpot = stateInfo.getResourceManager().getSpriteSheet("items").getSprite(17, 1);
+		emptySpot = stateInfo.getResourceManager().getSpriteSheet("items").getSprite(TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexX(), 
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexY());
 
 		this.enabled = new boolean[4];
 		this.icons = new Image[4];
