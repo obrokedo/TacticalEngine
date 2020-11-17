@@ -107,6 +107,16 @@ public class Map
 			}
 			else if (mo.getKey().equalsIgnoreCase("door"))
 			{
+				// If we are in combat remove doors that are on moveable spaces
+				if (isCombat) {
+					Door door = (Door) mo.getDoor(stateInfo.getResourceManager(), -1);
+					Point tti = new Point(door.getTileX(), door.getTileY());
+					
+					if (overriddenTerrain.containsKey(tti)) {
+						continue;
+					}
+				}
+				
 				Door door = (Door) mo.getDoor(stateInfo.getResourceManager(), incrementingIds++);
 				stateInfo.addSprite(door);
 				// stateInfo.addMapTrigger(new TriggerLocation(stateInfo, mo, door));

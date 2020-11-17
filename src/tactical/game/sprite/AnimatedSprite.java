@@ -32,6 +32,7 @@ public class AnimatedSprite extends Sprite
 	protected String imageName;
 	protected transient Direction facing;
 	private int animationUpdate = 10;
+	protected transient int alpha = 255;
 
 	public AnimatedSprite(int locX, int locY, String imageName, int id) {
 		super(locX, locY, id);
@@ -179,5 +180,13 @@ public class AnimatedSprite extends Sprite
 
 	public void doneMoving(StateInfo stateInfo) {
 
+	}
+
+	public int getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(int alpha) {
+		this.alpha = alpha;
 	}
 }

@@ -115,6 +115,7 @@ public class TurnManager extends Manager implements KeyboardListener
 	
 	// DEBUG Variables
 	public static boolean enableAIDebug = false;
+	public static boolean healOnTurn = false;
 	private List<AIConfidence> debugConfidences;
 
 	@Override
@@ -344,6 +345,11 @@ public class TurnManager extends Manager implements KeyboardListener
 			sprite.getTileY());
 
 		ownsSprite = false;
+		
+		// Check for heal debug
+		if (TurnManager.healOnTurn && sprite.isHero()) {
+			sprite.setCurrentHP(sprite.getMaxHP());
+		}
 
 		// This is the first combatant to act in the battle, the cursor will
 		// not have been set to any location yet, so set it on the current sprite

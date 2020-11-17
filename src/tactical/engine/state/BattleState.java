@@ -152,10 +152,13 @@ public class BattleState extends LoadableGameState
 			cinematicManager.render(g);
 			tileMapRenderer.renderForeground(xOffset, yOffset, stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer());
 			
-			stateInfo.getCurrentSprite().setFadeAmount(-155);
-			if (stateInfo.getCurrentSprite() != null && stateInfo.getCurrentSprite().isVisible())
+			// Render a "shadow" sprite on top of foreground
+			if (stateInfo.getCurrentSprite() != null && stateInfo.getCurrentSprite().isVisible()) {
+				int currAlpha = stateInfo.getCurrentSprite().getAlpha();
+				stateInfo.getCurrentSprite().setAlpha(Math.min(100, stateInfo.getCurrentSprite().getAlpha()));
 				stateInfo.getCurrentSprite().render(stateInfo.getCamera(), g, stateInfo.getPaddedGameContainer(), stateInfo.getTileHeight());
-			stateInfo.getCurrentSprite().setFadeAmount(stateInfo.getCurrentSprite().getMaxHP());
+				stateInfo.getCurrentSprite().setAlpha(currAlpha);
+			}
 			
 			turnManager.renderCursor(g);
 			cinematicManager.renderPostEffects(g);

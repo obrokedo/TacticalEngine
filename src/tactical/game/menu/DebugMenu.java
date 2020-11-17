@@ -41,13 +41,15 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 	private Button killButton = new Button(270, 55, 140, 20, "Kill Combatant");
 	private Button levelButton = new Button(270, 85, 140, 20, "Level Up Hero");
 	private Button healButton = new Button(270, 115, 140, 20, "Heal");
-	private Button setToOneButton = new Button(270, 145, 140, 20, "Set to 1 HP");
+	private Button setToOneButton = new Button(270, 145, 140, 20, "Set to 1 HP");	
 	
 	private Button setDisplayAttributes = new Button(15, 600, 140, 20, "Display Options");
 	
+	private Button healHeroesOnTurn = new Button(270, 115, 140, 20, (TurnManager.healOnTurn ? "Disable" : "Enable") + " Heal Heroes on Turn");
 	private Button debugAI = new Button(270, 85, 140, 20, (TurnManager.enableAIDebug ? "Disable" : "Enable") + " AI Debug");
 	private Button chooseSprite = new Button(270, 55, 140, 20, "Choose Sprite");
 	private Button showQuests = new Button(270, 25, 200, 20, "Show Completed Quests");
+	
 	private int inputTimer = 0;
 	private String triggerStatus = null;
 	private DebugMenuState state = DebugMenuState.CHOOSE_TRIGGER;
@@ -294,6 +296,11 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 				triggerStatus = null;
 				timerReset();
 			}
+			if (stateInfo.isCombat() && healHeroesOnTurn.handleUserInput(x, y, leftClick)) {
+				TurnManager.healOnTurn = !TurnManager.healOnTurn;
+				triggerStatus = null;
+				timerReset();
+			}
 			
 			if (showQuests.handleUserInput(x, y, leftClick)) {
 				state = DebugMenuState.SHOW_QUESTS;
@@ -350,6 +357,7 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 			if (stateInfo.isCombat()) {
 				chooseSprite.render(graphics);
 				debugAI.render(graphics);
+				healHeroesOnTurn.render(graphics);
 			}
 			showQuests.render(graphics);
 		}

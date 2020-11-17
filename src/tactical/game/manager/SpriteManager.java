@@ -207,7 +207,7 @@ public class SpriteManager extends Manager
 			updateDelta -= UPDATE_TIME;
 			boolean isEnemyAlive = false;
 
-			// TODO Is this to cumbersome, could move it when people move around the map?
+			// TODO Is this too cumbersome, could move it when people move around the map?
 			stateInfo.sortSprites();
 			Iterator<Sprite> spriteItr = stateInfo.getSpriteIterator();
 			while (spriteItr.hasNext())
@@ -218,45 +218,14 @@ public class SpriteManager extends Manager
 				{
 					CombatSprite cs = (CombatSprite) s;
 					if (cs.getCurrentHP() <= 0) {
-						cs.setFadeAmount(cs.getCurrentHP() - delta);
+						if (cs.getCurrentHP() != Integer.MIN_VALUE) {
+							cs.setCurrentHP(Integer.MIN_VALUE);
+							cs.setAlpha(255);
+						} else
+							cs.setAlpha(cs.getAlpha() - delta);
 					}
 					
-					if (cs.getCurrentHP() < -255)
-					{
-						// Add dropped items to deals
-						if (!cs.isHero()) {
-							for (int itemInd = 0; itemInd < cs.getItemsSize(); itemInd++) {
-								Item item = cs.getItem(itemInd);
-								if (item.isDeal()) {
-									stateInfo.getClientProgress().getDealItems().add(item.getItemId());
-								}
-							}
-						}
-						
-						cs.setCurrentHP(0);
-						spriteItr.remove();
-						stateInfo.removeCombatSprite(cs);
-						MusicConfiguration musicSelector = TacticalGame.ENGINE_CONFIGURATIOR.getMusicConfiguration();
-						stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, 
-								musicSelector.getSpriteDeathOnMapSoundEffect(cs.getName()), 
-								1.0f, false));
-						
-						s.destroy(stateInfo);
-
-						if (TacticalGame.BATTLE_MODE_OPTIMIZE && cs.isLeader())
-						{
-							// If it's a hero then we've lost
-							loadBattleOptmize(!cs.isHero());
-						}
-						
-						if (cs.isHero())
-							stateInfo.checkTriggersHeroDeath(cs);
-						else
-							stateInfo.checkTriggersEnemyDeath(cs);
-					}
-					// If the sprite did not die, then check to see if it is an enemy, if so the battle is not over
-					else if (!((CombatSprite) s).isHero())
-						isEnemyAlive = true;
+					isEnemyAlive = handleSpriteDying(isEnemyAlive, spriteItr, s, cs);
 				}
 			}
 
@@ -267,6 +236,46 @@ public class SpriteManager extends Manager
 				loadBattleOptmize(true);
 			}
 		}
+	}
+
+	private boolean handleSpriteDying(boolean isEnemyAlive, Iterator<Sprite> spriteItr, Sprite s, CombatSprite cs) {
+		if (cs.getAlpha() <= 0)
+		{
+			// Add dropped items to deals
+			if (!cs.isHero()) {
+				for (int itemInd = 0; itemInd < cs.getItemsSize(); itemInd++) {
+					Item item = cs.getItem(itemInd);
+					if (item.isDeal()) {
+						stateInfo.getClientProgress().getDealItems().add(item.getItemId());
+					}
+				}
+			}
+			
+			cs.setCurrentHP(0);
+			spriteItr.remove();
+			stateInfo.removeCombatSprite(cs);
+			MusicConfiguration musicSelector = TacticalGame.ENGINE_CONFIGURATIOR.getMusicConfiguration();
+			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, 
+					musicSelector.getSpriteDeathOnMapSoundEffect(cs.getName()), 
+					1.0f, false));
+			
+			s.destroy(stateInfo);
+
+			if (TacticalGame.BATTLE_MODE_OPTIMIZE && cs.isLeader())
+			{
+				// If it's a hero then we've lost
+				loadBattleOptmize(!cs.isHero());
+			}
+			
+			if (cs.isHero())
+				stateInfo.checkTriggersHeroDeath(cs);
+			else
+				stateInfo.checkTriggersEnemyDeath(cs);
+		}
+		// If the sprite did not die, then check to see if it is an enemy, if so the battle is not over
+		else if (!((CombatSprite) s).isHero())
+			isEnemyAlive = true;
+		return isEnemyAlive;
 	}
 	
 	private void loadBattleOptmize(boolean won)
@@ -290,62 +299,8 @@ public class SpriteManager extends Manager
 			case INTIIALIZE_MANAGERS:
 				initializeAfterSprites(((BooleanMessage) message).isBool());
 				break;
-			case INVESTIGATE:
-				
-				int checkX = stateInfo.getCurrentSprite().getTileX();
-				int checkY = stateInfo.getCurrentSprite().getTileY();
-				int checkX2 = checkX;
-				int checkY2 = checkY;
-				
-				switch (stateInfo.getCurrentSprite().getFacing())
-				{
-					case UP:
-						checkY--;
-						checkY2 -= 2;
-						break;
-					case DOWN:
-						checkY++;
-						checkY2 += 2;
-						break;
-					case LEFT:
-						checkX--;
-						checkX2 -= 2;
-						break;
-					case RIGHT:
-						checkX++;
-						checkX2 += 2;
-						break;
-				}
-
-				boolean checkThroughWall = false;
-				if (!stateInfo.getCurrentMap().isMarkedMoveable(checkX, checkY))
-					checkThroughWall = true;
-				for (Sprite s : stateInfo.getSprites())
-				{
-					if (s.getSpriteType() == Sprite.TYPE_NPC)
-					{
-						NPCSprite npc = (NPCSprite) s;
-						if (npc.getTileX() == checkX &&
-								npc.getTileY() == checkY || (checkThroughWall && 
-										npc.isThroughWall() &&
-										npc.getTileX() == checkX2 &&
-										npc.getTileY() == checkY2))
-						{
-							npc.triggerButton1Event(stateInfo);
-							break;
-						}
-					}
-					else if (s.getSpriteType() == Sprite.TYPE_STATIC_SPRITE)
-					{
-						StaticSprite ss = (StaticSprite) s;
-						if (s.getTileX() == checkX &&
-								ss.getTileY() == checkY)
-						{
-							ss.triggerButton1Event(stateInfo);
-							break;
-						}
-					}
-				}
+			case INVESTIGATE:				
+				handleInvestigate();
 				break;
 			case MENU_CLOSED:
 				for (Sprite s : stateInfo.getSprites()) {
@@ -360,6 +315,63 @@ public class SpriteManager extends Manager
 				break;
 			default:
 				break;
+		}
+	}
+
+	private void handleInvestigate() {
+		int checkX = stateInfo.getCurrentSprite().getTileX();
+		int checkY = stateInfo.getCurrentSprite().getTileY();
+		int checkX2 = checkX;
+		int checkY2 = checkY;
+		
+		switch (stateInfo.getCurrentSprite().getFacing())
+		{
+			case UP:
+				checkY--;
+				checkY2 -= 2;
+				break;
+			case DOWN:
+				checkY++;
+				checkY2 += 2;
+				break;
+			case LEFT:
+				checkX--;
+				checkX2 -= 2;
+				break;
+			case RIGHT:
+				checkX++;
+				checkX2 += 2;
+				break;
+		}
+
+		boolean checkThroughWall = false;
+		if (!stateInfo.getCurrentMap().isMarkedMoveable(checkX, checkY))
+			checkThroughWall = true;
+		for (Sprite s : stateInfo.getSprites())
+		{
+			if (s.getSpriteType() == Sprite.TYPE_NPC)
+			{
+				NPCSprite npc = (NPCSprite) s;
+				if (npc.getTileX() == checkX &&
+						npc.getTileY() == checkY || (checkThroughWall && 
+								npc.isThroughWall() &&
+								npc.getTileX() == checkX2 &&
+								npc.getTileY() == checkY2))
+				{
+					npc.triggerButton1Event(stateInfo);
+					break;
+				}
+			}
+			else if (s.getSpriteType() == Sprite.TYPE_STATIC_SPRITE)
+			{
+				StaticSprite ss = (StaticSprite) s;
+				if (s.getTileX() == checkX &&
+						ss.getTileY() == checkY)
+				{
+					ss.triggerButton1Event(stateInfo);
+					break;
+				}
+			}
 		}
 	}
 }

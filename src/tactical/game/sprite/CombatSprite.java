@@ -499,11 +499,18 @@ public class CombatSprite extends AnimatedSprite
 		return "";
 	}
 	
-	public void setFadeAmount(int amt) {
+	public void asetFadeAmount(int amt) {
 		currentHP = amt;
 		fadeColor.a = (255 + currentHP) / 255.0f;
 	}
-	
+
+	@Override
+	public void setAlpha(int alpha) {
+		super.setAlpha(alpha);
+		fadeColor.a = alpha / 255.0f;
+	}
+
+
 	@Override
 	public void setFacing(Direction dir)
 	{
@@ -536,7 +543,7 @@ public class CombatSprite extends AnimatedSprite
 	}
 
 	public int getMaxHP() {
-		return maxHP;
+		return this.maxHP;
 	}
 
 	public void setMaxHP(int maxHP) {
