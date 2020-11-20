@@ -592,6 +592,14 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		try {
 			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), plannerMap, new PlannerTilesetParser(), null);
 			
+			if (!plannerMap.validateLayers())
+			{
+				JOptionPane.showMessageDialog(null, 
+						"The loaded map contains Object Layers that do not conform to the map naming schema."
+						+ "\nOnly layers named 'Terrain', 'Meta', 'Trigger Region' and 'Battle' are allowed, \n"
+						+ "all other layers will be removed upon map export", "Unknown Object Layers Found", JOptionPane.ERROR_MESSAGE);
+			}
+			
 			if (plannerMap.getMapLayerAmount() < 4) {
 				JOptionPane.showMessageDialog(this, "The selected map has too few layers to be compatible with the engine.\n "
 						+ "Add at least 5 layers 'BG, BG Shadow, MG, MG Shadow, Walkable' to prevent errors.");

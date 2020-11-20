@@ -39,6 +39,29 @@ public class PlannerMap extends Map {
 		this.mapName = mapName;
 		this.locationReferences = locationReferences;
 	}
+	
+	public boolean validateLayers() {
+		TagArea newRootTA = new TagArea(this.rootTagArea);
+
+		for (int i = 0; i < newRootTA.getChildren().size(); i++)
+		{
+			TagArea rootChildTA = newRootTA.getChildren().get(i);
+			// We want to make a copy of this TagArea
+			// because the shallow copy we did for the root does not extend into its'
+			// children. So modifying this without a copy would mess up the original TAs
+			if ("objectgroup".equalsIgnoreCase(rootChildTA.getTagType())) {				
+				if (!("meta".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
+					"npcs-objects".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
+					"battle".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
+					"terrain".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
+					"trigger regions".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
+					"trigger region".equalsIgnoreCase(rootChildTA.getParams().get("name")))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	public void addTileset(Image[] sprites, int tileStartIndex,
 			int tileWidth, int tileHeight,
@@ -272,7 +295,8 @@ public class PlannerMap extends Map {
 			// because the shallow copy we did for the root does not extend into its'
 			// children. So modifying this without a copy would mess up the original TAs
 			if ("objectgroup".equalsIgnoreCase(rootChildTA.getTagType())) {				
-				if ("meta".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {					
+				if ("meta".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
+					"npcs-objects".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {					
 					metaTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, metaTagArea);
@@ -280,15 +304,20 @@ public class PlannerMap extends Map {
 					battleTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, battleTagArea);
-				} else if ("terrain".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
+				} else if ("terrains".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
 					terrainTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, terrainTagArea);
-				} else if ("trigger regions".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
+				} else if ("trigger regions".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
+						"trigger region".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
 					triggerRegionsTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, triggerRegionsTagArea);
 				} else {
+					JOptionPane.showMessageDialog(null, 
+							"The loaded map contains Object Layers that do not conform to the map naming schema."
+							+ "\nOnly layers named 'Terrain', 'Meta', 'Trigger Region' and 'Battle' are allowed, \n"
+							+ "all other layers will be removed upon map export", "Unknown Object Layers Found", JOptionPane.ERROR_MESSAGE);
 					newRootTA.getChildren().remove(i);
 					i--;
 				}
@@ -296,7 +325,7 @@ public class PlannerMap extends Map {
 		}
 		
 		if (metaTagArea == null) {
-			metaTagArea = new TagArea("<objectgroup name=\"Meta\" visible=\"1\">");
+			metaTagArea = new TagArea("<objectgroup name=\"NPCs-Objects\" visible=\"1\">");
 			newRootTA.getChildren().add(metaTagArea);
 		}
 		if (terrainTagArea == null) {
@@ -320,9 +349,6 @@ public class PlannerMap extends Map {
 		{
 			TagArea childTA = getNewChild(mo);
 			TagArea parentArea;
-			
-			if ("BabyMan".equalsIgnoreCase(mo.getName()))
-				System.out.println();
 			
 			if ("npc".equalsIgnoreCase(mo.getKey()) || 
 					"door".equalsIgnoreCase(mo.getKey()) || 
