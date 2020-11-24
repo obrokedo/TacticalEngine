@@ -54,6 +54,7 @@ public class CinematicEvent
 		STOP_SE,
 		VISIBLE,
 		SPEECH,
+		MULTI_HERO_JOIN_MENU,
 		CAMERA_SHAKE,
 		CAMERA_FOLLOW,
 		CAMERA_CENTER,

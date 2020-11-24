@@ -1218,7 +1218,7 @@ public class PlannerDefinitions {
 						"Displays the specified text in a text box. This action is 'halting', which means subsequent actions will not be performed until the text box is dismissed via user input.",
 						definingValues));
 		textControl.add("Show Speech Box");
-
+		
 		// Load map
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
@@ -1305,6 +1305,16 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("addhero", "Add Hero",
 				"Adds a new hero to the force", definingValues));
 		progressControl.add("Add Hero");
+
+		// Multi hero add selection
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+				PlannerValueDef.TYPE_MULTI_STRING, "heroids", false, "Hero IDs",
+				"The ID of the hero that should be added to the force"));
+		allowableLines.add(new PlannerLineDef("addmultihero", "Add Hero from Selection",
+				"Displays a menu that allows the user to select one of the specified heroes to the party", definingValues));
+		progressControl.add("Add Hero from Selection");
+		
 		/*
 		definingValues
 		.add(new PlannerValueDef(
@@ -2549,6 +2559,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("addhero", "Add Hero",
 				"Adds a new hero to the force", definingValues));
 		
+		// Add multiple hero selection
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
 				PlannerValueDef.TYPE_MULTI_STRING, "heroids", false, "Hero IDs",

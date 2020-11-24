@@ -3,6 +3,7 @@ package tactical.game.definition;
 import java.util.ArrayList;
 import java.util.List;
 
+import tactical.game.battle.LevelUpResult;
 import tactical.game.exception.BadResourceException;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
@@ -133,6 +134,7 @@ public abstract class HeroDefinition
 
 	private void parseProgressionReliantFields(TagArea tagArea) {
 		for (TagArea childTagArea : tagArea.getChildren()) {
+			
 			if (childTagArea.getTagType().equalsIgnoreCase("spellprogression"))
 			{
 				// Get the progression that is associated with these spells
@@ -164,6 +166,7 @@ public abstract class HeroDefinition
 					throw new BadResourceException("A spell progression was specified for " + name + " that is not associated with "
 							+ "any specified progression due to the settings of it's promoted/special promotion attributes");
 			}
+			
 			// These are starting items and should be associated with the starting progression
 			else if (childTagArea.getTagType().equalsIgnoreCase("item"))
 			{
@@ -246,10 +249,17 @@ public abstract class HeroDefinition
 
 		// Create hero progression
 		HeroProgression heroProgression = new HeroProgression(unpromotedProgression, promotedProgression, specialProgressions, id);
-
+		
 		// Create a CombatSprite from default stats, hero progression and spells known
 		CombatSprite cs = createNewCombatSprite(heroProgression);
-
+		
+		cs.setLevel(1);
+		for (int i = 1; i < level; i++) {
+			LevelUpResult lur = cs.getHeroProgression().getLevelUpResults(cs);
+			cs.getHeroProgression().levelUp(cs, lur);
+		}
+		cs.setExp(0);
+		
 		// Add items to the combat sprite
 		for (int i = 0; i < items.size(); i++)
 		{

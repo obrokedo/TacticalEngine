@@ -475,12 +475,15 @@ public class TextParser
 	
 	private static int[] parseMultiString(String tag, Hashtable<String, String> actionParams, Function<String, Integer> createMethod)
 	{
-		String leaders = actionParams.get(tag);
+		return parseMultiString(actionParams.get(tag), createMethod);
+	}
+	
+	private static int[] parseMultiString(String commaDelimitedList, Function<String, Integer> createMethod) {
 		int[] ids = null;
 
-		if (leaders != null)
+		if (commaDelimitedList != null)
 		{
-			String[] splitLeader = leaders.split(",");
+			String[] splitLeader = commaDelimitedList.split(",");
 			ids = new int[splitLeader.length];
 			for (int i = 0; i < splitLeader.length; i++) {
 				String val = splitLeader[i];
@@ -579,6 +582,9 @@ public class TextParser
 					HeroResource.getHeroIdByName(area.getAttribute("heroportrait")),
 					EnemyResource.getEnemyIdByName(area.getAttribute("enemyportrait")),
 					area.getAttribute("animportrait"));
+		else if (type.equalsIgnoreCase("addmultihero"))
+			return new CinematicEvent(CinematicEventType.MULTI_HERO_JOIN_MENU,
+					parseMultiString(area.getAttribute("heroids"), heid -> HeroResource.getHeroIdByName(heid)));
 		else if (type.equalsIgnoreCase("loadmap"))
 			return new CinematicEvent(CinematicEventType.LOAD_MAP, area.getAttribute("mapdata"), area.getAttribute("enter"));
 		else if (type.equalsIgnoreCase("loadbattle"))

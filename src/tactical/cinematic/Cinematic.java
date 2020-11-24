@@ -25,6 +25,7 @@ import tactical.game.constants.Direction;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel.PanelType;
 import tactical.game.input.UserInput;
+import tactical.game.menu.MultiHeroJoinMenu;
 import tactical.game.menu.Portrait;
 import tactical.game.resource.HeroResource;
 import tactical.game.sprite.AnimatedSprite;
@@ -351,14 +352,18 @@ public class Cinematic {
 		// If nothing is currently blocking then continue processing the
 		// cinematics
 		while (waitTime == 0 && haltedAnims == 0 && haltedMovers == 0
-				&& cameraMoveToX == -1 && !stateInfo.isMenuDisplayed(PanelType.PANEL_SPEECH)
+				&& cameraMoveToX == -1 
+				&& !stateInfo.isMenuDisplayed(PanelType.PANEL_SPEECH)
+				&& !stateInfo.isMenuDisplayed(PanelType.PANEL_MULTI_JOIN_CHOOSE)
 				&& cinematicEvents.size() > 0) {
 			CinematicEvent ce = cinematicEvents.remove(0);
 			handleEvent(ce, stateInfo);
 		}
 
 		return waitTime == 0 && haltedAnims == 0 && haltedMovers == 0
-				&& cameraMoveToX == -1 && !stateInfo.isMenuDisplayed(PanelType.PANEL_SPEECH)
+				&& cameraMoveToX == -1 
+				&& !stateInfo.isMenuDisplayed(PanelType.PANEL_SPEECH)
+				&& !stateInfo.isMenuDisplayed(PanelType.PANEL_MULTI_JOIN_CHOOSE)
 				&& cinematicEvents.size() == 0;
 	}
 	
@@ -614,6 +619,16 @@ public class Cinematic {
 				Portrait port = Portrait.getPortrait(heroPortrait, enemyPortrait, specificAnim, stateInfo);
 				stateInfo.sendMessage(new SpeechMessage((String) ce.getParam(0), Trigger.TRIGGER_NONE, port));
 				break;
+		
+			case MULTI_HERO_JOIN_MENU:
+				int[] heroList = (int[]) ce.getParam(0);
+				ArrayList<CombatSprite> heroesToChooseList = new ArrayList<>();
+				for (int id : heroList)
+					heroesToChooseList.add(HeroResource.getHero(id));
+				heroesToChooseList.forEach(cs -> { cs.initializeSprite(stateInfo.getResourceManager()); cs.initializeStats(); });
+				stateInfo.addSingleInstanceMenu(new MultiHeroJoinMenu(heroesToChooseList, stateInfo));
+				break;
+				
 			case LOAD_MAP:
 				stateInfo.getPersistentStateInfo().loadMap((String) ce.getParam(0),
 						(String) ce.getParam(1));
