@@ -817,7 +817,7 @@ public class Cinematic {
 	private void moveActorToLocation(CinematicActor ca, int moveToLocX, int moveToLocY, float speed, boolean haltingMove, 
 			int direction, boolean moveHorFirst, boolean moveDiag, StateInfo stateInfo)
 	{
-		ca.moveToLocation(moveToLocX, moveToLocY - (!this.inCinematicState ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0), 
+		ca.moveToLocation(moveToLocX, moveToLocY, 
 				speed, haltingMove, direction, moveHorFirst, moveDiag);;
 	}
 

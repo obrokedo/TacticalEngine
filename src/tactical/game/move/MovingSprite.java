@@ -16,7 +16,7 @@ public class MovingSprite
 	private AnimatedSprite animatedSprite;
 	private int moveIndex;
 	private Direction direction;
-	private float endX, endY;
+	private float endX, endY, startX, startY;
 	private StateInfo stateInfo;
 	private boolean isFirstMove = true;
 	private int moveRemainder = 0;
@@ -62,23 +62,25 @@ public class MovingSprite
 	private void initializeDirection(Direction dir) {
 		this.direction = dir;
 		this.moveIndex = 0;
+		startX = animatedSprite.getLocX();
+		startY = animatedSprite.getLocY();
 		switch (direction)
 		{
 			case UP:
-				endX = animatedSprite.getLocX();
-				endY = animatedSprite.getLocY() - stateInfo.getTileHeight();
+				endX = animatedSprite.getLocX() - animatedSprite.getLocX() % stateInfo.getTileWidth();
+				endY = animatedSprite.getLocY() - animatedSprite.getLocY() % stateInfo.getTileHeight() - stateInfo.getTileHeight();
 				break;
 			case DOWN:
-				endX = animatedSprite.getLocX();
-				endY = animatedSprite.getLocY() + stateInfo.getTileHeight();
+				endX = animatedSprite.getLocX() - animatedSprite.getLocX() % stateInfo.getTileWidth();
+				endY = animatedSprite.getLocY() - animatedSprite.getLocY() % stateInfo.getTileHeight() + stateInfo.getTileHeight();
 				break;
 			case LEFT:
-				endX = animatedSprite.getLocX() - stateInfo.getTileWidth();
-				endY = animatedSprite.getLocY();
+				endX = animatedSprite.getLocX() - animatedSprite.getLocX() % stateInfo.getTileWidth() - stateInfo.getTileWidth();
+				endY = animatedSprite.getLocY() - animatedSprite.getLocY() % stateInfo.getTileHeight();
 				break;
 			case RIGHT:
-				endX = animatedSprite.getLocX() + stateInfo.getTileWidth();
-				endY = animatedSprite.getLocY();
+				endX = animatedSprite.getLocX() - animatedSprite.getLocX() % stateInfo.getTileWidth() + stateInfo.getTileWidth();
+				endY = animatedSprite.getLocY() - animatedSprite.getLocY() % stateInfo.getTileHeight();
 				break;
 		}
 	}
@@ -122,32 +124,11 @@ public class MovingSprite
 		
 		// When we're on the stairs then we may move some y direction even when pressing right or left
 		
-		float amountMoved = ((moveSpeed - moveIndex) / (moveSpeed * 1.0f) * stateInfo.getTileHeight());
-		float yMovedOnStairs = ((moveSpeed - moveIndex) / (moveSpeed * 1.0f) * yMovedForStairs);
+		float amountMovedX = ((moveSpeed - moveIndex) / (moveSpeed * 1.0f) * (startX - endX));
+		float amountMovedY = ((moveSpeed - moveIndex) / (moveSpeed * 1.0f) * (startY - endY));
 		
-		switch (direction)
-		{
-			case UP:
-				animatedSprite.setLocY(endY + amountMoved, stateInfo.getTileHeight());
-						// 2 * CommRPG.GLOBAL_WORLD_SCALE[CommRPG.getGameInstance()]));
-				break;
-			case DOWN:
-				animatedSprite.setLocY(endY - amountMoved, stateInfo.getTileHeight());
-						// 2 * CommRPG.GLOBAL_WORLD_SCALE[CommRPG.getGameInstance()]));
-				break;
-			case LEFT:
-				if (stairs != null)
-					animatedSprite.setLocY(endY - yMovedOnStairs, stateInfo.getTileHeight());
-				animatedSprite.setLocX(endX + amountMoved, stateInfo.getTileWidth());
-						// 2 * CommRPG.GLOBAL_WORLD_SCALE[CommRPG.getGameInstance()]));
-				break;
-			case RIGHT:
-				if (stairs != null)
-					animatedSprite.setLocY(endY - yMovedOnStairs, stateInfo.getTileHeight());
-				animatedSprite.setLocX(endX - amountMoved, stateInfo.getTileWidth());
-						// 2 * CommRPG.GLOBAL_WORLD_SCALE[CommRPG.getGameInstance()]));
-				break;
-		}
+		animatedSprite.setLocY(endY + amountMovedY, stateInfo.getTileHeight());
+		animatedSprite.setLocX(endX + amountMovedX, stateInfo.getTileHeight());
 
 		if (stateInfo.isCombat() && animatedSprite == stateInfo.getCurrentSprite()) {
 			stateInfo.getCamera().centerOnSprite(animatedSprite, stateInfo.getCurrentMap());
