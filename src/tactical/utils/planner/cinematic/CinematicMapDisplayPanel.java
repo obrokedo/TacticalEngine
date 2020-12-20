@@ -86,6 +86,8 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 		systemPopup.add(createMenuItem("Show Speech Box"));
 		systemPopup.add(createMenuItem("Load Map"));
 		systemPopup.add(createMenuItem("Start Battle"));
+		systemPopup.add(createMenuItem("Add Hero"));
+		systemPopup.add(createMenuItem("Add Hero from Selection"));
 		systemPopup.add(createMenuItem("Exit Game"));
 
 

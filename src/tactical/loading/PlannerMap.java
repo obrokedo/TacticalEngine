@@ -304,7 +304,7 @@ public class PlannerMap extends Map {
 					battleTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, battleTagArea);
-				} else if ("terrains".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
+				} else if ("terrain".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
 					terrainTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
 					newRootTA.getChildren().add(i, terrainTagArea);

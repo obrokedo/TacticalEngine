@@ -160,7 +160,9 @@ public class DfAnimationParser implements AnimationParser {
 		// Once we've found a sprite in a directory, get all of the sprites from that dir
 		if (ta.getTagType().equalsIgnoreCase("spr"))
 		{
-			imageNames.add(dirName + "/" + ta.getAttribute("name"));
+			if (!dirName.endsWith("/"))
+				dirName += "/";
+			imageNames.add(dirName + ta.getAttribute("name"));
 			imageLocs.add(new Rectangle(Integer.parseInt(ta.getAttribute("x")),
 									Integer.parseInt(ta.getAttribute("y")),
 									Integer.parseInt(ta.getAttribute("w")),

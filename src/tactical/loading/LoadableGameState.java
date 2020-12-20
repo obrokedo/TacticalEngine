@@ -114,6 +114,7 @@ public abstract class LoadableGameState extends BasicGameState
 				}
 				else if (TacticalGame.DEV_MODE_ENABLED && container.getInput().isKeyPressed(Input.KEY_ESCAPE))
 				{
+					TacticalGame.MUTE_MUSIC = true;
 					game.enterState(TacticalGame.STATE_GAME_MENU_DEVEL);
 				}
 			}

@@ -105,8 +105,10 @@ public class SoundManager extends Manager implements MusicListener
 	@Override
 	public void recieveMessage(Message message)
 	{
-		if (TacticalGame.MUTE_MUSIC)
+		if (TacticalGame.MUTE_MUSIC) {
+			pauseMusic();
 			return;
+		}
 		
 		switch (message.getMessageType())
 		{

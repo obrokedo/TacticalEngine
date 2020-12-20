@@ -90,10 +90,13 @@ public class Trigger
 	public TriggerStatus perform(StateInfo stateInfo, boolean immediate)
 	{
 		Log.debug("Beginning Trigger Perform: " + this.id);
+		// Trigger immediately should now be handled by conditions
+		/*
 		if (triggerImmediately != immediate) {
 			Log.debug("Trigger will not be executed, movement is immediate " + immediate + " trigger is immediate " + triggerImmediately);
 			return TriggerStatus.IS_IMMEDIATE;
 		}
+		*
 
 		/* WHY IS THIS HERE?!??!?!?!
 		if (!stateInfo.isInitialized() && this.id != 0) {
