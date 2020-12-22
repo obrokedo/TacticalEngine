@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.newdawn.slick.util.Log;
@@ -186,7 +187,7 @@ public class ClientProgress implements Serializable
 		return battleEnemySprites;
 	}
 
-	public void setBattleSprites(ArrayList<CombatSprite> battleSprites) {
+	public void setBattleSprites(List<CombatSprite> battleSprites) {
 		if (battleSprites == null)
 		{
 			this.battleHeroSpriteIds = null;

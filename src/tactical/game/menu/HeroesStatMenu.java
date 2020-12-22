@@ -64,17 +64,18 @@ public class HeroesStatMenu extends Menu
 
 	@Override
 	public void render(PaddedGameContainer gc, Graphics graphics) {
+		int sizeMax = 6;
 		drawHeroSpecifics(graphics);
 
 		TacticalGame.ENGINE_CONFIGURATIOR.getPanelRenderer().render(20,
-				yOffsetBot + 118,
+				yOffsetBot + 117,
 				PaddedGameContainer.GAME_SCREEN_SIZE.width - 40,
-			108, graphics, null);
+			112, graphics, null);
 
 
 		graphics.setColor(Color.white);
 		graphics.drawRect(25,
-				yOffsetBot + (134 + 15 * Math.min(selectedIndex, 11)),
+				yOffsetBot + (134 + 15 * Math.min(selectedIndex, sizeMax - 1)),
 				269, 15);
 		StringUtils.drawString("NAME", 27,
 				yOffsetBot + 113, graphics);
@@ -102,37 +103,38 @@ public class HeroesStatMenu extends Menu
 					yOffsetBot + 113, graphics);
 		}
 
-		for (int i = (selectedIndex < 12 ? 0 : selectedIndex - 11); i < Math.min(heroes.size(),  (selectedIndex < 12 ? 12 : selectedIndex + 1)); i++)
-		{
-			StringUtils.drawString(heroes.get(i).getName(),
+		
+		for (int count = (selectedIndex < sizeMax ? 0 : selectedIndex - sizeMax + 1); count < Math.min(heroes.size(),  (selectedIndex < sizeMax ? sizeMax : selectedIndex + 1)); count++)
+		{						
+			StringUtils.drawString(heroes.get(count).getName(),
 					27,
-					yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
+					yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
 
 			if (view == VIEW_LEVEL)
 			{
-				StringUtils.drawString(heroes.get(i).getLevel() + "", 127,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
-				StringUtils.drawString(heroes.get(i).getExp() + "", 227,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
+				StringUtils.drawString(heroes.get(count).getLevel() + "", 127,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+				StringUtils.drawString(heroes.get(count).getExp() + "", 227,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
 			}
 			else if (view == VIEW_STATS)
 			{
-				StringUtils.drawString(heroes.get(i).getCurrentHP() + "", 92,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
-				StringUtils.drawString(heroes.get(i).getCurrentMP() + "", 127,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
-				StringUtils.drawString(heroes.get(i).getCurrentAttack() + "", 162,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
-				StringUtils.drawString(heroes.get(i).getCurrentDefense() + "", 197,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
-				StringUtils.drawString(heroes.get(i).getCurrentSpeed() + "", 232,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
-				StringUtils.drawString(heroes.get(i).getCurrentMove() + "", 267,
-						yOffsetBot + (128 + 15 * (i - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
+				StringUtils.drawString(heroes.get(count).getCurrentHP() + "", 92,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+				StringUtils.drawString(heroes.get(count).getCurrentMP() + "", 127,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+				StringUtils.drawString(heroes.get(count).getCurrentAttack() + "", 162,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+				StringUtils.drawString(heroes.get(count).getCurrentDefense() + "", 197,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+				StringUtils.drawString(heroes.get(count).getCurrentSpeed() + "", 232,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+				StringUtils.drawString(heroes.get(count).getCurrentMove() + "", 267,
+						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
 			}
 			else
 			{
-				renderMenuItem(graphics, i);
+				renderMenuItem(graphics, count);
 			}
 		}
 

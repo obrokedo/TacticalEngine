@@ -25,7 +25,7 @@ public class PlannerContainer implements ActionListener
 	private PlannerTab parentTab;
 	private JPanel uiAspect = new JPanel();
 
-	public PlannerContainer(PlannerContainerDef pcdef, PlannerTab parentTab) {
+	public PlannerContainer(PlannerContainerDef pcdef, PlannerTab parentTab, boolean initializeValues) {
 		super();
 		uiAspect.setLayout(new BoxLayout(uiAspect, BoxLayout.PAGE_AXIS));
 		this.pcdef = pcdef;
@@ -33,6 +33,11 @@ public class PlannerContainer implements ActionListener
 		this.defLine = new PlannerLine(pcdef.getDefiningLine(), true);
 		this.lines = new ArrayList<PlannerLine>();
 		this.parentTab = parentTab;
+		
+		if (initializeValues) {
+			this.setupUI();
+			this.commitChanges();
+		}
 	}
 
 	public PlannerContainer(String newName, PlannerContainer copyContainer)
@@ -119,15 +124,26 @@ public class PlannerContainer implements ActionListener
 		// this.add(new JScrollPane(listPanel));
 	}
 
-	public void addLine(PlannerLine line)
+	public void addLine(PlannerLine line, boolean initializeValues)
 	{
 		this.lines.add(line);
+		if (initializeValues) {
+			this.setupUI(this.lines.size() - 1);
+			this.commitChanges();
+		}
 		parentTab.refreshItem(this);
+	}
+	
+	public void addLine(PlannerLine line)
+	{
+		this.addLine(line, true);
 	}
 
 	public void addLine(PlannerLine line, int addIndex)
 	{
 		this.lines.add(addIndex, line);
+		this.setupUI(addIndex);
+		this.commitChanges();
 		parentTab.refreshItem(this);
 	}
 

@@ -31,18 +31,28 @@ public class PlannerIO {
 	/********************************************/
 	public boolean exportDataToFile(ArrayList<PlannerContainer> containers,
 			String pathToFile, boolean append, String rootXMLTag) {
-		ArrayList<String> buffer = export(containers, rootXMLTag);
+		ArrayList<String> myBuffer = null;
+		try {
+			myBuffer = PlannerIO.export(containers, rootXMLTag);
+			if (containers != null)
+				throw new Exception();
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "An error occurred while trying to format the data for " + rootXMLTag + ":"
+					+ e.getMessage(), "Error formatting data", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
 
 		Path path = Paths.get(pathToFile);
 		try {
 			if (append)
-				Files.write(path, buffer, StandardCharsets.UTF_8,
+				Files.write(path, myBuffer, StandardCharsets.UTF_8,
 						StandardOpenOption.APPEND);
 			else
-				Files.write(path, buffer, StandardCharsets.UTF_8);
+				Files.write(path, myBuffer, StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "An error occurred while trying to save the data:"
+			JOptionPane.showMessageDialog(null, "An error occurred while trying to save the for " + rootXMLTag + ":"
 					+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
@@ -56,7 +66,6 @@ public class PlannerIO {
 			buffer.add("<" + rootXMLTag + ">");
 		for (int i = 0; i < containers.size(); i++) {
 			PlannerContainer pc = containers.get(i);
-
 			buffer.add(exportLine(pc.getPcdef().getDefiningLine(),
 					pc.getDefLine(), i));
 
@@ -87,11 +96,12 @@ public class PlannerIO {
 				stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_STRING ||
 					pvd.getValueType() == PlannerValueDef.TYPE_LONG_STRING ||
-					pvd.getValueType() == PlannerValueDef.TYPE_MULTI_LONG_STRING)
+					pvd.getValueType() == PlannerValueDef.TYPE_MULTI_LONG_STRING) {
 				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE)
 					stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 				else
 					stringBuffer += "\"" + ((PlannerReference) pl.getValues().get(i)).getName() + "\"";
+			}
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_INT
 					|| pvd.getValueType() == PlannerValueDef.TYPE_UNBOUNDED_INT) {
 				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE)
@@ -123,6 +133,7 @@ public class PlannerIO {
 			} else if (pvd.getValueType() == PlannerValueDef.TYPE_MULTI_STRING) {
 				String newVals = "";
 				ArrayList<PlannerReference> refs = (ArrayList<PlannerReference>) pl.getValues().get(i);
+
 				for (int j = 0; j < refs.size(); j++) {
 					newVals = newVals + refs.get(j).getName();
 					if (j + 1 <= refs.size())
@@ -156,7 +167,7 @@ public class PlannerIO {
 				continue;
 			// LOGGER.finest(ta.getTagType());
 			PlannerContainerDef pcd = containersByName.get(ta.getTagType());
-			PlannerContainer plannerContainer = new PlannerContainer(pcd, plannerTab);
+			PlannerContainer plannerContainer = new PlannerContainer(pcd, plannerTab, false);
 			PlannerLine plannerLine = plannerContainer.getDefLine();
 			parseLine(plannerLine, pcd.getDefiningLine(), ta);
 			pcd.getDataLines().add(new PlannerReference(plannerContainer.getDescription()));
@@ -172,7 +183,7 @@ public class PlannerIO {
 						PlannerLine childLine = new PlannerLine(allowable,
 								false);
 						parseLine(childLine, allowable, taChild);
-						plannerContainer.addLine(childLine);
+						plannerContainer.addLine(childLine, false);
 					}
 				}
 

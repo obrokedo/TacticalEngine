@@ -1,4 +1,4 @@
-package tactical.game.menu;
+package tactical.game.menu.devel;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -15,6 +15,8 @@ import tactical.game.Camera;
 import tactical.game.constants.Direction;
 import tactical.game.input.UserInput;
 import tactical.game.manager.TurnManager;
+import tactical.game.menu.Menu;
+import tactical.game.menu.Menu.MenuUpdate;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.trigger.Trigger;
 import tactical.game.ui.Button;

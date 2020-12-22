@@ -39,11 +39,6 @@ public class ClientProfile implements Serializable
 	private int gold;
 	private String name;
 	private transient ArrayList<CombatSprite> networkHeroes;
-	private transient DevParams devParams;
-
-	public void setDevParams(DevParams devParams) {
-		this.devParams = devParams;
-	}
 
 	public ClientProfile(String name)
 	{
@@ -187,51 +182,6 @@ public class ClientProfile implements Serializable
 			}			
 		}
 		
-		applyDevParams();
-	}
-	
-	private void applyDevParams()
-	{
-		if (devParams == null)
-			return;
-		
-
-		// Add any heroes specified in the development params
-		if (devParams.getHeroesToAdd() != null)
-			for (Integer heroId : devParams.getHeroesToAdd())
-			{
-				Log.debug("DevParams adding hero with id: " + heroId + " to the party");
-				addHero(HeroResource.getHero(heroId));
-			}
-		
-		if (devParams.getHeroNamesToAdd() != null)
-			for (String heroName : devParams.getHeroNamesToAdd())
-			{
-				Log.debug("DevParams adding hero with name: " + heroName + " to the party");
-				addHero(HeroResource.getHero(heroName));
-			}
-
-		if (getHeroes().size() == 0)
-			throw new BadResourceException("No starting heroes have been specified. Update the ConfigurationValues "
-					+ "script to indicate the ids of the heroes that should start in the party.");
-
-		if (devParams.getLevel() > 1)
-		{
-			Log.debug("DevParams setting hero level to: " + devParams.getLevel());
-			
-			for (CombatSprite cs : getHeroes())
-			{
-				while (cs.getLevel() < devParams.getLevel())
-				{
-					LevelUpResult lur = cs.getHeroProgression().getLevelUpResults(cs);
-					cs.setExp(100);
-					cs.getHeroProgression().levelUp(cs, lur);
-				}
-			}
-		}
-		
-		System.out.println("Removing dev params");
-		devParams = null;
 	}
 
 	public String getName() {

@@ -203,4 +203,8 @@ public class HeroStatMenu extends Menu
 		// TODO Auto-generated method stub
 		return true;
 	}
+
+	public CombatSprite getSelectedSprite() {
+		return selectedSprite;
+	}
 }

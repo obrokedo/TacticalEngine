@@ -6,7 +6,6 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.StateBasedGame;
@@ -21,9 +20,12 @@ import tactical.game.manager.PanelManager;
 import tactical.game.manager.SoundManager;
 import tactical.game.manager.SpriteManager;
 import tactical.game.manager.TownMoveManager;
-import tactical.game.menu.DebugMenu;
+import tactical.game.menu.HeroStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.PauseMenu;
+import tactical.game.menu.devel.DebugMenu;
+import tactical.game.menu.devel.HeroContextDebugMenu;
+import tactical.game.menu.devel.HeroesContextDebugMenu;
 import tactical.game.sprite.NPCSprite;
 import tactical.game.sprite.Sprite;
 import tactical.game.ui.PaddedGameContainer;
@@ -206,8 +208,23 @@ public class TownState extends LoadableGameState
 					stateInfo.sendMessage(new Message(MessageType.SHOW_HEROES));
 				}
 				// Key for debugging menus
-				else if (container.getInput().isKeyDown(Input.KEY_Z))
+				else if (TacticalGame.DEV_MODE_ENABLED && container.getInput().isKeyDown(Input.KEY_Q))
 				{
+					Menu top = stateInfo.getTopMenu();
+					if (top != null) {
+						switch(top.getPanelType()) {
+							case PANEL_HEROS_STATS:
+								stateInfo.addSingleInstanceMenu(new HeroContextDebugMenu(((HeroStatMenu) top).getSelectedSprite()));
+								stateInfo.setInputDelay(System.currentTimeMillis() + 200);
+								break;
+							case PANEL_HEROS_OVERVIEW:
+								stateInfo.addSingleInstanceMenu(new HeroesContextDebugMenu());
+								stateInfo.setInputDelay(System.currentTimeMillis() + 200);
+								break;
+							default:
+								break;								
+						}
+					}
 					// image = null;
 					
 					// container.getGraphics().copyArea(image, 0, 0);

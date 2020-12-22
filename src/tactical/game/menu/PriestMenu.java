@@ -215,7 +215,8 @@ public class PriestMenu extends QuadMenu implements MenuListener
 						menuConfig.getPriestTargetHasBeenPromotedText(ph.spriteToPromote.getName(), ph.progressionToPromoteTo.getClassName(), 
 								itemName), Trigger.TRIGGER_NONE, portrait));
 				// This is lazy, but it we promote someone just completely re-establish the promotables
-				establishPromotables();
+				// establishPromotables();
+				this.promptNextCombatSprite();
 			}
 		} else if (curableHeroes.size() > 0) {
 			CombatSprite cs = curableHeroes.remove(0);

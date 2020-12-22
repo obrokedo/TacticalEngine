@@ -95,11 +95,11 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 			return null;
 
 		String type = containers[typeComboBox.getSelectedIndex()];
-		PlannerContainer newPC = new PlannerContainer(containersByName.get(type), this);
+		PlannerContainer newPC = new PlannerContainer(containersByName.get(type), this, true);
 		listPC.add(newPC);
 		PlannerContainerDef pcd = containersByName.get(type);
 		pcd.getDataLines().add(new PlannerReference(newName));
-		newPC.getDefLine().getValues().add(newName);
+		newPC.getDefLine().getValues().set(0, newName);
 		plannerTree.addItem(newName, listPC.size() - 1);
 		return newPC;
 	}

@@ -346,6 +346,11 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					JOptionPane.showMessageDialog(null, "An error occurred while trying to save the trigger file:"
 							+ e.getMessage(), "Error saving trigger file", JOptionPane.ERROR_MESSAGE);
 					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "An error occurred while trying to save the trigger file:"
+							+ e.getMessage(), "Error saving trigger file", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 
 				jtp.setEnabledAt(TAB_TRIGGER, true);
@@ -712,56 +717,45 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		return tabsWithReferences;
 	}
 
-	private void saveTriggers(boolean success) {
+	private void saveTriggers(boolean previousExportsSuccessful) {
 		if (triggerFile != null) {
 			LOGGER.fine("SAVE");
 			Path path = Paths.get(triggerFile.getAbsolutePath());
 			List<String> buffer = new ArrayList<>();
 			buffer.add("<area>");
 			buffer.add("<map file=\"" + plannerMap.getMapName() +"\"/>");
+			
+			try {
+				plannerTabs.get(TAB_TRIGGER).setNewValues();
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TRIGGER).getListPC(), null));
+	
+				plannerTabs.get(TAB_TEXT).setNewValues();
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TEXT).getListPC(), null));
+	
+				plannerTabs.get(TAB_CIN).setNewValues();
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CIN).getListPC(), null));
+				
+				plannerTabs.get(TAB_CONDITIONS).setNewValues();
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CONDITIONS).getListPC(), null));
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "An error occurred while trying to format the trigger data:"
+						+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			buffer.add("</area>");
 			try {
 				Files.write(path, buffer, StandardCharsets.UTF_8);
 			} catch (IOException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, "An error occurred while trying to save the data:"
-						+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);
-				success = false;
-				return;
-			}
-			
-			plannerTabs.get(TAB_TRIGGER).setNewValues();
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_TRIGGER).getListPC(),
-					triggerFile.getAbsolutePath(), true, null))
-				success = false;
-
-			plannerTabs.get(TAB_TEXT).setNewValues();
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_TEXT).getListPC(),
-					triggerFile.getAbsolutePath(), true, null))
-				success = false;
-
-			plannerTabs.get(TAB_CIN).setNewValues();
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_CIN).getListPC(),
-					triggerFile.getAbsolutePath(), true, null))
-				success = false;
-			
-			plannerTabs.get(TAB_CONDITIONS).setNewValues();
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_CONDITIONS).getListPC(),
-					triggerFile.getAbsolutePath(), true, null))
-				success = false;
-			
-			buffer = (List<String>) Collections.singletonList("</area>");
-			try {
-				Files.write(path, buffer, StandardCharsets.UTF_8, StandardOpenOption.APPEND);
-			} catch (IOException e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(null, "An error occurred while trying to save the data:"
-						+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);
-				success = false;
+						+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);				
 				return;
 			}
 		}
 
-		if (success) {
+		if (previousExportsSuccessful) {
 			int rc = JOptionPane.showConfirmDialog(this, 
 					"The file was saved successfully.\nWould you also like to export the map at this time (Highly recommended)", 
 					"Save Successful", JOptionPane.YES_NO_OPTION);

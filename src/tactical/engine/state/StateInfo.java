@@ -6,7 +6,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import org.newdawn.slick.util.Log;
 
@@ -59,11 +61,11 @@ public class StateInfo
 	private PersistentStateInfo psi;
 
 	// These values need to be reinitialized each time a map is loaded
-	private ArrayList<Sprite> sprites;
-	private ArrayList<CombatSprite> combatSprites;
-	private ArrayList<Panel> panels;
-	private ArrayList<Menu> menus;
-	private ArrayList<MouseListener> mouseListeners;
+	private List<Sprite> sprites;
+	private List<CombatSprite> combatSprites;
+	private List<Panel> panels;
+	private List<Menu> menus;
+	private List<MouseListener> mouseListeners;
 	private Stack<KeyboardListener> keyboardListeners;
 	private UserInput fcInput;
 
@@ -447,6 +449,10 @@ public class StateInfo
 
 		menus.add(menu);
 		menu.panelAdded(this);
+	}
+	
+	public void removeMenu(PanelType panelType) {
+		menus = menus.stream().filter(m -> m.getPanelType() != panelType).collect(Collectors.toList());
 	}
 
 	public Iterable<Panel> getPanels()

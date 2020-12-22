@@ -414,10 +414,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	}
 	
 	private boolean setDevParamStartBattle() {
-		DevParams devParams = DevParams.parseDevParams(textSelector.getSelectedResource());
-		if (devParams != null)
-			persistentStateInfo.getClientProfile().setDevParams(devParams);
-		
+		DevParams.parseDevParams(textSelector.getSelectedResource(), persistentStateInfo.getClientProfile());
 		return startBattle();
 	}
 	

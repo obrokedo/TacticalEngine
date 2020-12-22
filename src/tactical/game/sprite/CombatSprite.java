@@ -17,6 +17,7 @@ import tactical.game.Camera;
 import tactical.game.Range;
 import tactical.game.ai.AI;
 import tactical.game.battle.BattleEffect;
+import tactical.game.battle.LevelUpResult;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.constants.Direction;
 import tactical.game.dev.DevHeroAI;
@@ -24,6 +25,7 @@ import tactical.game.hudmenu.Panel.PanelType;
 import tactical.game.hudmenu.SpriteContextPanel;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
+import tactical.game.resource.HeroResource;
 import tactical.game.resource.ItemResource;
 import tactical.loading.ResourceManager;
 import tactical.utils.AnimSprite;
@@ -129,32 +131,48 @@ public class CombatSprite extends AnimatedSprite
 	{
 		super(0, 0, imageName, id);
 
+		setInitialStatistics(isLeader, name, imageName, heroProgression, level, promoted, id);
+
+		if (TacticalGame.TEST_MODE_ENABLED)
+		{
+			this.ai = new DevHeroAI(1);
+			if (this.isHero && this.isLeader && !TacticalGame.BATTLE_MODE_OPTIMIZE)
+			{
+				this.setMaxHP(99);
+				this.setMaxAttack(99);
+				this.setMaxDefense(99);
+				this.setMaxSpeed(99);
+			}
+		}
+	}
+
+
+	public void setInitialStatistics(boolean isLeader, String name, String imageName, HeroProgression heroProgression,
+			int level, boolean promoted, int id) {
 		this.isPromoted = promoted;
 		// If a CombatSprite is created as promoted then it must not be on a special promotion path
 		if (isPromoted)
 			this.promotionPath = 0;
 		this.level = level;
 		this.exp = 0;
-
+		
 
 		dodges = true;
 
 		this.heroProgression = heroProgression;
-
-		// Handle attribute strengths for heroes
+		
+		// Stats in the progression are set up as [0] = stat progression, [1] = stat start, [2] = stat end
 		if (heroProgression != null)
 		{
-			// Stats in the progression are set up as [0] = stat progression, [1] = stat start, [2] = stat end
 			currentHP = maxHP = (int) this.getCurrentProgression().getHp()[1];
-			maxMP = (int) this.getCurrentProgression().getMp()[1];
-			maxSpeed = (int) this.getCurrentProgression().getSpeed()[1];
-			maxMove = this.getCurrentProgression().getMove();
+			currentMP = maxMP = (int) this.getCurrentProgression().getMp()[1];
+			currentSpeed = maxSpeed = (int) this.getCurrentProgression().getSpeed()[1];
+			currentMove = maxMove = this.getCurrentProgression().getMove();
 			movementType = this.getCurrentProgression().getMovementType();
-			maxAttack = (int) this.getCurrentProgression().getAttack()[1];
-			maxDefense = (int) this.getCurrentProgression().getDefense()[1];
-
+			currentAttack = maxAttack = (int) this.getCurrentProgression().getAttack()[1];
+			currentDefense = maxDefense = (int) this.getCurrentProgression().getDefense()[1];
 			setNonRandomStats();			
-		}
+		}		
 
 		this.isHero = true;
 		this.isLeader = isLeader;
@@ -174,20 +192,9 @@ public class CombatSprite extends AnimatedSprite
 		this.spriteType = Sprite.TYPE_COMBAT;
 		this.id = id;
 		this.attackEffectId = null;
-
-		if (TacticalGame.TEST_MODE_ENABLED)
-		{
-			this.ai = new DevHeroAI(1);
-			if (this.isHero && this.isLeader && !TacticalGame.BATTLE_MODE_OPTIMIZE)
-			{
-				this.setMaxHP(99);
-				this.setMaxAttack(99);
-				this.setMaxDefense(99);
-				this.setMaxSpeed(99);
-			}
-		}
 	}
 
+	
 
 	public void setNonRandomStats() {
 		this.usuableWeapons = this.getCurrentProgression().getUsuableWeapons();
@@ -499,7 +506,7 @@ public class CombatSprite extends AnimatedSprite
 		return "";
 	}
 	
-	public void asetFadeAmount(int amt) {
+	public void setFadeAmount(int amt) {
 		currentHP = amt;
 		fadeColor.a = (255 + currentHP) / 255.0f;
 	}
@@ -736,6 +743,53 @@ public class CombatSprite extends AnimatedSprite
 	public void setLevel(int level) {
 		this.level = level;
 	}
+	
+	public void levelUp() {
+		LevelUpResult lur = getHeroProgression().getLevelUpResults(this);
+		this.exp += 100;
+		getHeroProgression().levelUp(this, lur);		
+	}
+	
+	public void levelDown() {
+		this.upgradeHeroToLevel(this.level - 1);
+	}
+	
+	public void upgradeHeroToLevel(int newLevel) {
+		boolean promoted = this.isPromoted;
+		int proPath = this.promotionPath;
+		
+		resetHero();
+		if (!this.isPromoted && promoted) {
+			while (this.level < 10) {
+				this.levelUp();
+			}
+			this.setPromoted(true, proPath);
+		}
+		
+		while (this.level < newLevel)
+			this.levelUp();
+	}
+	
+	public void resetHero() {
+		this.equipped.clear();
+		CombatSprite cs = HeroResource.getHero(this.id);
+		this.setInitialStatistics(cs.isLeader, name, imageName, 
+				cs.heroProgression, cs.level, 
+				// Is this a reasonable way to test for someone being promoted?
+				cs.getHeroProgression().getUnpromotedProgression() == null, id);
+		this.spells = cs.spells;
+		this.items = cs.items;
+		this.equipped = cs.equipped;
+		
+		// Add items to the combat sprite
+		for (int i = 0; i < items.size(); i++)
+		{
+			if (equipped.get(i)) {
+				this.equipped.set(i, false);
+				this.equipItem((EquippableItem) items.get(i));
+			}
+		}
+	}
 
 	public int getExp() {
 		return exp;
@@ -890,6 +944,24 @@ public class CombatSprite extends AnimatedSprite
 		this.customMusic = customMusic;
 	}
 
+	public String toXMLString() {
+		String out = "<hero name=" + getName() + " level=" + getLevel() + 
+				" exp=" + getExp() + " promoted=" + isPromoted() + " promotionPath=" + this.promotionPath + " ";
+		String item = "";
+		String eqp = "";
+		for (int i = 0; i < this.items.size(); i++) {
+			if (i == 0) {
+				item = ""+ items.get(i).getItemId();
+				eqp = "" + equipped.get(i);
+			} else {
+				item += ","+ items.get(i).getItemId();
+				eqp += "," + equipped.get(i);
+			}
+		}
+		
+		out = out + "item=" + item + " eqp=" + eqp + "/>";
+		return out;
+	}
 
 	@Override
 	public String toString() {

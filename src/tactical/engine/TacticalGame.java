@@ -191,12 +191,14 @@ public abstract class TacticalGame extends StateBasedGame   {
 			// were specified, if so then apply them to the client profile.
 			// If this is "Test" mode then don't apply the dev params as
 			// it may screw up the heroes in the party
+			/* THIS IS NO LONGER NEEDED AS WE ONLY LOAD DURING BATTLE LOAD FROM DEVEL
 			if (TacticalGame.DEV_MODE_ENABLED && !TacticalGame.TEST_MODE_ENABLED)
 			{
 				DevParams devParams = DevParams.parseDevParams();
 				if (devParams != null)
 					clientProfile.setDevParams(devParams);
 			}
+			*/
 
 			Log.debug("Profile was created");
 		}

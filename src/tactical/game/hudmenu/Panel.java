@@ -52,7 +52,8 @@ public abstract class Panel
 		PANEL_SHOP_OPTIONS,
 		PANEL_MULTI_JOIN_CHOOSE,
 		PANEL_MINI_MAP,
-		PANEL_PAUSE
+		PANEL_PAUSE,
+		PANEL_CONTEXT_DEBUG
 	}
 
 	protected PanelType panelType;

@@ -63,4 +63,13 @@ public class ItemResource
 		}
 		return itemDefs;
 	}
+	
+	public static ArrayList<Item> getAllItems() {
+		ArrayList<Item> itemDefs = new ArrayList<>();
+		for (ItemDefinition id : itemDefinitionsById.values()) {
+			Item item = id.getUnintializedItem();
+			itemDefs.add(item);
+		}
+		return itemDefs;
+	}
 }
