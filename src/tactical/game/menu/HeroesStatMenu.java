@@ -40,10 +40,22 @@ public class HeroesStatMenu extends Menu
 		this(stateInfo, null);
 	}
 
+	/**
+	 * Constructor to create a HeroesStatMenu with all of the heroes in the party
+	 * 
+	 * @param stateInfo
+	 * @param listener
+	 */
 	public HeroesStatMenu(StateInfo stateInfo, MenuListener listener)
 	{
-		this(PanelType.PANEL_HEROS_OVERVIEW, stateInfo.getAllHeroes(), listener);
+		super(PanelType.PANEL_HEROS_OVERVIEW);
+		heroes = stateInfo.getClientProfile().getHeroesInParty();
 		
+		for (CombatSprite cs : stateInfo.getAllHeroes()) {
+			if (!heroes.stream().anyMatch(h -> h.getId() == cs.getId()))
+				heroes.add(cs);
+		}
+		updateCurrentHero();
 	}
 	
 	protected HeroesStatMenu(PanelType panelType, Iterable<CombatSprite> chooseableSprites, MenuListener listener) {

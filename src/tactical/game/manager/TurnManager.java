@@ -1,19 +1,10 @@
 package tactical.game.manager;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
@@ -32,7 +23,7 @@ import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.TurnActionsMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.Range;
-import tactical.game.ai.AIConfidence;
+import tactical.game.ai.AIController;
 import tactical.game.battle.BattleEffect;
 import tactical.game.battle.BattleResults;
 import tactical.game.battle.command.BattleCommand;
@@ -51,6 +42,7 @@ import tactical.game.menu.ItemOptionMenu;
 import tactical.game.menu.LandEffectPanel;
 import tactical.game.menu.SpeechMenu;
 import tactical.game.menu.SpellMenu;
+import tactical.game.menu.devel.BattleAIDebug;
 import tactical.game.move.AttackableSpace;
 import tactical.game.move.MoveableSpace;
 import tactical.game.move.MovingSprite;
@@ -64,8 +56,6 @@ import tactical.game.turnaction.MoveToTurnAction;
 import tactical.game.turnaction.PerformAttackAction;
 import tactical.game.turnaction.TurnAction;
 import tactical.game.turnaction.WaitAction;
-import tactical.game.ui.PaddedGameContainer;
-import tactical.utils.StringUtils;
 
 public class TurnManager extends Manager implements KeyboardListener
 {
@@ -95,6 +85,7 @@ public class TurnManager extends Manager implements KeyboardListener
 	private int cursorTargetX, cursorTargetY;
 	private int updateDelta = 0;
 	private int activeCharFlashDelta = 0;
+	private AIController aiController;
 
 	private boolean ownsSprite;
 	private boolean resetSpriteLoc = false;
@@ -116,7 +107,7 @@ public class TurnManager extends Manager implements KeyboardListener
 	// DEBUG Variables
 	public static boolean enableAIDebug = false;
 	public static boolean healOnTurn = false;
-	private List<AIConfidence> debugConfidences;
+	private BattleAIDebug battleAIDebug;
 
 	@Override
 	public void initialize() {
@@ -126,6 +117,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		itemMenu = new ItemMenu(stateInfo);
 		itemOptionMenu = new ItemOptionMenu(stateInfo);
 		landEffectPanel = new LandEffectPanel();
+		aiController = new AIController();
 		movingSprite = null;
 		ms = null;
 		as = null;
@@ -139,6 +131,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		cursorImage = stateInfo.getResourceManager().getImage("battlecursor");
 		cursor = new Rectangle(0, 0, stateInfo.getTileWidth(), stateInfo.getTileHeight());
 		cursorTargetX = cursorTargetY = updateDelta = activeCharFlashDelta = 0;
+		battleAIDebug = new BattleAIDebug(this, stateInfo);
 	}
 
 	public void update(StateBasedGame game, int delta)
@@ -176,67 +169,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		}
 		
 		if (enableAIDebug)
-			handleDebugInput(game);
-	}
-
-	protected void handleDebugInput(StateBasedGame game) {
-		if (debugConfidences != null && game.getContainer().getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-			Input input = game.getContainer().getInput();
-			int mx = (int)(input.getMouseX() / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationX()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
-			int my = (int)(input.getMouseY()  / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationY()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
-			JPanel panel = null;
-			for (AIConfidence aic : debugConfidences) {
-				if (aic.attackPoint != null && aic.attackPoint.x == mx && aic.attackPoint.y == my) {
-					if (panel == null) {
-						panel = new JPanel();
-						panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-						
-						String approach = null;
-						/*
-						 *  public final static int APPROACH_REACTIVE = 0;
-							public final static int APPROACH_KAMIKAZEE = 1;
-							public final static int APPROACH_HESITANT = 2;
-							public final static int APPROACH_FOLLOW = 3;
-							public final static int APPROACH_MOVE_TO_POINT = 4;
-							public final static int APPROACH_TARGET = 5;
-						 */
-						switch (currentSprite.getAi().getApproachType()) {
-							case 0:
-								approach = "Reactive";
-								break;
-							case 1:
-								approach = "Kamikazee";
-								break;
-							case 2:
-								approach = "Hesitant";
-								break;
-							case 3:
-								approach = "Follow";
-								break;
-							case 4:
-								approach = "Move to point";
-								break;
-							case 5:
-								approach = "Approach target";
-								break;
-						}
-						panel.add(new JLabel("Approach: " + approach));
-					}
-					JLabel label = new JLabel("<html><body style='width: 600px'>" + aic.toString() + "</body></html>");
-					panel.add(label);					
-				}
-			}
-			
-			if (panel != null) {
-				JFrame debugFrame = new JFrame("AI Debug");
-				debugFrame.setContentPane(panel);
-				debugFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				debugFrame.setMinimumSize(new Dimension(600, 400));
-				debugFrame.pack();
-				debugFrame.setVisible(true);
-				debugFrame.toFront();
-			}
-		}
+			battleAIDebug.handleDebugInput(game.getContainer().getInput());
 	}
 
 	public void render(Graphics graphics)
@@ -246,7 +179,7 @@ public class TurnManager extends Manager implements KeyboardListener
 			ms.renderMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);
 
 		if (enableAIDebug) {
-			renderDebugConfidences(graphics);
+			battleAIDebug.renderDebugConfidences(graphics);
 		}
 		
 		if (displayCursor)
@@ -262,44 +195,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		}
 	}
 	
-	private void renderDebugConfidences(Graphics graphics) {
-		if (debugConfidences != null && currentSprite != null) {		
-			Hashtable<java.awt.Point, Integer> amtPerSpace = new Hashtable<>();
-			for (AIConfidence aic : debugConfidences) {
-				int amt = 0;
-				
-				if (aic.attackPoint != null) {
-					graphics.setColor(Color.green);
-					float x = aic.attackPoint.x * stateInfo.getCurrentMap().getTileEffectiveWidth() - 
-							stateInfo.getCamera().getLocationX();
-					float y = aic.attackPoint.y * stateInfo.getCurrentMap().getTileEffectiveHeight() - 
-							stateInfo.getCamera().getLocationY();
-					graphics.drawRect(x, y, stateInfo.getCurrentMap().getTileEffectiveWidth(), stateInfo.getCurrentMap().getTileEffectiveHeight());
-					graphics.setColor(Color.white);
-										
-					if (amtPerSpace.containsKey(aic.attackPoint)) {
-						amt = amtPerSpace.get(aic.attackPoint);
-					}
-					
-					if (aic.confidence != Integer.MIN_VALUE)
-						StringUtils.drawString("" + aic.confidence, (int) x + (10 * (amt / 4)), (int) y + (amt % 4) * 6, graphics);
-					else
-						StringUtils.drawString("L", (int) x + (10 * (amt / 4)), (int) y + (amt % 4) * 6, graphics);
-					if (aic.target != null) {
-						graphics.setColor(Color.orange);
-						float tx = aic.target.getLocX() -  stateInfo.getCamera().getLocationX();
-						float ty = aic.target.getLocY() -  stateInfo.getCamera().getLocationY();
-						graphics.drawRect(tx, ty, 
-								stateInfo.getCurrentMap().getTileEffectiveWidth(), stateInfo.getCurrentMap().getTileEffectiveHeight());
-						graphics.drawRect(tx + 1, ty + 1, 
-								stateInfo.getCurrentMap().getTileEffectiveWidth() - 2, stateInfo.getCurrentMap().getTileEffectiveHeight() - 2);
-					}
-					
-					amtPerSpace.put(aic.attackPoint, new Integer(amt + 1));
-				}
-			}
-		}
-	}
+	
 
 	public void renderCursor(Graphics graphics)
 	{
@@ -336,7 +232,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		stateInfo.removeKeyboardListeners();
 		currentSprite = sprite;
 		stateInfo.setCurrentSprite(currentSprite);
-		debugConfidences = null;
+		battleAIDebug.clearDebugConfidences();
 
 		as = null;
 		this.battleResults = null;
@@ -391,8 +287,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				if (!TurnManager.enableAIDebug)
 					stateInfo.sendMessage(new TurnActionsMessage(false, sprite.getAi().performAI(stateInfo, ms, currentSprite)), true);
 				else {
-					debugConfidences = new ArrayList<>();
-					sprite.getAi().performAI(stateInfo, ms, currentSprite, debugConfidences);
+					battleAIDebug.determineConfidences();
 					stateInfo.addKeyboardListener(this);
 				}
 			}
@@ -536,13 +431,17 @@ public class TurnManager extends Manager implements KeyboardListener
 				// At this point we know who we intend to target, but we need to inject the BattleCommand.
 				// Only the owner will have a value for the battle command so they will have to be
 				// the one to send the BattleResults
-				if (!(battleCommand.getCommand() == BattleCommand.COMMAND_GIVE_ITEM)) {
+				if (!(battleCommand.getCommand() == BattleCommand.COMMAND_GIVE_ITEM)) {										
 					displayAttackable = false;
 					displayMoveable = true;
 					// Once we've targeted a sprite there can not be anymore keyboard input
 					stateInfo.removeKeyboardListeners();
-					turnActions.add(new AttackSpriteAction(
-						((SpriteContextMessage) message).getSprites(stateInfo.getCombatSprites()), battleCommand));
+					if (battleCommand.getCommand() == BattleCommand.COMMAND_SPELL && !battleCommand.getSpell().showCombatAnimation()) {
+						battleCommand.getSpell().performSkippedSpellAction(stateInfo);						
+						turnActions.add(new EndTurnAction());
+					} else
+						turnActions.add(new AttackSpriteAction(
+								((SpriteContextMessage) message).getSprites(stateInfo.getCombatSprites()), battleCommand));
 				} else {
 					Item item = battleCommand.getItem();
 					CombatSprite targetSprite = ((SpriteContextMessage) message).getSprites(stateInfo.getCombatSprites()).get(0);
@@ -671,7 +570,9 @@ public class TurnManager extends Manager implements KeyboardListener
 				
 				as = new AttackableSpace(stateInfo, currentSprite, range, area);
 				displayAttackable = true;
-				
+				break;
+			case INITIALIZE_BATTLE:
+				aiController.initialize(stateInfo.getCombatSprites());
 				break;
 			default:
 				break;
@@ -698,28 +599,12 @@ public class TurnManager extends Manager implements KeyboardListener
 		}
 		return area;
 	}
-	
-	private boolean handleDebugKeyboardInput(UserInput input) {
-		if (input.isKeyDown(KeyMapping.BUTTON_3))
-		{
-			stateInfo.removeKeyboardListeners();
-			stateInfo.sendMessage(new TurnActionsMessage(false, currentSprite.getAi().performAI(stateInfo, ms, currentSprite)), true);
-			return true;
-		}
-		else if (input.isKeyDown(KeyMapping.BUTTON_2))
-		{
-			debugConfidences = new ArrayList<>();
-			currentSprite.getAi().performAI(stateInfo, ms, currentSprite, debugConfidences);
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public boolean handleKeyboardInput(UserInput input, StateInfo stateInfo)
 	{
-		if (enableAIDebug && debugConfidences != null) {
-			return handleDebugKeyboardInput(input);
+		if (enableAIDebug && battleAIDebug.acceptingInput()) {
+			return battleAIDebug.handleDebugKeyboardInput(input);
 		}
 		
 		if (turnActions.size() == 0)
@@ -811,6 +696,10 @@ public class TurnManager extends Manager implements KeyboardListener
 		}
 
 		return false;
+	}
+
+	public AIController getAiController() {
+		return aiController;
 	}
 
 	public CombatSprite getCurrentSprite() {

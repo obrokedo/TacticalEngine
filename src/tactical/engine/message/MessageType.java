@@ -2,6 +2,7 @@ package tactical.engine.message;
 
 public enum MessageType
 {
+	INITIALIZE_BATTLE,
 	NEXT_TURN,
 	COMBATANT_TURN,
 	ATTACK_PRESSED,

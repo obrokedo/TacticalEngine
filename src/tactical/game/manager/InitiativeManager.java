@@ -86,8 +86,6 @@ public class InitiativeManager extends Manager
 
 	public void updateOnTurn()
 	{
-		if (stateInfo.getCurrentSprite() == null)
-			initializeAfterSprites();
 		getNextTurn();
 	}
 
@@ -135,6 +133,10 @@ public class InitiativeManager extends Manager
 		{
 			case NEXT_TURN:
 				updateOnTurn();
+				break;
+			case INITIALIZE_BATTLE:
+				initializeAfterSprites();
+				stateInfo.sendMessage(MessageType.NEXT_TURN);
 				break;
 			default:
 				break;

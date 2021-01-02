@@ -43,6 +43,7 @@ public class ClientProgress implements Serializable
 	private Integer currentTurn;
 	private static final String BATTLE_PREFIX = "!!";
 	private transient long lastSaveTime;
+	private transient String lastSaveMapData;
 
 	public ClientProgress(String name)
 	{		
@@ -82,6 +83,7 @@ public class ClientProgress implements Serializable
 	{
 		this.timePlayed += (System.currentTimeMillis() - lastSaveTime);
 		this.lastSaveTime = System.currentTimeMillis();
+		this.lastSaveMapData = mapData;
 		try
 		{
 			OutputStream file = new FileOutputStream(name + ".progress");
@@ -105,6 +107,7 @@ public class ClientProgress implements Serializable
 
 	      ClientProgress cp = (ClientProgress) input.readObject();
 	      cp.lastSaveTime = System.currentTimeMillis();
+	      cp.lastSaveMapData = cp.mapData;
 	      file.close();
 	      return cp;
 	    }
@@ -244,5 +247,9 @@ public class ClientProgress implements Serializable
 
 	public HashSet<String> getQuestsCompleted() {
 		return questsCompleted;
+	}
+	
+	public String getLastSaveMapData() {
+		return lastSaveMapData;
 	}
 }

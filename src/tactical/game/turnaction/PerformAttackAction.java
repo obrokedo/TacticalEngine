@@ -34,6 +34,7 @@ public class PerformAttackAction extends TurnAction
 		stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
 		stateInfo.removePanel(PanelType.PANEL_ENEMY_HEALTH_BAR);
 		AttackCinematicState acs = TacticalGame.ENGINE_CONFIGURATIOR.getAttackCinematicState();
+		
 		if (TacticalGame.BATTLE_MODE_OPTIMIZE || acs == null)
 		{
 			for (int i = 0; i < turnManager.getBattleResults().targets.size(); i++)

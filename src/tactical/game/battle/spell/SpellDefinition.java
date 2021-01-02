@@ -7,6 +7,7 @@ import org.newdawn.slick.Image;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.ParticleEmitterConfiguration;
+import tactical.engine.state.StateInfo;
 import tactical.game.Range;
 import tactical.game.battle.BattleEffect;
 import tactical.game.sprite.CombatSprite;
@@ -233,6 +234,14 @@ public abstract class SpellDefinition implements Serializable
 	 * @see /scripts/Spells.py
 	 */
 	public abstract Color getSpellOverlayColor(int spellLevel);
+	
+	public boolean showCombatAnimation() {
+		return true;
+	}
+	
+	public void performSkippedSpellAction (StateInfo stateInfo) {
+		
+	}
 	
 	public abstract String getSpellAnimationFile(int spellLevel);
 	

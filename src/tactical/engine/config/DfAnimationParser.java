@@ -13,6 +13,7 @@ import tactical.utils.Animation;
 import tactical.utils.SpriteAnims;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
+import tactical.utils.XMLParser.XMLQueryMatcher;
 
 public class DfAnimationParser implements AnimationParser {
 	public SpriteAnims parseAnimations(String animsFile) throws IOException
@@ -23,6 +24,15 @@ public class DfAnimationParser implements AnimationParser {
 		 ArrayList<Rectangle> imageLocs = new ArrayList<>();
 		 SpriteAnims sa = null;
 
+		 // Get weapon animations if they exist
+		 TagArea weaponAnims = null;
+		 try {
+			 ArrayList<TagArea> weaponRootTags = XMLParser.process(animsFile.replace(".anim", "-weapon.anim"), false);
+			 weaponAnims = XMLParser.TagArea.findFirstTag(weaponRootTags, "animations");
+		 } catch (Exception e) {
+			 weaponAnims = null;
+		 }
+		 
 		 for (TagArea ta : rootTags)
 		 {
 			 if (ta.getTagType().equalsIgnoreCase("animations"))
@@ -52,6 +62,28 @@ public class DfAnimationParser implements AnimationParser {
 				 {
 					 String name = animTag.getAttribute("name");
 					 Animation animation = new Animation(name);
+					 
+					 // If there is a weapon animation file defined, then we need to combine the weapon animations
+					 // and the original animation.
+					 if (weaponAnims != null) {
+						 TagArea weaponAnim = weaponAnims.findFirstTag("anim", 100, 
+							new XMLQueryMatcher() {
+							 public boolean matchesQuery(TagArea tagArea) {
+								String searchName = tagArea.getAttribute("name");
+								return searchName != null && name.equalsIgnoreCase(searchName);
+							}
+						});
+						 
+						 if (weaponAnim != null) {
+							 if (animTag.getChildren().size() != weaponAnim.getChildren().size()) {
+								 throw new BadResourceException("Animation: " + name + " in animation file: " + animsFile + " has a different amount animation cells then it's associated weapon\n"
+								 		+ "this is usually due changes in the animation file that are not yet reflected in the weapon animation.");
+							 }
+							 for (int cellIdx = 0; cellIdx < animTag.getChildren().size(); cellIdx++) {
+								 animTag.getChildren().get(cellIdx).getChildren().addAll(weaponAnim.getChildren().get(cellIdx).getChildren());
+							 }
+						 }
+					 }
 
 					 for (TagArea frameTag : animTag.getChildren())
 					 {

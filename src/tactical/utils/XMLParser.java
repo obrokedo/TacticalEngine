@@ -195,6 +195,15 @@ public class XMLParser
         public Hashtable<String, String> getParams() {
 			return params;
 		}
+        
+        public static TagArea findFirstTag(List<TagArea> areas, String tagType) {
+        	TagArea ta = null;
+        	for (TagArea tas : areas)
+        		if ((ta = tas.findFirstTag(tagType)) != null)
+        			break;
+        	
+        	return ta;
+        }
 
 		/**
          * Gets the first child TagArea that has a tag type equal to the provided tag type. This
@@ -204,9 +213,9 @@ public class XMLParser
          * @return the first child TagArea that has a tag type equal to the provided tag type. This
          * will return null if no TagArea could be found
          */
-        public TagArea queryFirstTag(String tagType)
+        public TagArea findFirstTag(String tagType)
         {
-            return queryFirstTagImpl(tagType, 0, Integer.MAX_VALUE, null);
+            return findFirstTagImpl(tagType, 0, Integer.MAX_VALUE, null);
         }
 
         /**
@@ -218,9 +227,9 @@ public class XMLParser
          * @return the first child TagArea that has a tag type equal to the provided tag type and
          * is not to deep. This will return null if no TagArea could be found
          */
-        public TagArea queryFirstTag(String tagType, int maxDepth)
+        public TagArea findFirstTag(String tagType, int maxDepth)
         {
-            return queryFirstTagImpl(tagType, 0, maxDepth, null);
+            return findFirstTagImpl(tagType, 0, maxDepth, null);
         }
 
         /**
@@ -233,26 +242,23 @@ public class XMLParser
          * @return the first child TagArea that has a tag type equal to the provided tag type,
          * is not to deep and matches the given XMLQueryMatcher. This will return null if no TagArea could be found
          */
-        public TagArea queryFirstTag(String tagType, int maxDepth, XMLQueryMatcher matcher)
+        public TagArea findFirstTag(String tagType, int maxDepth, XMLQueryMatcher matcher)
         {
-            return queryFirstTagImpl(tagType, 0, maxDepth, matcher);
+            return findFirstTagImpl(tagType, 0, maxDepth, matcher);
         }
 
-        private TagArea queryFirstTagImpl(String tagType, int depth, int maxDepth, XMLQueryMatcher matcher)
+        private TagArea findFirstTagImpl(String tagType, int depth, int maxDepth, XMLQueryMatcher matcher)
         {
             depth++;
             if (depth > maxDepth)
                 return null;
 
-            for (TagArea child : children)
-            {
-                if (child.getTagType().equalsIgnoreCase(tagType) && (matcher == null || matcher.matchesQuery(child)))
-                    return child;
-            }
+            if (getTagType().equalsIgnoreCase(tagType) && (matcher == null || matcher.matchesQuery(this)))
+            	return this;
 
             for (TagArea child : children)
             {
-                TagArea ta = child.queryFirstTagImpl(tagType, depth, maxDepth, matcher);
+                TagArea ta = child.findFirstTagImpl(tagType, depth, maxDepth, matcher);
                 if (ta != null)
                     return ta;
             }
@@ -266,9 +272,9 @@ public class XMLParser
          * @param tagType the tag type of the TagArea to search for
          * @return a list of all child TagAreas that have a tag type equal to the provided tag type
          */
-        public List<TagArea> queryAllTag(String tagType)
+        public List<TagArea> findAllTag(String tagType)
         {
-            return queryAllTag(tagType, Integer.MAX_VALUE, null);
+            return findAllTag(tagType, Integer.MAX_VALUE, null);
         }
 
         /**
@@ -279,9 +285,9 @@ public class XMLParser
          * @return a list of all child TagAreas that have a tag type equal to the provided tag type and
          * is not to deep
          */
-        public List<TagArea> queryAllTag(String tagType, int maxDepth)
+        public List<TagArea> findAllTag(String tagType, int maxDepth)
         {
-            return queryAllTag(tagType, maxDepth, null);
+            return findAllTag(tagType, maxDepth, null);
         }
 
         /**
@@ -294,28 +300,27 @@ public class XMLParser
          * @return a list of all child TagAreas that have a tag type equal to the provided tag type,
          * is not to deep and matches the given XMLQueryMatcher.
          */
-        public List<TagArea> queryAllTag(String tagType, int maxDepth, XMLQueryMatcher matcher)
+        public List<TagArea> findAllTag(String tagType, int maxDepth, XMLQueryMatcher matcher)
         {
             List<TagArea> tagAreas = new ArrayList<TagArea>();
-            queryAllTagImpl(tagType, 0, maxDepth, tagAreas, matcher);
+            findAllTagImpl(tagType, 0, maxDepth, tagAreas, matcher);
             return tagAreas;
         }
 
-        public void queryAllTagImpl(String tagType, int depth, int maxDepth, List<TagArea> tagAreas, XMLQueryMatcher matcher)
+        private void findAllTagImpl(String tagType, int depth, int maxDepth, List<TagArea> tagAreas, XMLQueryMatcher matcher)
         {
             depth++;
             if (depth > maxDepth)
                 return;
 
-            for (TagArea child : children)
+            if (getTagType().equalsIgnoreCase(tagType) && (matcher == null || matcher.matchesQuery(this)))
             {
-                if (child.getTagType().equalsIgnoreCase(tagType))
-                {
-                    if (matcher == null || matcher.matchesQuery(child))
-                        tagAreas.add(child);
-                }
-
-                child.queryAllTagImpl(tagType, depth, maxDepth, tagAreas, matcher);
+            	tagAreas.add(this);
+            }
+            
+            for (TagArea child : children)
+            {          
+                child.findAllTagImpl(tagType, depth, maxDepth, tagAreas, matcher);
             }
         }
 

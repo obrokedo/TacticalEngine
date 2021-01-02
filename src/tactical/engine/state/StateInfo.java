@@ -80,8 +80,6 @@ public class StateInfo
 	/* These values are retrieved from the persistent */
 	/* state info									  */
 	/**************************************************/
-	private ArrayList<CombatSprite> heroes;
-
 	public StateInfo(PersistentStateInfo psi, boolean isCombat, boolean isCinematic)
 	{
 		this.psi = psi;
@@ -97,7 +95,6 @@ public class StateInfo
 		this.messagesToProcess = new ArrayList<Message>();
 		this.newMessages = new ArrayList<Message>();
 		this.fcInput = new UserInput();
-		this.heroes = new ArrayList<>();		
 	}
 
 	/************************/
@@ -116,11 +113,6 @@ public class StateInfo
 		psi.getClientProfile().initialize();
 
 		initializeSystems();
-
-		if (isCombat)
-			this.heroes.addAll(getClientProfile().getHeroesInParty());
-		else
-			this.heroes.add(getClientProfile().getMainCharacter());
 		
 		/*
 		 * If the first time into the game we start with a battle then the
@@ -194,7 +186,7 @@ public class StateInfo
 				else
 				{
 					// Start the whole battle
-					sendMessage(MessageType.NEXT_TURN);
+					sendMessage(MessageType.INITIALIZE_BATTLE);
 					sendMessage(MessageType.INITIALIZE_STATE_INFO);
 				}
 			}
@@ -211,7 +203,6 @@ public class StateInfo
 		combatSprites.clear();
 		panels.clear();
 		menus.clear();
-		heroes.clear();
 		mouseListeners.clear();
 		keyboardListeners.clear();
 		messagesToProcess.clear();
@@ -317,7 +308,7 @@ public class StateInfo
 					psi.loadCinematic(lmc.getMapData(), lmc.getCinematicID());
 					break;
 				case SAVE:
-				save();
+					save();
 					break;
 				case SAVE_BATTLE:
 				saveBattle();
@@ -334,7 +325,7 @@ public class StateInfo
 						initialized = true;
 						if (isCombat)
 							// Start the whole battle
-							sendMessage(MessageType.NEXT_TURN);
+							sendMessage(MessageType.INITIALIZE_BATTLE);
 					}
 					this.removePanel(PanelType.PANEL_WAIT);
 					isWaiting = false;
@@ -762,10 +753,6 @@ public class StateInfo
 	
 	public Iterable<CombatSprite> getAllHeroes() {
 		return this.psi.getClientProfile().getHeroes();
-	}
-
-	public Iterable<CombatSprite> getHeroesInState() {
-		return heroes;
 	}
 
 	public long getInputDelay() {

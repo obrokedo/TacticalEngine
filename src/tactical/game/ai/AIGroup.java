@@ -69,4 +69,12 @@ public class AIGroup {
 				// If not then heal and try to get back into the correct position
 		}
 	}
+	
+	public boolean groupContainsCombatant(CombatSprite cs) {
+		return this.members.stream().anyMatch(c -> c.getId() == cs.getId());
+	}
+
+	public ArrayList<CombatSprite> getMembers() {
+		return members;
+	}
 }

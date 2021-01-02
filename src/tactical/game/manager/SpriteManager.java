@@ -2,6 +2,7 @@ package tactical.game.manager;
 
 import java.awt.Point;
 import java.util.Iterator;
+import java.util.List;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.MusicConfiguration;
@@ -13,6 +14,7 @@ import tactical.game.constants.Direction;
 import tactical.game.definition.EnemyDefinition;
 import tactical.game.dev.BattleOptimizer;
 import tactical.game.exception.BadMapException;
+import tactical.game.exception.BadResourceException;
 import tactical.game.item.Item;
 import tactical.game.resource.NPCResource;
 import tactical.game.sprite.CombatSprite;
@@ -38,10 +40,12 @@ public class SpriteManager extends Manager
 		EnemyDefinition.resetEnemyIds();
 		NPCResource.resetNPCIds();
 
+		List<CombatSprite> heroesInState = stateInfo.getClientProfile().getHeroesInParty();
+		
 		// If we are not in combat then get this clients main character and set them as the current sprite
 		if (!stateInfo.isCombat())
 		{
-			for (CombatSprite cs : stateInfo.getHeroesInState())
+			for (CombatSprite cs : heroesInState)
 			{
 				if (cs.isLeader())
 				{
@@ -116,7 +120,7 @@ public class SpriteManager extends Manager
 			// Regardless of whether or not this is a loaded mid-way battle
 			// or a new battle, initialize the hero list, do NOT initialize
 			// the stats
-			for (CombatSprite cs : stateInfo.getHeroesInState())
+			for (CombatSprite cs : heroesInState)
 			{
 				// Do not allow dead sprites to appear in the battle
 				if (cs.getCurrentHP() <= 0)
@@ -131,7 +135,7 @@ public class SpriteManager extends Manager
 			// to the state and place them in their starting locations
 			if (!fromLoad) 
 			{
-				stateInfo.addAllCombatSprites(stateInfo.getHeroesInState());
+				stateInfo.addAllCombatSprites(heroesInState);
 
 				// Get any npcs from the map
 				for (MapObject mo : stateInfo.getResourceManager().getMap().getMapObjects())
@@ -158,7 +162,7 @@ public class SpriteManager extends Manager
 					// We purposely don't remove the combat sprites until this point so that their
 					// spots are still taken up in the start location (as empty spaces). Otherwise
 					// it could completely fuck up split battles... but so could less people in the party...
-					Iterator<CombatSprite> csIt = stateInfo.getHeroesInState().iterator();
+					Iterator<CombatSprite> csIt = heroesInState.iterator();
 					while (csIt.hasNext())
 					{
 						CombatSprite cs = csIt.next();
@@ -166,6 +170,11 @@ public class SpriteManager extends Manager
 							csIt.remove();
 					}
 				}
+				
+				if (heroesInState.stream().anyMatch(hs -> hs.getLocX() == -1))
+					throw new BadResourceException("The current battle does not have enough start locations to place all of the heroes currently in the party."
+							+ " Ensure that you have the expected amount of members in the party and that the start trigger refers to the correct start location");
+				
 				if (TacticalGame.BATTLE_MODE_OPTIMIZE)
 					battleOptimizer.startBattle();
 			// Since the enemies already exist in the combat sprite list

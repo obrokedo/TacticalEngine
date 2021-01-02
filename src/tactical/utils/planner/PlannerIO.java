@@ -34,8 +34,6 @@ public class PlannerIO {
 		ArrayList<String> myBuffer = null;
 		try {
 			myBuffer = PlannerIO.export(containers, rootXMLTag);
-			if (containers != null)
-				throw new Exception();
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "An error occurred while trying to format the data for " + rootXMLTag + ":"

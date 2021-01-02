@@ -65,8 +65,8 @@ public abstract class AI implements Serializable
 	public ArrayList<TurnAction> performAI(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite, List<AIConfidence> debugConfidences)
 	{
 		AIConfidence conf = this.getBestConfidence(stateInfo, ms, currentSprite, debugConfidences);
-		if (debugConfidences != null)
-			debugConfidences.add(0, conf);
+		//if (debugConfidences != null)
+			//debugConfidences.add(0, conf);
 		return this.getActions(stateInfo, ms, currentSprite, conf);
 	}
 

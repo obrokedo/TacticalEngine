@@ -3,12 +3,21 @@ package tactical.game.ai;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Optional;
 
 import tactical.game.sprite.CombatSprite;
 
 public class AIController
 {
 	private ArrayList<AIGroup> aiGroups;
+	public ArrayList<AIGroup> getAiGroups() {
+		return aiGroups;
+	}
+
+	public Hashtable<CombatSprite, ArrayList<HealRequest>> getHealRequestByHealer() {
+		return healRequestByHealer;
+	}
+
 	private Hashtable<CombatSprite, ArrayList<HealRequest>> healRequestByHealer;
 
 	public void initialize(Iterable<CombatSprite> combatSprites)
@@ -52,6 +61,10 @@ public class AIController
 	public void performAI(CombatSprite cs)
 	{
 
+	}
+	
+	public Optional<AIGroup> getCombatantGroup(CombatSprite cs) {
+		return aiGroups.stream().filter(aig -> aig.groupContainsCombatant(cs)).findFirst();
 	}
 
 	private class HealRequest

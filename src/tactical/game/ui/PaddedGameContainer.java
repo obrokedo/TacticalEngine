@@ -52,7 +52,8 @@ public class PaddedGameContainer extends AppGameContainer
 			try {
 				updateAndRender(delta);
 			} catch (Throwable e) {
-				((LoadableGameState) ((TacticalGame) game).getCurrentState()).exceptionInState();
+				if (((TacticalGame) game).getCurrentState() instanceof LoadableGameState)
+					((LoadableGameState) ((TacticalGame) game).getCurrentState()).exceptionInState();
 				((TacticalGame) game).enterState(TacticalGame.STATE_GAME_MENU_DEVEL);
 				JOptionPane.showMessageDialog(null, "An error occurred during execution " + e.getMessage());
 				return;
