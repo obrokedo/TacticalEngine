@@ -177,10 +177,6 @@ public class TurnManager extends Manager implements KeyboardListener
 
 		if (displayMoveable)
 			ms.renderMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);
-
-		if (enableAIDebug) {
-			battleAIDebug.renderDebugConfidences(graphics);
-		}
 		
 		if (displayCursor)
 		{
@@ -210,6 +206,10 @@ public class TurnManager extends Manager implements KeyboardListener
 		
 		if (displayMoveable)
 			ms.renderHiddenMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);
+		
+		if (enableAIDebug) {
+			battleAIDebug.renderDebugConfidences(graphics);
+		}
 	}
 
 	private void processTurnActions(int delta, StateBasedGame game)

@@ -60,9 +60,10 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 			pl.setupUI(pcdef.getAllowableLines(), this, cnt++, pcdef.getListOfLists(), true, null);
 			boxPanel.add(pl.getUiAspect());
 		}						
-		jcb = new JComboBox<>();
+		jcb = new JComboBox<>();		
 		for (PlannerLineDef pld : pc.getPcdef().getAllowableLines())
 			jcb.addItem(pld.getName());
+		jcb.setMaximumRowCount(40);
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(new JLabel("Add new entry:"));
 		buttonPanel.add(jcb);

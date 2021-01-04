@@ -2,8 +2,6 @@ package tactical.game.trigger;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 
 import org.newdawn.slick.util.Log;
@@ -497,6 +495,24 @@ public class Trigger
 				Speech.showFirstSpeechMeetsReqs(textId, stateInfo, immediate);
 			else
 				stateInfo.sendMessage(new SpeechMessage(message));
+			return true;
+		}
+	}
+	
+	public class TriggerChangeAIVision implements Triggerable {
+		private int vision;
+		private int id;
+		
+		public TriggerChangeAIVision(String id, String vision) {
+			this.id = Integer.parseInt(id);
+			this.vision = Integer.parseInt(vision);
+		}
+		
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			for (CombatSprite s : stateInfo.getCombatSprites())
+				if (s.getUniqueEnemyId() == id)
+					s.getAi().setVision(vision);
 			return true;
 		}
 	}

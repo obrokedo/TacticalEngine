@@ -44,6 +44,7 @@ public class PlannerDefinitions {
 		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("wait"));
 		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("fast"));
 		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("slow"));
+		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("wander"));
 
 		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("wizard"));
 		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("cleric"));
@@ -2446,6 +2447,18 @@ public class PlannerDefinitions {
 						"A number between 1-100 that represents the percent volume the sound should be played at"));
 		allowableLines.add(new PlannerLineDef("playsound", "Play Sound",
 				"Plays the specified sound effect", definingValues));
+		
+		// Change AI - Vision
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "id", false, "Unit",
+				"The unit whose AI vision should be changed"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "vision", false, "AI Vision",
+				"The maximum range that the specified combatant will look for targets. "
+				+ "This value can never be lower then the attack range of the combatant."));
+		allowableLines.add(new PlannerLineDef("aivision", "Change AI - Vision",
+				"Changes the range that the combatant will look for targets at", definingValues));
 		
 		// Change AI - Approach Type
 		definingValues = new ArrayList<PlannerValueDef>();

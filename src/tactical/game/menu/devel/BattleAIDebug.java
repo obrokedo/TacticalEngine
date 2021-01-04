@@ -17,6 +17,7 @@ import org.newdawn.slick.Input;
 
 import tactical.engine.message.TurnActionsMessage;
 import tactical.engine.state.StateInfo;
+import tactical.game.ai.AI;
 import tactical.game.ai.AIConfidence;
 import tactical.game.ai.AIController;
 import tactical.game.ai.AIGroup;
@@ -64,10 +65,13 @@ public class BattleAIDebug {
 			case 5:
 				approach = "Approach target";
 				break;
+			case AI.APPROACH_WANDER:
+				approach = "Wander";
 			}
 			
 			if (approach != null)
-				StringUtils.drawString(approach, 3, PaddedGameContainer.GAME_SCREEN_SIZE.height - 8, graphics);
+				StringUtils.drawString(approach, 3, PaddedGameContainer.GAME_SCREEN_SIZE.height - 8, graphics);			
+			StringUtils.drawString("Vision: " + turnManager.getCurrentSprite().getAi().getVision(), 3, PaddedGameContainer.GAME_SCREEN_SIZE.height - 16, graphics);
 			
 			if (optAIGroup.isPresent()) {
 				AIGroup aiGroup = optAIGroup.get();

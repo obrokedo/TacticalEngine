@@ -13,16 +13,6 @@ public class EquippableItem extends Item
 	public static final int TYPE_RING = 1;
 	public static final int TYPE_ARMOR = 2;
 
-
-	public static final int STYLE_SPEAR = 0;
-	public static final int STYLE_AXE = 1;
-	public static final int STYLE_SWORD = 2;
-	public static final int STYLE_STAFF = 3;
-	public static final int STYLE_BOW = 4;
-	public static final int STYLE_HEAVY = 5;
-	public static final int STYLE_MEDIUM = 6;
-	public static final int STYLE_LIGHT = 7;
-
 	public static final int RANGE_BOW_2_NO_1 = 4;
 	public static final int RANGE_BOW_3_NO_1 = 5;
 	public static final int RANGE_BOW_3_NO_1_OR_2 = 6;

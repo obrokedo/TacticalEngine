@@ -260,13 +260,19 @@ public class MapObject
 				approachIndex = AI.APPROACH_HESITANT;
 			else if (approach.equalsIgnoreCase("wait"))
 				approachIndex = AI.APPROACH_REACTIVE;
+			else if (approach.equalsIgnoreCase("wander"))
+				approachIndex = AI.APPROACH_WANDER;
 
+			int vision = Integer.MAX_VALUE;
+			if (params.containsKey("vision"))
+				vision = Integer.parseInt(params.get("vision"));
+			
 			if (type.equalsIgnoreCase("wizard"))
-				enemy.setAi(new WizardAI(approachIndex));
+				enemy.setAi(new WizardAI(approachIndex, vision));
 			else if (type.equalsIgnoreCase("cleric"))
-				enemy.setAi(new ClericAI(approachIndex));
+				enemy.setAi(new ClericAI(approachIndex, vision));
 			else if (type.equalsIgnoreCase("fighter"))
-				enemy.setAi(new WarriorAI(approachIndex));
+				enemy.setAi(new WarriorAI(approachIndex, vision));
 
 			if (id != -1)
 				enemy.setUniqueEnemyId(id);

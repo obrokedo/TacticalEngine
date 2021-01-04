@@ -22,7 +22,7 @@
         <javac target="1.8" srcdir="src" destdir="bin" classpathref="classpath"/>
     </target>	
 	
-    <target name="create_run_jar">
+    <target name="create_run_jar"  depends="clean,compile">
         <jar destfile="${dir.jarfile}/Tactical.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="tactical.utils.planner.PlannerFrame"/>
@@ -40,7 +40,8 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/slick.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/timebars-1.49.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/ZTCP.jar"/>
-        	<zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/javax.activation-api-1.2.0.jar"/>
         </jar>
+    	<copy file="${dir.jarfile}/Tactical.jar" tofile="${dir.jarfile}/../LegaciesOfVeridocia/lib/Tactical.jar"/>
+    	<ant antfile="LoV-Ant-Dev.xml" target="create_run_jar" dir="../LegaciesOfVeridocia/" inheritAll="false"/>
     </target>
 </project>

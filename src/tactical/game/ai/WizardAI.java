@@ -13,8 +13,8 @@ import tactical.game.sprite.CombatSprite;
 
 public class WizardAI extends CasterAI
 {
-	public WizardAI(int approachType) {
-		super(approachType, false, 50f);
+	public WizardAI(int approachType, int vision) {
+		super(approachType, false, 50f, vision);
 	}
 
 	@Override

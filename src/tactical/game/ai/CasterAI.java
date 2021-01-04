@@ -26,14 +26,14 @@ public abstract class CasterAI extends AI
 	protected ArrayList<CombatSprite> targets;
 	protected float maxKillConfidenceAmt;
 
-	public CasterAI(int approachType, boolean canHeal, float maxKillConfidenceAmt) {
-		super(approachType, canHeal);
+	public CasterAI(int approachType, boolean canHeal, float maxKillConfidenceAmt, int vision) {
+		super(approachType, canHeal, vision);
 		this.maxKillConfidenceAmt = maxKillConfidenceAmt;
 	}
 
-	@Override
-	public void initialize()
+	public void initialize(CombatSprite puppet)
 	{
+		super.initialize(puppet);
 		mostConfident = Integer.MIN_VALUE;
 		bestSpell = null;
 		spellLevel = 0;

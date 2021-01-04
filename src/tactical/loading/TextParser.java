@@ -375,6 +375,39 @@ public class TextParser
 							spriteId, enemyId, heroId,
 							xLoc, yLoc, priority));
 				}
+				else if (tagType.startsWith("changeai"))
+				{
+					String spriteId = actionParams.get("id");
+					String priority = actionParams.getOrDefault("priority", "0");
+					String approachType = null;
+					String enemyId = null;
+					String heroId = null;
+					String xLoc = null;
+					String yLoc = null;
+					
+					if (tagType.equalsIgnoreCase("changeaiapproach")) {
+						approachType = actionParams.get("aitype");
+					} else if (tagType.equalsIgnoreCase("changeaitargethero")) {
+						approachType = "target";
+						heroId = actionParams.get("heroid");
+					} else if (tagType.equalsIgnoreCase("changeaitargetenemy")) {
+						approachType = "follow";
+						enemyId = actionParams.get("targetid");
+					} else if (tagType.equalsIgnoreCase("changeaimove")) {
+						approachType = "moveto";
+						xLoc = actionParams.get("x");
+						yLoc = actionParams.get("y");
+					}
+					
+					te.addTriggerable(te.new TriggerChangeAI(approachType,
+							spriteId, enemyId, heroId,
+							xLoc, yLoc, priority));
+				}
+				else if (tagType.startsWith("aivision"))
+				{
+					te.addTriggerable(te.new TriggerChangeAIVision(actionParams.get("id"), 
+							actionParams.get("vision")));
+				}
 				else if (tagType.equalsIgnoreCase("showtext"))
 				{
 					te.addTriggerable(te.new TriggerShowText(Integer.parseInt(actionParams.get("textid"))));

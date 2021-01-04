@@ -90,7 +90,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			
 	public void showScrollableOptionPane(JPanel panel, boolean forNewItem) {
 		JScrollPane jsp = new JScrollPane(panel);
-		
+		jsp.getVerticalScrollBar().setUnitIncrement(40);
 		if (forNewItem)
 			jsp.setPreferredSize(new Dimension(600, 400));
 		else

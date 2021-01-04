@@ -670,6 +670,7 @@ public class CombatSprite extends AnimatedSprite
 	public void setAi(AI ai)
 	{
 		this.ai = ai;
+		ai.initialize(this);
 	}
 
 	public int getCurrentMove() {

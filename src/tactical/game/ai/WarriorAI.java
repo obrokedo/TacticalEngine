@@ -12,8 +12,8 @@ import tactical.game.turnaction.AttackSpriteAction;
 
 public class WarriorAI extends AI
 {
-	public WarriorAI(int approachType) {
-		super(approachType, false);
+	public WarriorAI(int approachType, int vision) {
+		super(approachType, false, vision);
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class WarriorAI extends AI
 	}
 
 	@Override
-	protected void initialize() {
-
+	public void initialize(CombatSprite puppet) {
+		super.initialize(puppet);
 	}
 
 	@Override

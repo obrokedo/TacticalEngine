@@ -13,8 +13,8 @@ import tactical.game.sprite.CombatSprite;
 
 public class ClericAI extends CasterAI
 {
-	public ClericAI(int approachType) {
-		super(approachType, true, 30f);
+	public ClericAI(int approachType, int vision) {
+		super(approachType, true, 30f, vision);
 	}
 
 	@Override

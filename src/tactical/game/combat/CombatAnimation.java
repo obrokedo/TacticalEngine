@@ -4,7 +4,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
-import tactical.engine.state.DefaultAttackCinematicState;
 import tactical.game.battle.BattleEffect;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.PaddedGameContainer;

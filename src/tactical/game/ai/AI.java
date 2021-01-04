@@ -36,19 +36,22 @@ public abstract class AI implements Serializable
 	public final static int APPROACH_FOLLOW = 3;
 	public final static int APPROACH_MOVE_TO_POINT = 4;
 	public final static int APPROACH_TARGET = 5;
+	public final static int APPROACH_WANDER = 6;
 
 	private int approachType;
 	private boolean canHeal;
 	private Point targetPoint;
 	private int priority = 0;
+	private int vision;
 
 	// The target Combat sprite that has been specified by external commands
 	private CombatSprite targetCS;
 
-	public AI(int approachType, boolean canHeal) {
+	public AI(int approachType, boolean canHeal, int vision) {
 		super();
 		this.approachType = approachType;
 		this.canHeal = canHeal;
+		this.vision = vision;
 	}
 	
 	public void reinitialize(StateInfo stateInfo)
@@ -72,12 +75,15 @@ public abstract class AI implements Serializable
 
 	public AIConfidence getBestConfidence(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite, List<AIConfidence> confidenceDebugList)
 	{
-		this.initialize();
-
 		ArrayList<AttackableEntity> attackableSprites = this.getAttackableSprites(stateInfo, currentSprite, ms, getMaxRange(currentSprite));
 		AIConfidence maxConfidence = new AIConfidence(0);
 		int tileWidth = ms.getTileWidth();
 		int tileHeight = ms.getTileHeight();
+		
+		ArrayList<AIConfidence> jankList = null;
+		if (TacticalGame.RANDOM.nextInt(100) < 10) {
+			jankList = new ArrayList<>();
+		}
 
 		Log.debug("------ " + currentSprite.getName());
 
@@ -93,8 +99,6 @@ public abstract class AI implements Serializable
 		{
 			for (AttackableEntity as : attackableSprites)
 			{
-				this.initialize();
-
 				if (as.getCombatSprite().isHero() != currentSprite.isHero())
 				{
 					// If we have a target approach type then we want to ignore any hero who is not the target,
@@ -119,21 +123,21 @@ public abstract class AI implements Serializable
 						currentConfidence.confidence += this.getLandEffectConfidence(attackPoint, currentSprite, stateInfo);
 					}
 					
+					currentConfidence.attackPoint = attackPoint;
+					currentConfidence.target = as.getCombatSprite();
+					currentConfidence.potentialAttackSpriteAction = getPerformedTurnAction(as.getCombatSprite());
+					currentConfidence.foundHero = true;
+					
 					if (confidenceDebugList != null) {
-						currentConfidence.attackPoint = attackPoint;
-						currentConfidence.target = as.getCombatSprite();
-						currentConfidence.potentialAttackSpriteAction = getPerformedTurnAction(as.getCombatSprite());
-						currentConfidence.foundHero = true;
 						confidenceDebugList.add(currentConfidence);
 					}
+					
+					if (jankList != null)
+						jankList.add(currentConfidence);
 
 					if (currentConfidence.confidence > maxConfidence.confidence)
 					{
 						maxConfidence = currentConfidence;
-						currentConfidence.attackPoint = attackPoint;
-						currentConfidence.target = as.getCombatSprite();
-						currentConfidence.potentialAttackSpriteAction = getPerformedTurnAction(as.getCombatSprite());
-						currentConfidence.foundHero = true;
 					}
 					else if (currentConfidence == maxConfidence)
 					{
@@ -141,10 +145,6 @@ public abstract class AI implements Serializable
 						if (TacticalGame.RANDOM.nextInt(100) > 50)
 						{
 							maxConfidence = currentConfidence;
-							currentConfidence.attackPoint = attackPoint;
-							currentConfidence.target = as.getCombatSprite();
-							currentConfidence.potentialAttackSpriteAction = getPerformedTurnAction(as.getCombatSprite());
-							currentConfidence.foundHero = true;
 							Log.debug("Switched action randomly");
 						}
 					}
@@ -152,6 +152,17 @@ public abstract class AI implements Serializable
 					Log.debug("Target " + as.getCombatSprite().getName() + " Confidence: " + currentConfidence + " Distance: " + distance);
 				}
 			}
+		}
+		
+		if (jankList != null && jankList.size() > 0) {
+			AIConfidence jankConf = jankList.get(TacticalGame.RANDOM.nextInt(jankList.size()));
+			
+			if (jankConf.confidence < 0) {
+				jankConf.potentialAttackSpriteAction = null;
+			}
+			
+			Log.debug("You've been JANKED");
+			return jankConf;
 		}
 
 		return maxConfidence;
@@ -198,6 +209,9 @@ public abstract class AI implements Serializable
 					case AI.APPROACH_TARGET:
 						performFollowApproach(stateInfo, tileWidth, tileHeight, currentSprite, ms, turnActions);
 						break;
+					case AI.APPROACH_WANDER:
+						performWanderApproach(stateInfo, tileWidth, tileHeight, currentSprite, ms, turnActions);
+						break;
 				}
 			}
 		}
@@ -208,11 +222,19 @@ public abstract class AI implements Serializable
 			Log.debug("Move to attack the target from attack point " + confidence.attackPoint.x + ", " + confidence.attackPoint.y);
 			Log.debug("Attack " + confidence.target.getName() + " at " + confidence.target.getTileX() + ", " + confidence.target.getTileY());
 			ms.addMoveActionsToLocation(confidence.attackPoint.x, confidence.attackPoint.y, currentSprite, turnActions);
-			turnActions.add(new WaitAction(500));
-			turnActions.add(new TargetSpriteAction(confidence.potentialAttackSpriteAction.getBattleCommand(),
-					confidence.target));
-			turnActions.add(new WaitAction(500));
-			turnActions.add(confidence.potentialAttackSpriteAction);
+			if (confidence.potentialAttackSpriteAction != null) {
+				turnActions.add(new WaitAction(500));
+				turnActions.add(new TargetSpriteAction(confidence.potentialAttackSpriteAction.getBattleCommand(),
+						confidence.target));
+				turnActions.add(new WaitAction(500));
+				turnActions.add(confidence.potentialAttackSpriteAction);
+			}
+			else {
+				turnActions.add(new WaitAction(250));
+				turnActions.add(new HideMoveAreaAction());
+				turnActions.add(new WaitAction(250));
+				turnActions.add(new EndTurnAction());
+			}
 		}
 		else
 		{
@@ -224,6 +246,30 @@ public abstract class AI implements Serializable
 
 
 		return turnActions;
+	}
+
+	private void performWanderApproach(StateInfo stateInfo, int tileWidth, int tileHeight, CombatSprite currentSprite, MoveableSpace ms, ArrayList<TurnAction> turnActions)
+	{
+		int dir = TacticalGame.RANDOM.nextInt(4);
+		int x = (int) currentSprite.getLocX();
+		int y = (int) currentSprite.getLocY();
+		switch (dir) {
+			case 0:
+				x -= tileWidth;
+				break;
+			case 1:
+				x += tileWidth;
+				break;
+			case 2:
+				y += tileHeight;
+				break;
+			case 3:
+				y -= tileHeight;
+				break;
+		}
+		
+		if (ms.canEndMoveHere(x / tileWidth, y / tileHeight))
+			ms.addMoveActionsAlongPath(x, y, currentSprite, turnActions);
 	}
 
 	private void performKamikazeeApproach(StateInfo stateInfo, int tileWidth, int tileHeight, CombatSprite currentSprite, MoveableSpace ms, ArrayList<TurnAction> turnActions)
@@ -467,9 +513,9 @@ public abstract class AI implements Serializable
 
 		for (CombatSprite s : stateInfo.getCombatSprites())
 		{
-			if (s == attacker)
+			if (s == attacker || !isInVisionRange(attacker, s, vision))
 				continue;
-			AttackableEntity as = isInAttackRange(attacker, s, maxAttackRange, moveableSpace, stateInfo);
+			AttackableEntity as = determineAttackEntity(attacker, s, maxAttackRange, moveableSpace, stateInfo);
 			if (as != null)
 				combatSprites.add(as);
 		}
@@ -496,7 +542,7 @@ public abstract class AI implements Serializable
 	}
 
 	/**
-	 * Gets an AttackableSprite containing the locations from which the specified target combat-sprite is in range for the attacking sprite
+	 * Gets an AttackableEntity containing the locations from which the specified target combat-sprite is in range for the attacking sprite
 	 *
 	 * @param attacking The combat sprite that AI is being performed for
 	 * @param target The combat sprite that is being checked for attackability
@@ -506,7 +552,7 @@ public abstract class AI implements Serializable
 	 * @return An AttackableEntity containing the locations from which the specified target entity is in range for the attacking entity, null
 	 *			if the target is not in range
 	 */
-	private static AttackableEntity isInAttackRange(CombatSprite attacking, Sprite target, int maxAttackRange, MoveableSpace ms, StateInfo stateInfo)
+	private static AttackableEntity determineAttackEntity(CombatSprite attacking, Sprite target, int maxAttackRange, MoveableSpace ms, StateInfo stateInfo)
 	{
 		int tx = target.getTileX();
 		int ty = target.getTileY();
@@ -530,6 +576,10 @@ public abstract class AI implements Serializable
 		}
 
 		return attackable;
+	}
+	
+	private boolean isInVisionRange(CombatSprite attacker, Sprite target, int vision) {
+		return Math.abs(attacker.getTileX() - target.getTileX()) + Math.abs(attacker.getTileY() - target.getTileY()) <= vision;
 	}
 
 	/**
@@ -578,7 +628,10 @@ public abstract class AI implements Serializable
 	protected abstract AIConfidence getConfidence(CombatSprite currentSprite, CombatSprite targetSprite,
 			int tileWidth , int tileHeight, Point attackPoint, int distance, StateInfo stateInfo);
 
-	protected abstract void initialize();
+	public void initialize(CombatSprite puppet) {
+		this.vision = Math.max(vision, getMaxRange(puppet));
+	}
+	
 
 	protected int getLandEffectConfidence(Point actionPoint, CombatSprite currentSprite, StateInfo stateInfo)
 	{
@@ -594,5 +647,13 @@ public abstract class AI implements Serializable
 
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+	
+	public void setVision(int vision) {
+		this.vision = vision;
+	}
+	
+	public int getVision() {
+		return vision;
 	}
 }

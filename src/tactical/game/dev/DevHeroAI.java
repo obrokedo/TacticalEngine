@@ -11,7 +11,7 @@ public class DevHeroAI extends ClericAI {
 	private static final long serialVersionUID = 1L;
 
 	public DevHeroAI(int approachType) {
-		super(approachType);
+		super(approachType, Integer.MAX_VALUE);
 	}
 	
 	@Override

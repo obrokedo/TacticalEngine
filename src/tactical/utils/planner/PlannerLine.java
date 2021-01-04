@@ -166,6 +166,7 @@ public class PlannerLine
 						c = new JComboBox<String>(items);
 						if (values.size() > i)
 							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
+						((JComboBox<?>) c).setMaximumRowCount(20);
 					}
 					break;
 				case PlannerValueDef.TYPE_MULTI_STRING:
@@ -194,6 +195,7 @@ public class PlannerLine
 						{
 							PlannerReference plannerRef = vals.next();
 							JComboBox<String> jcb = new JComboBox<String>(mitems);
+							jcb.setMaximumRowCount(20);
 							if (plannerRef.getName().length() > 0) {
 								jcb.setSelectedItem(plannerRef.getName());
 								c.add(jcb);
@@ -240,6 +242,7 @@ public class PlannerLine
 						// We're going to leave the "" in so bad references don't default to something
 							items.add(0, "");
 						c = new JComboBox<String>(items);
+						((JComboBox<?>) c).setMaximumRowCount(20);
 						if (values.size() > i)
 							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
 					}
