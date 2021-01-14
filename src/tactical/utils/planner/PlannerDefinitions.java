@@ -2999,6 +2999,9 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "unit", false, "Unit ID",
 				"Use this ID to specifiy which enemy should be the target of triggers (Change AI)"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "vision", false, "Vision",
+				"Max range that this enemy will look to find targets to engage with. This value can not be less then the enemies attack range."));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MUSIC,
 				PlannerValueDef.TYPE_STRING, "music", true, "Custom Music",
 				"The music that should be played when this enemy attacks, this overrides script values."));

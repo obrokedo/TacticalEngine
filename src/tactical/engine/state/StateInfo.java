@@ -547,6 +547,37 @@ public class StateInfo
 	{
 		return psi.isQuestComplete(questId);
 	}
+	
+	public void checkSearchLocation() {
+		int checkX = currentSprite.getTileX();
+		int checkY = currentSprite.getTileY();
+
+		switch (currentSprite.getFacing())
+		{
+			case UP:
+				checkY--;
+				break;
+			case DOWN:
+				checkY++;
+				break;
+			case LEFT:
+				checkX--;
+				break;
+			case RIGHT:
+				checkX++;
+				break;
+		}
+		
+		for (MapObject mo : getCurrentMap().getMapObjects())
+		{
+			if (mo.contains(checkX * getTileWidth() + 1, 
+					checkY * getTileHeight() + 1))
+			{
+				getResourceManager().checkTriggerCondtions(
+						mo.getName(), false, false, false, true, this);
+			}
+		}
+	}
 
 	/*********************/
 	/* Convience Methods */

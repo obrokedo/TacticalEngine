@@ -195,7 +195,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 
 		g.drawString(version, container.getWidth() / 2, container.getHeight() - 30);
 		
-		int amount = 7;
+		int amount = 8;
 		g.drawString("F1 - Toggle Main/Dev Menu", container.getWidth() - 250, container.getHeight() - amount-- * 30);
 		g.drawString("F2 - Open Planner", container.getWidth() - 250, container.getHeight() - amount-- * 30);
 		g.drawString("F3 - Open Quick Animator", container.getWidth() - 250, container.getHeight() - amount-- * 30);
@@ -204,6 +204,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		g.drawString("F6 - Open Battle Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 30);
 		g.drawString("F8 - Load Saved Game", container.getWidth() - 250, container.getHeight() - amount-- * 30);
 		g.drawString("F10 - Open Progression Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 30);
+		g.drawString("F11 - Show Credits", container.getWidth() - 250, container.getHeight() - amount-- * 30);
 		
 
 		if (initialized && ps != null)
@@ -341,6 +342,11 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			if (key == Input.KEY_F10)
 			{
 				progressionFrame.setVisible(true);
+			}
+			
+			if (key == Input.KEY_F11)
+			{	
+				game.enterState(TacticalGame.STATE_GAME_CREDITS);
 			}
 		}
 	}

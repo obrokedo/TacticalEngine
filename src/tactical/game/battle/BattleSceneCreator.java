@@ -475,7 +475,7 @@ public class BattleSceneCreator {
 	}
 	
 	private CombatAnimation getSpellShieldCombatAnimation(CombatSprite sprite) {
-		if (sprite.getSpellsDescriptors().size() > 0) {
+		if (sprite.isCaster()) {
 			String animName = "Shield";
 			if (!sprite.isHero())
 				animName = "EnemyShield";

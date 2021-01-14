@@ -199,13 +199,12 @@ public class TownState extends LoadableGameState
 					{
 						stateInfo.sendMessage(MessageType.INVESTIGATE);
 						stateInfo.setInputDelay(System.currentTimeMillis() + 200);
-						
-						checkSearchLocation();
+						stateInfo.checkSearchLocation();
 					}
 				}
 				else if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) && !stateInfo.areMenusDisplayed())
 				{
-					stateInfo.sendMessage(new Message(MessageType.SHOW_HEROES));
+					stateInfo.sendMessage(new Message(MessageType.SHOW_TOWN_MENU));
 				}
 				// Key for debugging menus
 				else if (TacticalGame.DEV_MODE_ENABLED && container.getInput().isKeyDown(Input.KEY_Q))
@@ -224,6 +223,8 @@ public class TownState extends LoadableGameState
 							default:
 								break;								
 						}
+					} else {
+						stateInfo.sendMessage(MessageType.SHOW_ADVISOR_MENU);
 					}
 					// image = null;
 					
@@ -245,37 +246,6 @@ public class TownState extends LoadableGameState
 			}
 
 			stateInfo.getInput().update(delta, container.getInput());
-		}
-	}
-
-	private void checkSearchLocation() {
-		int checkX = stateInfo.getCurrentSprite().getTileX();
-		int checkY = stateInfo.getCurrentSprite().getTileY();
-
-		switch (stateInfo.getCurrentSprite().getFacing())
-		{
-			case UP:
-				checkY--;
-				break;
-			case DOWN:
-				checkY++;
-				break;
-			case LEFT:
-				checkX--;
-				break;
-			case RIGHT:
-				checkX++;
-				break;
-		}
-		
-		for (MapObject mo : stateInfo.getCurrentMap().getMapObjects())
-		{
-			if (mo.contains(checkX * stateInfo.getTileWidth() + 1, 
-					checkY * stateInfo.getTileHeight() + 1))
-			{
-				stateInfo.getResourceManager().checkTriggerCondtions(
-						mo.getName(), false, false, false, true, stateInfo);
-			}
 		}
 	}
 

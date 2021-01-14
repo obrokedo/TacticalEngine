@@ -1,6 +1,7 @@
 package tactical.game.ui;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
@@ -13,6 +14,7 @@ import tactical.utils.StringUtils;
 
 public class ListUI {
 	protected ArrayList<Button> resourceFileButtons = new ArrayList<Button>();
+	protected ArrayList<String> values;
 	protected int longestNameWidth = 0;
 	protected Button selectedItem = null;
 	protected int drawX, drawY = 0;
@@ -50,9 +52,11 @@ public class ListUI {
 		longestNameWidth += 10;
 		this.listLength = listLength;
 		this.drawX = drawX;
+		
+		this.title = title;
+		this.values = values;
 		for (String value : values)
 			this.resourceFileButtons.add(new Button(drawX, 0, longestNameWidth, buttonHeight, value));
-		this.title = title;
 		this.layoutItems();
 		this.setupDirectionalButtons();
 		
@@ -183,7 +187,7 @@ public class ListUI {
 	}
 	
 	protected void layoutItems()
-	{
+	{		
 		for (int buttonIndex = 0; buttonIndex < resourceFileButtons.size(); buttonIndex++) {
 			Button button = this.resourceFileButtons.get(buttonIndex);
 			button.setX(drawX);
@@ -201,6 +205,13 @@ public class ListUI {
 				button.setVisible(false);
 			}
 		}
+	}
+	
+	public void filter(String filter) {
+		this.resourceFileButtons.clear();
+		for (String value : values.stream().filter(v -> v.toUpperCase().startsWith(filter.toUpperCase())).collect(Collectors.toList()))
+			this.resourceFileButtons.add(new Button(drawX, 0, longestNameWidth, buttonHeight, value));
+		layoutItems();
 	}
 
 	public void setListLength(int listLength) {

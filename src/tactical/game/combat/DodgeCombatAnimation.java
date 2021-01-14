@@ -23,24 +23,8 @@ public class DodgeCombatAnimation extends CombatAnimation
 			this.minimumTimePassed = this.animationWrapper.getAnimationLength();
 		else
 			this.minimumTimePassed = minimumTimePassed;
-		
-		// Arrays.binarySearch(parentSprite.getCurrentProgression().getUsuableWeapons(), 
-		//		TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getWeaponTypes())
-		// if (parentSprite.getCurrentProgression().getUsuableWeapons() > 0) {
-		
-		// TODO THIS IS SO INCREDIBLY UGLY BECAUSE THESE ARE JUST INDEXES INTO A SCRIPT DEFINED ARRAY. NEED TO FIX THIS
-		boolean isCaster = false;
-		if (parentSprite.getCurrentProgression().getUsuableWeapons().length > 0) {
-			for (int weapon : parentSprite.getCurrentProgression().getUsuableWeapons()) {
-				if (weapon == 3 || weapon == 8) {
-					isCaster = true;
-					break;
-				}
-			}
-		}
-		
-		if (parentSprite.getEquippedWeapon() != null && (parentSprite.getEquippedWeapon().getItemStyle() == 3 || parentSprite.getEquippedWeapon().getItemStyle() == 8))
-			isCaster = true;
+				
+		boolean isCaster = parentSprite.isCaster();
 				
 		if (isCaster) {
 			String animName = "Shield";

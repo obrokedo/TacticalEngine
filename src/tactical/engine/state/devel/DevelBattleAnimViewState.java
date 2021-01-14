@@ -11,6 +11,9 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.gui.AbstractComponent;
+import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
@@ -21,6 +24,7 @@ import tactical.game.battle.BattleResults;
 import tactical.game.battle.command.BattleCommand;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.battle.spell.SpellDefinition;
+import tactical.game.hudmenu.Panel;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
 import tactical.game.menu.Menu;
@@ -35,13 +39,13 @@ import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.ResourceManager;
 
-public class DevelBattleAnimViewState extends LoadableGameState implements ResourceSelectorListener {
+public class DevelBattleAnimViewState extends LoadableGameState implements ComponentListener, ResourceSelectorListener {
 	private WizardStep wizardIndex;
 	private ListUI currentList;
 	
 	private CombatSprite attacker;
-	private CombatSprite target;
-	
+	private CombatSprite target;	
+
 	private boolean attackerHero = true, targetHero = true;
 	private ResourceManager fcrm;
 	private StateBasedGame game;
@@ -67,7 +71,10 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 	private String attackAction;
 	private String defenderAction;
 	private String attackerWeapon = null;
-	private String defenderWeapon = null;
+	private String defenderWeapon = null;	
+	
+	private TextField textField = null;
+	private String lastFilter = "";
 	
 	public DevelBattleAnimViewState() {
 		wizardIndex = null;
@@ -77,6 +84,8 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		currentList = null;
+		textField = new TextField(container, container.getDefaultFont(), 315, 430, 100, 20);		
+		textField.addListener(this);
 	}
 
 	private void setupStep() {
@@ -131,6 +140,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 					break;
 			}
 			if (options.size() > 0) {				
+				textField.setText("");
 				currentList = new ListUI(selectText, 375, options);
 				currentList.setListener(this);
 			}
@@ -206,7 +216,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 				break;
 			default:
 				break;
-		}
+		}		
 		wizardIndex = null;
 		currentList = null;
 		
@@ -305,14 +315,24 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 		
 		if (currentList != null) {
 			g.setColor(Color.lightGray);
-			g.fillRect(300, 0, 300, 450);
+			g.fillRect(300, 0, 300, 490);
 			g.setColor(Color.black);
-			g.drawString("Right click to cancel", 315, 425);
+			g.drawString("Right click to cancel", 315, 465);
+			g.drawString("Search (Press enter)", 315, 410);
 			currentList.render(g);
+			
+			g.setColor(Color.white);
+			
+			textField.setFocus(true);
+			textField.setBorderColor(null);
+			textField.setBackgroundColor(Color.blue);
+			textField.setTextColor(Color.white);
+			textField.render(container, g);
 		}
 		
 		startButton.setX(400);
 		startButton.setY(400);
+		
 	}
 	
 	private void renderNew(Graphics g) {
@@ -471,5 +491,11 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 		
 	}
 	
-	
+
+	@Override
+	public void componentActivated(AbstractComponent source) {
+		if (currentList != null) {
+			currentList.filter(textField.getText());
+		}
+	}
 }

@@ -9,7 +9,9 @@ import tactical.engine.message.SpeechBundleMessage;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.StringMessage;
+import tactical.game.menu.AdvisorMenu;
 import tactical.game.menu.BattleOptionMenu;
+import tactical.game.menu.ChangePartyMenu;
 import tactical.game.menu.HeroStatMenu;
 import tactical.game.menu.HeroesStatMenu;
 import tactical.game.menu.Menu;
@@ -19,10 +21,12 @@ import tactical.game.menu.MiniMapPanel;
 import tactical.game.menu.MultiHeroJoinMenu;
 import tactical.game.menu.PriestMenu;
 import tactical.game.menu.SpeechMenu;
+import tactical.game.menu.StorageMenu;
 import tactical.game.menu.SystemMenu;
+import tactical.game.menu.TownMenu;
 import tactical.game.menu.YesNoMenu;
 import tactical.game.menu.shop.ShopBuyMenu;
-import tactical.game.menu.shop.ShopChooseItemMenu;
+import tactical.game.menu.shop.ChooseItemMenu;
 import tactical.game.menu.shop.ShopOptionsMenu;
 import tactical.game.resource.HeroResource;
 import tactical.game.sprite.CombatSprite;
@@ -34,7 +38,6 @@ public class MenuManager extends Manager
 	@Override
 	public void initialize()
 	{
-		// stateInfo.addMenu(new ShopMenuTabled(stateInfo, .8, 1.2, new int[] {0, 1, 2}));
 	}
 
 	public boolean isBlocking()
@@ -129,7 +132,7 @@ public class MenuManager extends Manager
 			case SHOW_SHOP_REPAIR:
 			case SHOW_SHOP_SELL:
 				sm = (ShopMessage) message;
-				stateInfo.addSingleInstanceMenu(new ShopChooseItemMenu(stateInfo, null, sm));
+				stateInfo.addSingleInstanceMenu(new ChooseItemMenu(stateInfo, null, sm));
 				break;
 			case SHOW_HEROES:
 				stateInfo.addSingleInstanceMenu(new HeroesStatMenu(stateInfo));
@@ -158,6 +161,17 @@ public class MenuManager extends Manager
 			case SHOW_MINI_MAP:
 				stateInfo.addMenu(new MiniMapPanel(stateInfo.getCurrentMap(), stateInfo));
 				break;
+			case SHOW_ADVISOR_MENU:
+				stateInfo.addMenu(new AdvisorMenu(stateInfo));
+				break;
+			case SHOW_CHANGE_PARTY_MENU:
+				stateInfo.addMenu(new ChangePartyMenu(stateInfo));
+				break;
+			case SHOW_STORAGE_MENU:
+				stateInfo.addMenu(new StorageMenu(stateInfo));
+				break;
+			case SHOW_TOWN_MENU:
+				stateInfo.addMenu(new TownMenu(stateInfo));
 			default:
 				break;
 		}

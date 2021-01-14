@@ -20,18 +20,19 @@ import tactical.game.trigger.Trigger;
 import tactical.game.ui.RectUI;
 import tactical.game.ui.TextUI;
 
-public class ShopChooseItemMenu extends HeroesStatMenu implements MenuListener
+public class ChooseItemMenu extends HeroesStatMenu implements MenuListener
 {
 	protected boolean selectingItemState = false;
 	protected int selectingItemIndex = 0;
 	private ShopMessage shopMessage;
 	private boolean isSellMenu = false;
+	private boolean isShop = false;
 	
 	protected RectUI goldPanel;
 	protected TextUI goldTitleText, goldAmountText;
 	protected MenuConfiguration menuConfig;
 
-	public ShopChooseItemMenu(StateInfo stateInfo, MenuListener listener, ShopMessage shopMessage) {
+	public ChooseItemMenu(StateInfo stateInfo, MenuListener listener, ShopMessage shopMessage) {
 		super(stateInfo, listener);
 		this.menuConfig = TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration();
 		this.shopMessage = shopMessage;
@@ -40,10 +41,18 @@ public class ShopChooseItemMenu extends HeroesStatMenu implements MenuListener
 			isSellMenu = true;
 		else
 			isSellMenu = false;
+		isShop = true;
 		
 		goldPanel = new RectUI(20, 89, 62, 32);
 		goldTitleText = new TextUI("Gold", 25, 85);
 		goldAmountText = new TextUI(stateInfo.getClientProfile().getGold() + "", 25, 97);
+	}
+	
+	public ChooseItemMenu(StateInfo stateInfo, MenuListener listener) {
+		super(stateInfo, listener);
+		this.menuConfig = TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration();
+		this.shopMessage = null;
+		isShop = false;		
 	}
 
 	@Override
@@ -55,10 +64,12 @@ public class ShopChooseItemMenu extends HeroesStatMenu implements MenuListener
 		}
 		
 		// Draw gold box
-		goldPanel.drawPanel(g);
-		g.setColor(Color.white);
-		goldTitleText.drawText(g);
-		goldAmountText.drawText(g);
+		if (isShop) {
+			goldPanel.drawPanel(g);
+			g.setColor(Color.white);
+			goldTitleText.drawText(g);
+			goldAmountText.drawText(g);
+		}
 	}
 
 
@@ -124,13 +135,21 @@ public class ShopChooseItemMenu extends HeroesStatMenu implements MenuListener
 		// Otherwise we are done, prompt to sell the selected item
 		else
 		{
-			if (isSellMenu)
-				promptSellItem(stateInfo);	
-			else
-				prompRepairItem(stateInfo);
+			if (isShop) {
+				if (isSellMenu)
+					promptSellItem(stateInfo);	
+				else
+					promptRepairItem(stateInfo);
+			} else {
+				promptGiveItem(stateInfo);
+			}
 		}
 
 		return MenuUpdate.MENU_ACTION_LONG;
+	}
+	
+	private void promptGiveItem(StateInfo stateInfo) {
+		
 	}
 
 	private void promptSellItem(StateInfo stateInfo) {
@@ -144,7 +163,7 @@ public class ShopChooseItemMenu extends HeroesStatMenu implements MenuListener
 		stateInfo.addMenu(new YesNoMenu(sellText, Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo), stateInfo, this));
 	}
 	
-	private void prompRepairItem(StateInfo stateInfo) {
+	private void promptRepairItem(StateInfo stateInfo) {
 		Item item = selectedHero.getItem(selectingItemIndex);
 		switch (item.getDurability()) {
 		case BROKEN:

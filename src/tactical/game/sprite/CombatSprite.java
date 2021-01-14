@@ -567,6 +567,8 @@ public class CombatSprite extends AnimatedSprite
 
 	public void modifyCurrentHP(int amount)
 	{
+		if (amount < 0 && this.ai != null)
+			ai.setVision(Integer.MAX_VALUE);
 		currentHP = Math.min(maxHP, Math.max(0, currentHP + amount));
 	}
 
@@ -670,7 +672,6 @@ public class CombatSprite extends AnimatedSprite
 	public void setAi(AI ai)
 	{
 		this.ai = ai;
-		ai.initialize(this);
 	}
 
 	public int getCurrentMove() {
@@ -778,6 +779,16 @@ public class CombatSprite extends AnimatedSprite
 				cs.heroProgression, cs.level, 
 				// Is this a reasonable way to test for someone being promoted?
 				cs.getHeroProgression().getUnpromotedProgression() == null, id);
+		
+		// Stats in the progression are set up as [0] = stat progression, [1] = stat start, [2] = stat end
+		currentHP = maxHP = cs.getMaxHP();
+		currentMP = maxMP = cs.getMaxMP();
+		currentSpeed = maxSpeed = cs.getCurrentSpeed();
+		currentMove = maxMove = cs.getCurrentMove();
+		movementType = cs.getMovementType();
+		currentAttack = maxAttack = cs.getCurrentAttack();
+		currentDefense = maxDefense = cs.getCurrentDefense();		
+		
 		this.spells = cs.spells;
 		this.items = cs.items;
 		this.equipped = cs.equipped;
@@ -786,7 +797,7 @@ public class CombatSprite extends AnimatedSprite
 		for (int i = 0; i < items.size(); i++)
 		{
 			if (equipped.get(i)) {
-				this.equipped.set(i, false);
+				// this.equipped.set(i, false);
 				this.equipItem((EquippableItem) items.get(i));
 			}
 		}
@@ -840,6 +851,8 @@ public class CombatSprite extends AnimatedSprite
 
 	public void addBattleEffect(BattleEffect battleEffect)
 	{
+		if (ai != null && battleEffect.isNegativeEffect())
+			ai.setVision(Integer.MAX_VALUE);
 		
 		for (int i = 0; i < this.battleEffects.size(); i++)
 		{
@@ -924,7 +937,12 @@ public class CombatSprite extends AnimatedSprite
 		this.clientId = clientId;
 	}
 
-
+	// TODO THIS IS SO INCREDIBLY UGLY BECAUSE THESE ARE JUST INDEXES INTO A SCRIPT DEFINED ARRAY. NEED TO FIX THIS
+	public boolean isCaster() {		
+		return false;
+	}
+	
+	
 	/**
 	 * Returns a boolean indicating whether this CombatSprite should have a shadow drawn for it
 	 * and by extension whether the battle platform should be displayed for it

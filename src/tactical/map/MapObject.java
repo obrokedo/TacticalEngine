@@ -264,7 +264,8 @@ public class MapObject
 				approachIndex = AI.APPROACH_WANDER;
 
 			int vision = Integer.MAX_VALUE;
-			if (params.containsKey("vision"))
+			if (params.containsKey("vision") && params.get("vision") != null &&
+					params.get("vision").length() > 0 && Integer.parseInt(params.get("vision")) != 0)					
 				vision = Integer.parseInt(params.get("vision"));
 			
 			if (type.equalsIgnoreCase("wizard"))
@@ -282,6 +283,7 @@ public class MapObject
 		}
 
 		enemy.initializeSprite(fcrm);
+		enemy.getAi().initialize(enemy);
 		enemy.setLocX(x, fcrm.getMap().getTileEffectiveWidth());
 		enemy.setLocY(y, fcrm.getMap().getTileEffectiveHeight());
 

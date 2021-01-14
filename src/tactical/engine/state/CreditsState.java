@@ -18,20 +18,27 @@ public class CreditsState extends LoadableGameState{
 
 	@Override
 	public void init(GameContainer arg0, StateBasedGame arg1) throws SlickException {
-		// TODO Auto-generated method stub
-		
 	}
+	
+	
+
+	@Override
+	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
+		// TODO Auto-generated method stub
+		super.enter(container, game);
+		scrollY = 770;
+	}
+
+
 
 	@Override
 	public void stateLoaded(ResourceManager resourceManager) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void initAfterLoad() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -82,7 +89,7 @@ public class CreditsState extends LoadableGameState{
 		g.drawString("'Hero Music' ~ Benmode", 40, y += 30);	
 		g.drawString("'Triumph' ~ nmarnson", 40, y += 30);
 		
-		g.drawString("In memory of Patrick Parent 'ZeXr0'", 65, y += 200);
+		g.drawString("In memory of Frank Girtzmacher and Patrick Parent 'ZeXr0'", -20, y += 200);
 		
 		g.drawString("Legacies of Veridocia is an open-source project developed by a dedicated ", -60, y += 250);
 		g.drawString("team of volunteers and we are always looking for more help. If you're ", -60, y += 30);
@@ -108,15 +115,17 @@ public class CreditsState extends LoadableGameState{
 		g.drawString("Brian Amell 'Corsair'", -70, y += 20);
 		g.drawString("Broked", 230, y);
 		g.drawString("Giuseppe T. 'SirIsaacLemon'", -70, y += 20);
+		g.drawString("Lindsey Porteous 'Wyndigo'", -70, y += 20);
 		
 		
-		y -= 45;
+		y -= 65;
 		g.setColor(accentColor);
 		g.drawString("- Project", 125, y += 5);		
 		g.drawString("- Project", 435, y);
 		g.drawString("- Artist", 125, y += 20);
 		g.drawString("- Programming", 295, y);
 		g.drawString("- Engineering", 180, y += 20);
+		g.drawString("- Map Creation", 180, y += 20);
 				
 		g.setColor(accentColor);
 		g.drawString("Map Creation", -70, y += 30);
@@ -139,13 +148,13 @@ public class CreditsState extends LoadableGameState{
 		g.setColor(Color.white);
 		g.drawLine(-70, y += 20, 520, y);
 		g.drawString("Joshua Greiner 'Dark Link'", -70, y += 5);
-		g.drawString("L. Porteous 'Wyndigo'", 220, y);
+		g.drawString("Red Archer", 220, y);
 		g.drawString("Mystic Shadow", -70, y += 20);
 		g.drawString("Alones", 220, y);
 		g.drawString("whiterose", -70, y += 20);
 		g.drawString("Dani Hunt 'Omega Entity'", 220, y);
 		g.drawString("Googrifflon", -70, y += 20);
-		g.drawString("Red Archer", 220, y);		
+				
 		
 		g.setColor(accentColor);
 		g.drawString("Character Creation", -70, y += 30);
@@ -155,7 +164,6 @@ public class CreditsState extends LoadableGameState{
 		g.drawString("xenometal", 220, y);
 		g.drawString("Chris Geddis 'Aldur'", -70, y += 20);
 		g.drawString("RagnarokkerAJ", 220, y);
-		g.drawString("Al Gritzmacher", -70, y += 20);
 		
 		g.setColor(accentColor);
 		g.drawString("Project Inspiration", -70, y += 30);
@@ -163,9 +171,8 @@ public class CreditsState extends LoadableGameState{
 		g.drawLine(-70, y += 20, 520, y);
 		g.drawString("BigNailCow", -70, y += 5);
 		g.drawString("Space King", 220, y);
-		g.drawString("Patrick Parent 'ZeXr0'", -70, y += 20);		
-		g.drawString("aanderse", 220, y);
-		g.drawString("SFC Community", -70, y += 20);
+		g.drawString("Patrick Parent 'ZeXr0'", -70, y += 20);				
+		g.drawString("SFC Community", 220, y);
 		
 				
 		g.setColor(accentColor);
@@ -178,6 +185,7 @@ public class CreditsState extends LoadableGameState{
 		g.drawString("NekoNova", 220, y);
 		g.drawString("SirHedge", -70, y += 20);
 		g.drawString("Amelie", 220, y);
+		g.drawString("aanderse", -70, y += 20);
 		
 		drawMusicContributions(y - scrollY, g);
 	}
