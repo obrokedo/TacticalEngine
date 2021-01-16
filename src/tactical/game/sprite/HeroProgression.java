@@ -303,7 +303,8 @@ public class HeroProgression implements Serializable
 			addStatChangeLog("Amount to gain after adding a BIG LEVEL value 0-3: " + amountToGainNow, statChanges);
 		}
 
-		amountToGainNowInt = Math.round(amountToGainNow);
+		// amountToGainNowInt = Math.round(amountToGainNow);
+		amountToGainNowInt = (int) Math.floor(amountToGainNow);
 
 		// Only give pity upgrades if you are unpromoted and under level 11 or
 		// if you are promoted and under level 25

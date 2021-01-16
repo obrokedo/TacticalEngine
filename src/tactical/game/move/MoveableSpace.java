@@ -394,7 +394,7 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 						return true;
 				}
 
-				return !map.isMarkedMoveable(tx, ty);
+				return !map.isMarkedMoveableForBattle(spriteMovementType, tx, ty);
 			}
 			return true;
 		}

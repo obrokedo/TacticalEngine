@@ -338,7 +338,7 @@ public class Map
 			else
 				return 10000;
 			*/
-			return 10000;
+			return Integer.MAX_VALUE;
 		}
 	}
 	
@@ -413,11 +413,16 @@ public class Map
 		return battleRegion;
 	}
 
-	public boolean isMarkedMoveable(int tileX, int tileY)
+	public boolean isMarkedMoveableForTown(int tileX, int tileY)
 	{
 		if ((moveableLayer.getTiles().length > (tileY * tileRatio)) && ((moveableLayer.getTiles()[0].length > tileX * tileRatio)))
 			return moveableLayer.getTiles()[(int) (tileY * tileRatio)][(int) (tileX * tileRatio)] != 0;
 		return false;
+	}
+	
+	public boolean isMarkedMoveableForBattle(String moverType, int tileX, int tileY)
+	{
+		return this.getMovementCostByType(moverType, tileX, tileY) < 100;
 	}
 
 	protected class TileSet
@@ -604,7 +609,7 @@ public class Map
 			
 			if (getHeightInTiles() > ty && getWidthInTiles() > tx)
 			{
-				return !isMarkedMoveable(tx, ty);
+				return !isMarkedMoveableForTown(tx, ty);
 			}
 			return true;
 		}

@@ -354,7 +354,7 @@ public class SpriteManager extends Manager
 		}
 
 		boolean checkThroughWall = false;
-		if (!stateInfo.getCurrentMap().isMarkedMoveable(checkX, checkY))
+		if (!stateInfo.getCurrentMap().isMarkedMoveableForTown(checkX, checkY))
 			checkThroughWall = true;
 		for (Sprite s : stateInfo.getSprites())
 		{

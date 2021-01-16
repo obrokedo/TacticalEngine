@@ -75,7 +75,7 @@ public class MiniMapPanel extends Menu {
 			for (int y = yMin; 
 					y < yMin + height; y++) {
 				Sprite s = stateInfo.getSpriteAtTile(x, y);
-				if (currentMap.isMarkedMoveable(x, y) &&
+				if (currentMap.isMarkedMoveableForTown(x, y) &&
 						(s == null || s.getSpriteType() != Sprite.TYPE_STATIC_SPRITE)) {
 					graphics.setColor(Color.lightGray);
 				} else {

@@ -211,7 +211,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 				" Tile Y: " + (e.getY() / mdp.getPlannerMap().getTileRenderHeight()) / 2 +
 				" Tiles Pixel X: " + (e.getX() / (mdp.getPlannerMap().getTileRenderWidth() * 2) * (mdp.getPlannerMap().getTileRenderWidth() * 2)) +
 				" Tiles Pixel Y: " + (e.getY() / (mdp.getPlannerMap().getTileRenderHeight() * 2) * (mdp.getPlannerMap().getTileRenderHeight() * 2)) +
-				" Walkable: " + mdp.getPlannerMap().isMarkedMoveable((e.getX() / mdp.getPlannerMap().getTileRenderWidth()) / 2,
+				" Walkable: " + mdp.getPlannerMap().isMarkedMoveableForTown((e.getX() / mdp.getPlannerMap().getTileRenderWidth()) / 2,
 						(e.getY() / mdp.getPlannerMap().getTileRenderHeight()) / 2));
 		rememberedLocationLabel.setText("Remembered Tile Pixel X: " + currentTilePixelX + " Remembered Tile Pixel Y: " + currentTilePixelY + "  ");
 	}

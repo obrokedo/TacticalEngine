@@ -229,7 +229,7 @@ public class TownMoveManager extends Manager
 	private boolean blocked(Map map, int tx, int ty)
 	{
 		if (tx >= 0 && ty >= 0 && map.getMapEffectiveHeight() > ty
-				&& map.getMapEffectiveWidth() > tx && map.isMarkedMoveable(tx, ty))
+				&& map.getMapEffectiveWidth() > tx && map.isMarkedMoveableForTown(tx, ty))
 		{
 			for (Sprite s : stateInfo.getSprites())
 			{

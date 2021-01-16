@@ -81,7 +81,7 @@ public abstract class AI implements Serializable
 		int tileHeight = ms.getTileHeight();
 		
 		ArrayList<AIConfidence> jankList = null;
-		if (TacticalGame.RANDOM.nextInt(100) < 10) {
+		if (TacticalGame.RANDOM.nextInt(100) < 3) {
 			jankList = new ArrayList<>();
 		}
 
