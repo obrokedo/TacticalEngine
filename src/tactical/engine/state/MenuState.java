@@ -92,7 +92,7 @@ public class MenuState extends LoadableGameState
 	@Override
 	public void doRender(PaddedGameContainer container, StateBasedGame game, Graphics g)
 	{
-
+		//TODO Break this out into it's own menu renderer
 		if (initialized)
 		{
 			if (stateIndex == 0) {
@@ -123,54 +123,8 @@ public class MenuState extends LoadableGameState
 				try {
 					transition.postRender(game, container, g);
 				} catch (SlickException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			// g.setColor(new Color(171, 194, 208));
-			// g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
-			// g.drawImage(bgImage, 0, 0);
-			/*
-			bgImage.draw(0, 70, .62f);
-			if (stateIndex == 0)
-			{
-				if (menuIndex == 0)
-					g.setColor(Color.blue);
-				else
-					g.setColor(Color.white);
-				StringUtils.drawString("Press Enter to Start Demo", 120, 180, g);
-
-				if (menuIndex == 1)
-					g.setColor(Color.blue);
-				else
-					g.setColor(Color.white);
-				StringUtils.drawString("Credits", 145, 200, g);
-
-				if (menuIndex == 2)
-					g.setColor(Color.blue);
-				else
-					g.setColor(Color.white);
-				StringUtils.drawString("Exit", 150, 220, g);
-			}
-			else if (stateIndex == 1)
-			{
-				g.setColor(Color.black);
-				g.drawString("Thanks to Musical Contributions from Newgrounds:", (container.getWidth() - g.getFont().getWidth("Thanks to Musical Contributions from Newgrounds:")) / 2, container.getHeight() * .005f + 90);
-				g.setColor(Color.yellow);
-				g.drawString("Remote Attack by dem0lecule", (container.getWidth() - g.getFont().getWidth("Remote Attack by dem0lecule")) / 2, container.getHeight() * .005f + 120);
-				g.drawString("The Tense Battle by Sephirot24", (container.getWidth() - g.getFont().getWidth("The Tense Battle by Sephirot24")) / 2, container.getHeight() * .005f + 150);
-				g.drawString("Shark Patrol by Ben Tibbetts", (container.getWidth() - g.getFont().getWidth("Shark Patrol by Ben Tibbetts")) / 2, container.getHeight() * .005f + 180);
-				g.drawString("Hero Music by Benmode", (container.getWidth() - g.getFont().getWidth("Hero Music by Benmode")) / 2, container.getHeight() * .005f + 210);
-				g.setColor(Color.black);
-				g.drawString("Special Thanks to Everyone at SFC!", (container.getWidth() - g.getFont().getWidth("Special Thanks to Everyone at SFC!")) / 2, container.getHeight() * .005f + 270);
-				g.setColor(Color.red);
-				g.drawString("Back", (container.getWidth() - g.getFont().getWidth("Back")) / 2, container.getHeight() * .005f + 330);
-			}
-
-			g.setColor(Color.white);
-			g.drawString("Version: " + version, 15, container.getHeight() - 30);
-			g.setFont(font);
-			g.drawString(CommRPG.GAME_TITLE, (container.getWidth() - font.getWidth(CommRPG.GAME_TITLE)) / 2, container.getHeight() * .005f - 15);
-			*/
 		}
 	}
 	
@@ -214,11 +168,16 @@ public class MenuState extends LoadableGameState
 			throws SlickException {
 		if (initialized)
 		{
+			// This is a bit confusing, we use a transition between the "PRESS START" text 
+			// and the rest of the options. This transition will be set to a value once the
+			// user has pressed start and then this code will catch the end of that transition
+			// and start the music and change the game state index
 			if (transition != null) {
 				transition.update(game, container, delta);
 				if (transition.isComplete()) {
 					if (transition instanceof FadeOutTransition) {
 						transition = new FadeInTransition();
+						//TODO Break this out into it's own menu renderer
 						music = fcrm.getMusicByName("lovtheme");
 						music.loop();
 						menuIndex = 0;
@@ -245,18 +204,38 @@ public class MenuState extends LoadableGameState
 				game.enterState(TacticalGame.STATE_GAME_LOADING);
 			}
 
-			if (updateDelta != 0)
-				return;
+			handleInput(container);
+		}
+	}
 
-			if (container.getInput().isKeyDown(Input.KEY_ENTER) || 
-					container.getInput().isKeyDown(KeyMapping.BUTTON_1) || 
-					container.getInput().isKeyDown(KeyMapping.BUTTON_3))
-			{
-				EngineConfigurationValues jcv = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues();
-				menuSelect.play();
-				if (stateIndex == 1) {
-					// music.fade(500, 0f, true);
-					if (menuIndex == 0) {
+
+
+	protected void handleInput(PaddedGameContainer container) {
+		if (container.getInput().isKeyDown(Input.KEY_ENTER) || 
+				container.getInput().isKeyDown(KeyMapping.BUTTON_1) || 
+				container.getInput().isKeyDown(KeyMapping.BUTTON_3))
+		{
+			EngineConfigurationValues jcv = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues();
+			menuSelect.play();
+			if (stateIndex == 1) {
+				// music.fade(500, 0f, true);
+				if (menuIndex == 0) {
+					// Clobber existing save data...
+					persistentStateInfo.getClientProfile().initializeValues();
+					persistentStateInfo.getClientProgress().initializeValues();
+					// persistentStateInfo.getClientProfile().serializeToFile();
+					// persistentStateInfo.getClientProgress().serializeToFile();
+					start(LoadTypeEnum.valueOf(jcv.getStartingState()), 
+							jcv.getStartingMapData(), jcv.getStartingLocation());
+				}
+				else if (menuIndex == 1)
+				{
+					LoadTypeEnum loadType = LoadTypeEnum.TOWN;
+					if (persistentStateInfo.getClientProfile().getHeroes().size() > 0) {
+						if (persistentStateInfo.getClientProgress().isBattle())
+							loadType = LoadTypeEnum.BATTLE;
+						start(loadType, persistentStateInfo.getClientProgress().getMapData(), null);
+					} else {
 						// Clobber existing save data...
 						persistentStateInfo.getClientProfile().initializeValues();
 						persistentStateInfo.getClientProgress().initializeValues();
@@ -265,56 +244,39 @@ public class MenuState extends LoadableGameState
 						start(LoadTypeEnum.valueOf(jcv.getStartingState()), 
 								jcv.getStartingMapData(), jcv.getStartingLocation());
 					}
-					else if (menuIndex == 1)
-					{
-						LoadTypeEnum loadType = LoadTypeEnum.TOWN;
-						if (persistentStateInfo.getClientProfile().getHeroes().size() > 0) {
-							if (persistentStateInfo.getClientProgress().isBattle())
-								loadType = LoadTypeEnum.BATTLE;
-							start(loadType, persistentStateInfo.getClientProgress().getMapData(), null);
-						} else {
-							// Clobber existing save data...
-							persistentStateInfo.getClientProfile().initializeValues();
-							persistentStateInfo.getClientProgress().initializeValues();
-							// persistentStateInfo.getClientProfile().serializeToFile();
-							// persistentStateInfo.getClientProgress().serializeToFile();
-							start(LoadTypeEnum.valueOf(jcv.getStartingState()), 
-									jcv.getStartingMapData(), jcv.getStartingLocation());
-						}
-					}
-					else if (menuIndex == 2)
-					{
-						System.exit(0);
-					}
 				}
-				else if (stateIndex == 0) {
-					transition = new FadeOutTransition();
-					menuSelect.play();
-					updateDelta = 1500;
-					
+				else if (menuIndex == 2)
+				{
+					System.exit(0);
 				}
 			}
-			
-			if (stateIndex == 1) { 
-				if (menuIndex != 0 && (container.getInput().isKeyDown(Input.KEY_UP) || 
-						container.getInput().isKeyDown(Input.KEY_LEFT)))
-				{
-					menuIndex = 0;
-					updateDelta = 200;
-					menuMove.play();
-				}
-				else if (menuIndex != 2 && container.getInput().isKeyDown(Input.KEY_DOWN))
-				{
-					menuIndex = 2;
-					updateDelta = 200;
-					menuMove.play();
-				}
-				else if (menuIndex != 1 && container.getInput().isKeyDown(Input.KEY_RIGHT))
-				{
-					menuIndex = 1;
-					updateDelta = 200;
-					menuMove.play();
-				}
+			else if (stateIndex == 0) {
+				transition = new FadeOutTransition();
+				menuSelect.play();
+				updateDelta = 1500;
+				
+			}
+		}
+		
+		if (stateIndex == 1) { 
+			if (menuIndex != 0 && (container.getInput().isKeyDown(Input.KEY_UP) || 
+					container.getInput().isKeyDown(Input.KEY_LEFT)))
+			{
+				menuIndex = 0;
+				updateDelta = 200;
+				menuMove.play();
+			}
+			else if (menuIndex != 2 && container.getInput().isKeyDown(Input.KEY_DOWN))
+			{
+				menuIndex = 2;
+				updateDelta = 200;
+				menuMove.play();
+			}
+			else if (menuIndex != 1 && container.getInput().isKeyDown(Input.KEY_RIGHT))
+			{
+				menuIndex = 1;
+				updateDelta = 200;
+				menuMove.play();
 			}
 		}
 	}
@@ -348,7 +310,7 @@ public class MenuState extends LoadableGameState
 
 	@Override
 	protected Menu getPauseMenu() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -356,7 +318,7 @@ public class MenuState extends LoadableGameState
 
 	@Override
 	public void exceptionInState() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

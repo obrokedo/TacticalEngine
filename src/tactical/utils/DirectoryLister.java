@@ -54,7 +54,6 @@ public class DirectoryLister {
 				try {
 					fileSystem.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}

@@ -373,13 +373,13 @@ public class HeroesStatMenu extends Menu
 
 	@Override
 	public boolean makeAddSounds() {
-		// TODO Auto-generated method stub
+		
 		return true;
 	}
 
 	@Override
 	public boolean makeRemoveSounds() {
-		// TODO Auto-generated method stub
+		
 		return true;
 	}
 }

@@ -411,8 +411,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 
 	@Override
 	public void initAfterLoad() {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override
@@ -477,7 +476,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 
 	@Override
 	public void doRender(PaddedGameContainer container, StateBasedGame game, Graphics g) {
-		// TODO Auto-generated method stub		
+				
 	}
 
 	@Override
@@ -487,8 +486,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 
 	@Override
 	public void exceptionInState() {
-		// TODO Auto-generated method stub
-		
+				
 	}
 	
 

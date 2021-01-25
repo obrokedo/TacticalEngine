@@ -20,7 +20,7 @@ public class ArrowLine implements UnifiedRenderable {
 
 	@Override
 	public int getHeight() {
-		// TODO Auto-generated method stub
+		
 		return 1;
 	}
 }

@@ -140,7 +140,6 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 		uiAspect.repaint();
 
 		currentPC = null;
-		// TODO REMOVE HERE
 		listPC.remove(index);
 	}
 

@@ -58,8 +58,7 @@ public class MoveMapTransition implements Transition {
 
 	@Override
 	public void preRender(StateBasedGame game, GameContainer container, Graphics g) throws SlickException {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override

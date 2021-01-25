@@ -27,7 +27,7 @@ public class TownMenu extends QuadMenu {
 
 	@Override
 	public void initialize() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

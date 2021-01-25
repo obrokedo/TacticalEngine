@@ -62,7 +62,7 @@ public class TownState extends LoadableGameState
 	private StateInfo stateInfo;
 	public static ParticleSystem ps = null;
 	
-	// TODO THIS IS A DEBUG TOOL
+	// THIS IS A DEBUG TOOL
 	public static float updateSpeed = 1;
 
 	public TownState(PersistentStateInfo psi) {

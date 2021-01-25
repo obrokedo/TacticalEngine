@@ -56,8 +56,7 @@ public class PlannerSearchFrame extends JFrame implements ActionListener {
 
 		@Override
 		public int getSize() {
-			// TODO Auto-generated method stub
-			return searchResults.size();
+						return searchResults.size();
 		}
 
 		@Override

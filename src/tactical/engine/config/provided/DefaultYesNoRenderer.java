@@ -41,8 +41,7 @@ public class DefaultYesNoRenderer implements YesNoMenuRenderer {
 
 	@Override
 	public void update(long delta, StateInfo stateInfo) {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override

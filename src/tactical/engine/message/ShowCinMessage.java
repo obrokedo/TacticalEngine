@@ -22,8 +22,7 @@ public class ShowCinMessage extends Message {
 
 	@Override
 	public boolean isImmediate() {
-		// TODO Auto-generated method stub
-		return true;
+				return true;
 	}
 	
 	

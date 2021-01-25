@@ -21,7 +21,7 @@ public class AddHeroDebugMenu extends ContextDebugMenu {
 
 	@Override
 	public MenuUpdate handleUserInput(UserInput input, StateInfo stateInfo) {
-		// TODO Auto-generated method stub
+		
 		if (input.isKeyDown(KeyMapping.BUTTON_1) || input.isKeyDown(KeyMapping.BUTTON_3) ) {
 			CombatSprite hero = HeroResource.getHero(this.options.get(this.selectedIndex));
 			boolean found = false;
@@ -44,7 +44,7 @@ public class AddHeroDebugMenu extends ContextDebugMenu {
 
 	@Override
 	public void render(PaddedGameContainer gc, Graphics graphics) {
-		// TODO Auto-generated method stub
+		
 		super.render(gc, graphics);
 	}
 }

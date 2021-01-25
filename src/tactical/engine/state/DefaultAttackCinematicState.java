@@ -682,7 +682,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 
 	@Override
 	public void exceptionInState() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

@@ -36,7 +36,7 @@ public class CinematicState extends LoadableGameState
 	private CinematicManager cinematicManager;
 	// private Cinematic cinematic;
 
-	// TODO THIS IS A DEBUG TOOL
+	// THIS IS A DEBUG TOOL
 	public static float cinematicSpeed = 1;
 
 	private StateInfo stateInfo;

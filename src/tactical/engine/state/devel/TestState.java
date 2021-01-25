@@ -124,13 +124,13 @@ public class TestState extends LoadableGameState
 
 	@Override
 	protected Menu getPauseMenu() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public void exceptionInState() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

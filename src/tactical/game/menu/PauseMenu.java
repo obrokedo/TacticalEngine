@@ -33,7 +33,6 @@ public class PauseMenu extends Menu {
 			subMenuFont.loadGlyphs();
 			menuFont.loadGlyphs();
 		} catch (SlickException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		};
 	}

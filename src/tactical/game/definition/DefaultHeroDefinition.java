@@ -22,13 +22,13 @@ public final class DefaultHeroDefinition extends HeroDefinition {
 
 	@Override
 	protected void parseCustomHeroDefinition(int maxProgressions) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	protected void parseCustomHeroProgression(int index, TagArea childTagArea) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

@@ -1,7 +1,6 @@
 package tactical.engine.state.devel;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import javax.swing.JOptionPane;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
@@ -73,6 +73,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	private ResourceManager mainGameFCRM = null;
 	protected BulkLoader mainGameBulkLoader = null;
 	protected AlertPanel alertPanel = null;
+	protected Image backgroundIm = null;
 
 
 	public DevelMenuState(PersistentStateInfo persistentStateInfo) {
@@ -98,6 +99,8 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		
 		if (!LoadingState.inJar)
 			 plannerFrame = new PlannerFrame(this);
+		
+		backgroundIm = new Image("image/engine/BlackGeo.jpg");
 		
 		// Checks to see if any mapdata has errors
 		/*
@@ -174,6 +177,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			throws SlickException
 	{
 		g.clearClip();
+		g.drawImage(backgroundIm.getScaledCopy(.5f), 0, 0);
 		g.setColor(Color.red);
 		g.drawString("DEVELOPMENT MODE", 5, 695);
 

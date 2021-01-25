@@ -24,7 +24,7 @@ public class CreditsState extends LoadableGameState{
 
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
-		// TODO Auto-generated method stub
+		
 		super.enter(container, game);
 		scrollY = 770;
 	}
@@ -61,7 +61,7 @@ public class CreditsState extends LoadableGameState{
 
 	@Override
 	protected Menu getPauseMenu() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -192,7 +192,7 @@ public class CreditsState extends LoadableGameState{
 
 	@Override
 	public void exceptionInState() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

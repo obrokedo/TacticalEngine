@@ -25,7 +25,6 @@ public class ClericAI extends CasterAI
 				targetSprite, stateInfo, baseConfidence, cost, attackPoint, aiSpellConf);
 	}
 
-	// TODO Lots to do here, they aren't really smart enough to move and target them self, kind of need it's own AI for that?
 	// Somehow there is never a time when aura can get 2 people in it
 	private void handleHealingSpell(SpellDefinition spell, KnownSpell knownSpell, int spellLevel, int tileWidth, int tileHeight, CombatSprite currentSprite,
 			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, AISpellConfidence aiSpellConf)

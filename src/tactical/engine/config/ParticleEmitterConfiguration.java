@@ -25,8 +25,7 @@ public abstract class ParticleEmitterConfiguration implements ParticleEmitter
 
 	@Override
 	public void wrapUp() {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override
@@ -41,38 +40,32 @@ public abstract class ParticleEmitterConfiguration implements ParticleEmitter
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override
 	public boolean useAdditive() {
-		// TODO Auto-generated method stub
-		return false;
+				return false;
 	}
 
 	@Override
 	public Image getImage() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public boolean isOriented() {
-		// TODO Auto-generated method stub
-		return false;
+				return false;
 	}
 
 	@Override
 	public boolean usePoints(ParticleSystem system) {
-		// TODO Auto-generated method stub
-		return false;
+				return false;
 	}
 
 	@Override
 	public void resetState() {
-		// TODO Auto-generated method stub
-	}
+			}
 
 	public ResourceManager getFcResourceManager() {
 		return fcResourceManager;

@@ -489,9 +489,6 @@ public class BattleResults implements Serializable
 		// TODO This needs to take into effect other hitting modifiers.
 		int dodgeChance = jBattleFunctions.getDodgePercent(attacker, target);
 
-
-		// TODO Critting, countering
-		// TODO A lot to do here, handle spells
 		if (TacticalGame.RANDOM.nextInt(100) < dodgeChance)
 		{
 			br.hpDamage.add(0);

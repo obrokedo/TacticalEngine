@@ -34,8 +34,7 @@ public class ScriptDrivenEmitter implements ParticleEmitter
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override

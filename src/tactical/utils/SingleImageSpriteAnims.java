@@ -51,7 +51,7 @@ public class SingleImageSpriteAnims extends SpriteAnims {
 
 	@Override
 	public Animation getCharacterDirectionAnimation(Direction dir, boolean isHeroPromoted) {
-		// TODO Auto-generated method stub
+		
 		return animations.get("single");
 	}
 
@@ -71,7 +71,7 @@ public class SingleImageSpriteAnims extends SpriteAnims {
 
 	@Override
 	public Set<String> getAnimationKeys() {
-		// TODO Auto-generated method stub
+		
 		return super.getAnimationKeys();
 	}
 

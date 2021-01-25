@@ -37,8 +37,7 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 	
 	@Override
 	public void getAttackCinematic() {
-		// TODO Auto-generated method stub
-	}
+			}
 
 	@Override
 	public AnimationParser getAnimationParser() {
@@ -57,32 +56,27 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 	
 	@Override
 	public YesNoMenuRenderer getYesNoMenuRenderer() {
-		// TODO Auto-generated method stub
-		return yesNoMenuRenderer;
+				return yesNoMenuRenderer;
 	}
 
 	@Override
 	public SpellFactory getSpellFactory() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public BattleEffectFactory getBattleEffectFactory() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public CinematicActorConfiguration getCinematicActorConfiguration() {
-		// TODO Auto-generated method stub
-		return cinematicActorConfiguration;
+				return cinematicActorConfiguration;
 	}
 
 	@Override
 	public BattleFunctionConfiguration getBattleFunctionConfiguration() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
@@ -92,51 +86,43 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 
 	@Override
 	public MusicConfiguration getMusicConfiguration() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public LevelProgressionConfiguration getLevelProgression() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public EngineConfigurationValues getConfigurationValues() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public MenuConfiguration getMenuConfiguration() {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 		
 
 	@Override
 	public LoadingScreenRenderer getLogoLoadScreenRenderer(GameContainer container) {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public LoadingScreenRenderer getFirstLoadScreenRenderer(GameContainer container, Music mainMenuMusic) {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public LoadingScreenRenderer getLoadScreenRenderer(GameContainer container) {
-		// TODO Auto-generated method stub
-		return null;
+				return null;
 	}
 
 	@Override
 	public void initialize() {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override

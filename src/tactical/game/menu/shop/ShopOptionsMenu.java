@@ -76,7 +76,7 @@ public class ShopOptionsMenu extends QuadMenu
 
 	@Override
 	public MenuUpdate update(int delta) {
-		// TODO Auto-generated method stub
+		
 		return super.update(delta);
 	}
 

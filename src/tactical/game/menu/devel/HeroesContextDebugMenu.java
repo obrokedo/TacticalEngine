@@ -54,7 +54,6 @@ public class HeroesContextDebugMenu extends ContextDebugMenu {
 				try {
 					Files.write(Paths.get("PartyConfig"), buffer, StandardCharsets.UTF_8);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "An error occurred trying to save the party configuration file");
 				}

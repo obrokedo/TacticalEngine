@@ -584,13 +584,13 @@ public class Map
 
 		@Override
 		public int getHeightInTiles() {
-			// TODO Auto-generated method stub
+			
 			return getMapEffectiveHeight();
 		}
 
 		@Override
 		public void pathFinderVisited(int x, int y) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 

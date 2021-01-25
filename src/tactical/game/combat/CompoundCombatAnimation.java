@@ -32,8 +32,7 @@ public class CompoundCombatAnimation extends CombatAnimation {
 	}
 	@Override
 	public void setMinimumTimePassed(int minimumTimePassed) {
-		// TODO Auto-generated method stub
-		super.setMinimumTimePassed(minimumTimePassed);
+				super.setMinimumTimePassed(minimumTimePassed);
 		secondAnimation.setMinimumTimePassed(minimumTimePassed);
 	}
 }

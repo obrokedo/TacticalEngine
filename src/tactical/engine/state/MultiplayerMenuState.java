@@ -170,7 +170,6 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 					try {
 						client.startAndConnect();
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -198,7 +197,6 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 					try {
 						client.startAndConnect();
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -245,7 +243,6 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 			try {
 				client.startAndConnect();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			*/
@@ -319,7 +316,7 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 
 	@Override
 	public void stringEntered(String string, String action) {
-		// TODO Auto-generated method stub
+		
 
 	}
 }

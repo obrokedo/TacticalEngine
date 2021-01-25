@@ -101,31 +101,31 @@ public class RainEmitter implements ParticleEmitter
 
 	@Override
 	public boolean useAdditive() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public Image getImage() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public boolean isOriented() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean usePoints(ParticleSystem system) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public void resetState() {
-		// TODO Auto-generated method stub
+		
 
 	}
 

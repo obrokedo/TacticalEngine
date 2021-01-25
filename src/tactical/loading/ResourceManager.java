@@ -409,7 +409,6 @@ public class ResourceManager {
 		try {
 			return new Music("music/" + name + ".ogg", true);
 		} catch (SlickException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new BadResourceException("Unable to find music: " + name);
 		}
@@ -421,7 +420,6 @@ public class ResourceManager {
 		try {
 			musicByTitle.put(name, new Music("music/" + name + ".ogg"));
 		} catch (SlickException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new BadResourceException("Unable to find music: " + name);
 		}

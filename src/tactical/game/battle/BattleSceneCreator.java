@@ -397,10 +397,7 @@ public class BattleSceneCreator {
 		} else
 			setAnimationsToFinishAtTheSameTime(attacker, target, 
 					battleResults, index, aca, targetDodge, dodgeDiff, battleResults.text.get(index));
-		
-		//TODO We probably need winddown even on miss
-		//TODO Add block winddown here
-		
+	
 		CombatAnimation spellShieldCA = getSpellShieldCombatAnimation(target);
 		
 		CombatAnimation attackerCA = null;

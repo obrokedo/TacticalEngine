@@ -28,7 +28,7 @@ public class ChangePartyMenu extends QuadMenu {
 
 	@Override
 	public void initialize() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -40,7 +40,7 @@ public class ChangePartyMenu extends QuadMenu {
 
 	@Override
 	protected MenuUpdate onConfirm() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 

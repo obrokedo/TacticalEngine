@@ -11,7 +11,7 @@ public class DefaultPanelRenderer implements PanelRenderer {
 
 	@Override
 	public void initializeResources(ResourceManager rm) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
