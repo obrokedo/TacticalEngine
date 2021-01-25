@@ -491,6 +491,10 @@ public class TextParser
 				else if (tagType.equalsIgnoreCase("npcspeech")) {
 					te.addTriggerable(te.new TriggerNPCSpeech(actionParams.get("npcname")));
 				}
+				else if (tagType.equalsIgnoreCase("setegress")) {
+					te.addTriggerable(te.new TriggerSetEgressLocation(actionParams.get("mapname"), 
+							Integer.parseInt(actionParams.get("locx")), Integer.parseInt(actionParams.get("locy"))));
+				}
 				else
 				{
 					Triggerable trigger = handleCustomTrigger(tagType, actionParams);
@@ -572,7 +576,7 @@ public class TextParser
 			return new CinematicEvent(CinematicEventType.REMOVE_STATIC_SPRITE, area.getAttribute("spriteid"));
 		else if (type.equalsIgnoreCase("assactor"))
 			return new CinematicEvent(CinematicEventType.ASSOCIATE_AS_ACTOR, area.getAttribute("name"),
-					HeroResource.getHeroIdByName(area.getAttribute("hero")), Integer.parseInt(area.getAttribute("enemyid")), area.getAttribute("npcid"));
+					HeroResource.getHeroIdByName(area.getAttribute("hero")), Integer.parseInt(area.getAttribute("enemyid")), area.getAttribute("npcid"), area.getAttribute("staticid"));
 		else if (type.equalsIgnoreCase("camerafollow"))
 			return new CinematicEvent(CinematicEventType.CAMERA_FOLLOW, area.getAttribute("name"));
 		else if (type.equalsIgnoreCase("haltingmove"))

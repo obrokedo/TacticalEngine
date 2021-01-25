@@ -66,16 +66,20 @@ public abstract class CasterAI extends AI
 		{
 			couldAttackTarget = true;
 			int damage = Math.max(1, currentSprite.getCurrentAttack() - targetSprite.getCurrentDefense());
-			int damageInfluence = Math.min(30, (int)(30.0 * damage / targetSprite.getMaxHP()));
-			currentConfidence += damageInfluence;
-			aiC.damageInfluence = damageInfluence;
+			int damageInfluence = Math.min(30, (int)(30.0 * damage / targetSprite.getMaxHP()));			
 
 			// If this attack would kill the target then add 50 confidence
 			if (targetSprite.getCurrentHP() <= damage)
 			{
 				currentConfidence += 50;
 				willKill = true;
+			// If we'll only do 1 damage and not kill anything then don't attack
+			} else if (damage == 1) {
+				damageInfluence = 0;
 			}
+				
+			currentConfidence += damageInfluence;
+			aiC.damageInfluence = damageInfluence;
 
 			Log.debug("Caster Attack confidence " + currentConfidence + " name " + targetSprite.getName());
 

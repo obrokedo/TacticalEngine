@@ -22,14 +22,6 @@ public class ItemMenu extends QuadMenu
 	private ItemOption itemOption;
 	private String[] itemDiffs;
 	
-	public enum ItemOption { 
-		USE,
-		GIVE,
-		EQUIP,
-		DROP,
-		
-	}
-
 	public ItemMenu(StateInfo stateInfo) {
 		super(PanelType.PANEL_ITEM, null, false, stateInfo);
 		emptySpot = stateInfo.getResourceManager().getSpriteSheet("items").getSprite(TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexX(), 

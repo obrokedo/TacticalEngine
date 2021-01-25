@@ -3,9 +3,6 @@ package tactical.game.menu.shop;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
-import tactical.engine.TacticalGame;
-import tactical.engine.config.MenuConfiguration;
-import tactical.engine.message.AudioMessage;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.ShopMessage;
 import tactical.engine.message.SpeechMessage;
@@ -14,142 +11,51 @@ import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
 import tactical.game.item.Item.ItemDurability;
 import tactical.game.listener.MenuListener;
-import tactical.game.menu.HeroesStatMenu;
+import tactical.game.menu.ChooseItemMenu;
 import tactical.game.menu.YesNoMenu;
 import tactical.game.trigger.Trigger;
 import tactical.game.ui.RectUI;
 import tactical.game.ui.TextUI;
 
-public class ChooseItemMenu extends HeroesStatMenu implements MenuListener
+public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 {
-	protected boolean selectingItemState = false;
-	protected int selectingItemIndex = 0;
 	private ShopMessage shopMessage;
 	private boolean isSellMenu = false;
-	private boolean isShop = false;
 	
 	protected RectUI goldPanel;
 	protected TextUI goldTitleText, goldAmountText;
-	protected MenuConfiguration menuConfig;
 
-	public ChooseItemMenu(StateInfo stateInfo, MenuListener listener, ShopMessage shopMessage) {
+	public ShopChooseItemMenu(StateInfo stateInfo, MenuListener listener, ShopMessage shopMessage) {
 		super(stateInfo, listener);
-		this.menuConfig = TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration();
 		this.shopMessage = shopMessage;
 		
 		if (shopMessage.getMessageType() == MessageType.SHOW_SHOP_SELL)
 			isSellMenu = true;
 		else
 			isSellMenu = false;
-		isShop = true;
 		
 		goldPanel = new RectUI(20, 89, 62, 32);
-		goldTitleText = new TextUI("Gold", 25, 85);
-		goldAmountText = new TextUI(stateInfo.getClientProfile().getGold() + "", 25, 97);
-	}
-	
-	public ChooseItemMenu(StateInfo stateInfo, MenuListener listener) {
-		super(stateInfo, listener);
-		this.menuConfig = TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration();
-		this.shopMessage = null;
-		isShop = false;		
+		goldTitleText = new TextUI("Gold", 27, 85);
+		goldAmountText = new TextUI(stateInfo.getClientProfile().getGold() + "", 27, 97);
 	}
 
 	@Override
 	protected void postRender(Graphics g) {
-		if (selectingItemState)
-		{
-			g.setColor(Color.white);
-			g.drawRect(207, yOffsetTop + 50 + selectingItemIndex * 20, 80, 20);
-		}
+		super.postRender(g);
 		
 		// Draw gold box
-		if (isShop) {
-			goldPanel.drawPanel(g);
-			g.setColor(Color.white);
-			goldTitleText.drawText(g);
-			goldAmountText.drawText(g);
-		}
-	}
-
-
-
-	@Override
-	protected MenuUpdate onUp(StateInfo stateInfo) {
-		if (selectingItemState)
-		{
-			if (selectingItemIndex > 0)
-				selectingItemIndex--;
-			else
-				selectingItemIndex = selectedHero.getItemsSize() - 1;
-			return MenuUpdate.MENU_ACTION_LONG;
-		}
-		else
-			return super.onUp(stateInfo);
-	}
-
-
-
-	@Override
-	protected MenuUpdate onDown(StateInfo stateInfo) {
-		if (selectingItemState)
-		{
-			if (selectingItemIndex < selectedHero.getItemsSize() - 1)
-				selectingItemIndex++;
-			else
-				selectingItemIndex = 0;
-			return MenuUpdate.MENU_ACTION_LONG;
-		}
-		else
-			return super.onDown(stateInfo);
-	}
-
-
-
-	@Override
-	protected MenuUpdate onBack(StateInfo stateInfo) {
-		stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
-		if (selectingItemState)
-		{
-			selectingItemState = false;
-			return MenuUpdate.MENU_ACTION_LONG;
-		}
-		else
-		{
-			selectedHero = null;
-			return MenuUpdate.MENU_CLOSE;
-		}
+		goldPanel.drawPanel(g);
+		g.setColor(Color.white);
+		goldTitleText.drawText(g);
+		goldAmountText.drawText(g);
 	}
 
 	@Override
-	protected MenuUpdate onConfirm(StateInfo stateInfo) {
-		// Show the item selection cursor
-		if (!selectingItemState)
-		{
-			// Check if the hero has items to sell
-			if (selectedHero.getItemsSize() > 0 ) {
-				selectingItemState = true;
-				selectingItemIndex = 0;
-			}
-		}
-		// Otherwise we are done, prompt to sell the selected item
+	protected void itemSelected(StateInfo stateInfo) {
+		if (isSellMenu)
+			promptSellItem(stateInfo);	
 		else
-		{
-			if (isShop) {
-				if (isSellMenu)
-					promptSellItem(stateInfo);	
-				else
-					promptRepairItem(stateInfo);
-			} else {
-				promptGiveItem(stateInfo);
-			}
-		}
-
-		return MenuUpdate.MENU_ACTION_LONG;
-	}
-	
-	private void promptGiveItem(StateInfo stateInfo) {
-		
+			promptRepairItem(stateInfo);
 	}
 
 	private void promptSellItem(StateInfo stateInfo) {

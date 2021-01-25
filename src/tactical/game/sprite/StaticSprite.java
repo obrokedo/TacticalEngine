@@ -15,6 +15,7 @@ public class StaticSprite extends Sprite
 	private Image image;
 	private int[] triggerIds;
 	private boolean offsetUp = false;
+	
 	/**
 	 * The id of a trigger that should be activated if no other triggers were
 	 * activated on a "search" of this sprite
@@ -46,6 +47,21 @@ public class StaticSprite extends Sprite
 
 	public void setImage(Image image) {
 		this.image = image;
+	}
+	
+	public boolean hasTriggers(StateInfo stateInfo) {
+		if (triggerIds != null && triggerIds.length > 0) {			
+			for (Integer triggerId : triggerIds) {
+				if (triggerId != -1) { 
+					if (stateInfo.getResourceManager().getTriggerEventById(
+							triggerId).canTriggerBePerformed(stateInfo) == TriggerStatus.TRIGGERED) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 
 	public void triggerButton1Event(StateInfo stateInfo)
@@ -83,5 +99,9 @@ public class StaticSprite extends Sprite
 	 */
 	public void setDefaultTriggerId(Integer defaultTriggerId) {
 		this.defaultTriggerId = defaultTriggerId;
+	}
+
+	public Image getImage() {
+		return image;
 	}
 }

@@ -1,4 +1,4 @@
-package tactical.game.menu;
+package tactical.game.menu.battle;
 
 import org.newdawn.slick.Image;
 
@@ -7,6 +7,8 @@ import tactical.engine.message.MessageType;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.constants.Direction;
+import tactical.game.menu.QuadMenu;
+import tactical.game.menu.SpeechMenu;
 import tactical.game.trigger.Trigger;
 
 public class BattleOptionMenu extends QuadMenu {

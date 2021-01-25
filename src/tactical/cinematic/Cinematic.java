@@ -588,6 +588,15 @@ public class Cinematic {
 							break;
 						}
 					}
+				} else if (StringUtils.isNotEmpty((String) ce.getParam(4))) {
+					for (Sprite s : stateInfo.getSprites()) {
+						if (s.getSpriteType() == Sprite.TYPE_STATIC_SPRITE
+								&& ((StaticSprite) s).getName() != null
+								&& ((StaticSprite) s).getName().equalsIgnoreCase((String) ce.getParam(4))) {
+							ca = new CinematicActor((StaticSprite) s, stateInfo);
+							break;
+						}
+					}
 				}
 
 				if (ca != null)
@@ -596,17 +605,6 @@ public class Cinematic {
 					sortedActors.add(ca);
 				}
 
-				break;
-			case ASSOCIATE_NPC_AS_ACTOR:
-				for (Sprite s : stateInfo.getSprites()) {
-					if (s.getSpriteType() == Sprite.TYPE_NPC
-							&& ((NPCSprite) s).getUniqueNPCId() == (int) ce
-									.getParam(0)) {
-						actors.put((String) ce.getParam(1), new CinematicActor(
-								(AnimatedSprite) s, stateInfo));
-						break;
-					}
-				}
 				break;
 			case SPEECH:
 				int heroPortrait = (int) ce.getParam(1);

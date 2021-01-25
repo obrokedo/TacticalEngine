@@ -252,4 +252,8 @@ public class ClientProgress implements Serializable
 	public String getLastSaveMapData() {
 		return lastSaveMapData;
 	}
+
+	public void setLastSaveMapData(String lastSaveMapData) {
+		this.lastSaveMapData = lastSaveMapData;
+	}
 }

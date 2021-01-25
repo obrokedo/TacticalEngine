@@ -44,7 +44,6 @@ public class Trigger
 	private boolean retrigOnEnter;
 	private boolean nonRetrig;
 	private boolean triggerOnce;
-	private boolean triggerImmediately;
 	private boolean triggered = false;
 	private String[] requires;
 	private String[] excludes;
@@ -62,6 +61,7 @@ public class Trigger
 	
 	public Trigger() {}
 
+	// TODO Remove triggerimmediately
 	public Trigger(String name, int id, boolean retrigOnEnter, boolean nonRetrig,
 			boolean triggerOnce, boolean triggerImmediately, String[] requires, String[] excludes) {
 		super();
@@ -69,7 +69,6 @@ public class Trigger
 		this.retrigOnEnter = retrigOnEnter;
 		this.nonRetrig = nonRetrig;
 		this.triggerOnce = triggerOnce;
-		this.triggerImmediately = triggerImmediately;
 		this.id = id;
 		this.requires = requires;
 		this.excludes = excludes;
@@ -84,25 +83,8 @@ public class Trigger
 	{
 		return perform(stateInfo, false);
 	}
-
-	public TriggerStatus perform(StateInfo stateInfo, boolean immediate)
-	{
-		Log.debug("Beginning Trigger Perform: " + this.id);
-		// Trigger immediately should now be handled by conditions
-		/*
-		if (triggerImmediately != immediate) {
-			Log.debug("Trigger will not be executed, movement is immediate " + immediate + " trigger is immediate " + triggerImmediately);
-			return TriggerStatus.IS_IMMEDIATE;
-		}
-		*
-
-		/* WHY IS THIS HERE?!??!?!?!
-		if (!stateInfo.isInitialized() && this.id != 0) {
-			Log.debug("Trigger will not be performed because the state has been changed");
-			return;
-		}
-		*/
-
+	
+	public TriggerStatus canTriggerBePerformed(StateInfo stateInfo) {
 		// Check to see if this trigger meets all required quests
 		if (requires != null)
 		{
@@ -128,23 +110,9 @@ public class Trigger
 			}
 		}
 
-		if (nonRetrig)
-		{
-			if (stateInfo.getClientProgress().isNonretriggableTrigger(id))
-			{
-				// Check to see if this is a "on enter" perform for a retriggerable trigger that has already been triggered
-				// If so we want this to be retriggered
-				if (!stateInfo.isInitialized()) // && retrigOnEnter && stateInfo.getClientProgress().isPreviouslyTriggered(id))
-				{
-					Log.debug("Trigger will be performed on strange path");
-					performTriggerImpl(stateInfo);
-				}
-				// The state has been changed and triggers should not be executed
-				else {
-					Log.debug("Trigger will not be performed because the state has been changed on strange path");
-					return TriggerStatus.NON_RETRIG;
-				}
-			}
+		if (nonRetrig && stateInfo.getClientProgress().isNonretriggableTrigger(id)) {
+			Log.debug("Trigger will not be performed because the trigger is non retriggerable");
+			return TriggerStatus.NON_RETRIG;
 		}
 
 		// Check if this is trigger once per map
@@ -153,6 +121,17 @@ public class Trigger
 			Log.debug("Trigger will not be triggered as it has already been triggered once");
 			return TriggerStatus.TRIGGER_ONCE;
 		}
+		
+		return TriggerStatus.TRIGGERED;
+	}
+
+	public TriggerStatus perform(StateInfo stateInfo, boolean immediate)
+	{
+		Log.debug("Beginning Trigger Perform: " + this.id);
+
+		TriggerStatus status = canTriggerBePerformed(stateInfo);
+		if (status != TriggerStatus.TRIGGERED)
+			return status;
 
 		Log.debug("Trigger will be performed");
 		if (!performTriggerImpl(stateInfo))
@@ -948,6 +927,28 @@ public class Trigger
 				stateInfo.saveBattle();
 			else
 				stateInfo.save();;
+			return true;
+		}
+		
+	}
+	
+	public class TriggerSetEgressLocation implements Triggerable {
+
+		private String map;
+		private int tileX, tileY;
+		
+		public TriggerSetEgressLocation(String map, int tileX, int tileY) {
+			super();
+			this.map = map;
+			this.tileX = tileX;
+			this.tileY = tileY;
+		}
+
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			stateInfo.getClientProgress().setInTownLocation(new Point(tileX * stateInfo.getTileWidth(), 
+					tileY * stateInfo.getTileHeight()));
+			stateInfo.getClientProgress().setLastSaveMapData(map);
 			return true;
 		}
 		

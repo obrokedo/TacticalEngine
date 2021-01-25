@@ -48,8 +48,13 @@ public class MapObject
 
 	public void determineShape()
 	{
-		if (polyPoints == null)
+		if (polyPoints == null) {
 			shape = new Rectangle(x, y, width, height);
+			polyPoints = new ArrayList<>();
+			for (int i = 0; i < shape.getPointCount(); i++) {
+				polyPoints.add(new Point((int) shape.getPoints()[i * 2], (int) shape.getPoints()[i * 2 + 1]));
+			}
+		}
 		else
 		{
 			float[] points = new float[polyPoints.size() * 2];
@@ -64,6 +69,23 @@ public class MapObject
 			width = (int) shape.getWidth();
 			height = (int) shape.getHeight();
 		}
+	}
+	
+	public void translate(int transX, int transY) {
+		float[] points = new float[polyPoints.size() * 2];
+		for (int i = 0; i < polyPoints.size(); i++)
+		{
+			polyPoints.get(i).x = polyPoints.get(i).x + transX;
+			polyPoints.get(i).y = polyPoints.get(i).y + transY;
+			points[2 * i] = polyPoints.get(i).x;
+			points[2 * i + 1] = polyPoints.get(i).y;
+		}
+
+		shape = new Polygon(points);
+		this.x = (int) shape.getX();
+		this.y = (int) shape.getY();
+		width = (int) shape.getWidth();
+		height = (int) shape.getHeight();
 	}
 
 	public void setWidth(int width) {
@@ -102,6 +124,10 @@ public class MapObject
 	public void setKey(String key) {
 		this.key = key;
 	}
+	public ArrayList<Point> getPolyPoints() {
+		return polyPoints;
+	}
+
 	public void setValue(String value)
 	{
 		if (value != null && value.length() > 0)

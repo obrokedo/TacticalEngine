@@ -299,10 +299,13 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_INT, "enemyid", true, "Enemy ID",
 				"The ID of the Enemy that should become a cinematic actor. This should only be used in 'battle'"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
-				PlannerValueDef.TYPE_STRING, "npcid", true, "NPC ID",
+				PlannerValueDef.TYPE_STRING, "npcid", true, "NPC Name",
 				"The Name of the NPC that should become a cinematic actor"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_STRING, "staticid", true, "Static Sprite Name",
+				"The Name of the static sprite that should become a cinematic actor"));
 		allowableLines.add(new PlannerLineDef("assactor", "Establish Sprite as Actor",
-						"Establishes a Sprite (NPC, Enemy, Hero) as an actor. Only one of the options should be specified above", definingValues));
+						"Establishes a Sprite (NPC, Enemy, Hero, Static) as an actor. Only one of the options should be specified above", definingValues));
 
 		sceneMembership.add("Establish Sprite as Actor");
 		
@@ -2750,6 +2753,26 @@ public class PlannerDefinitions {
 				"Show NPC Speech",
 				"Drives speech with the given npc as if they were spoken to directly. This allows"
 				+ " for speaking with npcs over counters and at range.",
+				definingValues));
+		
+		// Set egress location
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_STRING, "mapname", false,
+				"Map name",
+				"The name of map (map data) that the hero should egress to"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "locx", false,
+				"Map Tile X Coordinate",
+				"The X coordinate of the tile that the hero should egress to"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "locy", false,
+				"Map Tile Y Coordinate",
+				"The Y coordinate of the tile that the hero should egress to"));
+		allowableLines.add(new PlannerLineDef(
+				"setegress",
+				"Set Egress Location",
+				"Sets the location that the hero should egress to if they have not saved",
 				definingValues));
 		
 		// Exit Game

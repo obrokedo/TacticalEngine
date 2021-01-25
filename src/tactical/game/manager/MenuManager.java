@@ -2,6 +2,7 @@ package tactical.game.manager;
 
 import java.util.ArrayList;
 
+import tactical.engine.message.IntMessage;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.ShopMessage;
@@ -10,24 +11,26 @@ import tactical.engine.message.SpeechMessage;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.StringMessage;
 import tactical.game.menu.AdvisorMenu;
-import tactical.game.menu.BattleOptionMenu;
 import tactical.game.menu.ChangePartyMenu;
 import tactical.game.menu.HeroStatMenu;
 import tactical.game.menu.HeroesStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.Menu.MenuUpdate;
-import tactical.game.menu.devel.DebugMenu;
 import tactical.game.menu.MiniMapPanel;
 import tactical.game.menu.MultiHeroJoinMenu;
 import tactical.game.menu.PriestMenu;
 import tactical.game.menu.SpeechMenu;
 import tactical.game.menu.StorageMenu;
 import tactical.game.menu.SystemMenu;
-import tactical.game.menu.TownMenu;
 import tactical.game.menu.YesNoMenu;
+import tactical.game.menu.battle.BattleOptionMenu;
+import tactical.game.menu.devel.DebugMenu;
 import tactical.game.menu.shop.ShopBuyMenu;
-import tactical.game.menu.shop.ChooseItemMenu;
+import tactical.game.menu.shop.ShopChooseItemMenu;
 import tactical.game.menu.shop.ShopOptionsMenu;
+import tactical.game.menu.town.TownChooseItemMenu;
+import tactical.game.menu.town.TownItemOptionMenu;
+import tactical.game.menu.town.TownMenu;
 import tactical.game.resource.HeroResource;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.text.Speech;
@@ -132,7 +135,7 @@ public class MenuManager extends Manager
 			case SHOW_SHOP_REPAIR:
 			case SHOW_SHOP_SELL:
 				sm = (ShopMessage) message;
-				stateInfo.addSingleInstanceMenu(new ChooseItemMenu(stateInfo, null, sm));
+				stateInfo.addSingleInstanceMenu(new ShopChooseItemMenu(stateInfo, null, sm));
 				break;
 			case SHOW_HEROES:
 				stateInfo.addSingleInstanceMenu(new HeroesStatMenu(stateInfo));
@@ -172,6 +175,13 @@ public class MenuManager extends Manager
 				break;
 			case SHOW_TOWN_MENU:
 				stateInfo.addMenu(new TownMenu(stateInfo));
+				break;
+			case SHOW_TOWN_SELECT_ITEM:
+				IntMessage im = (IntMessage) message;
+				stateInfo.addMenu(new TownChooseItemMenu(stateInfo, im.getValue()));
+				break;
+			case SHOW_TOWN_ITEM_OPTION_MENU:				
+				stateInfo.addMenu(new TownItemOptionMenu(stateInfo));
 			default:
 				break;
 		}

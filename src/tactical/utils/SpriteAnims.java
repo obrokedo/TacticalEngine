@@ -14,7 +14,7 @@ import tactical.game.exception.BadResourceException;
 
 public class SpriteAnims
 {
-	private Hashtable<String, Animation> animations;
+	protected Hashtable<String, Animation> animations;
 	private String spriteSheet;
 	public ArrayList<Rectangle> imageLocs;
 	public transient ArrayList<Image> images;

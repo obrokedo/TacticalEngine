@@ -18,9 +18,11 @@ import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.NPCSprite;
 import tactical.game.sprite.Sprite;
+import tactical.game.sprite.StaticSprite;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.utils.AnimSprite;
 import tactical.utils.Animation;
+import tactical.utils.SingleImageSpriteAnims;
 import tactical.utils.SpriteAnims;
 
 /**
@@ -56,7 +58,9 @@ public class CinematicActor implements Comparable<CinematicActor>
 	private long animDelta = 0;
 	private boolean animHalting;
 	private AnimatedSprite sprite;
+	private StaticSprite staticSprite;
 	private boolean visible = true;
+	private boolean drawShadow = true;
 
 	// Moving location
 	private float locX;
@@ -132,7 +136,14 @@ public class CinematicActor implements Comparable<CinematicActor>
 		// For sprite backed actors, compensate for their usual offset
 		this.locX = sprite.getLocX();
 		this.locY = sprite.getLocY() - stateInfo.getResourceManager().getMap().getTileRenderHeight();
-		
+	}
+	
+	public CinematicActor(StaticSprite ss, StateInfo stateInfo) {
+		this(new SingleImageSpriteAnims(((StaticSprite) ss).getImage()), "", 
+				(int) ss.getLocX(), (int) ss.getLocY()  - stateInfo.getResourceManager().getMap().getTileRenderHeight() / 3, true, false, false);
+		this.staticSprite = ss;
+		ss.setVisible(false);
+		drawShadow = false;
 	}
 	
 	public void render(Graphics graphics, Camera camera, PaddedGameContainer cont, StateInfo stateInfo)
@@ -163,7 +174,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 				switch (specialEffectType)
 				{
 					case SE_NONE:
-						AnimatedSprite.drawShadow(im, xPos, yPos, 
+						drawShadow(im, xPos, yPos, 
 								camera, false, stateInfo.getTileHeight());
 						graphics.drawImage(im, xPos, yPos);
 						break;
@@ -171,7 +182,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 					case SE_SHRINK:
 						Image scaled = im.getScaledCopy(specialEffectCounter);
 
-						AnimatedSprite.drawShadow(scaled, (xPos  + (im.getWidth() - scaled.getWidth()) / 2),
+						drawShadow(scaled, (xPos  + (im.getWidth() - scaled.getWidth()) / 2),
 								 (yPos + im.getHeight() - scaled.getHeight()), camera, false, stateInfo.getTileHeight());
 
 						scaled.draw(xPos + (im.getWidth() - scaled.getWidth()) / 2,
@@ -179,14 +190,14 @@ public class CinematicActor implements Comparable<CinematicActor>
 						break;
 					case SE_QUIVER:
 
-						AnimatedSprite.drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos + (specialEffectCounter % 2 == 0 ? 0 : (-2 + specialEffectCounter)),
+						drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos + (specialEffectCounter % 2 == 0 ? 0 : (-2 + specialEffectCounter)),
 								yPos, camera, false, stateInfo.getTileHeight());
 
 						graphics.drawImage(im, xPos  + (specialEffectCounter % 2 == 0 ? 0 : (-2 + specialEffectCounter)),
 								yPos);
 						break;
 					case SE_FLASH:
-						AnimatedSprite.drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+						drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 						Image whiteIm = im;
 
@@ -223,7 +234,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 						// Only draw the nod if we are on SE counter 1
 						if (specialEffectCounter == 1)
 						{
-							AnimatedSprite.drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+							drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 							// This is the lower portion of the sprite
 							im.getSubImage(0, 10, im.getWidth(), 14).draw(xPos,
@@ -234,14 +245,14 @@ public class CinematicActor implements Comparable<CinematicActor>
 						}
 						else
 						{
-							AnimatedSprite.drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+							drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 							graphics.drawImage(im, xPos ,
 									yPos);
 						}
 						break;
 					case SE_HEAD_SHAKE:
-						AnimatedSprite.drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+						drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 						im.getSubImage(0, 10,
 								im.getWidth(), 14).draw(xPos,
@@ -279,7 +290,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 							trembleVal = 0;
 						}
 
-						AnimatedSprite.drawShadow(im, xPos + (trembleVal) / 2,
+						drawShadow(im, xPos + (trembleVal) / 2,
 								yPos + trembleVal, camera, false, stateInfo.getTileHeight());
 
 						graphics.drawImage(im, xPos  + (trembleVal) / 2,
@@ -288,6 +299,11 @@ public class CinematicActor implements Comparable<CinematicActor>
 				}
 			}
 		}
+	}
+	
+	private void drawShadow(Image originalIm, float locX, float locY, Camera camera, boolean tileOffset, int tileHeight) {
+		if (drawShadow)
+			AnimatedSprite.drawShadow(originalIm, locX, locY, camera, tileOffset, tileHeight);
 	}
 
 	private void renderOnDirection(Direction dir, Graphics graphics, Camera camera, PaddedGameContainer cont)
@@ -849,6 +865,10 @@ public class CinematicActor implements Comparable<CinematicActor>
 				NPCSprite npc = (NPCSprite) sprite;
 				npc.setMoving(false);
 			}
+		} else if (staticSprite != null) {
+			staticSprite.setLocX(locX, stateInfo.getTileWidth());
+			staticSprite.setLocY(locY + stateInfo.getResourceManager().getMap().getTileRenderHeight() / 3, stateInfo.getTileHeight());
+			staticSprite.setVisible(true);
 		}
 		return sprite;
 	}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.message.AudioMessage;
@@ -26,6 +27,7 @@ public class HeroesStatMenu extends Menu
 	protected static final Color COLOR_NONE = new Color(204, 0, 70);
 
 	// Why the fuck is the yoffsettop negative?!!??!?!?!?
+	protected Image emptySpot;
 	protected int yOffsetTop = -14, yOffsetBot = 10;
 	protected int selectedIndex = 0;
 	protected ArrayList<CombatSprite> heroes;
@@ -49,6 +51,8 @@ public class HeroesStatMenu extends Menu
 	public HeroesStatMenu(StateInfo stateInfo, MenuListener listener)
 	{
 		super(PanelType.PANEL_HEROS_OVERVIEW);
+		emptySpot = stateInfo.getResourceManager().getSpriteSheet("items").getSprite(TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexX(), 
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexY());
 		heroes = stateInfo.getClientProfile().getHeroesInParty();
 		
 		for (CombatSprite cs : stateInfo.getAllHeroes()) {
@@ -178,30 +182,19 @@ public class HeroesStatMenu extends Menu
 				88,
 				yOffsetTop + 15, graphics);
 
-		StringUtils.drawString("SPELLS", 90,
-				yOffsetTop + 32, graphics);
+		
 
+		
+
+		drawHeroSpecificsLeft(graphics);
+
+		drawHeroSpecificsRight(graphics);
+	}
+
+	protected void drawHeroSpecificsRight(Graphics graphics) {
 		StringUtils.drawString("ITEMS", 200,
 				yOffsetTop + 32, graphics);
-
-		// Draw Hero Spells
-		if (selectedHero.getSpellsDescriptors() != null && selectedHero.getSpellsDescriptors().size() > 0)
-			for (int i = 0; i < selectedHero.getSpellsDescriptors().size(); i++)
-			{
-				StringUtils.drawString(selectedHero.getSpellsDescriptors().get(i).getSpell().getName(),
-						100,
-					yOffsetTop + (42 + i * 20), graphics);
-				StringUtils.drawString("Level 1", 115,
-						yOffsetTop + (52 + i * 20), graphics);
-			}
-		else
-		{
-			graphics.setColor(COLOR_NONE);
-			StringUtils.drawString("NONE", 100,
-				yOffsetTop + 42, graphics);
-			graphics.setColor(Color.white);
-		}
-
+		
 		// Draw hero items
 		if (items != null && selectedHero.getItemsSize() > 0)
 			for (int i = 0; i < selectedHero.getItemsSize(); i++)
@@ -236,14 +229,37 @@ public class HeroesStatMenu extends Menu
 		}
 	}
 
+	protected void drawHeroSpecificsLeft(Graphics graphics) {
+		StringUtils.drawString("SPELLS", 90,
+				yOffsetTop + 32, graphics);
+		
+		// Draw Hero Spells
+		if (selectedHero.getSpellsDescriptors() != null && selectedHero.getSpellsDescriptors().size() > 0)
+			for (int i = 0; i < selectedHero.getSpellsDescriptors().size(); i++)
+			{
+				StringUtils.drawString(selectedHero.getSpellsDescriptors().get(i).getSpell().getName(),
+						100,
+					yOffsetTop + (42 + i * 20), graphics);
+				StringUtils.drawString("Level 1", 115,
+						yOffsetTop + (52 + i * 20), graphics);
+			}
+		else
+		{
+			graphics.setColor(COLOR_NONE);
+			StringUtils.drawString("NONE", 100,
+				yOffsetTop + 42, graphics);
+			graphics.setColor(Color.white);
+		}
+	}
+
 	protected void postRender(Graphics g)
 	{
-
+		
 	}
 
 	protected void renderMenuItem(Graphics graphics, int index)
 	{
-
+		
 	}
 
 	@Override

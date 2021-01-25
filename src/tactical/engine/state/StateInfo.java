@@ -33,6 +33,7 @@ import tactical.game.persist.ClientProgress;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.Sprite;
 import tactical.game.sprite.SpriteZComparator;
+import tactical.game.sprite.StaticSprite;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.ResourceManager;
 import tactical.map.Map;
@@ -616,6 +617,16 @@ public class StateInfo
 			if ((targetsHero == null || s.isHero() == targetsHero) && 
 					s.getTileX() == tileX && s.getTileY() == tileY && s.getCurrentHP() > 0)
 				return s;
+		}
+		return null;
+	}
+	
+	public Sprite getSearchableAtTile(int tileX, int tileY) {
+		for (Sprite s : this.sprites) {
+			if (s.getSpriteType() == Sprite.TYPE_STATIC_SPRITE && ((StaticSprite) s).hasTriggers(this) && 
+					s.getTileX() == tileX && s.getTileY() == tileY) {
+				return s;
+			}
 		}
 		return null;
 	}

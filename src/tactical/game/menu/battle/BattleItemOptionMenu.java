@@ -1,4 +1,4 @@
-package tactical.game.menu;
+package tactical.game.menu.battle;
 
 import org.newdawn.slick.Image;
 
@@ -10,10 +10,11 @@ import tactical.game.constants.Direction;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
 import tactical.game.item.Item.ItemDurability;
+import tactical.game.menu.QuadMenu;
 
-public class ItemOptionMenu extends QuadMenu
+public class BattleItemOptionMenu extends QuadMenu
 {
-	public ItemOptionMenu(StateInfo stateInfo) {
+	public BattleItemOptionMenu(StateInfo stateInfo) {
 		super(PanelType.PANEL_ITEM_OPTIONS, stateInfo);
 
 		icons = new Image[8];

@@ -34,19 +34,20 @@ import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
 import tactical.game.item.Item;
 import tactical.game.listener.KeyboardListener;
-import tactical.game.menu.BattleActionsMenu;
 import tactical.game.menu.HeroStatMenu;
 import tactical.game.menu.ItemMenu;
-import tactical.game.menu.ItemMenu.ItemOption;
-import tactical.game.menu.ItemOptionMenu;
+import tactical.game.menu.ItemOption;
 import tactical.game.menu.LandEffectPanel;
 import tactical.game.menu.SpeechMenu;
 import tactical.game.menu.SpellMenu;
+import tactical.game.menu.battle.BattleActionsMenu;
+import tactical.game.menu.battle.BattleItemOptionMenu;
 import tactical.game.menu.devel.BattleAIDebug;
 import tactical.game.move.AttackableSpace;
 import tactical.game.move.MoveableSpace;
 import tactical.game.move.MovingSprite;
 import tactical.game.sprite.CombatSprite;
+import tactical.game.sprite.StaticSprite;
 import tactical.game.turnaction.AttackSpriteAction;
 import tactical.game.turnaction.CheckDeathAction;
 import tactical.game.turnaction.EndTurnAction;
@@ -77,7 +78,7 @@ public class TurnManager extends Manager implements KeyboardListener
 	private BattleCommand battleCommand;
 	private SpellMenu spellMenu;
 	private ItemMenu itemMenu;
-	private ItemOptionMenu itemOptionMenu;
+	private BattleItemOptionMenu itemOptionMenu;
 	private BattleActionsMenu battleActionsMenu;
 	private LandEffectPanel landEffectPanel;
 	private Image cursorImage;
@@ -115,7 +116,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		battleActionsMenu = new BattleActionsMenu(stateInfo);
 		spellMenu = new SpellMenu(stateInfo);
 		itemMenu = new ItemMenu(stateInfo);
-		itemOptionMenu = new ItemOptionMenu(stateInfo);
+		itemOptionMenu = new BattleItemOptionMenu(stateInfo);
 		landEffectPanel = new LandEffectPanel();
 		aiController = new AIController();
 		movingSprite = null;
@@ -574,6 +575,26 @@ public class TurnManager extends Manager implements KeyboardListener
 			case INITIALIZE_BATTLE:
 				aiController.initialize(stateInfo.getCombatSprites());
 				break;
+			case SEARCH_IN_BATTLE:
+				range = AttackableSpace.getAttackableArea(Range.ONE_ONLY);
+				int rangeOffset = (range.length - 1) / 2;
+				
+				OUTER: for (int i = 0; i < range.length; i++)
+				{
+					for (int j = 0; j < range[0].length; j++)
+					{
+						if (range[i][j] == 1)
+						{
+							StaticSprite targetable = (StaticSprite) stateInfo.getSearchableAtTile(currentSprite.getTileX() - rangeOffset + i,
+									currentSprite.getTileY() - rangeOffset + j);
+							if (targetable != null) {
+								targetable.triggerButton1Event(stateInfo);								
+							}
+							break;
+						}
+					}
+				}
+				turnActions.add(new EndTurnAction());
 			default:
 				break;
 

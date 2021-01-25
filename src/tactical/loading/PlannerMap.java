@@ -231,6 +231,10 @@ public class PlannerMap extends Map {
 		
 		return null;
 	}
+	
+	public void updateMapObjectLocation(MapObject mo, TagArea ta) {
+		tagAreaByMapObject.put(mo, ta);
+	}
 
 	public void addMapObject(MapObject mo, TagArea ta) {
 		this.mapObjects.add(mo);

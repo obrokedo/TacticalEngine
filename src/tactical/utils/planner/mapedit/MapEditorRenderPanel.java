@@ -37,6 +37,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	private boolean creatingShape = false, creatingStamp = false;
 	private Point lastMouse;
 	private float scale = 1.0f;
+	private int dragStartX, dragStartY = 0;
 
 	public MapEditorRenderPanel(MapEditorPanel parentPanel)
 	{
@@ -171,6 +172,8 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 				if (selected != null)
 				{
 					this.selectedMapObject = selected;
+					this.dragStartX = m.getX();
+					this.dragStartY = m.getY();
 					try
 					{
 						parentPanel.mouseDown(selectedMapObject);
@@ -342,8 +345,31 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (selectedMapObject != null) {		
+			Point p = new Point(Math.round(e.getX() /scale), 
+						Math.round(e.getY() / scale));
+			//selectedMapObject.determineShape();
+			int tX = ((p.x - dragStartX) / plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth();
+			int tY = ((p.y - dragStartY) / plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight();
+			selectedMapObject.translate(tX, tY);
+						
+			String tagAreaText = "<object name=\"" + selectedMapObject.getName() + "\" x=\"0\" y=\"0\">";
+			TagArea tagArea = new TagArea(tagAreaText);
+			tagAreaText = "<polyline points=\"";
+			for (int i = 0; i < selectedMapObject.getPolyPoints().size(); i++) {
+				tagAreaText += selectedMapObject.getPolyPoints().get(i).x + "," + selectedMapObject.getPolyPoints().get(i).y;
+				if (i != selectedMapObject.getPolyPoints().size() - 1) 
+					tagAreaText += " ";
+			}
+			tagAreaText += "\"/>";
+			tagArea.getChildren().add(new TagArea(tagAreaText));
+			plannerMap.updateMapObjectLocation(selectedMapObject, tagArea);
+			
+			dragStartX += tX;
+			dragStartY += tY;
+			this.repaint();
+			
+		}
 	}
 
 	@Override

@@ -58,6 +58,7 @@ import tactical.utils.progression.ProgressionFrame;
 public class DevelMenuState extends MenuState implements ResourceSelectorListener
 {
 	private ResourceSelector textSelector;
+	private ResourceSelector loadoutSelector;
 	private ListUI entranceSelector;
 	private PlannerFrame plannerFrame = null;
 	private GifFrame quickAnimate = new GifFrame(true);
@@ -88,6 +89,9 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		textSelector = new ResourceSelector("Select Text", 0, true, "mapdata", "", container);
 		textSelector.setListener(this);
 		textSelector.setIgnoreClicksInUpdate(true);
+		
+		loadoutSelector = new ResourceSelector("Select Loadout", 20, false, "loadouts", "", container);
+		
 		loadTownButton.setEnabled(false);
 		loadBattleButton.setEnabled(false);
 		loadCinButton.setEnabled(false);
@@ -171,7 +175,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	{
 		g.clearClip();
 		g.setColor(Color.red);
-		g.drawString("DEVELOPMENT MODE", 5, 5);
+		g.drawString("DEVELOPMENT MODE", 5, 695);
 
 		g.setColor(Color.white);
 		
@@ -188,6 +192,8 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 
 		if (entranceSelector != null)
 			entranceSelector.render(g);
+		
+		loadoutSelector.render(g);
 
 		loadTownButton.render(g);
 		loadBattleButton.render(g);
@@ -240,6 +246,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			updateDelta = Math.max(0, updateDelta - delta);
 		
 		textSelector.update(container, delta);
+		loadoutSelector.update(container, delta);
 
 		if (entranceSelector != null) {
 			entranceSelector.update(container, delta);
@@ -404,12 +411,9 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					
 				}
 				if (loadBattleButton.handleUserInput(x, y, true)) {
-					if (new File(textSelector.getSelectedResource()).exists()) {									
-						alertPanel = new AlertPanel("A battle configuration was found for this battle, would you \\n like to apply it?",
-								()-> setDevParamStartBattle(), ()-> startBattle());
-					}
-					else					
-						startBattle();
+					if (loadoutSelector.getSelectedResource() != null)	
+						setDevParamStartBattle();
+					startBattle();
 				}
 				
 				this.textSelector.handleInput(x, y, true);
@@ -420,7 +424,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	}
 	
 	private boolean setDevParamStartBattle() {
-		DevParams.parseDevParams(textSelector.getSelectedResource(), persistentStateInfo.getClientProfile());
+		DevParams.parseDevParams(loadoutSelector.getSelectedResource(), persistentStateInfo.getClientProfile());
 		return startBattle();
 	}
 	

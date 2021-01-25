@@ -1,11 +1,11 @@
-package tactical.game.menu;
+package tactical.game.menu.town;
 
 import org.newdawn.slick.Image;
 
 import tactical.engine.message.AudioMessage;
-import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
 import tactical.engine.state.StateInfo;
+import tactical.game.menu.QuadMenu;
 
 public class TownMenu extends QuadMenu {
 	public TownMenu(StateInfo stateInfo) {
@@ -46,10 +46,13 @@ public class TownMenu extends QuadMenu {
 				stateInfo.checkSearchLocation();
 				break;
 			case RIGHT:
-				stateInfo.sendMessage(new Message(MessageType.SHOW_HEROES));
+				stateInfo.sendMessage(MessageType.SHOW_HEROES);
+				break;
+			case LEFT:
+				stateInfo.sendMessage(MessageType.SHOW_TOWN_ITEM_OPTION_MENU);
 				break;
 		}
-		return MenuUpdate.MENU_NO_ACTION;
+		return MenuUpdate.MENU_ACTION_LONG;
 	}
 
 	@Override
