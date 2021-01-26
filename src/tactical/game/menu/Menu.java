@@ -49,4 +49,8 @@ public abstract class Menu extends Panel
 	{
 		return true;
 	}
+	
+	public void dispose() {
+		
+	}
 }

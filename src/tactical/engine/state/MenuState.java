@@ -38,7 +38,6 @@ public class MenuState extends LoadableGameState
 	}
 
 	protected StateBasedGame game;
-	protected GameContainer gc;
 	protected String version = TacticalGame.VERSION;
 	protected Font font;
 	protected boolean initialized = false;
@@ -63,9 +62,8 @@ public class MenuState extends LoadableGameState
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
-
+		super.init(container, game);
 		this.game = game;
-		this.gc = container;
 		input = new UserInput();
 	}
 	
@@ -74,8 +72,8 @@ public class MenuState extends LoadableGameState
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
-		gc.getInput().removeAllKeyListeners();
-		gc.getInput().addKeyListener(this);
+		container.getInput().removeAllKeyListeners();
+		container.getInput().addKeyListener(this);
 	}
 
 
@@ -132,8 +130,8 @@ public class MenuState extends LoadableGameState
 	{
 		persistentStateInfo.loadCinematic(mapData, cinematicId);
 		
-		if (gc.isFullscreen())
-			gc.setMouseGrabbed(true);
+		if (container.isFullscreen())
+			container.setMouseGrabbed(true);
 
 		game.enterState(TacticalGame.STATE_GAME_LOADING);
 	}
@@ -155,10 +153,10 @@ public class MenuState extends LoadableGameState
 		}
 		
 		LoadingState loadingState = ((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING));
-		loadingState.setLoadingRenderer(TacticalGame.ENGINE_CONFIGURATIOR.getFirstLoadScreenRenderer(gc, music));
+		loadingState.setLoadingRenderer(TacticalGame.ENGINE_CONFIGURATIOR.getFirstLoadScreenRenderer(container, music));
 
-		if (gc.isFullscreen())
-			gc.setMouseGrabbed(true);
+		if (container.isFullscreen())
+			container.setMouseGrabbed(true);
 
 		game.enterState(TacticalGame.STATE_GAME_LOADING);
 	}
@@ -285,7 +283,7 @@ public class MenuState extends LoadableGameState
 
 	// Override this so that the state doesn't try to pause
 	@Override
-	public boolean isPaused(GameContainer gc) {
+	public boolean isPaused(GameContainer container) {
 		return false;
 	}
 

@@ -96,12 +96,12 @@ public class ShopBuyMenu extends Menu implements MenuListener
 
 		itemPanel = new RectUI(27, 2, -54, 32, 0, 0, stateInfo.getPaddedGameContainer().getPaddedWidth(), 0);
 		itemNamePanel = new RectUI(27, 34, 68, 37);
-		selectedItemRect = new RectUI(36,  6,  24,  24);
+		selectedItemRect = new RectUI(36,  6,  18,  23);
 
 		// Setup gold
 		goldPanel = new RectUI(241, 148, 62, 32);
-		goldTitleText = new TextUI("Gold", 246, 144);
-		goldAmountText = new TextUI(gold + "", 246, 156);
+		goldTitleText = new TextUI("Gold", 248, 144);
+		goldAmountText = new TextUI(gold + "", 248, 156);
 		this.stateInfo = stateInfo;
 		this.shopMessage = shopMessage;
 		updateSelectedItem();
@@ -198,7 +198,9 @@ public class ShopBuyMenu extends Menu implements MenuListener
 		goldAmountText.drawText(graphics);
 
 		// Draw selection box
-		selectedItemRect.drawRect(graphics, Color.white);
+		graphics.setLineWidth(2);
+		selectedItemRect.drawRoundRect(graphics, Color.white, 3);
+		// selectedItemRect.drawRect(graphics, Color.white);
 
 		if (speechMenu != null)
 			speechMenu.render(gc, graphics);
@@ -214,9 +216,9 @@ public class ShopBuyMenu extends Menu implements MenuListener
 	private void updateSelectedItem()
 	{
 		itemNamePanel.setX(27 + 28 * Math.min(8, selectedItemIndex));
-		itemNameText1 = new TextUI(itemName[0], 32 + 28  * Math.min(8, selectedItemIndex), 29);
+		itemNameText1 = new TextUI(itemName[0], 33 + 28  * Math.min(8, selectedItemIndex), 29);
 		if (itemName.length > 1)
-			itemNameText2 = new TextUI(itemName[1], 32 + 28 * Math.min(8, selectedItemIndex), 39);
+			itemNameText2 = new TextUI(itemName[1], 33 + 28 * Math.min(8, selectedItemIndex), 39);
 		String itemCost = "" + ((int) (selectedItem.getCost() * shopMessage.getBuyPercent()));
 		itemCostText = new TextUI(itemCost+ "", 87 + 28 * Math.min(8, selectedItemIndex), 49,
 				- PANEL_FONT.getWidth(itemCost));

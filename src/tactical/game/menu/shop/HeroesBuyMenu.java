@@ -37,7 +37,7 @@ public class HeroesBuyMenu extends HeroesStatMenu
 		{
 			int type = ((EquippableItem) selectedShopItem).getItemType();
 
-			for (CombatSprite hero : stateInfo.getAllHeroes())
+			for (CombatSprite hero : heroes)
 			{
 				EquippableDifference ed = null;
 				if (hero.isEquippable((EquippableItem) selectedShopItem))
@@ -59,12 +59,11 @@ public class HeroesBuyMenu extends HeroesStatMenu
 	}
 
 	@Override
-	protected void renderMenuItem(Graphics graphics, int index)
+	protected void renderMenuItem(Graphics graphics, int index, int drawY)
 	{
 		if (view == VIEW_DIFFS)
 		{
-			StringUtils.drawString(differences.get(index), 92,
-					yOffsetBot + (128 + 15 * (index - (selectedIndex < 12 ? 0 : selectedIndex - 11))), graphics);
+			StringUtils.drawString(differences.get(index), 92, drawY, graphics);
 		}
 	}
 

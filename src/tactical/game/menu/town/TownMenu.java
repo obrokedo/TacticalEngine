@@ -13,16 +13,25 @@ public class TownMenu extends QuadMenu {
 		
 		icons = new Image[8];
 
-		icons[0] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 0);
-		icons[1] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(2, 0);
-		icons[2] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(19, 0);
-		icons[3] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(1, 0);
-		icons[4] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 1);
-		icons[5] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(2, 1);
-		icons[6] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(19, 1);
-		icons[7] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(1, 1);
+		// Search
+		icons[3] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 0);
+		icons[7] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 1);
+		
+		// Item
+		icons[2] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(2, 0);
+		icons[6] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(2, 1);
+		
+		// Heroes
+		icons[0] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(19, 0);
+		icons[4] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(19, 1);
+		
+		// Magic
+		icons[1] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(1, 0);
+		icons[5] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(1, 1);
+		
+		
 		enabled = new boolean[] {true, true, true, true};
-		text = new String[] {"Search", "Item", "Heroes", "Magic"};
+		text = new String[] {"Heroes", "Magic", "Item", "Search"};
 	}
 
 	@Override
@@ -40,15 +49,15 @@ public class TownMenu extends QuadMenu {
 	@Override
 	protected MenuUpdate onConfirm() {
 		switch (selected) {
-			case UP:
+			case DOWN:
 				stateInfo.sendMessage(MessageType.INVESTIGATE);
 				stateInfo.setInputDelay(System.currentTimeMillis() + 200);
 				stateInfo.checkSearchLocation();
 				break;
-			case RIGHT:
+			case UP:
 				stateInfo.sendMessage(MessageType.SHOW_HEROES);
 				break;
-			case LEFT:
+			case RIGHT:
 				stateInfo.sendMessage(MessageType.SHOW_TOWN_ITEM_OPTION_MENU);
 				break;
 		}

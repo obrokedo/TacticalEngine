@@ -7,18 +7,19 @@ import org.newdawn.slick.GameContainer;
 import tactical.utils.DirectoryLister;
 
 public class ResourceSelector extends ListUI {
-	private boolean fromLeft = false;
 	public ResourceSelector(String title, int drawX,
 			boolean fromLeft, String rootFolder, 
 			String suffix, GameContainer gc)
 	{
-		super(title);
-		resourceFileButtons.clear();
-		this.drawX = drawX;
+		super(gc, title, false);
+		if (!fromLeft)
+			this.drawX = gc.getWidth() - longestNameWidth - drawX;
+		else
+			this.drawX = drawX;
 		this.drawY = 0;
-		this.fromLeft = fromLeft;
 
 		addResourceFromDir(rootFolder, suffix, gc);
+		this.initTextField(gc);
 	}
 
 	public void addResourceFromDir(String rootFolder, String suffix, GameContainer gc) {
@@ -30,6 +31,7 @@ public class ResourceSelector extends ListUI {
 			if (file.getName().endsWith(suffix))
 			{
 				resourceFileButtons.add(new Button(0, 0, 0, buttonHeight, file.getName()));
+				values.add(file.getName());
 				int width = gc.getDefaultFont().getWidth(file.getName());
 
 				if (width + 15 > longestNameWidth)
@@ -40,10 +42,8 @@ public class ResourceSelector extends ListUI {
 		for (Button button : resourceFileButtons)
 			button.setWidth(longestNameWidth);
 		
-		if (!fromLeft)
-			this.drawX = gc.getWidth() - longestNameWidth - drawX;		
-		
 		this.layoutItems();
 		this.setupDirectionalButtons();
+		
 	}
 }

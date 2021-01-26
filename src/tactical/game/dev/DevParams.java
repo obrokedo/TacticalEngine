@@ -16,10 +16,15 @@ import tactical.utils.XMLParser.TagArea;
 public class DevParams {
 	private static final String DEV_PARAMS_FILE = "DevParams";
 
-	public static void parseDevParams(String fileName, ClientProfile cp)
+	public static void parseDevParams(String fileName, ClientProfile cp, String[] startingHeroes)
 	{
 		try {
-			ArrayList<TagArea> tags = XMLParser.process(fileName, true);
+			ArrayList<TagArea> tags = XMLParser.process("loadouts/" + fileName, true);
+			cp.removeAllHeroes();
+			
+			for (String hero : startingHeroes)
+				cp.addHero(HeroResource.getHero(hero));
+			
 			for (TagArea t : tags) {
 				if (t.getTagType().equalsIgnoreCase("hero")) {
 					int id = HeroResource.getHeroIdByName(t.getAttribute("name"));					

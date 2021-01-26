@@ -16,7 +16,6 @@ import tactical.game.constants.Direction;
 import tactical.game.input.UserInput;
 import tactical.game.manager.TurnManager;
 import tactical.game.menu.Menu;
-import tactical.game.menu.Menu.MenuUpdate;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.trigger.Trigger;
 import tactical.game.ui.Button;
@@ -47,7 +46,7 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 	
 	private Button setDisplayAttributes = new Button(15, 600, 140, 20, "Display Options");
 	
-	private Button healHeroesOnTurn = new Button(270, 115, 140, 20, (TurnManager.healOnTurn ? "Disable" : "Enable") + " Heal Heroes on Turn");
+	private Button healHeroesOnTurn = new Button(270, 115, 180, 20, (TurnManager.healOnTurn ? "Disable" : "Enable") + " Heal Heroes on Turn");
 	private Button debugAI = new Button(270, 85, 140, 20, (TurnManager.enableAIDebug ? "Disable" : "Enable") + " AI Debug");
 	private Button chooseSprite = new Button(270, 55, 140, 20, "Choose Sprite");
 	private Button showQuests = new Button(270, 25, 200, 20, "Show Completed Quests");
@@ -60,9 +59,10 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 		super(PanelType.PANEL_DEBUG);
 		this.stateInfo = stateInfo;
 		
-		this.triggerList = new ListUI("Triggers", 5, 
-				new ArrayList<String>(stateInfo.getResourceManager().getTriggers().stream().map(t -> t.getName()).collect(Collectors.toList())),
-				22);
+		this.triggerList = new ListUI(stateInfo.getPaddedGameContainer(), "Triggers", 5, 
+				new ArrayList<String>(stateInfo.getResourceManager().getTriggers().stream().map(t -> t.getName()).
+						filter(s -> !s.startsWith("Door Trigger 5") && !s.startsWith("SearchChest5")).collect(Collectors.toList())),
+				22, true);
 		this.triggerList.setListener(this);
 		
 
@@ -73,100 +73,9 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 		if (stateInfo.getPaddedGameContainer().getInput().isKeyDown(Input.KEY_ENTER))
 		{
 			stateInfo.getCamera().centerOnSprite(stateInfo.getCurrentSprite(), stateInfo.getCurrentMap());
+			this.dispose();
 			return MenuUpdate.MENU_CLOSE;
 		}
-		/*
-		textField.setFocus(true);
-		
-		if (stateInfo.getFCGameContainer().getInput().isKeyDown(Input.KEY_ENTER))
-		{
-			String text = textField.getText();
-			String[] splitText = text.split(" ");
-			if (splitText[0].equalsIgnoreCase("loadmap"))
-			{
-				stateInfo.getPersistentStateInfo().loadMap(splitText[1], splitText[2]);
-			}
-			else if (splitText[0].equalsIgnoreCase("loadbattle"))
-			{
-				stateInfo.getPersistentStateInfo().loadBattle(splitText[1], splitText[2], (splitText.length > 2 ? Integer.parseInt(splitText[3]) : 0));
-			}
-			else if (splitText[0].equalsIgnoreCase("loadcin"))
-			{
-				if (splitText.length == 2)
-					stateInfo.getPersistentStateInfo().loadCinematic(splitText[1], 0);
-				else
-					stateInfo.getPersistentStateInfo().loadCinematic(splitText[1], Integer.parseInt(splitText[2]));
-			}
-			else if (splitText[0].equalsIgnoreCase("printmusic"))
-			{
-				
-			}
-			else if (splitText[0].equalsIgnoreCase("heal"))
-			{
-				for (CombatSprite cs : stateInfo.getHeroesInState())
-				{
-					cs.setCurrentHP(cs.getMaxHP());
-					cs.setCurrentMP(cs.getMaxMP());
-				}
-			}
-			else if (splitText[0].equalsIgnoreCase("movespeed"))
-			{
-				MovingSprite.MOVE_SPEED = Integer.parseInt(splitText[1]);
-			}
-			else if (splitText[0].equalsIgnoreCase("moveanim"))
-			{
-				MovingSprite.WALK_ANIMATION_SPEED = Integer.parseInt(splitText[1]);
-			}
-			else if (splitText[0].equalsIgnoreCase("standanim"))
-			{
-				MovingSprite.STAND_ANIMATION_SPEED = Integer.parseInt(splitText[1]);
-			}
-			else if (splitText[0].equalsIgnoreCase("loadscripts"))
-			{
-				GlobalPythonFactory.intialize();
-			}
-			else if (splitText[0].equalsIgnoreCase("play"))
-			{
-				stateInfo.sendMessage(new AudioMessage(MessageType.PLAY_MUSIC, splitText[1], 1, true));
-			}
-			else if (splitText[0].equalsIgnoreCase("gainlevel"))
-			{
-				for (CombatSprite cs : stateInfo.getHeroesInState())
-					cs.setExp(100);
-			}
-			else if (splitText[0].equalsIgnoreCase("setone"))
-			{
-				for (CombatSprite cs : stateInfo.getHeroesInState())
-					cs.setCurrentHP(1);
-			}
-			else if (splitText[0].equalsIgnoreCase("shadow"))
-			{
-				AnimatedSprite.SHADOW_OFFSET = Integer.parseInt(splitText[1]);
-			}
-			else if (splitText[0].equalsIgnoreCase("framerate"))
-			{
-				if (splitText.length > 1)
-				{
-					try
-					{
-						gc.setTargetFrameRate(Integer.parseInt(splitText[1]));
-					}
-					catch (NumberFormatException nfe)
-					{
-
-					}
-				}
-			}
-			else if (splitText[0].equalsIgnoreCase("mute"))
-			{
-				stateInfo.sendMessage(MessageType.PAUSE_MUSIC);
-				CommRPG.MUTE_MUSIC = true;
-			}
-
-			textField.deactivate();
-			return MenuUpdate.MENU_CLOSE;
-		}
-		*/
 
 		return MenuUpdate.MENU_NO_ACTION;
 	}
@@ -307,9 +216,11 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 			if (showQuests.handleUserInput(x, y, leftClick)) {
 				state = DebugMenuState.SHOW_QUESTS;
 				triggerStatus = null;
-				questList = new ListUI("Completed Quests", 5, 
+				if (questList != null)
+					questList.unregisterListeners(stateInfo.getPaddedGameContainer());
+				questList = new ListUI(stateInfo.getPaddedGameContainer(), "Completed Quests", 5, 
 				new ArrayList<String>(stateInfo.getClientProgress().getQuestsCompleted()),
-				22);
+				22, true);
 				timerReset();
 			}
 		}
@@ -331,13 +242,13 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 		graphics.scale(1.0f / PaddedGameContainer.GAME_SCREEN_SCALE, 1.0f / PaddedGameContainer.GAME_SCREEN_SCALE);
 		if (state == DebugMenuState.CHOOSE_TRIGGER || state == DebugMenuState.SPRITE_OPTIONS) {
 			graphics.fillRect(0, 0, gc.getWidth() / 2, gc.getHeight());
-			triggerList.render(graphics);
+			triggerList.render(stateInfo.getPaddedGameContainer(), graphics);
 			setDisplayAttributes.render(graphics);
 			graphics.drawString("Vsync: " + gc.isVSyncRequested() + " Frame Rate: " + gc.getTargetFrameRate(), 15, 625);
 		}
 		else if (state == DebugMenuState.SHOW_QUESTS) {
 			graphics.fillRect(0, 0, gc.getWidth() / 2, gc.getHeight());
-			questList.render(graphics);
+			questList.render(stateInfo.getPaddedGameContainer(), graphics);
 		}
 		
 		int mouseBounds = 20;
@@ -404,4 +315,13 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 		}
 		return true;
 	}
+
+	@Override
+	public void dispose() {
+		triggerList.unregisterListeners(stateInfo.getPaddedGameContainer());
+		if (questList != null)
+			questList.unregisterListeners(stateInfo.getPaddedGameContainer());
+	}
+	
+	
 }

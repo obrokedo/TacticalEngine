@@ -37,18 +37,12 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 	private static final Color BG_COLOR = new Color(172, 205, 183);
 	private SpellDefinition spell = null;
 	private ParticleSystem rainParticleSystem = null;
-	private TacticalGame commRPG;
+	private GameContainer container = null;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
-			throws SlickException {
-		animationFileSelector = new ResourceSelector("Animations", 0, true, ResourceManager.ANIMATIONS_FOLDER, ResourceManager.ANIMATIONS_EXTENSION, container);
-		animationFileSelector.setListener(this);
-		weaponSelector = new ResourceSelector(
-				"Weapons", 300, true, ResourceManager.WEAPONS_FOLDER, ResourceManager.WEAPONS_EXTENSION, container);
-		weaponSelector.addResourceFromDir(
-				ResourceManager.WEAPONS_ANIMATIONS_FOLDER, ResourceManager.ANIMATIONS_EXTENSION, container);
-		weaponSelector.setListener(this);
+			throws SlickException {		
+		this.container = container;
 		//spellSelector = new ResourceSelector("Spells",  0,  false, "scripts/Spellz", ".py", container);
 		//spellSelector.setListener(this);
 	}
@@ -57,7 +51,16 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 	public void enter(GameContainer container, StateBasedGame game)
 			throws SlickException {
 		super.enter(container, game);
-		commRPG = (TacticalGame) game;
+		container.getInput().removeAllListeners();
+		this.animationSelector = null;
+		animationFileSelector = new ResourceSelector("Animations", 0, true, ResourceManager.ANIMATIONS_FOLDER, ResourceManager.ANIMATIONS_EXTENSION, container);
+		animationFileSelector.setListener(this);
+		weaponSelector = new ResourceSelector(
+				"Weapons", 300, true, ResourceManager.WEAPONS_FOLDER, ResourceManager.WEAPONS_EXTENSION, container);
+		weaponSelector.addResourceFromDir(
+				ResourceManager.WEAPONS_ANIMATIONS_FOLDER, ResourceManager.ANIMATIONS_EXTENSION, container);
+		weaponSelector.setListener(this);
+		
 		frm = new ResourceManager();
 		try {
 			frm.addResource(ResourceManager.ANIMATIONS_FOLDER_IDENTIFIER + "," + ResourceManager.ANIMATIONS_FOLDER, TacticalGame.ENGINE_CONFIGURATIOR);
@@ -95,15 +98,15 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 		g.resetTransform();
 		
 		g.setColor(Color.black);
-		animationFileSelector.render(g);
+		animationFileSelector.render(container, g);
 		g.setColor(Color.black);
-		weaponSelector.render(g);
+		weaponSelector.render(container, g);
 		g.setColor(Color.black);
 		//spellSelector.render(g);
 
 		g.setColor(Color.black);
 		if (animationSelector != null)
-			animationSelector.render(g);
+			animationSelector.render(container, g);
 
 		g.setColor(Color.black);
 
@@ -168,7 +171,11 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 						TacticalGame.ENGINE_CONFIGURATIOR);
 				currentAnimation = new AnimationWrapper(frm.getSpriteAnimation(selectedItem));
 				ArrayList<String> animNames = new ArrayList<>(currentAnimation.getAnimations());
-				animationSelector = new ListUI("Anim", 650, animNames);
+				
+				if (animationSelector != null)
+					animationSelector.unregisterListeners(container);
+				
+				animationSelector = new ListUI(container, "Anim", 650, animNames);
 				animationSelector.setListener(this);
 				weaponSelector.setSelectedIndex(-1);
 			} catch (Throwable t ) {

@@ -23,7 +23,6 @@ import tactical.engine.state.devel.DevelAnimationViewState;
 import tactical.engine.state.devel.DevelBattleAnimViewState;
 import tactical.engine.state.devel.DevelMenuState;
 import tactical.game.Camera;
-import tactical.game.dev.DevParams;
 import tactical.game.persist.ClientProfile;
 import tactical.game.persist.ClientProgress;
 import tactical.game.ui.PaddedGameContainer;
@@ -312,5 +311,11 @@ public abstract class TacticalGame extends StateBasedGame   {
 	
 	public void setTextParser(TextParser parser) {
 		this.TEXT_PARSER = parser;
+	}
+	
+	public static boolean testD100(int percent, String roll) {
+		int random = RANDOM.nextInt(100);
+		System.out.println("Rolled " + random + " vs " + percent + "% for " + roll);
+		return random <= percent;
 	}
 }

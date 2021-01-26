@@ -34,6 +34,11 @@ public class RectUI extends Rectangle
 		g.setColor(color);
 		g.draw(this);
 	}
+	
+	public void drawRoundRect(Graphics g, Color color, int cornerRadius) {
+		g.setColor(color);
+		g.drawRoundRect(x, y, width, height, cornerRadius);
+	}
 
 	public void drawPanel(Graphics g)
 	{

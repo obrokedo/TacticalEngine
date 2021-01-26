@@ -1,7 +1,6 @@
 package tactical.engine.state.devel;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -28,12 +27,6 @@ public class TestState extends LoadableGameState
 	private int rangedDelta = 0;
 	private Animation targetAnim;
 	private SpriteAnims sas;
-
-	@Override
-	public void init(GameContainer container, StateBasedGame game)
-			throws SlickException {
-		gc = (PaddedGameContainer) container;
-	}
 
 	@Override
 	public void doRender(PaddedGameContainer container, StateBasedGame game, Graphics g)

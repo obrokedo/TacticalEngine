@@ -1,6 +1,5 @@
 package tactical.engine.state.devel;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,11 +81,9 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		super.init(container, game);
 		this.game = game;
-		this.gc = container;
-		// gameSetup(game, gc);
-		// mapSelector = new ResourceSelector("Select Map", 0, true, "map", ".tmx", container);
-		// mapSelector.setListener(this);
+
 		textSelector = new ResourceSelector("Select Text", 0, true, "mapdata", "", container);
 		textSelector.setListener(this);
 		textSelector.setIgnoreClicksInUpdate(true);
@@ -152,8 +149,13 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		SpellResource.initSpells(null);
 		this.progressionFrame.init();
 		initializeBulkLoader();
-		gc.getInput().removeAllKeyListeners();
-		gc.getInput().addKeyListener(this);
+		container.getInput().removeAllListeners();
+		container.getInput().addKeyListener(this);
+		container.getInput().addMouseListener(this);
+		
+		
+		textSelector.registerListeners(container);
+		loadoutSelector.registerListeners(container);		
 	}
 
 	protected void initializeBulkLoader() {
@@ -192,12 +194,12 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				170, 15);
 		g.setColor(Color.white);
 		
-		textSelector.render(g);
+		textSelector.render(container, g);
 
 		if (entranceSelector != null)
-			entranceSelector.render(g);
+			entranceSelector.render(container, g);
 		
-		loadoutSelector.render(g);
+		loadoutSelector.render(container, g);
 
 		loadTownButton.render(g);
 		loadBattleButton.render(g);
@@ -276,7 +278,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo("/menu/MainMenu", false, true,
 						new ResourceManager(),
 							(LoadableGameState) game.getState(TacticalGame.STATE_GAME_MENU),
-								new LoadingScreenRenderer(this.gc));
+								new LoadingScreenRenderer(this.container));
 	
 				game.enterState(TacticalGame.STATE_GAME_LOADING);
 			}
@@ -315,7 +317,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo("eriumjail", true, true,
 						new ResourceManager(),
 							(LoadableGameState) game.getState(TacticalGame.STATE_GAME_BATTLE_ANIM_VIEW),
-								new LoadingScreenRenderer(gc));
+								new LoadingScreenRenderer(container));
 	
 				game.enterState(TacticalGame.STATE_GAME_LOADING);
 			}
@@ -324,7 +326,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			{
 				try {
 					
-					((PaddedGameContainer) this.gc).toggleFullScreen();
+					((PaddedGameContainer) this.container).toggleFullScreen();
 				} catch (SlickException e) {
 					Log.error("Unable to toggle fullscreen mode: " + e.getMessage());
 					alertPanel = new AlertPanel("Unable to toggle fullscreen mode: " + e.getMessage());
@@ -400,23 +402,22 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					// a use case for that now
 					persistentStateInfo.setResourceManager(mainGameFCRM);
 					((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
-					
+					applyDevParams();
 					start(LoadTypeEnum.TOWN, textSelector.getSelectedResource(), entranceSelector.getSelectedResource());
 				}
 				if (loadCinButton.handleUserInput(x, y, true)) {
 					String id = JOptionPane.showInputDialog("Enter the cinematic id (a number) to run");
 					try {
-						int iId = Integer.parseInt(id);
-						
+						int iId = Integer.parseInt(id);	
+						applyDevParams();
 						startCinematic(textSelector.getSelectedResource(), iId);
 					} catch (NumberFormatException e) {
 						alertPanel = new AlertPanel("The value must be a number: " + e.getMessage());
 					}
 					
 				}
-				if (loadBattleButton.handleUserInput(x, y, true)) {
-					if (loadoutSelector.getSelectedResource() != null)	
-						setDevParamStartBattle();
+				if (loadBattleButton.handleUserInput(x, y, true)) {					
+					applyDevParams();
 					startBattle();
 				}
 				
@@ -427,9 +428,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		}
 	}
 	
-	private boolean setDevParamStartBattle() {
-		DevParams.parseDevParams(loadoutSelector.getSelectedResource(), persistentStateInfo.getClientProfile());
-		return startBattle();
+	private void applyDevParams() {
+		if (loadoutSelector.getSelectedResource() != null)	
+			DevParams.parseDevParams(loadoutSelector.getSelectedResource(), persistentStateInfo.getClientProfile(), 
+				((TacticalGame) game).getEngineConfigurator().getConfigurationValues().getStartingHeroIds());
 	}
 	
 	private boolean startBattle() {
@@ -462,7 +464,6 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	public boolean resourceSelected(String selectedItem,
 			ListUI parentSelector) {
 		
-		BufferedReader br;
 		try {			
 			String firstLine = ResourceManager.readAllLines("/mapdata/" + selectedItem).get(1);			
 			
@@ -491,7 +492,11 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				if (mo.getKey().equalsIgnoreCase("start"))
 					entrances.add(mo.getParam("exit"));
 
-			entranceSelector = new ListUI("Select Entrance", (((PaddedGameContainer) gc).getPaddedWidth() - 150) / 2, entrances);
+			if (entranceSelector != null) {
+				entranceSelector.unregisterListeners(container);
+			}
+			
+			entranceSelector = new ListUI(container, "Select Entrance", (((PaddedGameContainer) container).getPaddedWidth() - 150) / 2, entrances);
 			entranceSelector.setIgnoreClicksInUpdate(true);
 			loadCinButton.setEnabled(true);
 			return true;
@@ -560,4 +565,11 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			return MenuUpdate.MENU_NO_ACTION;
 		}		
 	}
+
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		container.getInput().removeAllListeners();
+	}
+	
+	
 }

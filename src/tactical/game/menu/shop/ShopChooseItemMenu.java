@@ -51,11 +51,12 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 	}
 
 	@Override
-	protected void itemSelected(StateInfo stateInfo) {
+	protected boolean itemSelected(StateInfo stateInfo) {
 		if (isSellMenu)
 			promptSellItem(stateInfo);	
 		else
 			promptRepairItem(stateInfo);
+		return false;
 	}
 
 	private void promptSellItem(StateInfo stateInfo) {

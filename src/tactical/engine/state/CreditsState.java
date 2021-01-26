@@ -17,12 +17,6 @@ public class CreditsState extends LoadableGameState{
 	private float scrollY = 750;
 
 	@Override
-	public void init(GameContainer arg0, StateBasedGame arg1) throws SlickException {
-	}
-	
-	
-
-	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		
 		super.enter(container, game);

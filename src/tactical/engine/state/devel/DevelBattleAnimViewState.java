@@ -11,9 +11,6 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.gui.AbstractComponent;
-import org.newdawn.slick.gui.ComponentListener;
-import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
@@ -24,7 +21,6 @@ import tactical.game.battle.BattleResults;
 import tactical.game.battle.command.BattleCommand;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.battle.spell.SpellDefinition;
-import tactical.game.hudmenu.Panel;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
 import tactical.game.menu.Menu;
@@ -39,7 +35,7 @@ import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.ResourceManager;
 
-public class DevelBattleAnimViewState extends LoadableGameState implements ComponentListener, ResourceSelectorListener {
+public class DevelBattleAnimViewState extends LoadableGameState implements ResourceSelectorListener {
 	private WizardStep wizardIndex;
 	private ListUI currentList;
 	
@@ -73,8 +69,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 	private String attackerWeapon = null;
 	private String defenderWeapon = null;	
 	
-	private TextField textField = null;
-	private String lastFilter = "";
+	private GameContainer container;
 	
 	public DevelBattleAnimViewState() {
 		wizardIndex = null;
@@ -84,8 +79,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		currentList = null;
-		textField = new TextField(container, container.getDefaultFont(), 315, 430, 100, 20);		
-		textField.addListener(this);
+		this.container = container;
 	}
 
 	private void setupStep() {
@@ -139,9 +133,9 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 					}
 					break;
 			}
-			if (options.size() > 0) {				
-				textField.setText("");
-				currentList = new ListUI(selectText, 375, options);
+			if (options.size() > 0) {		
+				container.getInput().removeAllListeners();
+				currentList = new ListUI(container, selectText, 375, options);
 				currentList.setListener(this);
 			}
 		} catch (Exception e) {
@@ -303,6 +297,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		super.init(container, game);
 		this.game = game;
 	}
 
@@ -319,15 +314,9 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 			g.setColor(Color.black);
 			g.drawString("Right click to cancel", 315, 465);
 			g.drawString("Search (Press enter)", 315, 410);
-			currentList.render(g);
+			currentList.render(container, g);
 			
 			g.setColor(Color.white);
-			
-			textField.setFocus(true);
-			textField.setBorderColor(null);
-			textField.setBackgroundColor(Color.blue);
-			textField.setTextColor(Color.white);
-			textField.render(container, g);
 		}
 		
 		startButton.setX(400);
@@ -487,13 +476,5 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Compo
 	@Override
 	public void exceptionInState() {
 				
-	}
-	
-
-	@Override
-	public void componentActivated(AbstractComponent source) {
-		if (currentList != null) {
-			currentList.filter(textField.getText());
-		}
 	}
 }

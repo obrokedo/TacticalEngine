@@ -60,6 +60,7 @@ public class HeroesStatMenu extends Menu
 				heroes.add(cs);
 		}
 		updateCurrentHero();
+		this.listener = listener;
 	}
 	
 	protected HeroesStatMenu(PanelType panelType, Iterable<CombatSprite> chooseableSprites, MenuListener listener) {
@@ -90,9 +91,10 @@ public class HeroesStatMenu extends Menu
 
 
 		graphics.setColor(Color.white);
-		graphics.drawRect(25,
+		graphics.setLineWidth(2);
+		graphics.drawRoundRect(25,
 				yOffsetBot + (134 + 15 * Math.min(selectedIndex, sizeMax - 1)),
-				269, 15);
+				269, 15, 3);
 		StringUtils.drawString("NAME", 27,
 				yOffsetBot + 113, graphics);
 
@@ -121,36 +123,37 @@ public class HeroesStatMenu extends Menu
 
 		
 		for (int count = (selectedIndex < sizeMax ? 0 : selectedIndex - sizeMax + 1); count < Math.min(heroes.size(),  (selectedIndex < sizeMax ? sizeMax : selectedIndex + 1)); count++)
-		{						
+		{				
+			int drawY = yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1))));
 			StringUtils.drawString(heroes.get(count).getName(),
 					27,
-					yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+					drawY, graphics);
 
 			if (view == VIEW_LEVEL)
 			{
 				StringUtils.drawString(heroes.get(count).getLevel() + "", 127,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 				StringUtils.drawString(heroes.get(count).getExp() + "", 227,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 			}
 			else if (view == VIEW_STATS)
 			{
 				StringUtils.drawString(heroes.get(count).getCurrentHP() + "", 92,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 				StringUtils.drawString(heroes.get(count).getCurrentMP() + "", 127,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 				StringUtils.drawString(heroes.get(count).getCurrentAttack() + "", 162,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 				StringUtils.drawString(heroes.get(count).getCurrentDefense() + "", 197,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 				StringUtils.drawString(heroes.get(count).getCurrentSpeed() + "", 232,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 				StringUtils.drawString(heroes.get(count).getCurrentMove() + "", 267,
-						yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1)))), graphics);
+						drawY, graphics);
 			}
 			else
 			{
-				renderMenuItem(graphics, count);
+				renderMenuItem(graphics, count, drawY);
 			}
 		}
 
@@ -257,7 +260,7 @@ public class HeroesStatMenu extends Menu
 		
 	}
 
-	protected void renderMenuItem(Graphics graphics, int index)
+	protected void renderMenuItem(Graphics graphics, int index, int drawY)
 	{
 		
 	}

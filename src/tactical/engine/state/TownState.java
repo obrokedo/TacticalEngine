@@ -31,7 +31,6 @@ import tactical.game.sprite.Sprite;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.ResourceManager;
-import tactical.map.MapObject;
 import tactical.renderer.MenuRenderer;
 import tactical.renderer.PanelRendererManager;
 import tactical.renderer.SpriteRenderer;
@@ -87,13 +86,6 @@ public class TownState extends LoadableGameState
 		stateInfo.registerManager(cinematicManager);
 		this.soundManager = new SoundManager();
 		stateInfo.registerManager(soundManager);
-	}
-
-	@Override
-	public void init(GameContainer container, StateBasedGame game)
-			throws SlickException
-	{
-
 	}
 
 	/**
@@ -205,6 +197,7 @@ public class TownState extends LoadableGameState
 				else if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) && !stateInfo.areMenusDisplayed())
 				{
 					stateInfo.sendMessage(new Message(MessageType.SHOW_TOWN_MENU));
+					stateInfo.setInputDelay(System.currentTimeMillis() + 200);
 				}
 				// Key for debugging menus
 				else if (TacticalGame.DEV_MODE_ENABLED && container.getInput().isKeyDown(Input.KEY_Q))

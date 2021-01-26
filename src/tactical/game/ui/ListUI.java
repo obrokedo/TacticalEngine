@@ -8,11 +8,14 @@ import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.gui.AbstractComponent;
+import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.TextField;
 
 import tactical.game.Timer;
 import tactical.utils.StringUtils;
 
-public class ListUI {
+public class ListUI implements ComponentListener {
 	protected ArrayList<Button> resourceFileButtons = new ArrayList<Button>();
 	protected ArrayList<String> values;
 	protected int longestNameWidth = 0;
@@ -29,18 +32,27 @@ public class ListUI {
 	private Button upButton, downButton;
 	private Font font;
 	private boolean ignoreClicksInUpdate = false;
+	private TextField textField;
+	private String lastFilter = "";
 	
-	public ListUI(String title)
+	protected ListUI() {}
+	
+	public ListUI(GameContainer container, String title)
 	{
-		this(title, 0, new ArrayList<String>());
+		this(container, title, 0, new ArrayList<String>());
 	}
 	
-	public ListUI(String title, int drawX, ArrayList<String> values)
+	public ListUI(GameContainer container, String title, boolean setupTextField)
 	{
-		this(title, drawX, values, 15);
+		this(container, title, 0, new ArrayList<String>(), 15, setupTextField);
+	}
+	
+	public ListUI(GameContainer container, String title, int drawX, ArrayList<String> values)
+	{
+		this(container, title, drawX, values, 15, true);
 	}
 
-	public ListUI(String title, int drawX, ArrayList<String> values, int listLength)
+	public ListUI(GameContainer container, String title, int drawX, ArrayList<String> values, int listLength, boolean setupTextField)
 	{
 		longestNameWidth = 150;
 		this.font = StringUtils.loadFont("Times New Roman", 14, false, false);
@@ -60,6 +72,18 @@ public class ListUI {
 		this.layoutItems();
 		this.setupDirectionalButtons();
 		
+		if (setupTextField)
+			initTextField(container);
+	}
+	
+	protected void initTextField(GameContainer container) {		
+		System.out.println("--------------- INIT TEXT FIELD " + this);
+		this.textField = new TextField(container, container.getDefaultFont(), drawX + 50,  Math.min(listLength, values.size()) * buttonHeight + drawY + 25 +  
+					Math.min(listLength, values.size()) * itemSpacing, 100, 20);
+		this.textField.setBackgroundColor(Color.white);
+		this.textField.setTextColor(Color.black);
+		this.textField.setBorderColor(Color.blue);
+		this.textField.addListener(this);
 	}
 	
 	protected void setupDirectionalButtons() {
@@ -73,7 +97,7 @@ public class ListUI {
 	}
 
 
-	public void render(Graphics g)
+	public void render(GameContainer container, Graphics g)
 	{
 		g.setFont(font);
 		if (!minimized)
@@ -92,6 +116,8 @@ public class ListUI {
 				downButton.render(g);
 			}
 			
+			textField.render(container, g);
+			g.drawString("Search", textField.getX()- 50, textField.getY());
 		}
 		else
 		{
@@ -106,7 +132,7 @@ public class ListUI {
 		g.setColor(Color.white);
 	}
 	
-	public void update(GameContainer container, int delta) {
+	public void update(GameContainer container, int delta) {		
 		int x = container.getInput().getMouseX();
 		int y = container.getInput().getMouseY();
 		this.clickCooldown.update(delta);
@@ -115,6 +141,12 @@ public class ListUI {
 				clickCooldown.perform() && !ignoreClicksInUpdate;
 		
 		handleInput(x, y, clicked);
+		
+		String fil = textField.getText();
+		if (!fil.equalsIgnoreCase(lastFilter)) {
+			this.filter(textField.getText());
+			lastFilter = fil;
+		}
 	}
 
 	public void handleInput(int x, int y, boolean clicked) {
@@ -160,7 +192,7 @@ public class ListUI {
 			upButton.setVisible(menuIndex > 0);
 			downButton.setVisible(menuIndex < resourceFileButtons.size() - listLength);
 			this.layoutItems();
-		}
+		}		
 	}
 
 	public String getSelectedResource()
@@ -225,4 +257,21 @@ public class ListUI {
 	public void setIgnoreClicksInUpdate(boolean ignoreClicksInUpdate) {
 		this.ignoreClicksInUpdate = ignoreClicksInUpdate;
 	}	
+	
+	public void registerListeners(GameContainer container) {
+		container.getInput().addKeyListener(textField);
+		container.getInput().addMouseListener(textField);
+		container.getInput().addControllerListener(textField);
+	}
+	
+	public void unregisterListeners(GameContainer container) {
+		container.getInput().removeKeyListener(textField);
+		container.getInput().removeMouseListener(textField);
+		container.getInput().removeControllerListener(textField);
+	}
+
+	@Override
+	public void componentActivated(AbstractComponent source) {
+		
+	}
 }

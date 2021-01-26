@@ -416,8 +416,8 @@ public class BattleResults implements Serializable
 		{
 			int distanceApart = Math.abs(attacker.getTileX() - target.getTileX()) + Math.abs(attacker.getTileY() - target.getTileY());
 			// Counter Attack
-			if (distanceApart == 1 && target.getAttackRange().isInDistance(1) &&
-					jBattleFunctions.getCounterPercent(attacker, target) >= TacticalGame.RANDOM.nextInt(100))
+			if (distanceApart == 1 && target.getAttackRange().isInDistance(1) && 
+					TacticalGame.testD100(jBattleFunctions.getCounterPercent(attacker, target), "counter"))
 			{
 				br.text.add(text);
 				text = addAttack(target, attacker, br, fcrm, jBattleFunctions, true);
@@ -450,7 +450,7 @@ public class BattleResults implements Serializable
 			if (br.remainingHP.size() == 1 || br.remainingHP.get(1) > 0)
 			{
 				// Double Attack
-				if (jBattleFunctions.getDoublePercent(attacker, target) >= TacticalGame.RANDOM.nextInt(100))
+				if (TacticalGame.testD100(jBattleFunctions.getDoublePercent(attacker, target), "double"))
 				{
 					br.text.add(text);
 					text = addAttack(attacker, target, br, fcrm, jBattleFunctions, false);
@@ -489,7 +489,7 @@ public class BattleResults implements Serializable
 		// TODO This needs to take into effect other hitting modifiers.
 		int dodgeChance = jBattleFunctions.getDodgePercent(attacker, target);
 
-		if (TacticalGame.RANDOM.nextInt(100) < dodgeChance)
+		if (TacticalGame.testD100(dodgeChance, "dodge"))
 		{
 			br.hpDamage.add(0);
 			br.mpDamage.add(0);
@@ -510,7 +510,7 @@ public class BattleResults implements Serializable
 					target.getTileX(), target.getTileY())) / 100.0f;
 
 			boolean critted = false;
-			if (jBattleFunctions.getCritPercent(attacker, target) >= TacticalGame.RANDOM.nextInt(100))
+			if (TacticalGame.testD100(jBattleFunctions.getCritPercent(attacker, target), "crit"))
 				critted = true;
 
 			br.critted.add(critted);

@@ -37,8 +37,9 @@ public class UIDebugMenu
 	private UIDebugState currentState;
 	private Timer clickCooldown = new Timer(200);
 	private ListUI listUI = null;
+	private GameContainer container;
 	
-	public UIDebugMenu()
+	public UIDebugMenu(GameContainer container)
 	{
 		this.currentState = UIDebugState.MAIN_MENU;
 		
@@ -59,6 +60,7 @@ public class UIDebugMenu
 		rootButtons.add(new Button(10, 130, 80, 10, "Mute", true));
 		
 		rootButtons.add(new Button(10, 150, 80, 10, "Reload Scripts", true));
+		this.container = container;
 	}
 	
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
@@ -92,7 +94,7 @@ public class UIDebugMenu
 			backButton.render(g);
 		
 		if (listUI != null)
-			listUI.render(g);
+			listUI.render(container, g);
 	}
 	
 	private void handleButtonPush(String buttonPushed, GameContainer container) {

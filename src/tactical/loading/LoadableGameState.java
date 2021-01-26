@@ -21,12 +21,13 @@ public abstract class LoadableGameState extends BasicGameState
 	
 	protected boolean paused = false;
 	
-	protected UIDebugMenu uiDebugMenu = new UIDebugMenu();
+	protected UIDebugMenu uiDebugMenu = null;
 	
 	protected Menu defaultPauseMenu;
 	protected Menu pauseMenu = null;
 	
 	protected float updateSpeed = 1.0f;
+	protected GameContainer container;
 
 	public abstract void stateLoaded(ResourceManager resourceManager);
 
@@ -38,11 +39,19 @@ public abstract class LoadableGameState extends BasicGameState
 	
 	private int inputTimer = 0;
 	
+	
+	
+	@Override
+	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		 uiDebugMenu = new UIDebugMenu(container);
+		 this.container = container;
+	}
+
 	public boolean isPaused(GameContainer gc) {
 		if (gc.getInput().isKeyDown(Input.KEY_ENTER))
-		{
-			
+		{			
 			if (paused) {
+				pauseMenu.dispose();
 				pauseMenuClosed();
 			}
 			else {

@@ -103,4 +103,9 @@ public class FileLogger extends DefaultLogSystem
 			JOptionPane.showMessageDialog(null, "An error occurred trying to write to the error log:" + e.getMessage(), "Error writing to error log", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	public void warn(String message, Throwable e) {
+		warn(message);
+		// e.printStackTrace(out);
+	}
 }

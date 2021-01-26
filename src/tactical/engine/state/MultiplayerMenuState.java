@@ -49,8 +49,8 @@ public class MultiplayerMenuState extends MenuState implements PacketHandler, St
 	@Override
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
+		super.init(container, game);
 		this.game = game;
-		this.gc = container;
 		this.players = new ArrayList<>();
 		availableMenuItems = new ArrayList<>();
 		availableMenuItems.add(0);

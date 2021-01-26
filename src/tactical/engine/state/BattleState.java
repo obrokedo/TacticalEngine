@@ -86,13 +86,6 @@ public class BattleState extends LoadableGameState
 		stateInfo.registerManager(cinematicManager);
 	}
 
-	@Override
-	public void init(GameContainer container, StateBasedGame game)
-			throws SlickException
-	{
-
-	}
-
 	/**
 	 * Initializes this state, this only gets called when coming
 	 * from a loading state

@@ -71,6 +71,11 @@ public class ClientProfile implements Serializable
 		if (this.inBattleHeroIds.size() < maxHeros)
 			this.inBattleHeroIds.add(hero.getId());
 	}
+	
+	public void removeAllHeroes() {
+		heroes.clear();
+		inBattleHeroIds.clear();
+	}
 
 	public ArrayList<CombatSprite> getHeroes() {
 		ArrayList<CombatSprite> hs = new ArrayList<>();
