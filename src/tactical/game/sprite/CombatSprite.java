@@ -405,6 +405,10 @@ public class CombatSprite extends AnimatedSprite
 
 	public boolean isEquippable(EquippableItem item)
 	{
+		if (item.isPromotedOnly() && !isPromoted)
+			return false;
+			
+		
 		if (EquippableItem.TYPE_WEAPON == item.getItemType())
 		{
 			for (int i = 0; i < usuableWeapons.length; i++)

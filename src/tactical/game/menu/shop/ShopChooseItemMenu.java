@@ -60,7 +60,7 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 	}
 
 	private void promptSellItem(StateInfo stateInfo) {
-		Item item = selectedHero.getItem(selectingItemIndex);
+		Item item = items.get(selectingItemIndex);
 		String sellText = null;
 		if (item.isDeal()) {
 			sellText = menuConfig.getShopPromptSellDealText(item.getName(), (int) (item.getCost() * shopMessage.getSellPercent()) + "");
@@ -71,7 +71,7 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 	}
 	
 	private void promptRepairItem(StateInfo stateInfo) {
-		Item item = selectedHero.getItem(selectingItemIndex);
+		Item item = items.get(selectingItemIndex);
 		switch (item.getDurability()) {
 		case BROKEN:
 			
@@ -119,7 +119,7 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 	}
 
 	private void sellItem(StateInfo stateInfo) {
-		Item item = selectedHero.getItem(selectingItemIndex);
+		Item item = items.get(selectingItemIndex);
 		if (selectedHero.getEquipped().get(selectingItemIndex)) {
 			selectedHero.unequipItem((EquippableItem) item);
 		}

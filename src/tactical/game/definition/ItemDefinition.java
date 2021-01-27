@@ -99,7 +99,8 @@ public class ItemDefinition
 							Integer.parseInt(childTagArea.getAttribute("range")),
 							Integer.parseInt(childTagArea.getAttribute("area")),
 							childTagArea.getAttribute("text"),
-							Boolean.parseBoolean(childTagArea.getAttribute("singleuse")));
+							Boolean.parseBoolean(childTagArea.getAttribute("singleuse")),
+							Boolean.parseBoolean(childTagArea.getAttribute("useoutsidebattle")));
 					useDamagesItem = Boolean.parseBoolean(childTagArea.getAttribute("damageitem"));
 				}
 				else if (childTagArea.getTagType().equalsIgnoreCase("usespell"))
@@ -119,6 +120,7 @@ public class ItemDefinition
 			id.id = Integer.parseInt(tagArea.getAttribute("id"));
 			boolean isDeal = Boolean.parseBoolean(tagArea.getAttribute("isdeal"));
 			boolean isDroppable = Boolean.parseBoolean(tagArea.getAttribute("droppable"));
+			boolean promoteOnly = Boolean.parseBoolean(tagArea.getAttribute("promoteonly"));
 			if (equippable)
 				id.item = new EquippableItem(tagArea.getAttribute("name"), Integer.parseInt(tagArea.getAttribute("cost")), tagArea.getAttribute("description"), 
 						itemUse, spellUse, useDamagesItem, isDeal, isDroppable, id.id, 
@@ -128,7 +130,7 @@ public class ItemDefinition
 						minMPRegen, maxMPRegen, effectLevel, effectChance, 
 						fireAffinity, elecAffinity, coldAffin, darkAffin, waterAffin, 
 						earthAffin, windAffin, lightAffin, ohko, ohkoOnCrit, range, 
-						isCustomEffect, weaponImage, weaponAnim, effectName, damageAffinity);
+						isCustomEffect, promoteOnly, weaponImage, weaponAnim, effectName, damageAffinity);
 			else {
 				id.item = new Item(tagArea.getAttribute("name"), 
 						Integer.parseInt(tagArea.getAttribute("cost")), tagArea.getAttribute("description"),

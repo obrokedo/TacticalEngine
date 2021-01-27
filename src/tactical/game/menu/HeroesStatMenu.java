@@ -13,6 +13,7 @@ import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
+import tactical.game.item.Item;
 import tactical.game.item.Item.ItemDurability;
 import tactical.game.listener.MenuListener;
 import tactical.game.sprite.CombatSprite;
@@ -31,7 +32,8 @@ public class HeroesStatMenu extends Menu
 	protected int yOffsetTop = -14, yOffsetBot = 10;
 	protected int selectedIndex = 0;
 	protected ArrayList<CombatSprite> heroes;
-	protected String[][] items;
+	protected String[][] itemNames;
+	protected ArrayList<Item> items;
 	protected CombatSprite selectedHero;
 	protected int view = VIEW_LEVEL;
 
@@ -199,8 +201,8 @@ public class HeroesStatMenu extends Menu
 				yOffsetTop + 32, graphics);
 		
 		// Draw hero items
-		if (items != null && selectedHero.getItemsSize() > 0)
-			for (int i = 0; i < selectedHero.getItemsSize(); i++)
+		if (itemNames != null && items.size() > 0)
+			for (int i = 0; i < items.size(); i++)
 			{
 				if (selectedHero.getEquipped().get(i))
 				{
@@ -217,10 +219,10 @@ public class HeroesStatMenu extends Menu
 					graphics.setColor(Color.white);
 				}
 
-				StringUtils.drawString(items[i][0], 210,
+				StringUtils.drawString(itemNames[i][0], 210,
 					yOffsetTop + (42 + i * 20), graphics);
-				if (items[i].length > 1)
-					StringUtils.drawString(items[i][1], 225,
+				if (itemNames[i].length > 1)
+					StringUtils.drawString(itemNames[i][1], 225,
 							yOffsetTop + (52 + i * 20), graphics);
 			}
 		else
@@ -353,13 +355,20 @@ public class HeroesStatMenu extends Menu
 		return MenuUpdate.MENU_NO_ACTION;
 	}
 
-	private void updateCurrentHero()
+	protected void updateCurrentHero()
 	{
 		selectedHero = heroes.get(selectedIndex);
 		selectedHeroPortrait = Portrait.getPortrait(selectedHero);
-		items = new String[selectedHero.getItemsSize()][];
-		for (int i = 0; i < selectedHero.getItemsSize(); i++)
-			items[i] = selectedHero.getItem(i).getName().split(" ");
+		updateHeroItems();
+	}
+	
+	protected void updateHeroItems() {
+		itemNames = new String[selectedHero.getItemsSize()][];
+		items = new ArrayList<>();
+		for (int i = 0; i < selectedHero.getItemsSize(); i++) {
+			itemNames[i] = selectedHero.getItem(i).getName().split(" ");
+			items.add(selectedHero.getItem(i));
+		}
 	}
 
 	@Override

@@ -19,11 +19,23 @@ public class HeroesBuyMenu extends HeroesStatMenu
 {
 	protected Item selectedShopItem;
 	protected ArrayList<String> differences = new ArrayList<>();
+	protected boolean showDiffs = true;
 
 	public HeroesBuyMenu(StateInfo stateInfo, MenuListener listener, Item item) {
+		this(stateInfo, listener, item, true);
+		selectedShopItem = item;
+		if (selectedShopItem != null && selectedShopItem.isEquippable())
+		{
+			view = VIEW_DIFFS;
+			determineDifferences(stateInfo);
+		}
+	}
+	
+	public HeroesBuyMenu(StateInfo stateInfo, MenuListener listener, Item item, boolean showDiffs) {
 		super(stateInfo, listener);
 		selectedShopItem = item;
-		if (selectedShopItem.isEquippable())
+		this.showDiffs = showDiffs;
+		if (showDiffs && selectedShopItem.isEquippable())
 		{
 			view = VIEW_DIFFS;
 			determineDifferences(stateInfo);
@@ -72,7 +84,7 @@ public class HeroesBuyMenu extends HeroesStatMenu
 	protected MenuUpdate onLeft(StateInfo stateInfo) {
 		if (view > 0)
 			view--;
-		else if (selectedShopItem.isEquippable())
+		else if (showDiffs && selectedShopItem.isEquippable())
 			view = 2;
 		else
 			return super.onLeft(stateInfo);
@@ -81,8 +93,8 @@ public class HeroesBuyMenu extends HeroesStatMenu
 
 	@Override
 	protected MenuUpdate onRight(StateInfo stateInfo) {
-		if ((view == 2 && selectedShopItem.isEquippable())
-				|| (view == 1 && !selectedShopItem.isEquippable()))
+		if ((view == 2)
+				|| (view == 1 && (!showDiffs || !selectedShopItem.isEquippable())))
 			view = 0;
 		else
 			view++;

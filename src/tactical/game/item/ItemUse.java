@@ -15,10 +15,11 @@ public class ItemUse
 	private int area;
 	private String battleText;
 	private boolean singleUse;
+	private boolean useOutsideBattle;
 
 	// TODO EFFECTS ARE NOT SUPPORTED FOR ITEM USE YET
 	public ItemUse(boolean targetsEnemy, int damage, int mpDamage,
-			BattleEffect effects, int range, int area, String battleText, boolean singleUse) {
+			BattleEffect effects, int range, int area, String battleText, boolean singleUse, boolean useOutsideBattle) {
 		super();
 		this.targetsEnemy = targetsEnemy;
 		this.damage = damage;
@@ -28,6 +29,7 @@ public class ItemUse
 		this.area = area;
 		this.battleText = battleText;
 		this.singleUse = singleUse;
+		this.useOutsideBattle = useOutsideBattle;
 	}
 
 	public boolean isTargetsEnemy() {
@@ -60,6 +62,10 @@ public class ItemUse
 
 	public boolean isSingleUse() {
 		return singleUse;
+	}
+
+	public boolean isUseOutsideBattle() {
+		return useOutsideBattle;
 	}
 
 	public int getExpGained()

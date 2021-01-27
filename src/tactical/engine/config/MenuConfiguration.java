@@ -50,4 +50,11 @@ public interface MenuConfiguration {
 	public String getItemInChestTextNoRoom(String itemName);
 	
 	public String getItemRecievedText(String heroName, String itemName);
+	
+	public String getGiveToWhoText(String heroName, String itemName);
+	public String getGiveSuccessText(String giverName, String itemName, String targetName);
+	public String getDropConfirmText(String itemName);
+	public String getDropSuccessText(String itemName);
+	public String getUseTargetText(String itemName);
+	public String getUseFailedText(String heroName, String itemName);
 }

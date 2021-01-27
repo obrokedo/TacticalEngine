@@ -12,7 +12,6 @@ import tactical.engine.message.MessageType;
 import tactical.engine.state.StateInfo;
 import tactical.game.item.Item;
 import tactical.game.listener.MenuListener;
-import tactical.game.menu.Menu.MenuUpdate;
 
 public abstract class ChooseItemMenu extends HeroesStatMenu
 {
@@ -27,16 +26,23 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 
 	@Override
 	protected void postRender(Graphics g) {
-		if (selectingItemState)
-		{
-			g.setLineWidth(2);
-			g.setColor(Color.white);
-			g.drawRoundRect(207, yOffsetTop + 50 + selectingItemIndex * 20, 80, 20, 3);
-			
-			Point loc = getSelectedItemIconPoint(selectingItemIndex);
-			
-			g.drawRoundRect(loc.x, loc.y, 20, 32, 3);
+		
+	}
+	
+	
+
+	@Override
+	protected void drawHeroSpecificsRight(Graphics graphics) {
+		super.drawHeroSpecificsRight(graphics);
+		if (selectingItemState) {
+			graphics.setLineWidth(2);
+			graphics.setColor(Color.white);
+			graphics.drawRoundRect(207, yOffsetTop + 50 + selectingItemIndex * 20, 80, 20, 3);
 		}
+	}
+	
+	protected void selectedItemChanged() {
+		
 	}
 
 	@Override
@@ -44,6 +50,7 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 		if (selectingItemState)
 		{
 			selectingItemIndex = 0;
+			selectedItemChanged();
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
 		else
@@ -56,15 +63,43 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 	protected MenuUpdate onDown(StateInfo stateInfo) {
 		if (selectingItemState)
 		{
-			if (selectedHero.getItemsSize() > 3)
+			if (selectedHero.getItemsSize() > 3) {
 				selectingItemIndex = 3;
+				selectedItemChanged();
+			}
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
 		else
 			return super.onDown(stateInfo);
 	}
-
 	
+	@Override
+	protected MenuUpdate onLeft(StateInfo stateInfo) {
+		if (selectingItemState) {
+			if (items.size() > 1) {
+				selectingItemIndex = 1;
+				selectedItemChanged();
+			}
+			return MenuUpdate.MENU_ACTION_LONG;
+		} else
+			return super.onLeft(stateInfo);
+	}
+
+	@Override
+	protected MenuUpdate onRight(StateInfo stateInfo) {
+		if (selectingItemState) {
+			if (items.size() > 2) {
+				selectingItemIndex = 2;				
+				selectedItemChanged();
+			}
+			return MenuUpdate.MENU_ACTION_LONG;
+		} else
+			return super.onRight(stateInfo);
+	}
+
+	protected void selectingItemStateStarted() {
+		
+	}
 
 	@Override
 	protected MenuUpdate onBack(StateInfo stateInfo) {
@@ -87,9 +122,10 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 		if (!selectingItemState)
 		{
 			// Check if the hero has items to sell
-			if (selectedHero.getItemsSize() > 0 ) {
+			if (items.size() > 0 ) {
 				selectingItemState = true;
 				selectingItemIndex = 0;
+				selectingItemStateStarted();
 			}
 		}
 		// Otherwise we are done, prompt to sell the selected item
@@ -110,9 +146,9 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 			for (int i = 0; i < 4; i++) {
 				Point loc = getSelectedItemIconPoint(i);
 				
-				if (i < selectedHero.getItemsSize())
+				if (i < items.size())
 				{
-					Item item = selectedHero.getItem(i);
+					Item item = items.get(i);
 					graphics.drawImage(item.getImage().getScaledCopy(1.3f), loc.x, loc.y);
 				}
 				else
@@ -120,30 +156,18 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 					graphics.drawImage(emptySpot.getScaledCopy(1.3f), loc.x, loc.y);
 				}
 			}
+						
+			graphics.setLineWidth(2);
+			
+			if (selectingItemState) {
+				Point loc = getSelectedItemIconPoint(selectingItemIndex);
+				
+				graphics.drawRoundRect(loc.x, loc.y, 20, 32, 3);
+			}
 		}
-	}	
-	
-	@Override
-	protected MenuUpdate onLeft(StateInfo stateInfo) {
-		if (selectingItemState) {
-			if (selectedHero.getItemsSize() > 1)
-				selectingItemIndex = 1;
-			return MenuUpdate.MENU_ACTION_LONG;
-		} else
-			return super.onLeft(stateInfo);
-	}
+	}		
 
-	@Override
-	protected MenuUpdate onRight(StateInfo stateInfo) {
-		if (selectingItemState) {
-			if (selectedHero.getItemsSize() > 2)
-				selectingItemIndex = 2;
-			return MenuUpdate.MENU_ACTION_LONG;
-		} else
-			return super.onRight(stateInfo);
-	}
-
-	private Point getSelectedItemIconPoint(int index) {
+	protected Point getSelectedItemIconPoint(int index) {
 		switch (index) {
 			case 0:
 				return new Point(130, 30);

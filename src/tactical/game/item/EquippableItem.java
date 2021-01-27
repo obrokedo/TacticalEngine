@@ -22,7 +22,7 @@ public class EquippableItem extends Item
 			fireAffinity, elecAffinity, coldAffin, darkAffin, waterAffin, earthAffin, 
 			windAffin, lightAffin, ohko, ohkoOnCrit;
 	private Range range;
-	private boolean isCustomEffect;
+	private boolean isCustomEffect, promotedOnly;
 	private String weaponImage, weaponAnim, effectName, damageAffinity;
 
 	/* Old "non-extended" equipped items
@@ -55,7 +55,7 @@ public class EquippableItem extends Item
 			int increasedEvade, int minHPRegen, int maxHPRegen, int minMPRegen, int maxMPRegen, int effectLevel,
 			int effectChance, int fireAffinity, int elecAffinity, int coldAffin, int darkAffin, int waterAffin,
 			int earthAffin, int windAffin, int lightAffin, int ohko, int ohkoOnCrit, int range,
-			boolean isCustomEffect, String weaponImage, String weaponAnim, String effectName, String damageAffinity) {
+			boolean isCustomEffect, boolean promotedOnly, String weaponImage, String weaponAnim, String effectName, String damageAffinity) {
 		super(name, cost, description, itemUse, spellUse, true, useDamagesItem, isDeal, isDroppable, itemId);
 		this.attack = attack;
 		this.defense = defense;
@@ -85,6 +85,7 @@ public class EquippableItem extends Item
 		this.ohkoOnCrit = ohkoOnCrit;
 		this.range = Range.convertIntToRange(range);
 		this.isCustomEffect = isCustomEffect;
+		this.promotedOnly = promotedOnly;
 		this.weaponImage = weaponImage;
 		this.weaponAnim = weaponAnim;
 		this.effectName = effectName;
@@ -219,6 +220,10 @@ public class EquippableItem extends Item
 		return damageAffinity;
 	}
 	
+	public boolean isPromotedOnly() {
+		return promotedOnly;
+	}
+
 	@Override
 	public Item copyItem() {
 		return new EquippableItem(name, cost, description, itemUse, spellUse, 
@@ -228,7 +233,7 @@ public class EquippableItem extends Item
 				maxHPRegen, minMPRegen, maxMPRegen, effectLevel, effectChance, 
 				fireAffinity, elecAffinity, coldAffin, darkAffin, waterAffin, 
 				earthAffin, windAffin, lightAffin, ohko, ohkoOnCrit, range, 
-				isCustomEffect, weaponImage, weaponAnim, effectName, damageAffinity, image);
+				isCustomEffect, promotedOnly, weaponImage, weaponAnim, effectName, damageAffinity, image);
 	}
 
 	private EquippableItem(String name, int cost, String description, ItemUse itemUse, SpellItemUse spellUse,
@@ -237,7 +242,7 @@ public class EquippableItem extends Item
 			int increasedDouble, int increasedEvade, int minHPRegen, int maxHPRegen, int minMPRegen, int maxMPRegen,
 			int effectLevel, int effectChance, int fireAffinity, int elecAffinity, int coldAffin, int darkAffin,
 			int waterAffin, int earthAffin, int windAffin, int lightAffin, int ohko, int ohkoOnCrit, Range range,
-			boolean isCustomEffect, String weaponImage, String weaponAnim, String effectName, String damageAffinity, Image image) {
+			boolean isCustomEffect, boolean promotedOnly, String weaponImage, String weaponAnim, String effectName, String damageAffinity, Image image) {
 		super(name, cost, description, itemUse, spellUse, isEquippable, useDamagesItem, isDeal, isDroppable, itemId);
 		this.attack = attack;
 		this.defense = defense;

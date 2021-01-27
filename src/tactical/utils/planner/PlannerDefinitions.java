@@ -1401,9 +1401,7 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_WEAPON_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "weaponanim", true, "Weapon Animation",
 				"The animation file that should be used for animating the weapon. Selecting this value will override any weapon attack image."));
-		allowableLines.add(new PlannerLineDef("equippable", "Equippable Item",
-				"Marks this item as equippable and defines stats for it",
-				definingValues));
+		
 		//////////////////////////////// NEW STUFF
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "incmindam", false, "Minimum Damage Modifier",
@@ -1524,7 +1522,17 @@ public class PlannerDefinitions {
 				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"ohkooc", false, "OHKO Chance on Critical",
 				"The percent chance of a OHKO occurring on a critical attack."));
+		// Usable only by promoted
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN, "promoteonly", false,
+				"Promotable Only",
+				"If true, this item will only be equippable by promoted heroes"));
 
+		allowableLines.add(new PlannerLineDef("equippable", "Equippable Item",
+				"Marks this item as equippable and defines stats for it",
+				definingValues));
+		
+		
 		// Use Custom
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
@@ -1570,7 +1578,15 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_BOOLEAN, "damageitem", false,
 				"Damages Item",
 				"If true, the item has a chance of being damaged on use"));
-
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN, "damageitem", false,
+				"Damages Item",
+				"If true, the item has a chance of being damaged on use"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN, "useoutsidebattle", false,
+				"Usable Outside of Battle",
+				"If true, this item is usable outside of battle. It should have a single target area"));
+		
 		allowableLines.add(new PlannerLineDef("use", "Custom Usuable Item",
 				"Marks this item as usuable and defines its' use",
 				definingValues));
