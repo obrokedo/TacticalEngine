@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,9 +27,11 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
 
-public class PlannerLine
+public class PlannerLine implements FocusListener, ChangeListener
 {
 	private PlannerLineDef plDef;
 	private ArrayList<Component> components;
@@ -68,7 +72,10 @@ public class PlannerLine
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
 			boolean displayButtons, PlannerTab parentTab)
 	{
-		this.commitChanges();
+		System.out.println("SETUP UI");
+		ArrayList<String> badReferences = new ArrayList<>();
+		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
+		// this.commitChanges();
 		components.clear();
 		uiAspect.removeAll();
 		JPanel headDescPanel = new JPanel(new BorderLayout());
@@ -150,6 +157,7 @@ public class PlannerLine
 							snm = new SpinnerNumberModel(0, -1, Integer.MAX_VALUE, 1);
 						else
 							snm = new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
+												
 
 						if (values.size() > i)
 							snm.setValue(values.get(i));
@@ -157,6 +165,7 @@ public class PlannerLine
 						((JSpinner.NumberEditor) ((JSpinner) c).getEditor()).getTextField().setHorizontalAlignment(JTextField.LEFT);
 
 						((NumberFormatter) ((JSpinner.NumberEditor) ((JSpinner) c).getEditor()).getTextField().getFormatter()).setAllowsInvalid(true);
+						snm.addChangeListener(this);
 					}
 					else
 					{
@@ -175,7 +184,7 @@ public class PlannerLine
 					mitems.add("No value selected");
 					mitems.addAll(getReferenceStringList(referenceListByReferenceType, pv));
 
-					c = new MultiIntPanel(getReferenceStringList(referenceListByReferenceType, pv));
+					c = new MultiIntPanel(getReferenceStringList(referenceListByReferenceType, pv), this);
 					JButton ab = new JButton("Add Item");
 					ab.addActionListener((MultiIntPanel) c);
 					ab.setActionCommand("ADD");
@@ -195,6 +204,7 @@ public class PlannerLine
 						{
 							PlannerReference plannerRef = vals.next();
 							JComboBox<String> jcb = new JComboBox<String>(mitems);
+							jcb.addFocusListener(this);
 							jcb.setMaximumRowCount(20);
 							if (plannerRef.getName().length() > 0) {
 								jcb.setSelectedItem(plannerRef.getName());
@@ -206,11 +216,17 @@ public class PlannerLine
 						}
 						
 						// Make sure at least one box is displayed even if it's empty
-						if (!hadAValue)
-							c.add(new JComboBox<String>(mitems));
+						if (!hadAValue) {
+							JComboBox<String> jcb = new JComboBox<String>(mitems);
+							jcb.addFocusListener(this);
+							c.add(jcb);
+						}
 					}
-					else
-						c.add(new JComboBox<String>(mitems));
+					else {
+						JComboBox<String> jcb = new JComboBox<String>(mitems);
+						jcb.addFocusListener(this);
+						c.add(jcb);
+					}
 					
 					break;
 				case PlannerValueDef.TYPE_BOOLEAN:
@@ -277,6 +293,7 @@ public class PlannerLine
 
 			label.setToolTipText(pv.getDisplayDescription());
 			c.setToolTipText(pv.getDisplayDescription());
+			c.addFocusListener(this);
 			
 			/*
 			JLabel descriptionLabel = new JLabel(pv.getDisplayDescription());
@@ -339,6 +356,9 @@ public class PlannerLine
 
 	public void commitChanges()
 	{
+		System.out.println("COMMIT");
+		PlannerFrame.updateSave("Saved...");
+		
 		if (components.size() > 0)
 		{
 			for (int i = 0; i < plDef.getPlannerValues().size(); i++)
@@ -423,20 +443,7 @@ public class PlannerLine
 						mip = (MultiIntPanel) components.get(i);
 						
 						for (int j = 2; j < mip.getComponentCount(); j++)
-						{
-							// If there is a deleted reference in the list, then just skip this entry
-							if (values != null && values.size() > i && values.get(i) instanceof ArrayList) {
-								ArrayList<PlannerReference> prs = (ArrayList<PlannerReference>) values.get(i);
-								if (prs.size() > j - 2) {
-									if (prs.get(j - 2).getName().equalsIgnoreCase("")) {
-										mip.remove(mip.getComponent(j));
-										prs.remove(j - 2);
-										j--;
-										continue;
-									}
-								}
-							}
-							
+						{														
 							multi = multi + ((JComboBox<?>)mip.getComponent(j)).getSelectedIndex();
 							if (j + 1 != mip.getComponentCount())
 								multi = multi + ",";
@@ -467,7 +474,7 @@ public class PlannerLine
 		}
 		
 		// Clear out my components so I don't 're-commit'
-		this.components.clear();
+		// this.components.clear();
 		ArrayList<String> badReferences = new ArrayList<>();
 		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
 	}
@@ -500,5 +507,21 @@ public class PlannerLine
 	public String toString() {
 		return "PlannerLine [plDef=" + plDef + ", components=" + components + ", values=" + values + ", isDefining="
 				+ isDefining + ", uiAspect=" + uiAspect + "]";
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		commitChanges();
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		commitChanges();
 	}
 }

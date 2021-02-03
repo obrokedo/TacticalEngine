@@ -542,13 +542,16 @@ public class BattleResults implements Serializable
 			if (target.getCurrentHP() + damage > 0)
 			{
 				BattleEffect eff = null;
-				if ((eff = attacker.getAttackEffect()) != null && eff.isEffected(target))
+				if ((attacker.getEquippedWeapon() != null && (eff = attacker.getEquippedWeapon().getAttackEffect()) != null) || 
+						(eff = attacker.getAttackEffect()) != null)
 				{
-					appliedEffects.add(eff);
-					Log.debug(target.getName() + " was affected by " + eff.getBattleEffectId());
-					String effectText = eff.effectStartedText(attacker, target);
-					if (effectText != null)
-						text = text + " " + effectText;
+					if (eff.isEffected(target)) {
+						appliedEffects.add(eff);
+						Log.debug(target.getName() + " was affected by " + eff.getBattleEffectId());
+						String effectText = eff.effectStartedText(attacker, target);
+						if (effectText != null)
+							text = text + " " + effectText;
+					}
 				}
 			}
 

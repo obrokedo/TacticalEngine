@@ -113,11 +113,11 @@ public class HeroesStatMenu extends Menu
 					yOffsetBot + 113, graphics);
 			StringUtils.drawString("MP", 127,
 					yOffsetBot + 113, graphics);
-			StringUtils.drawString("ATK", 162,
+			StringUtils.drawString("ATT", 162,
 					yOffsetBot + 113, graphics);
 			StringUtils.drawString("DEF", 197,
 					yOffsetBot + 113, graphics);
-			StringUtils.drawString("SPD", 232,
+			StringUtils.drawString("AGI", 232,
 					yOffsetBot + 113, graphics);
 			StringUtils.drawString("MOV", 267,
 					yOffsetBot + 113, graphics);

@@ -12,11 +12,13 @@ public class MultiIntPanel extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 1L;
 	
-	public List<String> mitems;
+	private List<String> mitems;
+	private PlannerLine parentLine;
 	
-	public MultiIntPanel(List<String> mitems) {
+	public MultiIntPanel(List<String> mitems, PlannerLine parentLine) {
 		super();
 		this.mitems = mitems;
+		this.parentLine = parentLine;
 	}
 	
 	@Override
@@ -26,7 +28,9 @@ public class MultiIntPanel extends JPanel implements ActionListener
 			Vector<String> vs = new Vector<String>();
 			vs.add("No value selected");
 			vs.addAll(mitems);
-			this.add(new JComboBox<String>(vs));			
+			JComboBox<String> jc = new JComboBox<String>(vs);
+			jc.addFocusListener(parentLine);
+			this.add(jc);			
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("REMOVE") && this.getComponentCount() > 3)
 		{
@@ -39,6 +43,7 @@ public class MultiIntPanel extends JPanel implements ActionListener
 				}
 			}
 		}
+		parentLine.commitChanges();
 		this.revalidate();
 		this.repaint();
 	}

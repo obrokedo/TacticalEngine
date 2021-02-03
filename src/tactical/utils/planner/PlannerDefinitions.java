@@ -103,7 +103,6 @@ public class PlannerDefinitions {
 		// Setup Battle Effects
 		for (String effectName : TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().getBattleEffectList())
 			listOfLists.get(PlannerValueDef.REFERS_EFFECT - 1).add(new PlannerReference(effectName));
-		listOfLists.get(PlannerValueDef.REFERS_EFFECT - 1).add(new PlannerReference("CUSTOM"));
 
 		// Setup Attribute Strength
 		listOfLists.get(PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH - 1).add(new PlannerReference(AttributeStrength.WEAK.name()));
@@ -1440,8 +1439,7 @@ public class PlannerDefinitions {
 		// Battle Effect
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_EFFECT,
 				PlannerValueDef.TYPE_STRING, "effect", true, "Attack Effect",
-				"The effect type that can be applied on a successful hit with this weapon. A value of CUSTOM"
-				+ " means that this weapons effect will be passed to the BattleFunctions script to be performed."));
+				"The effect type that can be applied on a successful hit with this weapon. "));
 
 		// Battle Effect Level
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
@@ -1452,10 +1450,6 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "effchc", false, "Attack Effect Chance",
 				"The chance that the associated battle effect will be applied on attack."));
-		// Custom Battle Effect Chance
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
-				PlannerValueDef.TYPE_BOOLEAN, "csteff", false, "Custom Effect Chance",
-				"If checked, the battle effect chance will be determined in the ConfigurationValues script."));
 
 		// Damage Affinity
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_WEAPON_DAMAGE_TYPE,
@@ -1611,6 +1605,10 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_BOOLEAN, "damageitem", false,
 				"Damages Item",
 				"If true, the item has a chance of being damaged on use"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN, "useoutsidebattle", false,
+				"Usable Outside of Battle",
+				"If true, this item is usable outside of battle. It should have a single target area"));
 
 		allowableLines.add(new PlannerLineDef("usespell", "Usuable Item Spell",
 				"Marks this item as usuable and defines the spell it casts on use",
@@ -2475,7 +2473,7 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "vision", false, "AI Vision",
 				"The maximum range that the specified combatant will look for targets. "
-				+ "This value can never be lower then the attack range of the combatant."));
+				+ "This value can never be lower then the attack range of the combatant. A value of 0 = unlimited"));
 		allowableLines.add(new PlannerLineDef("aivision", "Change AI - Vision",
 				"Changes the range that the combatant will look for targets at", definingValues));
 		
@@ -3040,7 +3038,7 @@ public class PlannerDefinitions {
 				"Use this ID to specifiy which enemy should be the target of triggers (Change AI)"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "vision", false, "Vision",
-				"Max range that this enemy will look to find targets to engage with. This value can not be less then the enemies attack range."));
+				"Max range that this enemy will look to find targets to engage with. This value can not be less then the enemies attack range. A value of 0 = infinite"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MUSIC,
 				PlannerValueDef.TYPE_STRING, "music", true, "Custom Music",
 				"The music that should be played when this enemy attacks, this overrides script values."));

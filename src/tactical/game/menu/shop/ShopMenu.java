@@ -226,9 +226,9 @@ public class ShopMenu extends Menu implements MenuListener
 						ed = Item.getEquippableDifference(hero.getEquippedArmor(), (EquippableItem) selectedItem);
 					else if (type == EquippableItem.TYPE_RING)
 						ed = Item.getEquippableDifference(hero.getEquippedRing(), (EquippableItem) selectedItem);
-					differences.add("ATK: " + ed.atk +
+					differences.add("ATT: " + ed.atk +
 						" DEF: " + ed.def +
-						" SPD: " + ed.spd);
+						" AGI: " + ed.spd);
 				}
 				else
 					differences.add("Can not equip");

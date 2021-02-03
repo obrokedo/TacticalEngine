@@ -60,9 +60,9 @@ public class HeroesBuyMenu extends HeroesStatMenu
 						ed = Item.getEquippableDifference(hero.getEquippedArmor(), (EquippableItem) selectedShopItem);
 					else if (type == EquippableItem.TYPE_RING)
 						ed = Item.getEquippableDifference(hero.getEquippedRing(), (EquippableItem) selectedShopItem);
-					differences.add("ATK: " + ed.atk +
+					differences.add("ATT: " + ed.atk +
 						" DEF: " + ed.def +
-						" SPD: " + ed.spd);
+						" AGI: " + ed.spd);
 				}
 				else
 					differences.add("Can not equip");

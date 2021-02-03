@@ -153,7 +153,7 @@ public class Line implements UnifiedRenderable {
 	protected boolean hasValuesSpecified(int valueIdx) {
 		boolean conditional = false;
 		ArrayList<PlannerReference> quests = (ArrayList<PlannerReference>) pc.getDefLine().getValues().get(valueIdx);
-		if (quests.size() > 1 || quests.get(0).getName().length() > 0) {
+		if (quests.size() > 1 && quests.get(0).getName().length() > 0) {
 			conditional = true;
 		}
 		return conditional;

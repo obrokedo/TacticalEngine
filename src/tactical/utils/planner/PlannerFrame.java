@@ -1,6 +1,7 @@
 package tactical.utils.planner;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,12 +16,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -86,10 +89,50 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	public static final int TAB_CIN_MAP = 8;
 	public static final int TAB_EDIT_MAP = 9;
 	public static final int TAB_UNIFIED_VIEW = 10;
+	
+	private static Object saveLock = new Object();
+	private static Color saveColor = Color.GREEN;
+	private static JLabel saveLabel = new JLabel();
+	private static SavingThread savingThread = null;
+	
+	private static class SavingThread implements Runnable {
+		private AtomicBoolean cancel = new AtomicBoolean(false);
+		
+		public void cancel() {
+			cancel.set(true);
+		}
+		
+		@Override
+		public void run() {
+			while (!cancel.get()) {
+				try {
+					synchronized(saveLock) {
+						
+						saveColor = new Color(saveColor.getRed(), saveColor.getGreen(), saveColor.getBlue(), Math.max(0, saveColor.getAlpha() - 5));						
+						saveLabel.setForeground(saveColor);
+						saveLabel.repaint();
+					}
+					Thread.sleep(100);
+				} catch (Exception e) {}
+			}
+		}
+		
+	}
+	
+	public static void updateSave(String text) {
+		synchronized(saveLock) {
+			if (savingThread != null)
+				savingThread.cancel();
+			saveColor = Color.BLACK;
+			// savingThread = new SavingThread();
+			// new Thread(savingThread).start();
+			saveLabel.setText(text);		
+			saveLabel.repaint();
+		}
+	}
+	
 
 	public static void main(String args[]) {
-		
-		
 		PlannerFrame pf = new PlannerFrame(null);
 		pf.setVisible(true);
 		pf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -133,7 +176,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		/*******************/
 		/* Set up triggers */
 		/*******************/
-		PlannerDefinitions.setupDefintions(referenceListByReferenceType, containersByName);		
+		PlannerDefinitions.setupDefintions(referenceListByReferenceType, containersByName);			
 		
 		initUI();
 
@@ -292,6 +335,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		backPanel.add(jtp, BorderLayout.CENTER);
 		errorScroll = new JScrollPane(errorList);
 		errorScroll.setPreferredSize(new Dimension(errorScroll.getPreferredSize().width, 120));
+		// backPanel.add(saveLabel, BorderLayout.PAGE_END);
 		backPanel.add(errorScroll, BorderLayout.PAGE_END);
 		this.setContentPane(backPanel);
 

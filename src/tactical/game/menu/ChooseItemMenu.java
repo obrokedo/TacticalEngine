@@ -63,7 +63,7 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 	protected MenuUpdate onDown(StateInfo stateInfo) {
 		if (selectingItemState)
 		{
-			if (selectedHero.getItemsSize() > 3) {
+			if (items.size() > 3) {
 				selectingItemIndex = 3;
 				selectedItemChanged();
 			}
@@ -97,8 +97,8 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 			return super.onRight(stateInfo);
 	}
 
-	protected void selectingItemStateStarted() {
-		
+	protected boolean selectingItemStateStarted(StateInfo stateInfo) {
+		return false;
 	}
 
 	@Override
@@ -107,6 +107,7 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 		if (selectingItemState)
 		{
 			selectingItemState = false;
+			updateHeroItems();
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
 		else
@@ -124,9 +125,11 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 			// Check if the hero has items to sell
 			if (items.size() > 0 ) {
 				selectingItemState = true;
-				selectingItemIndex = 0;
-				selectingItemStateStarted();
+				selectingItemIndex = 0;				
 			}
+			
+			if (selectingItemStateStarted(stateInfo))
+				return MenuUpdate.MENU_CLOSE;
 		}
 		// Otherwise we are done, prompt to sell the selected item
 		else

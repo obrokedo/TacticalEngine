@@ -154,9 +154,9 @@ public class ItemMenu extends QuadMenu
 			
 			EquippableDifference ed = Item.getEquippableDifference((EquippableItem) equippedItem, (EquippableItem) item);
 			itemDiffs = new String[] {
-					"ATK: " + (stateInfo.getCurrentSprite().getCurrentAttack() + ed.atk) + " (" + ed.atk +")",
+					"ATT: " + (stateInfo.getCurrentSprite().getCurrentAttack() + ed.atk) + " (" + ed.atk +")",
 					"DEF: " + (stateInfo.getCurrentSprite().getCurrentDefense() + ed.def) + " (" + ed.def +")",
-					"SPD: " + (stateInfo.getCurrentSprite().getCurrentSpeed() + ed.spd) + " (" + ed.spd +")"
+					"AGI: " + (stateInfo.getCurrentSprite().getCurrentSpeed() + ed.spd) + " (" + ed.spd +")"
 			};
 		}
 	}

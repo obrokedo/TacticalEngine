@@ -29,7 +29,7 @@ public class ShopOptionsMenu extends QuadMenu
 		enabled = new boolean[4];
 		for (int i = 0; i < enabled.length; i++)
 			enabled[i] = true;
-		text = new String[] {"Buy", "Deals", "Repair", "Sell"};
+		text = new String[] {"Buy", "Deals", "Recharge", "Sell"};
 	}
 
 	@Override

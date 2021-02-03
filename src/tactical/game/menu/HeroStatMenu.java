@@ -99,11 +99,11 @@ public class HeroStatMenu extends Menu
 				x + 152, y + (statsY + 15), graphics);
 
 
-		StringUtils.drawString("ATK: " + (selectedSprite.getCurrentAttack() < 10 ? " " : "") + selectedSprite.getCurrentAttack(),
+		StringUtils.drawString("ATT: " + (selectedSprite.getCurrentAttack() < 10 ? " " : "") + selectedSprite.getCurrentAttack(),
 				x + 75, y + (statsY + 30), graphics);
 		StringUtils.drawString("DEF: " + (selectedSprite.getCurrentDefense() < 10 ? " " : "") + selectedSprite.getCurrentDefense() ,
 				x + 152, y + (statsY + 30), graphics);
-		StringUtils.drawString("SPD: " + (selectedSprite.getCurrentSpeed() < 10 ? " " : "") + selectedSprite.getCurrentSpeed(),
+		StringUtils.drawString("AGI: " + (selectedSprite.getCurrentSpeed() < 10 ? " " : "") + selectedSprite.getCurrentSpeed(),
 				x + 75, y + (statsY + 45), graphics);
 		StringUtils.drawString("MOV: " + (selectedSprite.getCurrentMove() < 10 ? " " : "") + selectedSprite.getCurrentMove(),
 				x + 152, y + (statsY + 45), graphics);

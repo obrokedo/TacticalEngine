@@ -34,7 +34,8 @@ import tactical.loading.ResourceManager;
 
 public class MapObject
 {
-	private int width, height, x, y;
+	private int x, y;
+	private int width, height;
 	private String name = null;
 	private String key;
 	private ArrayList<Point> polyPoints = null;
@@ -60,12 +61,13 @@ public class MapObject
 			float[] points = new float[polyPoints.size() * 2];
 			for (int i = 0; i < polyPoints.size(); i++)
 			{
-				points[2 * i] = polyPoints.get(i).x + x;
-				points[2 * i + 1] = polyPoints.get(i).y + y;
+				polyPoints.set(i, new Point(polyPoints.get(i).x + x, polyPoints.get(i).y + y));
+				points[2 * i] = polyPoints.get(i).x;
+				points[2 * i + 1] = polyPoints.get(i).y;
 			}
 			shape = new Polygon(points);
-			x = (int) shape.getX();
-			y = (int) shape.getY();
+			
+			x = y = 0;
 			width = (int) shape.getWidth();
 			height = (int) shape.getHeight();
 		}
@@ -82,8 +84,8 @@ public class MapObject
 		}
 
 		shape = new Polygon(points);
-		this.x = (int) shape.getX();
-		this.y = (int) shape.getY();
+		// this.x = (int) shape.getX();
+		// this.y = (int) shape.getY();
 		width = (int) shape.getWidth();
 		height = (int) shape.getHeight();
 	}
@@ -101,13 +103,13 @@ public class MapObject
 		return height;
 	}
 	public int getX() {
-		return x;
+		return (int) shape.getX();
 	}
 	public void setX(int x) {
 		this.x = x;
 	}
 	public int getY() {
-		return y;
+		return (int) shape.getY();
 	}
 	public void setY(int y) {
 		this.y = y;
@@ -184,11 +186,11 @@ public class MapObject
 
 			if (sprite.getSpriteType() == Sprite.TYPE_COMBAT && ((CombatSprite) sprite).isHero() && sprite.getLocX() == -1)
 			{
-				if (shape.contains(x + startX + 1, y + startY + 1))
+				if (shape.contains(shape.getX() + startX + 1, shape.getY() + startY + 1))
 				{
 					CombatSprite cs = ((CombatSprite) sprite);
 					Direction facing = cs.getFacing();
-					cs.setLocation((x + startX), (y + startY), stateInfo.getTileWidth(), stateInfo.getTileHeight());
+					cs.setLocation((shape.getX() + startX), (shape.getY() + startY), stateInfo.getTileWidth(), stateInfo.getTileHeight());
 					if (stateInfo.isCombat() || facing == null)
 						cs.setFacing(Direction.DOWN);
 					else
@@ -258,7 +260,7 @@ public class MapObject
 		if (facing != null && facing != -1)
 			facingVal = Direction.values()[facing];
 		
-		npc.setInitialPosition(x, y, fcrm.getMap().getTileEffectiveWidth(), 
+		npc.setInitialPosition(getX(), getY(), fcrm.getMap().getTileEffectiveWidth(), 
 				fcrm.getMap().getTileEffectiveHeight(), wanderVal, facingVal);
 		
 		if (npcId != null)
@@ -310,8 +312,8 @@ public class MapObject
 
 		enemy.initializeSprite(fcrm);
 		enemy.getAi().initialize(enemy);
-		enemy.setLocX(x, fcrm.getMap().getTileEffectiveWidth());
-		enemy.setLocY(y, fcrm.getMap().getTileEffectiveHeight());
+		enemy.setLocX(getX(), fcrm.getMap().getTileEffectiveWidth());
+		enemy.setLocY(getY(), fcrm.getMap().getTileEffectiveHeight());
 
 		return enemy;
 	}
@@ -337,10 +339,10 @@ public class MapObject
 	{
 		Image image = fcrm.getImage(imageName);
 		
-		Sprite s = new StaticSprite(x, y, name, image, trigger);
+		Sprite s = new StaticSprite(getX(), getY(), name, image, trigger);
 		s.initializeSprite(fcrm);
-		s.setLocX(x, fcrm.getMap().getTileEffectiveWidth());
-		s.setLocY(y, fcrm.getMap().getTileEffectiveHeight());
+		s.setLocX(getX(), fcrm.getMap().getTileEffectiveWidth());
+		s.setLocY(getY(), fcrm.getMap().getTileEffectiveHeight());
 		return s;
 	}
 
@@ -356,7 +358,7 @@ public class MapObject
 		}
 		
 		if (trigger == null || trigger.length == 0) {
-			JOptionPane.showMessageDialog(null, "A searcharea (" + name + ")with no search trigger is defined was found at location " + x + " " + y);
+			JOptionPane.showMessageDialog(null, "A searcharea (" + name + ")with no search trigger is defined was found at location " + getX() + " " + getY());
 		} else {		
 			TriggerCondition tc = new TriggerCondition(trigger[0], "");
 			tc.addCondition(new TriggerCondition.LocationSearched(name));
@@ -384,9 +386,9 @@ public class MapObject
 		Trigger searchTrigger2 = new Trigger("SearchChest" + triggerId2, triggerId2, false, 
 				true, true, false, null, null);
 		
-		StaticSprite chestSprite = new StaticSprite(x, y, name, fcrm.getImage(spriteImage), new int[] {triggerId2} );
-		chestSprite.setLocX(x, fcrm.getMap().getTileEffectiveWidth());
-		chestSprite.setLocY(y, fcrm.getMap().getTileEffectiveHeight());
+		StaticSprite chestSprite = new StaticSprite(getX(), getY(), name, fcrm.getImage(spriteImage), new int[] {triggerId2} );
+		chestSprite.setLocX(getX(), fcrm.getMap().getTileEffectiveWidth());
+		chestSprite.setLocY(getY(), fcrm.getMap().getTileEffectiveHeight());
 		chestSprite.setOffsetUp(false);
 		searchTrigger1.addTriggerable(searchTrigger1.new TriggerRemoveSprite(name));
 		searchTrigger1.addTriggerable(searchTrigger1.new TriggerAddSearchArea(this, Trigger.TRIGGER_CHEST_NO_ITEM));
@@ -412,10 +414,10 @@ public class MapObject
 	{
 		Image image = fcrm.getImage(params.get("image"));
 
-		Sprite s = new Door(doorId, x, y, image);
+		Sprite s = new Door(doorId, getX(), getY(), image);
 		s.initializeSprite(fcrm);
-		s.setLocX(x, fcrm.getMap().getTileEffectiveWidth());
-		s.setLocY(y, fcrm.getMap().getTileEffectiveHeight());
+		s.setLocX(getX(), fcrm.getMap().getTileEffectiveWidth());
+		s.setLocY(getY(), fcrm.getMap().getTileEffectiveHeight());
 		return s;
 	}
 	

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -65,10 +64,6 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 
 		plannerTree = new PlannerTree(name, listPC, this, new TabAttributeTransferHandler(listPC), this);
 		uiAspect.add(plannerTree.getUiAspect(), BorderLayout.LINE_START);
-		JButton bigSaveButton = new JButton("Save");
-		bigSaveButton.setActionCommand("save");
-		bigSaveButton.addActionListener(this);
-		uiAspect.add(bigSaveButton, BorderLayout.PAGE_END);
 	}
 
 	@Override
@@ -99,7 +94,7 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 		listPC.add(newPC);
 		PlannerContainerDef pcd = containersByName.get(type);
 		pcd.getDataLines().add(new PlannerReference(newName));
-		newPC.getDefLine().getValues().set(0, newName);
+		newPC.getDefLine().getValues().add(newName);
 		plannerTree.addItem(newName, listPC.size() - 1);
 		return newPC;
 	}
@@ -145,8 +140,11 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 
 	public void commitChanges()
 	{
+		/*
+		System.out.println("PLANNER TAB COMMIT CHANGES");
 		for (PlannerContainer pcs : listPC)
 			pcs.commitChanges();
+			*/
 	}
 
 	public void setNewValues()
@@ -159,6 +157,7 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 
 		if (currentPC != null)
 		{
+			System.out.println("SET NEW VALUES COMMIT CHANGES");
 			currentPC.commitChanges();
 			plannerFrame.updateErrorList(PlannerReference.getBadReferences(plannerFrame.getDataInputTabs()));
 			// Check to see if the description (name) has been renamed

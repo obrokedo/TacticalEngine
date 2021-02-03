@@ -17,6 +17,7 @@ public class AIConfidence {
 	public int allyInfluence;
 	public int enemyInfluence;
 	public int damageInfluence;
+	public int distanceInfluence;
 	// Spells
 	public ArrayList<AISpellConfidence> aiSpellConfs;
 
@@ -27,10 +28,10 @@ public class AIConfidence {
 
 	@Override
 	public String toString() {
-		return "AIConfidence [confidence=" + confidence + ", willKill=" + willKill + ", willHeal=" + willHeal
-				+ ", foundHero=" + foundHero + ", target=" + target + ", attackPoint=" + attackPoint
-				+ ", potentialAttackSpriteAction=" + potentialAttackSpriteAction + ", allyInfluence=" + allyInfluence
-				+ ", enemyInfluence=" + enemyInfluence + ", damageInfluence=" + damageInfluence + ", aiSpellConfs="
+		return "AIConfidence [confidence=" + confidence + "     willKill=" + willKill + "     willHeal=" + willHeal
+				+ "     foundHero=" + foundHero + "     target=" + target + ", attackPoint=" + attackPoint
+				+ "     potentialAttackSpriteAction=" + potentialAttackSpriteAction + "     allyInfluence=" + allyInfluence
+				+ "     enemyInfluence=" + enemyInfluence + "     damageInfluence=" + damageInfluence + "     distanceInfluence=" + distanceInfluence +"     aiSpellConfs="
 				+ aiSpellConfs + "]";
 	}
 

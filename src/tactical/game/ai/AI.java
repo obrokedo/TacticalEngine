@@ -97,6 +97,8 @@ public abstract class AI implements Serializable
 		// and the most amount of damage. Want to balance this with the resources used
 		if (attackableSprites.size() > 0)
 		{
+			int distanceCost = getSpriteDistanceCost(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, 
+					new Point(currentSprite.getTileX(), currentSprite.getTileY()), currentSprite.getCurrentMove(), currentSprite);
 			for (AttackableEntity as : attackableSprites)
 			{
 				if (as.getCombatSprite().isHero() != currentSprite.isHero())
@@ -121,6 +123,10 @@ public abstract class AI implements Serializable
 					if (currentConfidence.confidence > 0)
 					{
 						currentConfidence.confidence += this.getLandEffectConfidence(attackPoint, currentSprite, stateInfo);
+						currentConfidence.distanceInfluence = distanceCost - getSpriteDistanceCost(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, 
+								attackPoint, currentSprite.getCurrentMove(), currentSprite);
+						currentConfidence.confidence = Math.max(1, currentConfidence.confidence + currentConfidence.distanceInfluence);
+												
 					}
 					
 					currentConfidence.attackPoint = attackPoint;
@@ -178,7 +184,7 @@ public abstract class AI implements Serializable
 
 		// We found no reasonable target, either because none was in range OR the available spaces were
 		// really poor
-		if (confidence.confidence == 0)
+		if (confidence.confidence <= 0)
 		{
 			// If we have no confidence in what we're going to do then we want to move away from the enemies
 			// to try and split them up.
@@ -471,6 +477,31 @@ public abstract class AI implements Serializable
 		}
 
 		return count;
+	}
+	
+	protected int getSpriteDistanceCost(StateInfo stateInfo, boolean isHero,
+			int tileWidth, int tileHeight, Point point, int range, CombatSprite attacker)
+	{
+		int cost = 0;
+
+		for (CombatSprite target : stateInfo.getCombatSprites())
+		{
+			if (target == attacker)
+				continue;
+
+			if (target.isHero() == isHero)
+			{
+				int tx = target.getTileX();
+				int ty = target.getTileY();
+
+				int dx = Math.abs(point.x - tx);
+				int dy = Math.abs(point.y - ty);
+				if ( dx + dy <= range)
+					cost += dx + dy;
+			}
+		}
+
+		return cost;
 	}
 
 	protected ArrayList<CombatSprite> getNearbySprites(StateInfo stateInfo, boolean isHero,

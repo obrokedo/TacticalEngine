@@ -39,6 +39,9 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 	private TownStepEnum step;
 	private MenuConfiguration menuConfig = null;
 	
+	private CombatSprite givingHero = null;
+	private int givingIndex = 0;
+	
 	public TownChooseItemMenu(StateInfo stateInfo, int option) {
 		super(stateInfo, null);
 		menuConfig = TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration();
@@ -66,10 +69,22 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 	protected boolean itemSelected(StateInfo stateInfo) {
 		switch (option) {
 			case GIVE:
-				step = TownStepEnum.GIVE_SHOW_SPEECH;
-				
-				stateInfo.addMenu(new SpeechMenu(menuConfig.getGiveToWhoText(selectedHero.getName(), items.get(selectingItemIndex).getName()), null, this, stateInfo));
-				return true;
+				if (step == TownStepEnum.GIVE_SELECT_ITEM) {
+					step = TownStepEnum.GIVE_SHOW_SPEECH;				
+					stateInfo.addMenu(new SpeechMenu(menuConfig.getGiveToWhoText(selectedHero.getName(), items.get(selectingItemIndex).getName()), null, this, stateInfo));
+					givingHero = selectedHero;
+					givingIndex = selectingItemIndex;				
+					this.selectingItemState = false;				
+					return false;
+				} else if (step == TownStepEnum.GIVE_SELECT_HERO) {
+					Item tradeItem = selectedHero.getItem(selectingItemIndex);
+					selectedHero.removeItem(tradeItem);
+					
+					giveItemImpl(stateInfo);
+					
+					givingHero.addItem(tradeItem);
+					return true;
+				}
 			case DROP:
 				step = TownStepEnum.DROP_CONFIRM;
 				
@@ -88,7 +103,7 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 							null, null, stateInfo));
 					return true;
 				}
-			// Nothing to be done for equp
+			// Nothing to be done for equip
 		}
 		return false;
 	}
@@ -102,18 +117,6 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 		switch (step) {
 			case GIVE_SHOW_SPEECH:
 				step = TownStepEnum.GIVE_SELECT_HERO;
-				stateInfo.addMenu(new HeroesBuyMenu(stateInfo, 
-						this, items.get(selectingItemIndex)));
-				break;
-			case GIVE_SELECT_HERO:
-				if (value != null) {
-					CombatSprite target = (CombatSprite) value;					
-					stateInfo.addMenu(new SpeechMenu(
-							menuConfig.getGiveSuccessText(selectedHero.getName(), items.get(selectingItemIndex).getName(), target.getName()), stateInfo));
-					item = selectedHero.getItem(selectingItemIndex);
-					selectedHero.removeItem(item);
-					target.addItem(item);
-				}
 				break;
 			case DROP_CONFIRM:
 				boolean drop = (Boolean) value;
@@ -180,8 +183,8 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 	}
 
 	@Override
-	protected void selectingItemStateStarted() {
-		if (this.selectingItemState && this.option == ItemOption.EQUIP) {
+	protected boolean selectingItemStateStarted(StateInfo stateInfo) {
+		if (selectingItemState && this.option == ItemOption.EQUIP) {
 			items.clear();
 			updateEquippableItems(EquippableItem.TYPE_WEAPON);
 			step = TownStepEnum.EQUIP_SELECT_WEAPON;
@@ -194,9 +197,26 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 				} else 
 					selectedItemChanged();
 			} else 
-				selectedItemChanged();
+				selectedItemChanged();			
+		} else if (this.step == TownStepEnum.GIVE_SELECT_HERO 
+				&& selectedHero.getItemsSize() < 4) {
+			// If we select ourselves to give the item to then just ignore stuff
+			if (selectedHero == givingHero)
+				return true;
 			
+			giveItemImpl(stateInfo);
+			return true;
 		}
+		
+		return false;
+	}
+
+	protected void giveItemImpl(StateInfo stateInfo) {
+		stateInfo.addMenu(new SpeechMenu(
+				menuConfig.getGiveSuccessText(givingHero.getName(), givingHero.getItem(givingIndex).getName(), selectedHero.getName()), stateInfo));
+		Item item = givingHero.getItem(givingIndex);
+		givingHero.removeItem(item);
+		selectedHero.addItem(item);
 	}
 
 	@Override
@@ -204,11 +224,11 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 		if (this.selectingItemState && this.option == ItemOption.EQUIP) {
 			StringUtils.drawString(items.get(selectingItemIndex).getName(), 210,
 					yOffsetTop + (35), graphics);
-			StringUtils.drawString("ATK: " + selectedHero.getMaxAttack(), 210,
+			StringUtils.drawString("ATT: " + selectedHero.getMaxAttack(), 210,
 					yOffsetTop + (50), graphics);
 			StringUtils.drawString("DEF: " + selectedHero.getMaxDefense(), 210,
 					yOffsetTop + (50 + 1 * 18), graphics);
-			StringUtils.drawString("SPD: " + selectedHero.getMaxSpeed(), 210,
+			StringUtils.drawString("AGI: " + selectedHero.getMaxSpeed(), 210,
 					yOffsetTop + (50 + 2 * 18), graphics);
 			StringUtils.drawString("MOV: " + selectedHero.getMaxMove(), 210,
 					yOffsetTop + (50 + 3 * 18), graphics);
@@ -257,12 +277,14 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 	*/
 	
 	private void updateEquippableItems(int itemType) {
+		int itemCnt = 0;
 		for (int i = 0; i < selectedHero.getItemsSize(); i++) {
 			Item item = selectedHero.getItem(i);
 			if (item.isEquippable() && ((EquippableItem) item).getItemType() == itemType && selectedHero.isEquippable((EquippableItem) item)) {
 				items.add(item);
 				if (selectedHero.getEquippedWeapon() == item)
-					selectingItemIndex = i;
+					selectingItemIndex = itemCnt;
+				itemCnt++;
 			}
 		}
 	}

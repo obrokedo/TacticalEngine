@@ -2,7 +2,9 @@ package tactical.game.item;
 
 import org.newdawn.slick.Image;
 
+import tactical.engine.TacticalGame;
 import tactical.game.Range;
+import tactical.game.battle.BattleEffect;
 
 
 public class EquippableItem extends Item
@@ -22,7 +24,7 @@ public class EquippableItem extends Item
 			fireAffinity, elecAffinity, coldAffin, darkAffin, waterAffin, earthAffin, 
 			windAffin, lightAffin, ohko, ohkoOnCrit;
 	private Range range;
-	private boolean isCustomEffect, promotedOnly;
+	private boolean promotedOnly;
 	private String weaponImage, weaponAnim, effectName, damageAffinity;
 
 	/* Old "non-extended" equipped items
@@ -55,7 +57,7 @@ public class EquippableItem extends Item
 			int increasedEvade, int minHPRegen, int maxHPRegen, int minMPRegen, int maxMPRegen, int effectLevel,
 			int effectChance, int fireAffinity, int elecAffinity, int coldAffin, int darkAffin, int waterAffin,
 			int earthAffin, int windAffin, int lightAffin, int ohko, int ohkoOnCrit, int range,
-			boolean isCustomEffect, boolean promotedOnly, String weaponImage, String weaponAnim, String effectName, String damageAffinity) {
+			boolean promotedOnly, String weaponImage, String weaponAnim, String effectName, String damageAffinity) {
 		super(name, cost, description, itemUse, spellUse, true, useDamagesItem, isDeal, isDroppable, itemId);
 		this.attack = attack;
 		this.defense = defense;
@@ -84,7 +86,6 @@ public class EquippableItem extends Item
 		this.ohko = ohko;
 		this.ohkoOnCrit = ohkoOnCrit;
 		this.range = Range.convertIntToRange(range);
-		this.isCustomEffect = isCustomEffect;
 		this.promotedOnly = promotedOnly;
 		this.weaponImage = weaponImage;
 		this.weaponAnim = weaponAnim;
@@ -208,12 +209,18 @@ public class EquippableItem extends Item
 		return ohkoOnCrit;
 	}
 
-	public boolean isCustomEffect() {
-		return isCustomEffect;
-	}
-
 	public String getEffectName() {
 		return effectName;
+	}
+	
+	public BattleEffect getAttackEffect()
+	{
+		BattleEffect eff = null;
+		if (effectName != null)
+		{
+			eff = TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().createEffect(effectName, effectLevel);
+		}
+		return eff;
 	}
 
 	public String getDamageAffinity() {
@@ -233,7 +240,7 @@ public class EquippableItem extends Item
 				maxHPRegen, minMPRegen, maxMPRegen, effectLevel, effectChance, 
 				fireAffinity, elecAffinity, coldAffin, darkAffin, waterAffin, 
 				earthAffin, windAffin, lightAffin, ohko, ohkoOnCrit, range, 
-				isCustomEffect, promotedOnly, weaponImage, weaponAnim, effectName, damageAffinity, image);
+				promotedOnly, weaponImage, weaponAnim, effectName, damageAffinity, image);
 	}
 
 	private EquippableItem(String name, int cost, String description, ItemUse itemUse, SpellItemUse spellUse,
@@ -242,7 +249,7 @@ public class EquippableItem extends Item
 			int increasedDouble, int increasedEvade, int minHPRegen, int maxHPRegen, int minMPRegen, int maxMPRegen,
 			int effectLevel, int effectChance, int fireAffinity, int elecAffinity, int coldAffin, int darkAffin,
 			int waterAffin, int earthAffin, int windAffin, int lightAffin, int ohko, int ohkoOnCrit, Range range,
-			boolean isCustomEffect, boolean promotedOnly, String weaponImage, String weaponAnim, String effectName, String damageAffinity, Image image) {
+			boolean promotedOnly, String weaponImage, String weaponAnim, String effectName, String damageAffinity, Image image) {
 		super(name, cost, description, itemUse, spellUse, isEquippable, useDamagesItem, isDeal, isDroppable, itemId);
 		this.attack = attack;
 		this.defense = defense;
@@ -271,7 +278,6 @@ public class EquippableItem extends Item
 		this.ohko = ohko;
 		this.ohkoOnCrit = ohkoOnCrit;
 		this.range = range;
-		this.isCustomEffect = isCustomEffect;
 		this.weaponImage = weaponImage;
 		this.weaponAnim = weaponAnim;
 		this.effectName = effectName;

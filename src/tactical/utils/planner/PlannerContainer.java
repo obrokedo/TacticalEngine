@@ -32,7 +32,7 @@ public class PlannerContainer implements ActionListener
 
 		this.defLine = new PlannerLine(pcdef.getDefiningLine(), true);
 		this.lines = new ArrayList<PlannerLine>();
-		this.parentTab = parentTab;
+		this.parentTab = parentTab;			
 		
 		if (initializeValues) {
 			this.setupUI();
@@ -47,7 +47,7 @@ public class PlannerContainer implements ActionListener
 		this.pcdef = copyContainer.pcdef;
 
 		this.defLine = new PlannerLine(copyContainer.defLine);
-		this.defLine.getValues().set(0, newName);
+		this.defLine.getValues().add(newName);
 		this.lines = new ArrayList<PlannerLine>();
 		this.parentTab = copyContainer.parentTab;
 		for (PlannerLine l : copyContainer.lines)
@@ -230,9 +230,11 @@ public class PlannerContainer implements ActionListener
 
 	public void commitChanges()
 	{
+		/*
 		defLine.commitChanges();
 		for (PlannerLine pl : lines)
 			pl.commitChanges();
+			*/
 	}
 
 	public PlannerContainerDef getPcdef() {

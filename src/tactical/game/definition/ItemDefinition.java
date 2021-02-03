@@ -33,7 +33,6 @@ public class ItemDefinition
 			String weaponImage = null, weaponAnim = null, effectName = null, damageAffinity = null;
 			boolean equippable = false;
 			boolean useDamagesItem = false;
-			boolean isCustomEffect = false;
 			ItemUse itemUse = null;
 			SpellItemUse spellUse = null;
 			//TODO Replace get attribute with remove attribute and then
@@ -80,7 +79,6 @@ public class ItemDefinition
 						effectName = null;
 					// The damage affinity is a string that should not be null/empty
 					damageAffinity = childTagArea.getAttribute("dmgaff");
-					isCustomEffect = childTagArea.getBoolAttribute("csteff");
 					
 					if (StringUtils.isEmpty(weaponImage))
 						weaponImage = null;
@@ -108,7 +106,8 @@ public class ItemDefinition
 					spellUse = new SpellItemUse(
 							childTagArea.getAttribute("spellid"),
 							Integer.parseInt(childTagArea.getAttribute("level")),
-							Boolean.parseBoolean(childTagArea.getAttribute("singleuse")));
+							Boolean.parseBoolean(childTagArea.getAttribute("singleuse")),
+							Boolean.parseBoolean(childTagArea.getAttribute("useoutsidebattle")));
 					useDamagesItem = Boolean.parseBoolean(childTagArea.getAttribute("damageitem"));
 				}
 				else
@@ -130,7 +129,7 @@ public class ItemDefinition
 						minMPRegen, maxMPRegen, effectLevel, effectChance, 
 						fireAffinity, elecAffinity, coldAffin, darkAffin, waterAffin, 
 						earthAffin, windAffin, lightAffin, ohko, ohkoOnCrit, range, 
-						isCustomEffect, promoteOnly, weaponImage, weaponAnim, effectName, damageAffinity);
+						promoteOnly, weaponImage, weaponAnim, effectName, damageAffinity);
 			else {
 				id.item = new Item(tagArea.getAttribute("name"), 
 						Integer.parseInt(tagArea.getAttribute("cost")), tagArea.getAttribute("description"),

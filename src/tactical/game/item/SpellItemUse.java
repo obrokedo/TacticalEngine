@@ -9,12 +9,14 @@ public class SpellItemUse {
 	private String spellId;
 	private int level;
 	private boolean singleUse;
+	private boolean useOutsideBattle;
 
-	public SpellItemUse(String spellId, int level, boolean singleUse) {
+	public SpellItemUse(String spellId, int level, boolean singleUse, boolean useOutsideBattle) {
 		super();
 		this.spellId = spellId;
 		this.level = level;
 		this.singleUse = singleUse;
+		this.useOutsideBattle = useOutsideBattle;
 	}
 
 	public SpellDefinition getSpell() {
@@ -31,6 +33,10 @@ public class SpellItemUse {
 
 	public boolean isSingleUse() {
 		return singleUse;
+	}
+	
+	public boolean isUseOutsideBattle() {
+		return useOutsideBattle;
 	}
 
 	public void initialize(ResourceManager fcrm) {
