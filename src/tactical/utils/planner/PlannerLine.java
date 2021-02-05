@@ -72,7 +72,6 @@ public class PlannerLine implements FocusListener, ChangeListener
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
 			boolean displayButtons, PlannerTab parentTab)
 	{
-		System.out.println("SETUP UI");
 		ArrayList<String> badReferences = new ArrayList<>();
 		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
 		// this.commitChanges();

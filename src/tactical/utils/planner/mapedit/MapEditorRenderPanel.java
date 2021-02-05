@@ -172,8 +172,8 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 				if (selected != null)
 				{
 					this.selectedMapObject = selected;
-					this.dragStartX = m.getX();
-					this.dragStartY = m.getY();
+					this.dragStartX = (int) (m.getX() / scale);
+					this.dragStartY = (int) (m.getY() / scale);
 					try
 					{
 						parentPanel.mouseDown(selectedMapObject);
@@ -346,7 +346,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (selectedMapObject != null) {		
-			Point p = new Point(Math.round(e.getX() /scale), 
+			Point p = new Point(Math.round(e.getX() / scale), 
 						Math.round(e.getY() / scale));
 			//selectedMapObject.determineShape();
 			int tX = ((p.x - dragStartX) / plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth();

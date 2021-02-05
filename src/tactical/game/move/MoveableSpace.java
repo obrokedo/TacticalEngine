@@ -265,6 +265,9 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 	public void addMoveActionsToLocation(int mapX, int mapY, Sprite currentSprite,
 			ArrayList<TurnAction> turnActions)
 	{
+		if (mapX == currentSprite.getTileX() && mapY == currentSprite.getTileY())
+			return;
+		
 		AStarPathFinder pathFinder = new AStarPathFinder(this, 18, false);
 
 		Path path = pathFinder.findPath(
@@ -297,6 +300,10 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 	 */
 	public void addMoveActionsAlongPath(int mapX, int mapY, Sprite currentSprite, ArrayList<TurnAction> turnActions, int maxMove)
 	{
+		// If we're staying put then don't look for a route
+		if (currentSprite.getTileX() == mapX / tileWidth && currentSprite.getTileY() == mapY / tileHeight)
+			return;
+		
 		checkMoveable = false;
 		AStarPathFinder pathFinder = new AStarPathFinder(this, 1000, false);
 

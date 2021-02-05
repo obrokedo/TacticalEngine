@@ -26,6 +26,7 @@ import tactical.game.trigger.Trigger;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.game.ui.RectUI;
 import tactical.game.ui.TextUI;
+import tactical.utils.StringUtils;
 
 public class ShopBuyMenu extends Menu implements MenuListener
 {
@@ -80,8 +81,8 @@ public class ShopBuyMenu extends Menu implements MenuListener
 		this.smallFont = stateInfo.getResourceManager().getFontByName("smallmenufont");
 		this.gold = stateInfo.getClientProfile().getGold();
 
-		selectedItem = items[0];
-		itemName = selectedItem.getName().split(" ");
+		selectedItem = items[0];		
+		itemName = StringUtils.splitItemString(selectedItem.getName());
 
 		rightArrow = new Polygon(new float[] {
 				285, 13,
@@ -94,8 +95,8 @@ public class ShopBuyMenu extends Menu implements MenuListener
 				31, 17,
 				35, 21});
 
-		itemPanel = new RectUI(27, 2, -54, 32, 0, 0, stateInfo.getPaddedGameContainer().getPaddedWidth(), 0);
-		itemNamePanel = new RectUI(27, 34, 68, 37);
+		itemPanel = new RectUI(25, 2, 270, 32);
+		itemNamePanel = new RectUI(27, 34, 90, 37);
 		selectedItemRect = new RectUI(36,  6,  18,  23);
 
 		// Setup gold
@@ -131,7 +132,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 		{
 			selectedItemIndex = Math.min(selectedItemIndex + 1, items.length - 1);
 			selectedItem = items[selectedItemIndex];
-			itemName = selectedItem.getName().split(" ");
+			itemName = StringUtils.splitItemString(selectedItem.getName());
 			updateSelectedItem();
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
@@ -139,7 +140,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 		{
 			selectedItemIndex = Math.max(0, selectedItemIndex - 1);
 			selectedItem = items[selectedItemIndex];
-			itemName = selectedItem.getName().split(" ");
+			itemName = StringUtils.splitItemString(selectedItem.getName());
 			updateSelectedItem();
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
@@ -168,7 +169,6 @@ public class ShopBuyMenu extends Menu implements MenuListener
 
 		graphics.setColor(Color.white);
 		graphics.setFont(smallFont);
-
 		// Draw items and price
 		for (int i = (selectedItemIndex < 9 ? 0 : selectedItemIndex - 8); i < Math.min(items.length,  (selectedItemIndex < 9 ? 9 : selectedItemIndex + 1)); i++)
 		{
@@ -214,14 +214,23 @@ public class ShopBuyMenu extends Menu implements MenuListener
 	}
 
 	private void updateSelectedItem()
-	{
-		itemNamePanel.setX(27 + 28 * Math.min(8, selectedItemIndex));
-		itemNameText1 = new TextUI(itemName[0], 33 + 28  * Math.min(8, selectedItemIndex), 29);
-		if (itemName.length > 1)
-			itemNameText2 = new TextUI(itemName[1], 33 + 28 * Math.min(8, selectedItemIndex), 39);
-		String itemCost = "" + ((int) (selectedItem.getCost() * shopMessage.getBuyPercent()));
-		itemCostText = new TextUI(itemCost+ "", 87 + 28 * Math.min(8, selectedItemIndex), 49,
-				- PANEL_FONT.getWidth(itemCost));
+	{	
+		if (selectedItemIndex < 7) {
+			itemNamePanel.setX(27 + 28 * selectedItemIndex);
+			itemNameText1 = new TextUI(itemName[0], 33 + 28  *selectedItemIndex, 29);
+			if (itemName.length > 1)
+				itemNameText2 = new TextUI(itemName[1], 33 + 28 * selectedItemIndex, 39);
+			String itemCost = "" + ((int) (selectedItem.getCost() * shopMessage.getBuyPercent()));
+			itemCostText = new TextUI(itemCost+ "", 35 + 28 * selectedItemIndex, 49);
+		}
+		else {
+			itemNamePanel.setX(205);
+			itemNameText1 = new TextUI(itemName[0], 213, 29);
+			if (itemName.length > 1)
+				itemNameText2 = new TextUI(itemName[1], 213, 39);
+			String itemCost = "" + ((int) (selectedItem.getCost() * shopMessage.getBuyPercent()));
+			itemCostText = new TextUI(itemCost+ "", 213, 49);
+		}
 		selectedItemRect.setX(36 + 28 * Math.min(8, selectedItemIndex));
 	}
 

@@ -13,9 +13,9 @@ public class SpellResource
 
 	public static void initSpells(ResourceManager frm)
 	{
-		spells = new Hashtable<String, SpellDefinition>();
-		for (String spell : TacticalGame.ENGINE_CONFIGURATIOR.getSpellFactory().getSpellList())
-			addSpell(spell, frm);
+			spells = new Hashtable<String, SpellDefinition>();
+			for (String spell : TacticalGame.ENGINE_CONFIGURATIOR.getSpellFactory().getSpellList())
+				addSpell(spell, frm);
 	}
 
 	private static void addSpell(String spellId, ResourceManager frm)

@@ -11,7 +11,7 @@ import tactical.game.sprite.CombatSprite;
 public class MultiHeroJoinMenu extends HeroesStatMenu implements MenuListener {
 	
 	public MultiHeroJoinMenu(List<CombatSprite> combatSpriteHeroOptions, StateInfo stateInfo) {
-		super(PanelType.PANEL_MULTI_JOIN_CHOOSE, combatSpriteHeroOptions, null);
+		super(PanelType.PANEL_MULTI_JOIN_CHOOSE, combatSpriteHeroOptions, stateInfo, null);
 	}
 	
 	@Override

@@ -48,7 +48,8 @@ public class WarriorAI extends AI
 			willKill = true;
 		}
 
-		AIConfidence aiC = new AIConfidence(currentConfidence);
+		// Warriors don't run!
+		AIConfidence aiC = new AIConfidence(Math.max(1, currentConfidence));
 		aiC.allyInfluence = nearbyAlly;
 		aiC.enemyInfluence = nearbyEnemy;
 		aiC.damageInfluence = damageDone;

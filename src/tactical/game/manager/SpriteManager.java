@@ -327,7 +327,7 @@ public class SpriteManager extends Manager
 		}
 	}
 
-	private void handleInvestigate() {
+	public boolean handleInvestigate() {
 		int checkX = stateInfo.getCurrentSprite().getTileX();
 		int checkY = stateInfo.getCurrentSprite().getTileY();
 		int checkX2 = checkX;
@@ -367,7 +367,8 @@ public class SpriteManager extends Manager
 								npc.getTileX() == checkX2 &&
 								npc.getTileY() == checkY2))
 				{
-					npc.triggerButton1Event(stateInfo);
+					if (npc.triggerButton1Event(stateInfo))
+						return true;
 					break;
 				}
 			}
@@ -377,10 +378,13 @@ public class SpriteManager extends Manager
 				if (s.getTileX() == checkX &&
 						ss.getTileY() == checkY)
 				{
-					ss.triggerButton1Event(stateInfo);
+					if (ss.triggerButton1Event(stateInfo))
+						return true;
 					break;
 				}
 			}
 		}
+		
+		return false;
 	}
 }

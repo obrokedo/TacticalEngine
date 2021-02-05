@@ -36,6 +36,16 @@ public class StringUtils {
 		return font.getWidth(string) / PaddedGameContainer.GAME_SCREEN_SCALE;
 	}
 	
+	public static String[] splitItemString(String string) {
+		String[] split = string.split(" ");
+		if (split.length == 3) {
+			split = new String[] {split[0] + " " + split[1], split[2]};
+		} else if (split.length == 4) {
+			split = new String[] {split[0] + " " + split[1], split[2] + " " + split[3]};
+		}
+		return split;
+	}
+	
 	public static UnicodeFont loadFont(String fontName, int size, boolean bold, boolean italic) {
 		Font awtFont = new Font(fontName, 0, 0);
 		UnicodeFont ufont = new UnicodeFont(awtFont, size, bold, italic);

@@ -75,29 +75,25 @@ public class BattleActionsMenu extends QuadMenu
 			}
 		}
 		
-		// If there is nothing to attack then check search areas
-		if (!enabled[0]) {
-			range = AttackableSpace.getAttackableArea(Range.ONE_ONLY);
-			rangeOffset = (range.length - 1) / 2;
-			
-			OUTER: for (int i = 0; i < range.length; i++)
+		// Check search areas
+		range = AttackableSpace.getAttackableArea(Range.ONE_ONLY);
+		rangeOffset = (range.length - 1) / 2;
+		
+		OUTER: for (int i = 0; i < range.length; i++)
+		{
+			for (int j = 0; j < range[0].length; j++)
 			{
-				for (int j = 0; j < range[0].length; j++)
+				if (range[i][j] == 1)
 				{
-					if (range[i][j] == 1)
+					Sprite targetable = stateInfo.getSearchableAtTile(currentSprite.getTileX() - rangeOffset + i,
+							currentSprite.getTileY() - rangeOffset + j);
+					if (targetable != null)
 					{
-						Sprite targetable = stateInfo.getSearchableAtTile(currentSprite.getTileX() - rangeOffset + i,
-								currentSprite.getTileY() - rangeOffset + j);
-						if (targetable != null)
-						{
-							enabled[0] = true;
-							this.selected = Direction.UP;
-							searchSprite = targetable;
-							text[0] = "Search";
-							icons[0] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 0);
-							icons[1] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 1);
-							break OUTER;
-						}
+						searchSprite = targetable;
+						text[3] = "Search";
+						icons[3] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 0);
+						icons[7] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(4, 1);
+						break OUTER;
 					}
 				}
 			}
@@ -116,10 +112,7 @@ public class BattleActionsMenu extends QuadMenu
 		switch (selected)
 		{
 			case UP:
-				if (searchSprite == null)
-					stateInfo.sendMessage(MessageType.ATTACK_PRESSED);
-				else
-					stateInfo.sendMessage(MessageType.SEARCH_IN_BATTLE);
+				stateInfo.sendMessage(MessageType.ATTACK_PRESSED);
 				break;
 			case LEFT:
 				stateInfo.sendMessage(MessageType.SHOW_SPELLMENU);
@@ -130,7 +123,10 @@ public class BattleActionsMenu extends QuadMenu
 				stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
 				break;
 			case DOWN:
-				stateInfo.sendMessage(MessageType.PLAYER_END_TURN);
+				if (searchSprite == null)
+					stateInfo.sendMessage(MessageType.PLAYER_END_TURN);
+				else
+					stateInfo.sendMessage(MessageType.SEARCH_IN_BATTLE);				
 				break;
 		}
 

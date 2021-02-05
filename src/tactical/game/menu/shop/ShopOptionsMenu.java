@@ -9,6 +9,7 @@ import tactical.engine.message.MessageType;
 import tactical.engine.message.ShopMessage;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.state.StateInfo;
+import tactical.game.constants.Direction;
 import tactical.game.menu.QuadMenu;
 import tactical.game.trigger.Trigger;
 
@@ -73,6 +74,13 @@ public class ShopOptionsMenu extends QuadMenu
 	}
 	
 	
+
+	@Override
+	protected int getTextboxWidth() {
+		if ((selected == Direction.RIGHT))
+			return 74;
+		return super.getTextboxWidth();
+	}
 
 	@Override
 	public MenuUpdate update(int delta) {

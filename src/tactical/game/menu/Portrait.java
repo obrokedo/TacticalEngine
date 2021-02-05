@@ -2,6 +2,7 @@ package tactical.game.menu;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SpriteSheet;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.state.StateInfo;
@@ -19,7 +20,9 @@ public class Portrait
 	private boolean isBlinking = false, isTalking = false;
 	private int blinkCounter = 0;
 	private boolean portraitFound = true;
-
+	private SpriteSheet gemSpriteSheet = null;
+	private boolean hero = false, enemy = false;
+	
 	/**
 	 * Retrieves a portrait for the hero with the given id if one is specified, or a portrait for
 	 * an enemy with the given id if one is specifed or a portrait contained in the specified spriteAnimName.
@@ -39,7 +42,7 @@ public class Portrait
 		if (enemyId != -1)
 		{
 			sa = stateInfo.getResourceManager().getSpriteAnimation(EnemyResource.getAnimation(enemyId));
-			return getPortrait(sa, false);
+			return getPortrait(sa, false, false, true, stateInfo);
 		}
 		else if (heroId != -1)
 		{
@@ -47,15 +50,16 @@ public class Portrait
 			{
 				if (cs.getHeroProgression().getHeroID() == heroId)
 				{
-					return getPortrait(cs);
+					return getPortrait(cs, stateInfo);
 				}
 			}
 
 			sa = stateInfo.getResourceManager().getSpriteAnimation(HeroResource.getAnimation(heroId));
-			return getPortrait(sa, false);
+			return getPortrait(sa, false, true, false, stateInfo);
 		}
 		else if (spriteAnimName != null) {
-			return getPortrait(stateInfo.getResourceManager().getSpriteAnimation(spriteAnimName), false);
+			return getPortrait(stateInfo.getResourceManager().getSpriteAnimation(spriteAnimName), 
+					false, false, false, stateInfo);
 		}
 
 		return null;
@@ -68,18 +72,22 @@ public class Portrait
 	 * @param combatSprite the CombatSprite whose portrait should be retrieved
 	 * @return the portrait of the specified CombatSprite
 	 */
-	public static Portrait getPortrait(CombatSprite combatSprite)
+	public static Portrait getPortrait(CombatSprite combatSprite, StateInfo stateInfo)
 	{
-		Portrait p = getPortrait(combatSprite.getSpriteAnims(), combatSprite.isPromoted());
+		Portrait p = getPortrait(combatSprite.getSpriteAnims(), combatSprite.isPromoted(), 
+				combatSprite.isHero(), !combatSprite.isHero(), stateInfo);
 		// Enemies can have portraits, but if one isn't specified assume that it shouldn't have one
 		if (p.portraitFound && combatSprite.isHero())
 			return p;
 		return null;
 	}
 
-	private static Portrait getPortrait(SpriteAnims spriteAnim, boolean promoted)
+	private static Portrait getPortrait(SpriteAnims spriteAnim, boolean promoted, boolean hero, boolean enemy, StateInfo stateInfo)
 	{
 		Portrait p = new Portrait();
+		p.hero = hero;
+		p.enemy = enemy;
+		p.gemSpriteSheet = stateInfo.getResourceManager().getSpriteSheet("portraitgems");
 		if ((promoted || spriteAnim.hasAnimation("UnPortIdle")) && spriteAnim.hasAnimation("ProPortIdle"))
 		{
 			p.idleAnim = new AnimationWrapper(spriteAnim, "ProPortIdle", true);
@@ -129,6 +137,13 @@ public class Portrait
 		if (isTalking)
 			talkAnim.drawAnimationIgnoreOffset(x + 7,
 					y + 7 + topHeight, graphics);
+		
+		int gem = 0;
+		if (hero)
+			gem = 1;
+		else if (enemy)
+			gem = 2;
+		gemSpriteSheet.getSubImage(gem, 0).draw(x + 55, y + 71);
 	}
 
 	public void update(long delta)

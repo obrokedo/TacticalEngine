@@ -181,7 +181,7 @@ public class BattleAIDebug {
 						}
 						panel.add(new JLabel("Approach: " + approach));
 					}
-					JLabel label = new JLabel("<html><body style='width: 600px'>" + aic.toString() + "</body></html>");
+					JLabel label = new JLabel("<html><body style='width: 600px'>" + aic.toString().replaceAll(" ", "<br>") + "</body></html>");
 					panel.add(label);					
 				}
 			}

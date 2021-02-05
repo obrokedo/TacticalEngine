@@ -132,7 +132,7 @@ public class ClericAI extends CasterAI
 			int maxDamage = spell.getDamage()[spellLevel - 1];
 			Log.debug("Check healing: Effective Healing: " + effectiveDamage + " Percent left " + (targetSprite.getCurrentHP() * 1.0 / targetSprite.getMaxHP()) +
 					" Amount of heal power: " + (targetSprite.getMaxHP() - targetSprite.getCurrentHP()) / (1.0 * maxDamage));
-			if (targetSprite.getCurrentHP() * 1.0 / targetSprite.getMaxHP() < .5 ||
+			if (targetSprite.getCurrentHP() * 1.0 / targetSprite.getMaxHP() <= .5 ||
 					(targetSprite.getMaxHP() - targetSprite.getCurrentHP()) /
 						(1.0 * maxDamage) > .75)
 			{

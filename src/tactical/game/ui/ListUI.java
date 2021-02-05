@@ -77,7 +77,6 @@ public class ListUI implements ComponentListener {
 	}
 	
 	protected void initTextField(GameContainer container) {		
-		System.out.println("--------------- INIT TEXT FIELD " + this);
 		this.textField = new TextField(container, container.getDefaultFont(), drawX + 50,  Math.min(listLength, values.size()) * buttonHeight + drawY + 25 +  
 					Math.min(listLength, values.size()) * itemSpacing, 100, 20);
 		this.textField.setBackgroundColor(Color.white);
@@ -241,6 +240,7 @@ public class ListUI implements ComponentListener {
 	
 	public void filter(String filter) {
 		this.resourceFileButtons.clear();
+		this.menuIndex = 0;
 		for (String value : values.stream().filter(v -> v.toUpperCase().startsWith(filter.toUpperCase())).collect(Collectors.toList()))
 			this.resourceFileButtons.add(new Button(drawX, 0, longestNameWidth, buttonHeight, value));
 		layoutItems();

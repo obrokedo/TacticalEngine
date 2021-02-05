@@ -64,12 +64,11 @@ public class StaticSprite extends Sprite
 		return false;
 	}
 
-	public void triggerButton1Event(StateInfo stateInfo)
+	public boolean triggerButton1Event(StateInfo stateInfo)
 	{
+		boolean triggerActivated = false;
 		if (triggerIds != null)
 		{
-			boolean triggerActivated = false;
-			
 			for (Integer triggerId : triggerIds) {
 				if (triggerId != -1) {
 					if (stateInfo.getResourceManager().getTriggerEventById(
@@ -82,8 +81,10 @@ public class StaticSprite extends Sprite
 			if (defaultTriggerId != null && !triggerActivated) {
 				stateInfo.getResourceManager().getTriggerEventById(
 						defaultTriggerId).perform(stateInfo);
+				triggerActivated = true;
 			}
 		}
+		return triggerActivated;
 	}
 
 	public void setOffsetUp(boolean offsetUp) {

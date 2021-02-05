@@ -105,7 +105,9 @@ public class FileLogger extends DefaultLogSystem
 	}
 	
 	public void warn(String message, Throwable e) {
+		if (message != null && message.contains("org.newdawn.slick.opengl.PNGImageData failed to read the data"))
+			return;
 		warn(message);
-		// e.printStackTrace(out);
+		e.printStackTrace(out);
 	}
 }

@@ -14,6 +14,7 @@ import tactical.engine.state.StateInfo;
 import tactical.game.Camera;
 import tactical.game.constants.Direction;
 import tactical.game.exception.BadAnimationException;
+import tactical.game.move.MovingSprite;
 import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.NPCSprite;
@@ -861,6 +862,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 			sprite.setLocY(locY + stateInfo.getResourceManager().getMap().getTileRenderHeight(), stateInfo.getTileHeight());
 			sprite.setFacing(facing);
 			sprite.setVisible(true);
+			sprite.setAnimationUpdate(MovingSprite.STAND_ANIMATION_SPEED);
 			if (sprite.getSpriteType() == Sprite.TYPE_NPC) {
 				NPCSprite npc = (NPCSprite) sprite;
 				npc.setMoving(false);

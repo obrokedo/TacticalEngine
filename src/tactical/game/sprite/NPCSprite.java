@@ -53,7 +53,7 @@ public class NPCSprite extends AnimatedSprite
 		this.maxWander = maxWander;
 	}
 
-	public void triggerButton1Event(StateInfo stateInfo)
+	public boolean triggerButton1Event(StateInfo stateInfo)
 	{
 		if (Speech.showFirstSpeechMeetsReqs(speechId, stateInfo, false)) {
 			originalFacing = this.getFacing();
@@ -61,7 +61,9 @@ public class NPCSprite extends AnimatedSprite
 				turnTowardsHero(stateInfo);
 			}
 			waitingForSpeechToEnd = true;
+			return true;
 		}
+		return false;
 	}
 
 	private void turnTowardsHero(StateInfo stateInfo) {

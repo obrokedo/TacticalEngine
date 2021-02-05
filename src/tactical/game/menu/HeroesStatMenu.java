@@ -61,16 +61,16 @@ public class HeroesStatMenu extends Menu
 			if (!heroes.stream().anyMatch(h -> h.getId() == cs.getId()))
 				heroes.add(cs);
 		}
-		updateCurrentHero();
+		updateCurrentHero(stateInfo);
 		this.listener = listener;
 	}
 	
-	protected HeroesStatMenu(PanelType panelType, Iterable<CombatSprite> chooseableSprites, MenuListener listener) {
+	protected HeroesStatMenu(PanelType panelType, Iterable<CombatSprite> chooseableSprites, StateInfo stateInfo, MenuListener listener) {
 		super(panelType);
 		heroes = new ArrayList<>();
 		for (CombatSprite cs : chooseableSprites)
 			heroes.add(cs);
-		updateCurrentHero();
+		updateCurrentHero(stateInfo);
 		this.listener = listener;
 	}
 
@@ -245,7 +245,7 @@ public class HeroesStatMenu extends Menu
 				StringUtils.drawString(selectedHero.getSpellsDescriptors().get(i).getSpell().getName(),
 						100,
 					yOffsetTop + (42 + i * 20), graphics);
-				StringUtils.drawString("Level 1", 115,
+				StringUtils.drawString("Level " + selectedHero.getSpellsDescriptors().get(i).getMaxLevel(), 115,
 						yOffsetTop + (52 + i * 20), graphics);
 			}
 		else
@@ -337,7 +337,7 @@ public class HeroesStatMenu extends Menu
 		{
 			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
 			selectedIndex--;
-			updateCurrentHero();
+			updateCurrentHero(stateInfo);
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
 		return MenuUpdate.MENU_NO_ACTION;
@@ -349,16 +349,16 @@ public class HeroesStatMenu extends Menu
 		{
 			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
 			selectedIndex++;
-			updateCurrentHero();
+			updateCurrentHero(stateInfo);
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
 		return MenuUpdate.MENU_NO_ACTION;
 	}
 
-	protected void updateCurrentHero()
+	protected void updateCurrentHero(StateInfo stateInfo)
 	{
 		selectedHero = heroes.get(selectedIndex);
-		selectedHeroPortrait = Portrait.getPortrait(selectedHero);
+		selectedHeroPortrait = Portrait.getPortrait(selectedHero, stateInfo);
 		updateHeroItems();
 	}
 	
@@ -366,7 +366,7 @@ public class HeroesStatMenu extends Menu
 		itemNames = new String[selectedHero.getItemsSize()][];
 		items = new ArrayList<>();
 		for (int i = 0; i < selectedHero.getItemsSize(); i++) {
-			itemNames[i] = selectedHero.getItem(i).getName().split(" ");
+			itemNames[i] = StringUtils.splitItemString(selectedHero.getItem(i).getName());
 			items.add(selectedHero.getItem(i));
 		}
 	}

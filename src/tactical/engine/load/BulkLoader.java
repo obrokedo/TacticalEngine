@@ -108,9 +108,7 @@ public class BulkLoader {
 	
 	private void loadResourceLine(EngineConfigurator configurator) {
 		String line = allLines.remove(0);
-		System.out.println("Last load time: " + (System.currentTimeMillis() - lastTime));
 		lastTime = System.currentTimeMillis();
-		System.out.println("Loading " + line);
 		if (!line.startsWith("//"))
 		{
 			try

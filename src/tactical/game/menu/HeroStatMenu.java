@@ -3,6 +3,7 @@ package tactical.game.menu;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SpriteSheet;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.message.AudioMessage;
@@ -26,18 +27,20 @@ public class HeroStatMenu extends Menu
 	private int animCount = 0;
 	private Timer timer;
 	private Portrait portrait;
+	private SpriteSheet spellLevels;
 
 	public HeroStatMenu(GameContainer gc, CombatSprite selectedSprite, StateInfo stateInfo) {
 		super(PanelType.PANEL_HEROS_STATS);
-		x = (PaddedGameContainer.GAME_SCREEN_SIZE.width - 230) / 2;
+		x = (PaddedGameContainer.GAME_SCREEN_SIZE.width - 260) / 2;
 		y = (PaddedGameContainer.GAME_SCREEN_SIZE.height - 192) / 2;
 		this.selectedSprite = selectedSprite;
 		if (selectedSprite.isHero())
 			this.gold = stateInfo.getClientProfile().getGold() + "";
 
-		portrait = Portrait.getPortrait(selectedSprite);
+		portrait = Portrait.getPortrait(selectedSprite, stateInfo);
 
 		timer = new Timer(500);
+		this.spellLevels = stateInfo.getResourceManager().getSpriteSheet("spelllevel");
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class HeroStatMenu extends Menu
 		/* Draw the main stat window */
 		/*****************************/
 		TacticalGame.ENGINE_CONFIGURATIOR.getPanelRenderer().render(x + 62,
-				y, 168,
+				y, 193,
 				192, graphics, null);
 		graphics.setColor(COLOR_FOREFRONT);
 		StringUtils.drawString(selectedSprite.getName(), x + 70, y + -3, graphics);
@@ -122,31 +125,30 @@ public class HeroStatMenu extends Menu
 				{
 					graphics.setColor(Color.yellow);
 
-					graphics.fillRect(x + 87 + j * 10,
-							y + 105 + i * 22,
-							7,
-							7);
+					graphics.drawImage(spellLevels.getSprite(0, 2), x + 87 + j * 14,
+							y + 105 + i * 22);					
 				}
 			}
 		}
 
 		// Draw Items
+		int itemXStart = 151;
 		graphics.setColor(Panel.COLOR_FOREFRONT);
-		StringUtils.drawString("ITEM", x + 135, y + 73, graphics);
+		StringUtils.drawString("ITEM", x + itemXStart, y + 73, graphics);
 		for (int i = 0; i < selectedSprite.getItemsSize(); i++)
 		{
 			graphics.setColor(Panel.COLOR_FOREFRONT);
-			graphics.drawImage(selectedSprite.getItem(i).getImage(), x + 135,
+			graphics.drawImage(selectedSprite.getItem(i).getImage(), x + itemXStart,
 					y + 92 + i * 24);
-			String[] itemSplit = selectedSprite.getItem(i).getName().split(" ");
-			StringUtils.drawString(itemSplit[0], x + 155, y + 83 + i * 23, graphics);
+			String[] itemSplit = StringUtils.splitItemString(selectedSprite.getItem(i).getName());
+			StringUtils.drawString(itemSplit[0], x + itemXStart + 20, y + 83 + i * 23, graphics);
 			if (itemSplit.length > 1)
-				StringUtils.drawString(itemSplit[1], x + 155, y + 90 + i * 23, graphics);
+				StringUtils.drawString(itemSplit[1], x + itemXStart + 20, y + 90 + i * 23, graphics);
 
 			if (selectedSprite.getEquipped().get(i))
 			{
 				graphics.setColor(Color.pink);
-				StringUtils.drawString("EQ.", x + 155, y + 97 + i * 23, graphics);
+				StringUtils.drawString("EQ.", x + itemXStart + 20, y + 97 + i * 23, graphics);
 			}
 
 		}

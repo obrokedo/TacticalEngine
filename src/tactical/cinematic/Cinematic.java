@@ -393,7 +393,6 @@ public class Cinematic {
 			case HALTING_MOVE_PATHFIND:
 				if (actors.containsKey((String) ce.getParam(3))) {
 					ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
-					
 					Path path = stateInfo.getCurrentMap().findPixelPathWithPixels
 							((int) ca.getLocX(), (int) ca.getLocY() + 
 									(!this.inCinematicState ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0), 

@@ -189,9 +189,11 @@ public class TownState extends LoadableGameState
 				{
 					if (!menuManager.isBlocking() && !cinematicManager.isBlocking())
 					{
-						stateInfo.sendMessage(MessageType.INVESTIGATE);
+						boolean foundSomething = spriteManager.handleInvestigate();						
+						foundSomething = foundSomething || stateInfo.checkSearchLocation();
+						if (!foundSomething)
+							stateInfo.sendMessage(new Message(MessageType.SHOW_TOWN_MENU));
 						stateInfo.setInputDelay(System.currentTimeMillis() + 200);
-						stateInfo.checkSearchLocation();
 					}
 				}
 				else if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) && !stateInfo.areMenusDisplayed())

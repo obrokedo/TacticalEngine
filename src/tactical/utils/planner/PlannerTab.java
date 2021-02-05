@@ -157,7 +157,6 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 
 		if (currentPC != null)
 		{
-			System.out.println("SET NEW VALUES COMMIT CHANGES");
 			currentPC.commitChanges();
 			plannerFrame.updateErrorList(PlannerReference.getBadReferences(plannerFrame.getDataInputTabs()));
 			// Check to see if the description (name) has been renamed

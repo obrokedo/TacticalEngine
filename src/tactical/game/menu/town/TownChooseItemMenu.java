@@ -222,16 +222,20 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 	@Override
 	protected void drawHeroSpecificsRight(Graphics graphics) {
 		if (this.selectingItemState && this.option == ItemOption.EQUIP) {
-			StringUtils.drawString(items.get(selectingItemIndex).getName(), 210,
+			String[] name = StringUtils.splitItemString(items.get(selectingItemIndex).getName());
+			StringUtils.drawString(name[0], 210,
 					yOffsetTop + (35), graphics);
+			if (name.length > 1)
+				StringUtils.drawString(name[1], 214,
+						yOffsetTop + (45), graphics);
 			StringUtils.drawString("ATT: " + selectedHero.getMaxAttack(), 210,
-					yOffsetTop + (50), graphics);
+					yOffsetTop + (58), graphics);
 			StringUtils.drawString("DEF: " + selectedHero.getMaxDefense(), 210,
-					yOffsetTop + (50 + 1 * 18), graphics);
+					yOffsetTop + (58 + 1 * 16), graphics);
 			StringUtils.drawString("AGI: " + selectedHero.getMaxSpeed(), 210,
-					yOffsetTop + (50 + 2 * 18), graphics);
+					yOffsetTop + (58 + 2 * 16), graphics);
 			StringUtils.drawString("MOV: " + selectedHero.getMaxMove(), 210,
-					yOffsetTop + (50 + 3 * 18), graphics);
+					yOffsetTop + (58 + 3 * 16), graphics);
 		} else
 			super.drawHeroSpecificsRight(graphics);
 	}

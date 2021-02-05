@@ -18,6 +18,7 @@ public class AIConfidence {
 	public int enemyInfluence;
 	public int damageInfluence;
 	public int distanceInfluence;
+	public int landInfluence;
 	// Spells
 	public ArrayList<AISpellConfidence> aiSpellConfs;
 
@@ -28,11 +29,12 @@ public class AIConfidence {
 
 	@Override
 	public String toString() {
-		return "AIConfidence [confidence=" + confidence + "     willKill=" + willKill + "     willHeal=" + willHeal
-				+ "     foundHero=" + foundHero + "     target=" + target + ", attackPoint=" + attackPoint
-				+ "     potentialAttackSpriteAction=" + potentialAttackSpriteAction + "     allyInfluence=" + allyInfluence
-				+ "     enemyInfluence=" + enemyInfluence + "     damageInfluence=" + damageInfluence + "     distanceInfluence=" + distanceInfluence +"     aiSpellConfs="
-				+ aiSpellConfs + "]";
+		return "AIConfidence [confidence=" + confidence + " willKill=" + willKill + " willHeal=" + willHeal
+				+ " foundHero=" + foundHero + " target=" + (target != null ? target.getName() : "none") + 
+				", attackPoint=Tile" + attackPoint.x + "," + attackPoint.y
+				+ " potentialAttackSpriteAction=" + potentialAttackSpriteAction.getBattleCommand().toString() + " allyInfluence=" + allyInfluence
+				+ " enemyInfluence=" + enemyInfluence + " damageInfluence=" + damageInfluence + " distanceInfluence=" + distanceInfluence 
+				+ " landInfluence=" + landInfluence +" aiSpellConfs=" + aiSpellConfs + "]";
 	}
 
 	

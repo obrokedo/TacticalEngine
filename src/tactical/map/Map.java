@@ -457,8 +457,6 @@ public class Map
 			// System.out.println("Bounds: " + spriteSheet.getHorizontalCount() + " " + spriteSheet.getVerticalCount());
 			//spriteSheet.renderInUse(x, y, 
 				//	(index - startIndex) % ssWidth, (index - startIndex) / ssWidth);
-			if ((index - startIndex) / ssWidth > 100000)
-				System.out.println();
 			spriteSheet.getSubImage((index - startIndex) % ssWidth, (index - startIndex) / ssWidth).
 				drawEmbedded(x, y, tileWidth, tileHeight);
 		}

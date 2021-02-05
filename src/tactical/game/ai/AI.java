@@ -122,7 +122,8 @@ public abstract class AI implements Serializable
 					// Don't let land effect make a bad decision better
 					if (currentConfidence.confidence > 0)
 					{
-						currentConfidence.confidence += this.getLandEffectConfidence(attackPoint, currentSprite, stateInfo);
+						currentConfidence.landInfluence = this.getLandEffectConfidence(attackPoint, currentSprite, stateInfo);
+						currentConfidence.confidence += currentConfidence.landInfluence;
 						currentConfidence.distanceInfluence = distanceCost - getSpriteDistanceCost(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, 
 								attackPoint, currentSprite.getCurrentMove(), currentSprite);
 						currentConfidence.confidence = Math.max(1, currentConfidence.confidence + currentConfidence.distanceInfluence);

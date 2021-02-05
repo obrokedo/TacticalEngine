@@ -135,20 +135,25 @@ public class MenuState extends LoadableGameState
 
 		game.enterState(TacticalGame.STATE_GAME_LOADING);
 	}
-
+	
 	public void start(LoadTypeEnum loadType, String mapData, String entrance)
+	{			
+		start(loadType, mapData, entrance, 0);
+	}
+
+	public void start(LoadTypeEnum loadType, String mapData, String entrance, int resourceId)
 	{			
 		persistentStateInfo.isFirstLoad = true;
 		switch (loadType)
 		{
 			case CINEMATIC:
-				persistentStateInfo.loadCinematic(mapData, 0);
+				persistentStateInfo.loadCinematic(mapData, resourceId);
 				break;
 			case TOWN:
 				persistentStateInfo.loadMap(mapData, entrance);
 				break;
 			case BATTLE:
-				persistentStateInfo.loadBattle(mapData, entrance, 0);
+				persistentStateInfo.loadBattle(mapData, entrance, resourceId);
 			break;
 		}
 		

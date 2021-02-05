@@ -487,13 +487,15 @@ public class ResourceManager {
 		return cinematicById.get(id);
 	}
 
-	public void checkTriggerCondtions(String location, 
+	public boolean checkTriggerCondtions(String location, 
 			boolean locationEntered, boolean immediate, boolean onMapLoad, boolean searching, StateInfo stateInfo)
 	{
+		boolean executedCondition = false;
 		for (TriggerCondition tc : this.conditions)
 		{
-			tc.executeCondtions(location, locationEntered, immediate, onMapLoad, searching, stateInfo);
+			executedCondition = executedCondition || tc.executeCondtions(location, locationEntered, immediate, onMapLoad, searching, stateInfo);
 		}
+		return executedCondition;
 	}
 
 	public static ArrayList<String> readAllLines(String file) throws IOException

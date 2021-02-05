@@ -26,6 +26,7 @@ public class TownMoveManager extends Manager
 	private int updateDelta = 0;
 	public static int UPDATE_TIME = 20;
 	private Stairs stairsHeroIsOn = null;
+	
 
 	@Override
 	public void initialize() {
@@ -38,9 +39,6 @@ public class TownMoveManager extends Manager
 		updateDelta += delta;
 		boolean currentSpriteJustFinishedMoving = false;
 		int moveRemainder = 0;
-		
-		float currentSpritePrevX = stateInfo.getCurrentSprite().getLocX();
-		float currentSpritePrevY = stateInfo.getCurrentSprite().getLocY();
 
 		for (int i = 0; i < movers.size(); i++)
 		{
@@ -56,7 +54,7 @@ public class TownMoveManager extends Manager
 				movers.remove(i);
 				ms.getAnimatedSprite().doneMoving(stateInfo);
 				i--;
-
+				
 				if (ms.getAnimatedSprite().getSpriteType() == Sprite.TYPE_COMBAT) {
 					stateInfo.checkTriggersMovement((int) ms.getAnimatedSprite().getLocX(), (int) ms.getAnimatedSprite().getLocY(), false);
 				}	
@@ -69,10 +67,15 @@ public class TownMoveManager extends Manager
 					currentSpriteJustFinishedMoving = true;
 					moveRemainder = ms.getMoveRemainder();
 				}
+				
 			}
-		}
+		}			
 
-		if (currentSpriteJustFinishedMoving && moveRemainder > 0) {
+		// If this previous movement started a cinematic or opened a menu then we don't want to allow
+		// adding the remainder
+		if (currentSpriteJustFinishedMoving && moveRemainder > 0 
+				&& !stateInfo.areMenusDisplayed() && !stateInfo.isShowingMapEvent()) {
+			// This can add the users mover back immediately			
 			checkInput();
 
 			for (int i = 0; i < movers.size(); i++)
@@ -160,7 +163,7 @@ public class TownMoveManager extends Manager
 		CombatSprite current = stateInfo.getCurrentSprite();
 
 		// Check to see if we are done moving
-		if (!moving && !stateInfo.areMenusDisplayed())
+		if (!moving && !stateInfo.areMenusDisplayed() && !stateInfo.isShowingMapEvent())
 		{
 			int sx = current.getTileX();
 			int sy = current.getTileY();
@@ -300,8 +303,9 @@ public class TownMoveManager extends Manager
 							nowMoving = true;
 				}
 
-				if (nowMoving)
+				if (nowMoving) {
 					movers.add(new MovingSprite(sprite, dir, stateInfo));
+				}
 				else
 					sprite.doneMoving(stateInfo);
 				break;

@@ -363,26 +363,6 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			}
 		}
 	}
-	
-	
-
-	@Override
-	public void startCinematic(String mapData, int cinematicId) {
-		// This whole line of logic is somewhat terrifying... We set the resource manager
-		// of the psi to the one that the bulkloader is using it is NOT set in the
-		// state info at this point. It will be set in the state info and PSI (again)
-		// once the town/cin/battle state loads. What's more concerning is that we manually
-		// set the loading states bulk loader here and it we will use the same bulk loader
-		// for the rest of the game after we get past the menu state. Ideally it would be nice
-		// to pass the bulkloader along on these load* calls (below), but there currently isn't
-		// a use case for that now
-		persistentStateInfo.setResourceManager(mainGameFCRM);
-		((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
-		
-		super.startCinematic(mapData, cinematicId);
-	}
-
-
 
 	@Override
 	public void mousePressed(int button, int x, int y) {
@@ -408,9 +388,21 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				if (loadCinButton.handleUserInput(x, y, true)) {
 					String id = JOptionPane.showInputDialog("Enter the cinematic id (a number) to run");
 					try {
-						int iId = Integer.parseInt(id);	
+						int iId = Integer.parseInt(id);							
+						
+						// This whole line of logic is somewhat terrifying... We set the resource manager
+						// of the psi to the one that the bulkloader is using it is NOT set in the
+						// state info at this point. It will be set in the state info and PSI (again)
+						// once the town/cin/battle state loads. What's more concerning is that we manually
+						// set the loading states bulk loader here and it we will use the same bulk loader
+						// for the rest of the game after we get past the menu state. Ideally it would be nice
+						// to pass the bulkloader along on these load* calls (below), but there currently isn't
+						// a use case for that now
+						persistentStateInfo.setResourceManager(mainGameFCRM);
+						((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
 						applyDevParams();
-						startCinematic(textSelector.getSelectedResource(), iId);
+						start(LoadTypeEnum.CINEMATIC, textSelector.getSelectedResource(), entranceSelector.getSelectedResource(), iId);
+						
 					} catch (NumberFormatException e) {
 						alertPanel = new AlertPanel("The value must be a number: " + e.getMessage());
 					}

@@ -59,6 +59,7 @@ public class StateInfo
 	private boolean isCombat = false;
 	private boolean isCinematic = false;
 	private boolean isWaiting = false;
+	private boolean showingMapEvent = false;
 	private PersistentStateInfo psi;
 
 	// These values need to be reinitialized each time a map is loaded
@@ -109,6 +110,7 @@ public class StateInfo
 
 		this.initialized = false;
 		this.showAttackCinematic = false;
+		this.showingMapEvent = false;
 		setWaiting();
 		
 		psi.getClientProfile().initialize();
@@ -230,9 +232,11 @@ public class StateInfo
 	public void sendMessage(Message message)
 	{
 		if (message.isImmediate()) {
-			sendMessageImpl(message);
 			// Send the message to our peers, these messages will not be received locally
 			psi.sendMessageToPeers(message);
+						
+			// Short circuit message sending if we're gonna just leave
+			processMessage(message);	
 		}
 		else
 			psi.sendMessage(message);
@@ -241,7 +245,7 @@ public class StateInfo
 	public void sendMessage(Message message, boolean ifHost)
 	{
 		if (psi.isHost())
-			psi.sendMessage(message);
+			sendMessage(message);
 
 		/*
 		if (message.isImmediate())
@@ -276,6 +280,73 @@ public class StateInfo
 	public void recieveMessage(Message message)
 	{
 		newMessages.add(message);
+	}	
+	
+	/**
+	 * 
+	 * @param m
+	 * @return true if this message should stop processing of further messages
+	 */
+	private boolean processMessage(Message m) {
+		switch (m.getMessageType())
+		{
+			case INITIALIZE_STATE_INFO:
+				this.initialized = true;
+				break;
+			case LOAD_MAP:
+				// sendMessage(MessageType.PAUSE_MUSIC);
+
+				LoadMapMessage lmm = (LoadMapMessage) m;
+				psi.loadMap(lmm.getMapData(), lmm.getLocation(), lmm.getTransDir());
+				return true;
+			case START_BATTLE:
+				sendMessage(MessageType.PAUSE_MUSIC);
+
+				LoadMapMessage lmb = (LoadMapMessage) m;
+				psi.loadBattle(lmb.getMapData(), lmb.getLocation(), lmb.getBattleBG());
+				return true;
+			case LOAD_CINEMATIC:
+				sendMessage(MessageType.PAUSE_MUSIC);
+
+				LoadMapMessage lmc = (LoadMapMessage) m;
+				psi.loadCinematic(lmc.getMapData(), lmc.getCinematicID());
+				break;
+			case SAVE:
+				save();
+				break;
+			case SAVE_BATTLE:
+			saveBattle();
+				break;
+			case COMPLETE_QUEST:
+				this.setQuestStatus(((StringMessage) m).getString(), true);
+				break;
+			case UNCOMPLETE_QUEST:
+				this.setQuestStatus(((StringMessage) m).getString(), false);
+				break;
+			case CONTINUE:
+				if (!initialized)
+				{
+					initialized = true;
+					if (isCombat)
+						// Start the whole battle
+						sendMessage(MessageType.INITIALIZE_BATTLE);
+				}
+				this.removePanel(PanelType.PANEL_WAIT);
+				isWaiting = false;
+				break;
+			case SHOW_CINEMATIC:
+				showingMapEvent = true;
+				sendMessageImpl(m);
+				break;
+			case CIN_END: 
+				showingMapEvent = false;
+				sendMessageImpl(m);
+				break;
+			default:
+				sendMessageImpl(m);
+				break;
+		}
+		return false;
 	}
 
 	public void processMessages()
@@ -284,57 +355,8 @@ public class StateInfo
 		newMessages.clear();
 		MESSAGES: for (int i = 0; i < messagesToProcess.size(); i = 0)
 		{
-			Message m = messagesToProcess.remove(i);
-			switch (m.getMessageType())
-			{
-				case INITIALIZE_STATE_INFO:
-					this.initialized = true;
-					break;
-				case LOAD_MAP:
-					// sendMessage(MessageType.PAUSE_MUSIC);
-
-					LoadMapMessage lmm = (LoadMapMessage) m;
-					psi.loadMap(lmm.getMapData(), lmm.getLocation(), lmm.getTransDir());
-					break MESSAGES;
-				case START_BATTLE:
-					sendMessage(MessageType.PAUSE_MUSIC);
-
-					LoadMapMessage lmb = (LoadMapMessage) m;
-					psi.loadBattle(lmb.getMapData(), lmb.getLocation(), lmb.getBattleBG());
-					break MESSAGES;
-				case LOAD_CINEMATIC:
-					sendMessage(MessageType.PAUSE_MUSIC);
-
-					LoadMapMessage lmc = (LoadMapMessage) m;
-					psi.loadCinematic(lmc.getMapData(), lmc.getCinematicID());
-					break;
-				case SAVE:
-					save();
-					break;
-				case SAVE_BATTLE:
-				saveBattle();
-					break;
-				case COMPLETE_QUEST:
-					this.setQuestStatus(((StringMessage) m).getString(), true);
-					break;
-				case UNCOMPLETE_QUEST:
-					this.setQuestStatus(((StringMessage) m).getString(), false);
-					break;
-				case CONTINUE:
-					if (!initialized)
-					{
-						initialized = true;
-						if (isCombat)
-							// Start the whole battle
-							sendMessage(MessageType.INITIALIZE_BATTLE);
-					}
-					this.removePanel(PanelType.PANEL_WAIT);
-					isWaiting = false;
-					break;
-				default:
-					sendMessageImpl(m);
-					break;
-			}
+			if (processMessage(messagesToProcess.remove(i)))
+				break;
 		}
 	}
 
@@ -549,7 +571,7 @@ public class StateInfo
 		return psi.isQuestComplete(questId);
 	}
 	
-	public void checkSearchLocation() {
+	public boolean checkSearchLocation() {
 		int checkX = currentSprite.getTileX();
 		int checkY = currentSprite.getTileY();
 
@@ -569,15 +591,19 @@ public class StateInfo
 				break;
 		}
 		
+		boolean foundSomething = false;
+		
 		for (MapObject mo : getCurrentMap().getMapObjects())
 		{
 			if (mo.contains(checkX * getTileWidth() + 1, 
 					checkY * getTileHeight() + 1))
 			{
-				getResourceManager().checkTriggerCondtions(
+				foundSomething = foundSomething || getResourceManager().checkTriggerCondtions(
 						mo.getName(), false, false, false, true, this);
 			}
 		}
+		
+		return foundSomething;
 	}
 
 	/*********************/
@@ -819,6 +845,10 @@ public class StateInfo
 
 	public void setShowAttackCinematic(boolean showAttackCinematic) {
 		this.showAttackCinematic = showAttackCinematic;
+	}
+	
+	public boolean isShowingMapEvent() {
+		return showingMapEvent;
 	}
 
 	public CombatSprite getCurrentSprite() {

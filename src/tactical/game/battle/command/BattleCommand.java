@@ -73,4 +73,29 @@ public class BattleCommand implements Serializable
 	public void setLevel(int level) {
 		this.level = level;
 	}
+
+	@Override
+	public String toString() {
+		String cmdStr = null;
+		switch (command) {
+			case COMMAND_ATTACK:
+				cmdStr = "Attack";
+				break;
+			case COMMAND_SPELL:
+				cmdStr = "Spell";
+				break;
+			case COMMAND_ITEM:
+				cmdStr = "UseItem";
+				break;
+			case COMMAND_GIVE_ITEM:
+				cmdStr = "GiveItem";
+				break;
+			case COMMAND_TURN_PREVENTED:
+				cmdStr = "TurnPrevented";
+				break;
+		}
+		return "BattleCommand[command=" + cmdStr + ",spell=" + (spell != null ? spell.getSpellId() : "none") + ",item=" + (item != null ? item.getName() : "none") + ",level=" + level + "]";
+	}
+	
+	
 }
