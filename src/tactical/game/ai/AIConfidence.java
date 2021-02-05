@@ -29,12 +29,12 @@ public class AIConfidence {
 
 	@Override
 	public String toString() {
-		return "AIConfidence [confidence=" + confidence + " willKill=" + willKill + " willHeal=" + willHeal
+		return "<b>AIConfidence</b> [confidence=" + confidence + " willKill=" + willKill + " willHeal=" + willHeal
 				+ " foundHero=" + foundHero + " target=" + (target != null ? target.getName() : "none") + 
 				", attackPoint=Tile" + attackPoint.x + "," + attackPoint.y
 				+ " potentialAttackSpriteAction=" + potentialAttackSpriteAction.getBattleCommand().toString() + " allyInfluence=" + allyInfluence
 				+ " enemyInfluence=" + enemyInfluence + " damageInfluence=" + damageInfluence + " distanceInfluence=" + distanceInfluence 
-				+ " landInfluence=" + landInfluence +" aiSpellConfs=" + aiSpellConfs + "]";
+				+ " landInfluence=" + landInfluence +" aiSpellConfs=" + aiSpellConfs + "]<p/>";
 	}
 
 	

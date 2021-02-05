@@ -6,6 +6,7 @@ public abstract class EngineConfigurationValues implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public abstract String[] getStartingHeroIds();
+	public abstract String getIntroCinematicMap();
 	public abstract String getStartingMapData();
 	public abstract String getStartingState();
 	public abstract String getStartingLocation();

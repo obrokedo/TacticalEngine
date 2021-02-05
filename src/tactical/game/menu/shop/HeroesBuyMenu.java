@@ -59,8 +59,9 @@ public class HeroesBuyMenu extends HeroesStatMenu
 					else if (type == EquippableItem.TYPE_ARMOR)
 						ed = Item.getEquippableDifference(hero.getEquippedArmor(), (EquippableItem) selectedShopItem);
 					else if (type == EquippableItem.TYPE_RING)
-						ed = Item.getEquippableDifference(hero.getEquippedRing(), (EquippableItem) selectedShopItem);
-					differences.add("ATT: " + ed.atk +
+						ed = Item.getEquippableDifference(hero.getEquippedRing(), (EquippableItem) selectedShopItem);					
+					// differences.add("ATT " + hero.getMaxAttack() + "-" + (hero.getMaxAttack() + ed.atk) +
+					differences.add("ATT " + ed.atk +
 						" DEF: " + ed.def +
 						" AGI: " + ed.spd);
 				}

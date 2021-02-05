@@ -474,7 +474,7 @@ public class BattleResults implements Serializable
 		{
 			expGained += getExperienceByDamage(sumDamage, attacker, target);
 		}
-		else if (br.attackerDeath)
+		else if (attacker.isHero() && br.attackerDeath)
 			expGained = 0;
 		
 		commandResult.expGained = expGained;

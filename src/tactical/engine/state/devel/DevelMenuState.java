@@ -275,12 +275,11 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			updateDelta += 50;
 			if (key == Input.KEY_F1)
 			{
-				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo("/menu/MainMenu", false, true,
-						new ResourceManager(),
-							(LoadableGameState) game.getState(TacticalGame.STATE_GAME_MENU),
-								new LoadingScreenRenderer(this.container));
-	
-				game.enterState(TacticalGame.STATE_GAME_LOADING);
+				
+				persistentStateInfo.setResourceManager(mainGameFCRM);
+				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
+				applyDevParams();
+				start(LoadTypeEnum.CINEMATIC, ((TacticalGame) game).getEngineConfigurator().getConfigurationValues().getIntroCinematicMap(), null, 0);				
 			}
 	
 			if (key == Input.KEY_F2 || key == Input.KEY_P)

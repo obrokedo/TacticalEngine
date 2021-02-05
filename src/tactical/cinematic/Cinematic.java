@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
 import org.newdawn.slick.util.pathfinding.Path;
 
@@ -35,6 +36,10 @@ import tactical.game.sprite.Sprite;
 import tactical.game.sprite.StaticSprite;
 import tactical.game.trigger.Trigger;
 import tactical.game.ui.PaddedGameContainer;
+import tactical.loading.LoadableGameState;
+import tactical.loading.LoadingScreenRenderer;
+import tactical.loading.LoadingState;
+import tactical.loading.ResourceManager;
 import tactical.map.Map;
 import tactical.utils.StringUtils;
 
@@ -794,6 +799,15 @@ public class Cinematic {
 				addHeroSprite.initializeSprite(stateInfo.getResourceManager());
 				stateInfo.getPersistentStateInfo().getClientProfile().addHero(addHeroSprite);
 				break;
+			case SHOW_MAIN_MENU:
+				StateBasedGame game = stateInfo.getPersistentStateInfo().getGame();
+				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(null);
+				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo("/menu/MainMenu", false, true,
+						new ResourceManager(),
+							(LoadableGameState) game.getState(TacticalGame.STATE_GAME_MENU),
+								new LoadingScreenRenderer(stateInfo.getPaddedGameContainer()));
+	
+				game.enterState(TacticalGame.STATE_GAME_LOADING);
 			default:
 				handleCustomEvent(ce, stateInfo);
 				break;

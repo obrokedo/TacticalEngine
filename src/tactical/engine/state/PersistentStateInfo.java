@@ -71,10 +71,12 @@ public class PersistentStateInfo implements PacketHandler
 	{	
 		this.entranceLocation = entrance;
 
-		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_TOWN, transitionDir);
+		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_TOWN, transitionDir, null);
 	}
 
-	private void cleanupStateAndLoadNext(String mapData, int nextState, Direction transitionDir) {
+	private void cleanupStateAndLoadNext(String mapData, int nextState, Direction transitionDir, LoadingScreenRenderer lsr) {
+		if (lsr == null)
+			lsr = new LoadingScreenRenderer(gc);
 		gc.getInput().removeAllKeyListeners();
 
 		getClientProgress().setMapData(mapData, false);
@@ -85,16 +87,17 @@ public class PersistentStateInfo implements PacketHandler
 				Image image = townState.getStateImageScreenshot(true);
 				setLoadingInfo(mapData,
 					(LoadableGameState) getGame().getState(nextState), getResourceManager(),
+					lsr,
 					image,
 					new MoveMapTransition(townState, transitionDir));
 			} catch (SlickException e) {
 				e.printStackTrace();
 				setLoadingInfo(mapData,
-						(LoadableGameState) getGame().getState(nextState), getResourceManager(), null, null);
+						(LoadableGameState) getGame().getState(nextState), getResourceManager(), lsr, null, null);
 			}
 		} else {
 			setLoadingInfo(mapData, (LoadableGameState) getGame().getState(nextState), 
-					getResourceManager(), null, null);
+					getResourceManager(), lsr, null, null);
 		}
 		
 		// Do not fade out when coming from a cinematic or if the map is going to 'slide' out
@@ -125,13 +128,13 @@ public class PersistentStateInfo implements PacketHandler
 	 * 			null will use the default transition
 	 */
 	private void setLoadingInfo(String text, LoadableGameState nextState,
-			ResourceManager fcResourceManager, Image intermediateImage, Transition transition)
+			ResourceManager fcResourceManager, LoadingScreenRenderer lsr, Image intermediateImage, Transition transition)
 	{
 		// If it's not the first load then we don't want to reload the resources
 		((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo(text, true, isFirstLoad,
 			(fcResourceManager == null ? new ResourceManager() : fcResourceManager),
 				nextState,
-					new LoadingScreenRenderer(gc), intermediateImage, transition);
+					lsr, intermediateImage, transition);
 		isFirstLoad = false;
 	}
 
@@ -145,14 +148,21 @@ public class PersistentStateInfo implements PacketHandler
 	{
 		this.entranceLocation = entrance;
 
-		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_BATTLE, null);
+		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_BATTLE, null, null);
 	}
 
 	public void loadCinematic(String mapData, int cinematicID)
 	{
 		this.cinematicID = cinematicID;		
 		
-		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_CINEMATIC, null);
+		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_CINEMATIC, null, null);
+	}
+	
+	public void loadCinematic(String mapData, int cinematicID, LoadingScreenRenderer lsr)
+	{
+		this.cinematicID = cinematicID;		
+		
+		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_CINEMATIC, null, lsr);
 	}
 
 	public Camera getCamera() {

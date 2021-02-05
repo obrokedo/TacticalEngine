@@ -138,12 +138,12 @@ public class Portrait
 			talkAnim.drawAnimationIgnoreOffset(x + 7,
 					y + 7 + topHeight, graphics);
 		
-		int gem = 0;
+		int gem = 1;
 		if (hero)
-			gem = 1;
+			gem = 0;
 		else if (enemy)
 			gem = 2;
-		gemSpriteSheet.getSubImage(gem, 0).draw(x + 55, y + 71);
+		gemSpriteSheet.getSubImage(gem, 0).draw(x + 53, y + 69);
 	}
 
 	public void update(long delta)

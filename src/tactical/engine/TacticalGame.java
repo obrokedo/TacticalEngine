@@ -285,13 +285,16 @@ public abstract class TacticalGame extends StateBasedGame   {
 						new LoadingScreenRenderer(gameContainer));
 						
 		// RELEASE MODE
-		/*
-		else
+		else {
+			/*
 			loadingState.setLoadingInfo("/menu/MainMenu", false, true,
 				new ResourceManager(),
 					(LoadableGameState) this.getState(STATE_GAME_MENU),
 						TacticalGame.ENGINE_CONFIGURATIOR.getLogoLoadScreenRenderer(gameContainer));
 						*/
+			persistentStateInfo.loadCinematic(this.getEngineConfigurator().getConfigurationValues().getIntroCinematicMap(), 0, 
+					TacticalGame.ENGINE_CONFIGURATIOR.getLogoLoadScreenRenderer(gameContainer));
+		}
 		
 		// TESTER ONLY MODE
 		/*

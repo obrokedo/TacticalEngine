@@ -1285,6 +1285,12 @@ public class PlannerDefinitions {
 				"Show the end game credits.", definingValues));
 		mapControl.add("Show Credits");
 
+		
+		definingValues = new ArrayList<PlannerValueDef>();		
+		allowableLines.add(new PlannerLineDef("showmainmenu", "Show Main Menu",
+				"Show the game main menu.", definingValues));
+		mapControl.add("Show Main Menu");
+		
 		// Exit Game
 		definingValues = new ArrayList<PlannerValueDef>();
 		allowableLines.add(new PlannerLineDef("exit", "Exit Game",
