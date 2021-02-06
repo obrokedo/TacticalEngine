@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.function.Function;
 
-import org.newdawn.slick.SlickException;
-
 import tactical.cinematic.Cinematic;
 import tactical.cinematic.event.CinematicEvent;
 import tactical.cinematic.event.CinematicEvent.CinematicEventType;
@@ -40,7 +38,7 @@ public class TextParser
 {
 	public String parseText(String file, Hashtable<Integer, ArrayList<Speech>> speechesById,
 			Hashtable<Integer, Trigger> triggerEventById, Hashtable<Integer, Cinematic> cinematicById,
-			HashSet<TriggerCondition> conditions, ResourceManager frm) throws IOException, SlickException
+			HashSet<TriggerCondition> conditions, HashSet<TagArea> mapAreas) throws IOException
 	{
 		HashSet<String> animToLoad = new HashSet<String>();
 		HashSet<String> soundToLoad = new HashSet<String>();
@@ -214,6 +212,8 @@ public class TextParser
 				conditions.add(condition);
 			} else if (tagArea.getTagType().equalsIgnoreCase("map")) {
 				mapName = tagArea.getAttribute("file");
+			} else if (tagArea.getTagType().equalsIgnoreCase("objectgroup")) {
+				mapAreas.add(tagArea);
 			}
 		}
 		

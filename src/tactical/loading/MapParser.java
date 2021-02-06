@@ -26,13 +26,14 @@ public class MapParser
 {
 	private static float tileResize = 1;
 	
-	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser,
+	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser, HashSet<TagArea> mapAreas,
 			ResourceManager frm) throws IOException, SlickException
 	{
 		HashSet<String> spriteToLoad = new HashSet<String>();
 		ArrayList<TagArea> tagAreas = XMLParser.process(mapFile, false);
 
 		TagArea tagArea = tagAreas.get(0);
+		tagArea.getChildren().addAll(mapAreas);
 
 		int width = Integer.parseInt(tagArea.getAttribute("width"));
 		int height = Integer.parseInt(tagArea.getAttribute("height"));

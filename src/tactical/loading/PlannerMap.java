@@ -303,20 +303,20 @@ public class PlannerMap extends Map {
 					"npcs-objects".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {					
 					metaTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
-					newRootTA.getChildren().add(i, metaTagArea);
+					// newRootTA.getChildren().add(i, metaTagArea);
 				} else if ("battle".equalsIgnoreCase(rootChildTA.getParams().get("name"))) { 
 					battleTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
-					newRootTA.getChildren().add(i, battleTagArea);
+					// newRootTA.getChildren().add(i, battleTagArea);
 				} else if ("terrain".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
 					terrainTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
-					newRootTA.getChildren().add(i, terrainTagArea);
+					// newRootTA.getChildren().add(i, terrainTagArea);
 				} else if ("trigger regions".equalsIgnoreCase(rootChildTA.getParams().get("name")) ||
 						"trigger region".equalsIgnoreCase(rootChildTA.getParams().get("name"))) {
 					triggerRegionsTagArea = new TagArea(rootChildTA);
 					newRootTA.getChildren().remove(i);
-					newRootTA.getChildren().add(i, triggerRegionsTagArea);
+					// newRootTA.getChildren().add(i, triggerRegionsTagArea);
 				} else {
 					JOptionPane.showMessageDialog(null, 
 							"The loaded map contains Object Layers that do not conform to the map naming schema."
@@ -392,8 +392,17 @@ public class PlannerMap extends Map {
 				parentArea.getChildren().add(childTA);
 			
 		}
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(triggerRegionsTagArea.getOriginalText());
+		sb.append("\n");
+		sb.append(battleTagArea.getOriginalText());
+		sb.append("\n");
+		sb.append(metaTagArea.getOriginalText());
+		sb.append("\n");
+		sb.append(terrainTagArea.getOriginalText());
 
-		return newRootTA.getOriginalText();
+		return sb.toString();
 	}
 
 	private TagArea getNewChild(MapObject mo)

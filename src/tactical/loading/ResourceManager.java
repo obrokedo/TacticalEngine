@@ -163,10 +163,11 @@ public class ResourceManager {
 		}
 		else if (split[0].equalsIgnoreCase("text"))
 		{
-			String mapName = TacticalGame.TEXT_PARSER.parseText(split[1], speechesById, triggerEventById, cinematicById, conditions, this);
+			HashSet<TagArea> mapAreas = new HashSet<>();
+			String mapName = TacticalGame.TEXT_PARSER.parseText(split[1], speechesById, triggerEventById, cinematicById, conditions, mapAreas);
 			Log.debug("Load map: " + mapName);
 			map.setName(mapName);
-			MapParser.parseMap("/map/" + mapName, map, new TilesetParser(), this);
+			MapParser.parseMap("/map/" + mapName, map, new TilesetParser(), mapAreas, this);
 		}
 		else if (split[0].equalsIgnoreCase("herodefs"))
 		{

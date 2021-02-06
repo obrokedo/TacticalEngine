@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -21,6 +23,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
 
 import mb.fc.utils.gif.GifFrame;
+import tactical.cinematic.Cinematic;
 import tactical.engine.TacticalGame;
 import tactical.engine.load.BulkLoader;
 import tactical.engine.state.MenuState;
@@ -30,6 +33,9 @@ import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel;
 import tactical.game.menu.Menu.MenuUpdate;
 import tactical.game.resource.SpellResource;
+import tactical.game.text.Speech;
+import tactical.game.trigger.Trigger;
+import tactical.game.trigger.TriggerCondition;
 import tactical.game.ui.Button;
 import tactical.game.ui.ListUI;
 import tactical.game.ui.ListUI.ResourceSelectorListener;
@@ -455,8 +461,13 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	public boolean resourceSelected(String selectedItem,
 			ListUI parentSelector) {
 		
+		HashSet<TagArea> mapArea = new HashSet<TagArea>();
 		try {			
-			String firstLine = ResourceManager.readAllLines("/mapdata/" + selectedItem).get(1);			
+			String firstLine = ResourceManager.readAllLines("/mapdata/" + selectedItem).get(1);		
+			mapArea = new HashSet<TagArea>();
+			TacticalGame.TEXT_PARSER.parseText("/mapdata/" + selectedItem, 
+					new Hashtable<Integer, ArrayList<Speech>>(), new Hashtable<Integer, Trigger>(), 
+					new Hashtable<Integer, Cinematic>(), new HashSet<TriggerCondition>(), mapArea);
 			
 			if (firstLine.startsWith("<map")) {
 				ArrayList<TagArea> tagArea = XMLParser.process(Collections.singletonList(firstLine), false);
@@ -477,7 +488,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		Map map = new Map();
 		ArrayList<String> entrances = new ArrayList<>();
 		try {
-			MapParser.parseMap("/map/" + currentMap, map, new TilesetParser(), null);
+			MapParser.parseMap("/map/" + currentMap, map, new TilesetParser(), mapArea, null);
 
 			for (MapObject mo : map.getMapObjects())
 				if (mo.getKey().equalsIgnoreCase("start"))

@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -210,8 +211,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		addMenuItem("Open Triggers/Speech/Cinematic", "open", fileMenu);
 		changeAssociatedMapMenuItem = addMenuItem("Change Associated Map", "openmap", fileMenu);
 		changeAssociatedMapMenuItem.setEnabled(false);
-		exportMapItem = addMenuItem("Export Map", "exportmap", fileMenu);
-		exportMapItem.setEnabled(false);
+		//exportMapItem = addMenuItem("Export Map", "exportmap", fileMenu);
+		// exportMapItem.setEnabled(false);
 		addMenuItem("Reload Triggers/Speech/Cinematic", "reload", fileMenu);
 		// addMenuItem("Create Triggers Based on Map", "generate", fileMenu);
 		addMenuItem("Save Triggers/Speech/Cinematic", "save", fileMenu);
@@ -412,7 +413,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				openFile(triggerFile);
 			}
 		} else if (actionCommand.equalsIgnoreCase("openmap")) {
-			promptAndLoadPlannerMap();
+			// promptAndLoadPlannerMap();
 		} else if (actionCommand.equalsIgnoreCase("reload")) {
 			if (triggerFile != null)
 				openFile(triggerFile);
@@ -453,7 +454,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		}
 		else if (actionCommand.equalsIgnoreCase("exportmap"))
 		{
-			exportMap();
+			// exportMap();
 		}
 		else if (actionCommand.equalsIgnoreCase("playcin")) {
 			if (cinematicMapPanel.getSelectedCinematicId() != -1) {
@@ -616,7 +617,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		}
 	}
 	
-	private boolean promptAndLoadPlannerMap() 
+	private boolean promptAndLoadPlannerMap(HashSet<TagArea> mapAreas) 
 	{
 		JFileChooser fc = createFileChooser();
 		int returnVal = fc.showOpenDialog(this);
@@ -628,17 +629,17 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					+ "the correct trigger file open so that they may be viewed correctly. As such triggers\n"
 					+ "and battletriggers in the map view may not work correctly until the appropriate text file is loaded.");
 
-			return loadPlannerMap(fc.getSelectedFile().getName());
+			return loadPlannerMap(fc.getSelectedFile().getName(), mapAreas);
 		} else {
 			return false;
 		}
 	}
 
-	private boolean loadPlannerMap(String fileName) {
+	private boolean loadPlannerMap(String fileName, HashSet<TagArea> mapAreas) {
 		plannerMap = new PlannerMap(fileName, referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1));
 
 		try {
-			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), plannerMap, new PlannerTilesetParser(), null);
+			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), plannerMap, new PlannerTilesetParser(), mapAreas, null);
 			
 			if (!plannerMap.validateLayers())
 			{
@@ -690,10 +691,14 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			ArrayList<TagArea> tagAreas = XMLParser.process(Files.readAllLines(
 					Paths.get(triggerFile.getAbsolutePath()), StandardCharsets.UTF_8), true);
 			String mapFile = null;
+			
+			HashSet<TagArea> mapAreas = new HashSet<TagArea>();
+			
 			for (TagArea ta : tagAreas)
 				if (ta.getTagType().equalsIgnoreCase("map")) {
 					mapFile = ta.getAttribute("file");
-					break;
+				} else if (ta.getTagType().equalsIgnoreCase("objectgroup")) {
+					mapAreas.add(ta);
 				}
 			
 			referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1).clear();
@@ -702,11 +707,11 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			if (mapFile == null) {
 				if (reportNoMap) {
 					JOptionPane.showMessageDialog(this, "No map file has been associated with this map data, please choose a map now");
-					if (!promptAndLoadPlannerMap())
+					if (!promptAndLoadPlannerMap(mapAreas))
 						return;
 				}
 			} else {
-				if (!loadPlannerMap(mapFile))
+				if (!loadPlannerMap(mapFile, mapAreas))
 					return;
 			}
 			
@@ -768,6 +773,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			buffer.add("<area>");
 			buffer.add("<map file=\"" + plannerMap.getMapName() +"\"/>");
 			
+			
+			
 			try {
 				plannerTabs.get(TAB_TRIGGER).setNewValues();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TRIGGER).getListPC(), null));
@@ -780,6 +787,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				
 				plannerTabs.get(TAB_CONDITIONS).setNewValues();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CONDITIONS).getListPC(), null));
+				
+				buffer.add(plannerMap.outputNewMap());
 			} catch (Exception e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, "An error occurred while trying to format the trigger data:"
@@ -796,14 +805,6 @@ public class PlannerFrame extends JFrame implements ActionListener,
 						+ e.getMessage(), "Error saving data", JOptionPane.ERROR_MESSAGE);				
 				return;
 			}
-		}
-
-		if (previousExportsSuccessful) {
-			int rc = JOptionPane.showConfirmDialog(this, 
-					"The file was saved successfully.\nWould you also like to export the map at this time (Highly recommended)", 
-					"Save Successful", JOptionPane.YES_NO_OPTION);
-			if (rc == JOptionPane.YES_OPTION)
-				exportMap();
 		}
 	}
 
