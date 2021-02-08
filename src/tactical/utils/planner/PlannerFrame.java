@@ -94,7 +94,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private static Object saveLock = new Object();
 	private static Color saveColor = Color.GREEN;
 	private static JLabel saveLabel = new JLabel();
-	private static SavingThread savingThread = null;
+	private static SavingThread savingThread = null;	
 	
 	private static class SavingThread implements Runnable {
 		private AtomicBoolean cancel = new AtomicBoolean(false);
@@ -142,8 +142,11 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	public PlannerFrame(MenuState menuState) {
 		super("Planner: NO TRIGGERS LOADED " + version);
 
-		this.menuState = menuState;
-		
+		this.menuState = menuState;	
+		initialize();
+	}
+
+	protected void initialize() {
 		try {
 		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 		        if ("Nimbus".equals(info.getName())) {
@@ -636,10 +639,14 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	}
 
 	private boolean loadPlannerMap(String fileName, HashSet<TagArea> mapAreas) {
-		plannerMap = new PlannerMap(fileName, referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1));
+		plannerMap = new PlannerMap(fileName, 
+				referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1), plannerTabs.get(PlannerFrame.TAB_ENEMY));
 
 		try {
-			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), plannerMap, new PlannerTilesetParser(), mapAreas, null);
+			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), 
+					plannerMap, new PlannerTilesetParser(), mapAreas, null);
+			
+			plannerMap.loadSprites();
 			
 			if (!plannerMap.validateLayers())
 			{
@@ -668,7 +675,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			return false;
 		}
 
-		exportMapItem.setEnabled(true);
+		// exportMapItem.setEnabled(true);
 		ArrayList<PlannerTab> tabsWithMapRefs = getTabsWithMapReferences();
 		plannerMap.setTabsWithMapReferences(tabsWithMapRefs);
 		
@@ -820,7 +827,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		if (jtp.getSelectedIndex() == TAB_CIN_MAP)
 		{
 			cinematicMapPanel.reloadCinematicItem();
-			playCinematicMenuItem.setEnabled(true);
+			if (menuState != null)
+				playCinematicMenuItem.setEnabled(true);
 		} else if (jtp.getSelectedIndex() == TAB_UNIFIED_VIEW) {
 			unifiedViewPanel.panelSelected();
 		}

@@ -3,6 +3,8 @@ package tactical.loading;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -12,9 +14,19 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.util.Log;
+
+import tactical.engine.TacticalGame;
+import tactical.game.constants.Direction;
+import tactical.game.exception.BadAnimationException;
 import tactical.map.Map;
 import tactical.map.MapLayer;
 import tactical.map.MapObject;
+import tactical.utils.Animation;
+import tactical.utils.DirectoryLister;
+import tactical.utils.ImageUtility;
+import tactical.utils.SpriteAnims;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.PlannerContainer;
 import tactical.utils.planner.PlannerFrame;
@@ -33,11 +45,14 @@ public class PlannerMap extends Map {
 	private String mapName;
 	private ArrayList<PlannerTab> tabsWithMapReferences;
 	private ArrayList<PlannerReference> locationReferences;
+	private Hashtable<String, BufferedImage> imagesByName = new Hashtable<>();
+	private PlannerTab enemyTab;
 
-	public PlannerMap(String mapName, ArrayList<PlannerReference> locationReferences) {
+	public PlannerMap(String mapName, ArrayList<PlannerReference> locationReferences, PlannerTab enemyTab) {
 		super();
 		this.mapName = mapName;
 		this.locationReferences = locationReferences;
+		this.enemyTab = enemyTab;
 	}
 	
 	public boolean validateLayers() {
@@ -61,6 +76,48 @@ public class PlannerMap extends Map {
 			}
 		}
 		return true;
+	}
+	
+	public void loadSprites() {		
+		loadImagesFromDir("sprite", ".png");
+		loadAnimations();		
+	}
+	
+	private void loadAnimations(){
+		for (File file : DirectoryLister.listFilesInDir("animations/animationsheets"))
+		{
+			try {
+				if (file.getName().endsWith(".anim")) {
+					Log.debug(file.getName());
+					SpriteAnims sa = TacticalGame.ENGINE_CONFIGURATIOR.getAnimationParser().
+							parseAnimations(file.getPath());
+					BufferedImage spriteSheet = ImageUtility.loadBufferedImage("animations/animationsheets/" + sa.getSpriteSheet() + ".png");
+					Animation anim = null;
+					try {
+						anim = sa.getDirectionAnimation(Direction.DOWN);
+					} catch (BadAnimationException ex) {
+						anim = sa.getAnimation("Down");
+					}
+									
+					if (anim != null) {
+						Rectangle bounds = sa.imageLocs.get(anim.frames.get(0).sprites.get(0).imageIndex);
+						imagesByName.put(file.getName().replaceFirst(".anim", ""), spriteSheet.getSubimage(
+								(int) bounds.getX(), (int) bounds.getY(), 
+								(int) bounds.getWidth(), (int) bounds.getHeight()));
+					}			
+				}
+			} catch (Exception ex) {
+			}
+		}
+	}
+	
+	private void loadImagesFromDir(String path, String ext) {
+		for (File f : DirectoryLister.listFilesInDir(path)) {
+			String name = f.getName();
+			if (f.getName().endsWith(ext)) {
+				imagesByName.put(name.replaceFirst(ext, ""), ImageUtility.loadBufferedImage(path + "/" + name));
+			}
+		}
 	}
 
 	public void addTileset(Image[] sprites, int tileStartIndex,
@@ -139,6 +196,8 @@ public class PlannerMap extends Map {
 			if (isMapObjectFilteredOut(mo, displayEnemy, displayOther, displayTerrain, 
 					displayUnused, displayInteractables, interactable))
 				continue;
+			
+			
 
 			int[] xP, yP;
 			xP = new int[mo.getShape().getPointCount()];
@@ -166,11 +225,39 @@ public class PlannerMap extends Map {
 				g.setColor(SELECTED_MO_LINE_COLOR);
 			
 			g.drawPolygon(xP, yP, xP.length);
+			
+			String im = null;
+			if (mo.getKey().equalsIgnoreCase("door")) {
+				im = mo.getParam("image");				
+			} else if (mo.getKey().equalsIgnoreCase("npc")) {			
+				im = mo.getParam("animation");
+			} else if (mo.getKey().equalsIgnoreCase("chest")) {
+				im = mo.getParam("spriteimage");
+			} else if (mo.getKey().equalsIgnoreCase("enemy")) {
+				if ((im = mo.getParam("enemyid")) != null) {
+					PlannerContainer pc = enemyTab.getPlannerContainerByReference(new PlannerReference(im));
+					if (pc.getDefLine().getValues().size() > 23) {
+						im = ((PlannerReference) pc.getDefLine().getValues().get(23)).getName();
+					}
+				}
+			}
+			
+			if (im != null)
+				renderMapObjectImage(im, mo, scale, g);
+			
 			if (name != null)
 			{
 				g.setColor(Color.white);
 				g.drawString(name, xP[0] + 5, yP[0] + 15);
 			}
+		}
+	}
+	
+	private void renderMapObjectImage(String im, MapObject mo, float scale, Graphics g) {
+		Image i = imagesByName.get(im); 
+		if (i != null) {
+			g.drawImage(i.getScaledInstance((int) (i.getWidth(null) * scale), (int) (i.getWidth(null) * scale), 0), 
+				(int) (mo.getX() * scale), (int) (mo.getY() * scale), null);
 		}
 	}
 	
