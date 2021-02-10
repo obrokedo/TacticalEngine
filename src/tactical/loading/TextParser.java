@@ -317,6 +317,10 @@ public class TextParser
 				{
 					te.addTriggerable(te.new TriggerShowPriest(actionParams.get("portrait")));
 				}
+				else if (tagType.equalsIgnoreCase("showadvisor"))
+				{
+					te.addTriggerable(te.new TriggerShowAdvisor());
+				}
 				else if (tagType.equalsIgnoreCase("addhero"))
 				{
 					te.addTriggerable(te.new TriggerAddHero(HeroResource.getHeroIdByName(actionParams.get("heroid"))));

@@ -57,4 +57,20 @@ public interface MenuConfiguration {
 	public String getDropSuccessText(String itemName);
 	public String getUseTargetText(String itemName);
 	public String getUseFailedText(String heroName, String itemName);
+	
+	public String getStorageDepositText();
+	public String getStorageDepositedText(String itemName);
+	public String getStorageWithdrawText();
+	public String getStorageWithdrawnText();
+	public String getStorageEvaluateText();
+	public String getStorageWithdrawNoItemsText();
+	
+	public String getPartyNoOneToJoinText();
+	public String getPartyGroupIsFull();
+	public String getPartyWhoToAdd();
+	public String getPartyWhoToRemove();
+	public String getPartyNoOneToRemove();
+	public String getPartyWhoToInpsect();
+	public String getPartyMemberRemoved(String hero);
+	public String getPartyMemberAdded(String hero);
 }

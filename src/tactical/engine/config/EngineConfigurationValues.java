@@ -24,4 +24,5 @@ public abstract class EngineConfigurationValues implements Serializable {
 	public abstract void clearPythonModules();
 	public abstract int getEmptyItemIndexX();
 	public abstract int getEmptyItemIndexY();
+	public abstract String getAdvisorPortraitAnimFile();
 }

@@ -24,6 +24,7 @@ public abstract class HeroDefinition
 	protected String animations;
 
 	protected String className[];
+	protected String classDescription[];
 	protected int move[];
 	protected String movementType[];
 
@@ -99,6 +100,7 @@ public abstract class HeroDefinition
 			mpGain = new String[listSize];
 			usuableWeapons = new int[listSize][];
 			className = new String[listSize];
+			classDescription = new String[listSize];
 
 			parseCustomHeroDefinition(listSize);
 			
@@ -212,6 +214,7 @@ public abstract class HeroDefinition
 				mpStart[index] = Integer.parseInt(childTagArea.getAttribute("mpstart"));
 				mpEnd[index] = Integer.parseInt(childTagArea.getAttribute("mpend"));
 				className[index] = childTagArea.getAttribute("class");
+				classDescription[index] = childTagArea.getAttribute("evaluation");
 
 				parseCustomHeroProgression(index, childTagArea);
 

@@ -10,17 +10,20 @@ import tactical.engine.message.SpeechBundleMessage;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.StringMessage;
-import tactical.game.menu.AdvisorMenu;
-import tactical.game.menu.ChangePartyMenu;
 import tactical.game.menu.HeroStatMenu;
 import tactical.game.menu.HeroesStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.Menu.MenuUpdate;
+import tactical.game.menu.advisor.AdvisorMenu;
+import tactical.game.menu.advisor.ChangePartyMenu;
+import tactical.game.menu.advisor.DepositItemMenu;
+import tactical.game.menu.advisor.RetrieveItemMenu;
+import tactical.game.menu.advisor.StorageMenu;
 import tactical.game.menu.MiniMapPanel;
 import tactical.game.menu.MultiHeroJoinMenu;
 import tactical.game.menu.PriestMenu;
+import tactical.game.menu.SelectHeroMenu;
 import tactical.game.menu.SpeechMenu;
-import tactical.game.menu.StorageMenu;
 import tactical.game.menu.SystemMenu;
 import tactical.game.menu.YesNoMenu;
 import tactical.game.menu.battle.BattleOptionMenu;
@@ -149,6 +152,9 @@ public class MenuManager extends Manager
 				StringMessage stringMessage = (StringMessage) message;
 				stateInfo.addMenu(new PriestMenu(stringMessage.getString(), stateInfo));
 				break;
+			case SHOW_ADVISOR_MENU:
+				stateInfo.addMenu(new AdvisorMenu(stateInfo));
+				break;
 			case SHOW_PANEL_MULTI_JOIN_CHOOSE:
 				ArrayList<CombatSprite> heroesToChooseList = new ArrayList<>();
 				((SpriteContextMessage) message).getSpriteIds().forEach(id -> heroesToChooseList.add(HeroResource.getHero(id)));
@@ -163,10 +169,7 @@ public class MenuManager extends Manager
 				break;
 			case SHOW_MINI_MAP:
 				stateInfo.addMenu(new MiniMapPanel(stateInfo.getCurrentMap(), stateInfo));
-				break;
-			case SHOW_ADVISOR_MENU:
-				stateInfo.addMenu(new AdvisorMenu(stateInfo));
-				break;
+				break;			
 			case SHOW_CHANGE_PARTY_MENU:
 				stateInfo.addMenu(new ChangePartyMenu(stateInfo));
 				break;
@@ -182,6 +185,13 @@ public class MenuManager extends Manager
 				break;
 			case SHOW_TOWN_ITEM_OPTION_MENU:				
 				stateInfo.addMenu(new TownItemOptionMenu(stateInfo));
+				break;
+			case SHOW_DEPOSIT_MENU:
+				stateInfo.addMenu(new DepositItemMenu(stateInfo, null));
+				break;
+			case SHOW_WITHDRAW_MENU:
+				stateInfo.addMenu(new RetrieveItemMenu(stateInfo));
+				break;
 			default:
 				break;
 		}

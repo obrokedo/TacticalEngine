@@ -17,7 +17,7 @@ public final class DefaultHeroDefinition extends HeroDefinition {
 				new Object[] {hpGain[index], hpStart[index], hpEnd[index]},
 				new Object[] {mpGain[index], mpStart[index], mpEnd[index]}, 
 				spellIds.get(index), spellsPerLevel.get(index),
-				specialPromotionItemId[index], className[index]);
+				specialPromotionItemId[index], className[index], classDescription[index]);
 	}
 
 	@Override

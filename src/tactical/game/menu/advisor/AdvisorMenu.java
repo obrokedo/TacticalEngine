@@ -1,20 +1,22 @@
-package tactical.game.menu;
+package tactical.game.menu.advisor;
 
 import org.newdawn.slick.Image;
 
+import tactical.engine.TacticalGame;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.MessageType;
-import tactical.engine.message.StringMessage;
+import tactical.engine.message.SpeechMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.constants.Direction;
-import tactical.game.hudmenu.Panel.PanelType;
-import tactical.game.menu.Menu.MenuUpdate;
+import tactical.game.menu.Portrait;
+import tactical.game.menu.QuadMenu;
 
 public class AdvisorMenu extends QuadMenu {
 
 	public AdvisorMenu(StateInfo stateInfo) {
-		super(PanelType.PANEL_ADVISOR, stateInfo);
-
+		super(PanelType.PANEL_ADVISOR, stateInfo);		
+		this.portrait = Portrait.getPortrait(-1, -1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getAdvisorPortraitAnimFile(), stateInfo);
 		icons = new Image[8];
 
 		for (int i = 0; i < icons.length; i++)
@@ -50,8 +52,8 @@ public class AdvisorMenu extends QuadMenu {
 				stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
 				break;
 			case RIGHT:
-				stateInfo.sendMessage(new StringMessage(MessageType.SPEECH, "Win some battles!<hardstop>"));
-				break;				
+				stateInfo.sendMessage(new SpeechMessage("Win some battles!<hardstop>", -1, this.portrait));
+				break;
 		}
 		return MenuUpdate.MENU_ACTION_LONG;
 	}

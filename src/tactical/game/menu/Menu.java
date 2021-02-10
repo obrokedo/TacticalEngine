@@ -1,5 +1,7 @@
 package tactical.game.menu;
 
+import tactical.engine.TacticalGame;
+import tactical.engine.config.MenuConfiguration;
 import tactical.engine.state.StateInfo;
 import tactical.game.hudmenu.Panel;
 import tactical.game.input.UserInput;
@@ -15,6 +17,8 @@ public abstract class Menu extends Panel
 {
 	protected MenuListener listener = null;
 
+	protected MenuConfiguration menuConfig;
+
 	public enum MenuUpdate
 	{
 		MENU_NO_ACTION,
@@ -26,6 +30,7 @@ public abstract class Menu extends Panel
 
 	public Menu(PanelType menuType) {
 		super(menuType);
+		menuConfig = TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration();
 	}
 
 	public abstract MenuUpdate handleUserInput(UserInput input, StateInfo stateInfo);

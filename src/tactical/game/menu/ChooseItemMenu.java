@@ -13,7 +13,7 @@ import tactical.engine.state.StateInfo;
 import tactical.game.item.Item;
 import tactical.game.listener.MenuListener;
 
-public abstract class ChooseItemMenu extends HeroesStatMenu
+public class ChooseItemMenu extends HeroesStatMenu
 {
 	protected boolean selectingItemState = false;
 	protected int selectingItemIndex = 0;
@@ -141,7 +141,9 @@ public abstract class ChooseItemMenu extends HeroesStatMenu
 		return MenuUpdate.MENU_ACTION_LONG;
 	}
 	
-	protected abstract boolean itemSelected(StateInfo stateInfo);
+	protected boolean itemSelected(StateInfo stateInfo) {
+		return true;
+	}
 
 	@Override
 	protected void drawHeroSpecificsLeft(Graphics graphics) {

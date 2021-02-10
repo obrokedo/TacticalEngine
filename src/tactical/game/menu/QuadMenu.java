@@ -6,6 +6,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.config.MenuConfiguration;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.MessageType;
 import tactical.engine.state.StateInfo;

@@ -1,6 +1,7 @@
 package tactical.game.menu;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.util.Log;
@@ -20,7 +21,7 @@ import tactical.game.text.Speech;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.utils.StringUtils;
 
-public class SpeechMenu extends Menu
+public class SpeechMenu extends Menu implements MenuListener
 {
 	public static final int NO_TRIGGER = -1;
 
@@ -42,6 +43,7 @@ public class SpeechMenu extends Menu
 	private Speech speech = null;
 	protected boolean isDone = false;
 	private int linesSincePause = 0;
+	private Supplier<Boolean> onCloseSupplier = null;
 
 	private int LINES_DISPLAYED_IN_TOWN = 3;
 	private int LINES_DISPLAYED_IN_BATTLE = 2;
@@ -72,6 +74,20 @@ public class SpeechMenu extends Menu
 	public SpeechMenu(String text, StateInfo stateInfo)
 	{
 		this(text, stateInfo.getPaddedGameContainer(), NO_TRIGGER, null, null);
+	}
+	
+	public SpeechMenu(String text, StateInfo stateInfo, Supplier<Boolean> onCloseSupplier)
+	{
+		this(text, stateInfo.getPaddedGameContainer(), NO_TRIGGER, null, null);
+		this.onCloseSupplier = onCloseSupplier;
+		this.listener = this;
+	}
+	
+	public SpeechMenu(String text, Portrait portrait, StateInfo stateInfo, Supplier<Boolean> onCloseSupplier)
+	{
+		this(text, stateInfo.getPaddedGameContainer(), NO_TRIGGER, portrait, null);
+		this.onCloseSupplier = onCloseSupplier;
+		this.listener = this;
 	}
 	
 	/**
@@ -400,5 +416,17 @@ public class SpeechMenu extends Menu
 	public boolean makeRemoveSounds() {
 		
 		return true;
+	}
+
+	@Override
+	public void valueSelected(StateInfo stateInfo, Object value) {
+		if (onCloseSupplier != null)
+			onCloseSupplier.get();
+	}
+
+	@Override
+	public void menuClosed() {
+		// TODO Auto-generated method stub
+		
 	}
 }

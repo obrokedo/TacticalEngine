@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.state.StateInfo;
+import tactical.game.item.Item;
 import tactical.game.sprite.CombatSprite;
 
 public class ClientProgress implements Serializable
@@ -44,6 +45,7 @@ public class ClientProgress implements Serializable
 	private static final String BATTLE_PREFIX = "!!";
 	private transient long lastSaveTime;
 	private transient String lastSaveMapData;
+	private ArrayList<Integer> storedItems;
 
 	public ClientProgress(String name)
 	{		
@@ -64,6 +66,7 @@ public class ClientProgress implements Serializable
 		battleHeroSpriteIds = null;
 		currentTurn = 0;
 		lastSaveTime = System.currentTimeMillis();
+		storedItems = new ArrayList<>(); 
 	}
 	
 	public void setQuestStatus(String questId, boolean completed)	
@@ -255,5 +258,17 @@ public class ClientProgress implements Serializable
 
 	public void setLastSaveMapData(String lastSaveMapData) {
 		this.lastSaveMapData = lastSaveMapData;
+	}
+	
+	public void depositItem(Item item) {
+		this.storedItems.add(item.getItemId());
+	}
+	
+	public void retrieveItem(int index) {
+		this.storedItems.remove(index);
+	}
+	
+	public ArrayList<Integer> getStoredItems() {
+		return new ArrayList<Integer> (this.storedItems);
 	}
 }

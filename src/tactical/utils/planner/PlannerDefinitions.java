@@ -1354,7 +1354,7 @@ public class PlannerDefinitions {
 				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "description", false,
 						"Description",
-						"A description of the object that will be presented to the players"));
+						"A description of the object that will be presented to the players during item evaluation"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "cost", false, "Cost",
 				"The amount this item costs to purchase"));
@@ -2059,6 +2059,16 @@ public class PlannerDefinitions {
 
 		// Progression
 		definingValues = new ArrayList<PlannerValueDef>();
+		
+		definingValues
+		.add(new PlannerValueDef(
+				PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_LONG_STRING,
+				"evaluation",
+				false,
+				"Progression Evaluation",
+				"The text that will be displayed when a hero with this progression is evaluated in the advisor"));
+		
 		definingValues
 				.add(new PlannerValueDef(
 						PlannerValueDef.REFERS_NONE,
@@ -2433,6 +2443,11 @@ public class PlannerDefinitions {
 				"The animation file containing the priest portrait"));
 		allowableLines.add(new PlannerLineDef("showpriest", "Show Priest",
 				"Displays the priests menu", definingValues));
+		
+		// Show advisor
+		definingValues = new ArrayList<PlannerValueDef>();
+		allowableLines.add(new PlannerLineDef("showadvisor", "Show Advisor",
+				"Displays the advisor menu. The advisor portrait is defined in the ConfigurationValues script as getAdvisorPortraitAnimFile.", definingValues));
 
 		// Play Music
 		definingValues = new ArrayList<PlannerValueDef>();

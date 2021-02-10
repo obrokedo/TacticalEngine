@@ -21,6 +21,7 @@ import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.Button;
 import tactical.game.ui.PaddedGameContainer;
 
+@Deprecated
 public class ShopMenu extends Menu implements MenuListener
 {
 	private int x;

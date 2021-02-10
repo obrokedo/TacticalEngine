@@ -28,8 +28,6 @@ public class PriestMenu extends QuadMenu implements MenuListener
 	{
 		super(PanelType.PANEL_PRIEST, Portrait.getPortrait(-1, -1, portaitAnim, stateInfo), true, stateInfo);
 		
-		menuConfig = TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration();
-		
 		this.enabled = new boolean[4];
 		this.icons = new Image[8];
 		this.text = new String[4];

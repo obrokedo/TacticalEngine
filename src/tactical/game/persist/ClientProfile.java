@@ -18,16 +18,11 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.newdawn.slick.util.Log;
-
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
-import tactical.game.battle.LevelUpResult;
-import tactical.game.dev.DevParams;
 import tactical.game.exception.BadResourceException;
 import tactical.game.resource.HeroResource;
 import tactical.game.sprite.CombatSprite;
-import tactical.loading.ResourceManager;
 
 public class ClientProfile implements Serializable
 {
@@ -110,6 +105,14 @@ public class ClientProfile implements Serializable
 				hs.add(hero);
 		}
 		return hs;
+	}
+	
+	public void addHeroToParty(CombatSprite cs) {
+		this.inBattleHeroIds.add(cs.getId());
+	}
+	
+	public void removeHeroFromParty(CombatSprite cs) {
+		this.inBattleHeroIds.remove(cs.getId());
 	}
 
 	private class HeroComparator implements Comparator<CombatSprite>

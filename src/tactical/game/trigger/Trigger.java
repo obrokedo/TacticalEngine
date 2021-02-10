@@ -286,6 +286,19 @@ public class Trigger
 			return true;
 		}
 	}
+	
+	public class TriggerShowAdvisor implements Triggerable {
+		
+		public TriggerShowAdvisor() {
+			super();
+		}
+		
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			stateInfo.sendMessage(MessageType.SHOW_ADVISOR_MENU);
+			return true;
+		}
+	}
 
 	public class TriggerAddHero implements Triggerable
 	{

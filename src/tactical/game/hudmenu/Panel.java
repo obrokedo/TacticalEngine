@@ -57,7 +57,8 @@ public abstract class Panel
 		PANEL_MULTI_JOIN_CHOOSE,
 		PANEL_MINI_MAP,
 		PANEL_PAUSE,
-		PANEL_CONTEXT_DEBUG
+		PANEL_CONTEXT_DEBUG,
+		PANEL_SELECT_HERO
 	}
 
 	protected PanelType panelType;
