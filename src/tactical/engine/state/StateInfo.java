@@ -30,6 +30,7 @@ import tactical.game.manager.Manager;
 import tactical.game.menu.Menu;
 import tactical.game.persist.ClientProfile;
 import tactical.game.persist.ClientProgress;
+import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.Sprite;
 import tactical.game.sprite.SpriteZComparator;
@@ -65,6 +66,7 @@ public class StateInfo
 	// These values need to be reinitialized each time a map is loaded
 	private List<Sprite> sprites;
 	private List<CombatSprite> combatSprites;
+	private List<AnimatedSprite> followingSprites;
 	private List<Panel> panels;
 	private List<Menu> menus;
 	private List<MouseListener> mouseListeners;
@@ -159,6 +161,14 @@ public class StateInfo
 		{
 			Log.debug("Initializing NEW battle");
 		}
+		
+		this.followingSprites = new ArrayList<>();
+		/*
+		AnimatedSprite as = NPCResource.getNPC("Man1", Trigger.TRIGGER_NONE, "Fartboy", false, true, false);
+		this.followingSprites.add(as);
+		this.sprites.add(as);
+		*/
+		
 
 		sendMessage(new BooleanMessage(MessageType.INTIIALIZE_MANAGERS, isBattleInitialized));
 
@@ -730,6 +740,10 @@ public class StateInfo
 
 	public Iterable<Sprite> getSprites() {
 		return sprites;
+	}
+	
+	public List<AnimatedSprite> getFollowers() {
+		return this.followingSprites;
 	}
 
 	public Iterable<CombatSprite> getCombatSprites() {

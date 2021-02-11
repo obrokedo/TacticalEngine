@@ -17,6 +17,7 @@ import tactical.game.exception.BadMapException;
 import tactical.game.exception.BadResourceException;
 import tactical.game.item.Item;
 import tactical.game.resource.NPCResource;
+import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.NPCSprite;
 import tactical.game.sprite.Sprite;
@@ -105,6 +106,14 @@ public class SpriteManager extends Manager
 			{
 				throw new BadMapException("The selected map does not contain a start location with the name " + entranceLocation);
 			}
+			
+			for (AnimatedSprite as : stateInfo.getFollowers()) {
+				as.initializeSprite(stateInfo.getResourceManager());
+				as.setFacing(Direction.DOWN);
+				as.setLocation(stateInfo.getCurrentSprite().getLocX(),stateInfo.getCurrentSprite().getLocY(), 
+						stateInfo.getTileWidth(), stateInfo.getTileHeight());				
+			}
+			
 
 			stateInfo.getCamera().centerOnSprite(stateInfo.getCurrentSprite(), stateInfo.getCurrentMap());
 		}

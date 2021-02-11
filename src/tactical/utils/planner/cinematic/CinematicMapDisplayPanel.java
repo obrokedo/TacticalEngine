@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,9 +56,11 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 	private final Color SPRITE_FILL_COLOR = new Color(230, 230, 230, 50);
 	private final Color SPRITE_LINE_COLOR = new Color(230, 230, 230);
 
+	private ArrayList<String> actorImages = new ArrayList<String>();
 	private ArrayList<Point> actorLocations = new ArrayList<Point>();
 	private ArrayList<ZMoveIntervalImpl> actorMoving = new ArrayList<>();
 	private ArrayList<Point> spriteLocations = new ArrayList<Point>();
+	private ArrayList<String> spriteImages = new ArrayList<String>();
 	private int selectedActor = -1;
 	private int popupType = 0;
 	private Point cameraLocation = null;
@@ -145,10 +148,13 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 	public void setStaticSpritesAtTime(int time)
 	{
 		spriteLocations.clear();
+		spriteImages.clear();
 		for (StaticSprite ss : timeline.staticSprites)
 		{
-			if (ss.timeAdded <= time && (ss.timeRemoved > time || ss.timeRemoved == 0))
+			if (ss.timeAdded <= time && (ss.timeRemoved > time || ss.timeRemoved == 0)) {
 				spriteLocations.add(new Point(ss.locX, ss.locY));
+				spriteImages.add(ss.image);
+			}			
 		}
 	}
 
@@ -177,6 +183,7 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 	{
 		actorLocations.clear();
 		actorMoving.clear();
+		actorImages.clear();
 		ArrayList<ArrayList<String>> lol = new ArrayList<ArrayList<String>>();
 
 		ArrayList<Entry<String, ActorBar>> listOfActorEntrys = new ArrayList<>(timeline.rowsByName.entrySet());
@@ -203,6 +210,8 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 				// values.add("Actor is Moving: " + moving);
 				actorLocations.add(actorPoint);
 				actorMoving.add(movingSprite.moveInterval);
+				actorImages.add(ab.getValue().imageName);
+				
 
 				addIntervals(ab.getValue().dt.getIntervals(new JaretDate(time)), values);
 
@@ -246,24 +255,33 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 			plannerMap.renderMapLocations(g, selectedMO, 1);
 		}
 
-		for (Point sp : spriteLocations)
+		for (int i = 0; i < spriteLocations.size(); i++)
 		{
+			Point sp = spriteLocations.get(i);
 			g.setColor(SPRITE_FILL_COLOR);
 			g.fillRect(sp.x, sp.y, plannerMap.getTileEffectiveWidth(), plannerMap.getTileEffectiveHeight());
 			g.setColor(SPRITE_LINE_COLOR);
 			g.drawRect(sp.x, sp.y, plannerMap.getTileEffectiveWidth(), plannerMap.getTileEffectiveHeight());
+			BufferedImage bim = plannerMap.getImagesByName().get(spriteImages.get(i));
+			if (bim != null)
+				g.drawImage(bim, sp.x, sp.y, this);
 		}
 
 		g.setColor(Color.red);
 		for (int a = 0; a < actorLocations.size(); a++)
 		{
 			Point ap = actorLocations.get(a);
+			BufferedImage bim = plannerMap.getImagesByName().get(actorImages.get(a));
 			g.setColor(Color.red);
 			if (selectedActor != -1 && a == selectedActor)
 				g.setColor(Color.yellow);
 			g.fillRect(ap.x, ap.y, plannerMap.getTileEffectiveWidth(), plannerMap.getTileEffectiveHeight());
 			g.setColor(Color.white);
 			g.drawRect(ap.x, ap.y, plannerMap.getTileEffectiveWidth(), plannerMap.getTileEffectiveHeight());
+			
+			if (bim != null) {
+				g.drawImage(bim, ap.x, ap.y, this);
+			}
 			
 			ZMoveIntervalImpl zmi = actorMoving.get(a);
 			if (zmi != null)

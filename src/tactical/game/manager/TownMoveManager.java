@@ -173,7 +173,7 @@ public class TownMoveManager extends Manager
 					if  (stairsHeroIsOn != null && !stairsHeroIsOn.isOnRightEntry(sx, sy)) {
 						setMoving(Direction.RIGHT, current, stairsHeroIsOn);
 					}
-					else if (!blocked(stateInfo.getResourceManager().getMap(), sx + 1, sy)) {
+					else if (!blocked(stateInfo.getResourceManager().getMap(), sx + 1, sy, true)) {
 						stairsHeroIsOn = null;
 						setMoving(Direction.RIGHT, current, stairsHeroIsOn);
 					}
@@ -184,7 +184,7 @@ public class TownMoveManager extends Manager
 					if  (stairsHeroIsOn != null && !stairsHeroIsOn.isOnLeftEntry(sx, sy)) {
 						setMoving(Direction.LEFT, current, stairsHeroIsOn);
 					}
-					else if (!blocked(stateInfo.getResourceManager().getMap(), sx - 1, sy)) {
+					else if (!blocked(stateInfo.getResourceManager().getMap(), sx - 1, sy, true)) {
 						stairsHeroIsOn = null;
 						setMoving(Direction.LEFT, current, stairsHeroIsOn);
 					}
@@ -197,7 +197,7 @@ public class TownMoveManager extends Manager
 						!stairsHeroIsOn.isOnRightEntry(sx, sy)) {
 						current.setFacing(Direction.UP);
 					}
-					else if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy - 1)) {
+					else if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy - 1, true)) {
 						stairsHeroIsOn = null;
 						setMoving(Direction.UP, current, stairsHeroIsOn);
 					}
@@ -210,7 +210,7 @@ public class TownMoveManager extends Manager
 						!stairsHeroIsOn.isOnRightEntry(sx, sy)) {
 						current.setFacing(Direction.DOWN);
 					}
-					else if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy + 1)) {
+					else if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy + 1, true)) {
 						stairsHeroIsOn = null;
 						setMoving(Direction.DOWN, current, stairsHeroIsOn);
 					}
@@ -223,20 +223,22 @@ public class TownMoveManager extends Manager
 
 	private void setMoving(Direction direction, AnimatedSprite current, Stairs stairs)
 	{
-		if (current == stateInfo.getCurrentSprite())
+		if (current == stateInfo.getCurrentSprite()) {
 			moving = true;
+			
+		}
 		stateInfo.sendMessage(new SpriteMoveMessage(current, direction, stairs));
 		// recieveMessage(new SpriteMoveMessage(current, direction));
 	}
 
-	private boolean blocked(Map map, int tx, int ty)
+	private boolean blocked(Map map, int tx, int ty, boolean ignoresFollowers)
 	{
 		if (tx >= 0 && ty >= 0 && map.getMapEffectiveHeight() > ty
 				&& map.getMapEffectiveWidth() > tx && map.isMarkedMoveableForTown(tx, ty))
 		{
 			for (Sprite s : stateInfo.getSprites())
 			{
-				if (s.getTileX() == tx && s.getTileY() == ty && !(s instanceof Door))
+				if (s.getTileX() == tx && s.getTileY() == ty && !(s instanceof Door) && (!ignoresFollowers || !stateInfo.getFollowers().contains(s)))
 				{
 					return true;
 				}
@@ -281,30 +283,41 @@ public class TownMoveManager extends Manager
 				int sx = sprite.getTileX();
 				int sy = sprite.getTileY();
 				Direction dir = m.getDirection();
-
+				
+				boolean isCurrentSprite = (sprite == stateInfo.getCurrentSprite());
 				boolean nowMoving = false;
 
 				switch (dir)
 				{
 					case RIGHT:
-						if (!blocked(stateInfo.getResourceManager().getMap(), sx + 1, sy))
+						if (!blocked(stateInfo.getResourceManager().getMap(), sx + 1, sy, isCurrentSprite)) {
 							nowMoving = true;
+							moveFollowers(sprite, sprite.getTileX(), stateInfo.getFollowers().get(0).getTileX(), dir);
+						}
 						break;
 					case LEFT:
-						if (!blocked(stateInfo.getResourceManager().getMap(), sx - 1, sy))
+						if (!blocked(stateInfo.getResourceManager().getMap(), sx - 1, sy, isCurrentSprite)) {
 							nowMoving = true;
+							moveFollowers(sprite, stateInfo.getFollowers().get(0).getTileX(), sprite.getTileX(), dir);
+						}
 						break;
 					case UP:
-						if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy - 1))
+						if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy - 1, isCurrentSprite)) {
 							nowMoving = true;
+							moveFollowers(sprite, stateInfo.getFollowers().get(0).getTileY(), sprite.getTileY(), dir);
+						}						
 						break;
 					case DOWN:
-						if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy + 1))
+						if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy + 1, isCurrentSprite)) {
 							nowMoving = true;
+							moveFollowers(sprite, sprite.getTileY(), stateInfo.getFollowers().get(0).getTileY(), dir);
+						}
 				}
+				
+				
 
-				if (nowMoving) {
-					movers.add(new MovingSprite(sprite, dir, stateInfo));
+				if (nowMoving) { 
+					movers.add(new MovingSprite(sprite, dir, stateInfo));					
 				}
 				else
 					sprite.doneMoving(stateInfo);
@@ -334,5 +347,19 @@ public class TownMoveManager extends Manager
 				break;
 		}
 
+	}
+
+	protected void moveFollowers(AnimatedSprite sprite, int compare1, int compare2, Direction dir) {
+		if (sprite == stateInfo.getCurrentSprite() && stateInfo.getFollowers().size() > 0) {
+			if (compare1 > compare2)
+				for (int i = 0; i < stateInfo.getFollowers().size(); i++) {
+					if (i == 0)
+						movers.add(new MovingSprite(stateInfo.getFollowers().get(0), dir, 
+								(int) sprite.getLocX(), (int) sprite.getLocY(), stateInfo));
+					else
+						movers.add(new MovingSprite(stateInfo.getFollowers().get(i), dir, 
+								(int) stateInfo.getFollowers().get(i - 1).getLocX(), (int) stateInfo.getFollowers().get(i - 1).getLocY(), stateInfo));
+				}
+		}
 	}
 }

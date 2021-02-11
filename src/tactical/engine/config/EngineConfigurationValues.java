@@ -25,4 +25,5 @@ public abstract class EngineConfigurationValues implements Serializable {
 	public abstract int getEmptyItemIndexX();
 	public abstract int getEmptyItemIndexY();
 	public abstract String getAdvisorPortraitAnimFile();
+	public abstract boolean isWorldMap(String mapName);
 }

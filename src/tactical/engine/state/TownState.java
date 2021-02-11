@@ -13,7 +13,6 @@ import org.newdawn.slick.state.StateBasedGame;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
-import tactical.engine.message.StringMessage;
 import tactical.game.input.KeyMapping;
 import tactical.game.manager.CinematicManager;
 import tactical.game.manager.MenuManager;
@@ -199,8 +198,14 @@ public class TownState extends LoadableGameState
 				}
 				else if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) && !stateInfo.areMenusDisplayed())
 				{
-					stateInfo.sendMessage(new Message(MessageType.SHOW_TOWN_MENU));
-					stateInfo.setInputDelay(System.currentTimeMillis() + 200);
+					System.out.println(stateInfo.getCurrentMap().getName());
+					if (TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().isWorldMap(stateInfo.getCurrentMap().getName())) {
+						stateInfo.sendMessage(MessageType.SHOW_ADVISOR_MENU);
+						stateInfo.setInputDelay(System.currentTimeMillis() + 200);
+					} else {
+						stateInfo.sendMessage(new Message(MessageType.SHOW_TOWN_MENU));
+						stateInfo.setInputDelay(System.currentTimeMillis() + 200);
+					}
 				}
 				// Key for debugging menus
 				else if (TacticalGame.DEV_MODE_ENABLED && container.getInput().isKeyDown(Input.KEY_Q))

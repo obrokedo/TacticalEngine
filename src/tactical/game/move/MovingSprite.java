@@ -56,14 +56,28 @@ public class MovingSprite
 		this.animatedSprite = combatSprite;
 		this.stateInfo = stateInfo;
 		combatSprite.setAnimationUpdate(WALK_ANIMATION_SPEED);
-		initializeDirection(dir);
-	}
-
-	private void initializeDirection(Direction dir) {
 		this.direction = dir;
 		this.moveIndex = 0;
 		startX = animatedSprite.getLocX();
 		startY = animatedSprite.getLocY();
+		initializeDirection(dir);
+	}
+	
+	public MovingSprite(AnimatedSprite combatSprite, Direction facing, int endLocX, int endLocY, StateInfo stateInfo) {
+		super();
+		this.animatedSprite = combatSprite;
+		this.stateInfo = stateInfo;
+		combatSprite.setAnimationUpdate(WALK_ANIMATION_SPEED);
+		this.direction = facing;
+		this.moveIndex = 0;
+		startX = animatedSprite.getLocX();
+		startY = animatedSprite.getLocY();
+		this.endX = endLocX;
+		this.endY = endLocY;
+	}
+
+	private void initializeDirection(Direction dir) {
+		
 		switch (direction)
 		{
 			case UP:
@@ -164,10 +178,6 @@ public class MovingSprite
 
 	public AnimatedSprite getAnimatedSprite() {
 		return animatedSprite;
-	}
-
-	public Direction getDirection() {
-		return direction;
 	}
 
 	public int getMoveRemainder() {

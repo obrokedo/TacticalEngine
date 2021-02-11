@@ -238,6 +238,7 @@ public class PlannerMap extends Map {
 					PlannerContainer pc = enemyTab.getPlannerContainerByReference(new PlannerReference(im));
 					if (pc.getDefLine().getValues().size() > 23) {
 						im = ((PlannerReference) pc.getDefLine().getValues().get(23)).getName();
+						System.out.println();
 					}
 				}
 			}
@@ -524,6 +525,14 @@ public class PlannerMap extends Map {
 		ta.getChildren().add(0, propTA);
 
 		return ta;
+	}
+
+	public Hashtable<String, BufferedImage> getImagesByName() {
+		return imagesByName;
+	}
+
+	public void setImagesByName(Hashtable<String, BufferedImage> imagesByName) {
+		this.imagesByName = imagesByName;
 	}
 
 	public void setRootTagArea(TagArea rootTagArea) {

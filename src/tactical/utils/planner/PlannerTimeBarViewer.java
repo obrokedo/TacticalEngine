@@ -97,6 +97,7 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
 					DefaultTimeBarRowModel dt = new DefaultTimeBarRowModel(new DefaultRowHeader("Actor: " + (String) ce.getParam(2)));
 					// System.out.println("ADD ACTOR " + ce.getParam(2) + " " + ce.getParam(0) + " " + ce.getParam(1));
 					ActorBar ab = new ActorBar(dt, (int) ce.getParam(0), (int) ce.getParam(1));
+					ab.imageName = (String) ce.getParam(3);
 					rowsByName.put((String) ce.getParam(2), ab);
 
 					// Check invisible
@@ -126,7 +127,7 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
 					int ssX = (int) ce.getParam(0);
 					int ssY = (int) ce.getParam(1);
 					String ssID = (String) ce.getParam(2);
-					staticSprites.add(new StaticSprite(ssID, ssX, ssY, currentTime));
+					staticSprites.add(new StaticSprite(ssID, ssX, ssY, currentTime, (String) ce.getParam(3)));
 					break;
 				case REMOVE_STATIC_SPRITE:
 					ssID = (String) ce.getParam(0);
@@ -805,6 +806,7 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
     	public int locY;
     	public Hashtable<String, ZIntervalImpl> indefiniteIntervals;
     	public long lastMoveTime = 0;
+    	public String imageName;
 
 		public ActorBar(DefaultTimeBarRowModel dt, int locX, int locY) {
 			super();
@@ -932,13 +934,15 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
     	public String id;
     	public int locX, locY;
     	public long timeAdded, timeRemoved;
+    	public String image;
 
-		public StaticSprite(String id, int locX, int locY, long timeAdded) {
+		public StaticSprite(String id, int locX, int locY, long timeAdded, String image) {
 			super();
 			this.id = id;
 			this.locX = locX;
 			this.locY = locY;
 			this.timeAdded = timeAdded;
+			this.image = image;
 		}
     }
 

@@ -841,7 +841,6 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println("PRESS");
 		if (e.getClickCount() == 2) {
 			editCinematicLine();
 		}
