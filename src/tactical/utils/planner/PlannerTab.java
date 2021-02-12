@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -13,10 +15,11 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-public class PlannerTab implements ActionListener, TreeSelectionListener
+public class PlannerTab implements ActionListener, TreeSelectionListener, KeyListener
 {
 	protected static final long serialVersionUID = 1L;
 
@@ -35,6 +38,8 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 	private JPanel uiAspect;
 	private boolean renamingItem = false;
 	private int tabIndex;
+	
+	private JTextField searchField;
 
 	public PlannerTab(String name, Hashtable<String, PlannerContainerDef> containersByName,
 			String[] containers, int refersTo, PlannerFrame plannerFrame, int tabIndex)
@@ -63,7 +68,13 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 		this.plannerFrame = plannerFrame;
 
 		plannerTree = new PlannerTree(name, listPC, this, new TabAttributeTransferHandler(listPC), this);
-		uiAspect.add(plannerTree.getUiAspect(), BorderLayout.LINE_START);
+		JPanel treePanel = new JPanel(new BorderLayout());
+		treePanel.add(plannerTree.getUiAspect(), BorderLayout.CENTER);
+		searchField = new JTextField();
+		searchField.addKeyListener(this);
+		treePanel.add(searchField, BorderLayout.PAGE_END);
+		uiAspect.add(treePanel, BorderLayout.LINE_START);
+		
 	}
 
 	@Override
@@ -347,5 +358,30 @@ public class PlannerTab implements ActionListener, TreeSelectionListener
 					return pc;
 		}
 		return null;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			for (int i = selectedPC + 1; i != selectedPC; i = (i + 1) % (plannerTree.getItemList().size() - 1)) {
+				if (plannerTree.getItemList().get(i).toUpperCase().contains(searchField.getText().toUpperCase())) {					
+					this.setSelectedListItem(i, -1);
+					break;
+				}
+				this.uiAspect.repaint();
+			}
+		}		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

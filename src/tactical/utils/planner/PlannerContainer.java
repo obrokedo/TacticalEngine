@@ -16,8 +16,6 @@ import tactical.utils.planner.cinematic.CinematicTimeline;
 
 public class PlannerContainer implements ActionListener
 {
-	private static final long serialVersionUID = 1L;
-
 	private PlannerContainerDef pcdef;
 	private ArrayList<PlannerLine> lines;
 	private PlannerLine defLine;

@@ -292,25 +292,29 @@ public class TownMoveManager extends Manager
 					case RIGHT:
 						if (!blocked(stateInfo.getResourceManager().getMap(), sx + 1, sy, isCurrentSprite)) {
 							nowMoving = true;
-							moveFollowers(sprite, sprite.getTileX(), stateInfo.getFollowers().get(0).getTileX(), dir);
+							if (stateInfo.getFollowers().size() > 0)
+								moveFollowers(sprite, sprite.getTileX(), stateInfo.getFollowers().get(0).getTileX(), dir);
 						}
 						break;
 					case LEFT:
 						if (!blocked(stateInfo.getResourceManager().getMap(), sx - 1, sy, isCurrentSprite)) {
 							nowMoving = true;
-							moveFollowers(sprite, stateInfo.getFollowers().get(0).getTileX(), sprite.getTileX(), dir);
+							if (stateInfo.getFollowers().size() > 0)
+								moveFollowers(sprite, stateInfo.getFollowers().get(0).getTileX(), sprite.getTileX(), dir);
 						}
 						break;
 					case UP:
 						if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy - 1, isCurrentSprite)) {
 							nowMoving = true;
-							moveFollowers(sprite, stateInfo.getFollowers().get(0).getTileY(), sprite.getTileY(), dir);
+							if (stateInfo.getFollowers().size() > 0)
+								moveFollowers(sprite, stateInfo.getFollowers().get(0).getTileY(), sprite.getTileY(), dir);
 						}						
 						break;
 					case DOWN:
 						if (!blocked(stateInfo.getResourceManager().getMap(), sx, sy + 1, isCurrentSprite)) {
 							nowMoving = true;
-							moveFollowers(sprite, sprite.getTileY(), stateInfo.getFollowers().get(0).getTileY(), dir);
+							if (stateInfo.getFollowers().size() > 0)
+								moveFollowers(sprite, sprite.getTileY(), stateInfo.getFollowers().get(0).getTileY(), dir);
 						}
 				}
 				
