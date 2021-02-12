@@ -17,6 +17,8 @@ import tactical.engine.config.EngineConfigurationValues;
 import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
 import tactical.game.menu.Menu;
+import tactical.game.trigger.Trigger;
+import tactical.game.trigger.Trigger.TriggerStartBattle;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.LoadingState;
@@ -49,7 +51,7 @@ public class MenuState extends LoadableGameState
 	private Sound menuMove;
 	private Sound menuSelect;
 	private ResourceManager fcrm;
-	private Music music;
+	protected Music music;
 	private Transition transition;
 	
 	public MenuState(PersistentStateInfo persistentStateInfo) {
@@ -142,28 +144,28 @@ public class MenuState extends LoadableGameState
 	}
 
 	public void start(LoadTypeEnum loadType, String mapData, String entrance, int resourceId)
-	{			
-		persistentStateInfo.isFirstLoad = true;
+	{		
+		Trigger trigger = new Trigger();
 		switch (loadType)
 		{
 			case CINEMATIC:
-				persistentStateInfo.loadCinematic(mapData, resourceId);
+				trigger.addTriggerable(trigger.new TriggerLoadCinematic(mapData, 0));				
 				break;
 			case TOWN:
-				persistentStateInfo.loadMap(mapData, entrance);
+				trigger.addTriggerable(trigger.new TriggerLoadMap(mapData, entrance, null));
 				break;
 			case BATTLE:
-				persistentStateInfo.loadBattle(mapData, entrance, resourceId);
-			break;
+				trigger.addTriggerable(trigger.new TriggerStartBattle(mapData, entrance, 0));
+				break;
 		}
 		
-		LoadingState loadingState = ((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING));
-		loadingState.setLoadingRenderer(TacticalGame.ENGINE_CONFIGURATIOR.getFirstLoadScreenRenderer(container, music));
-
+		persistentStateInfo.loadChapter(TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getFirstChapterHeaderText(), 
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getFirstChapterDescriptionText(), trigger);
+			
 		if (container.isFullscreen())
 			container.setMouseGrabbed(true);
 
-		game.enterState(TacticalGame.STATE_GAME_LOADING);
+		
 	}
 
 	@Override

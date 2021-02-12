@@ -636,6 +636,11 @@ public class Cinematic {
 						(String) ce.getParam(1));
 				CinematicState.cinematicSpeed = 1;
 				break;
+			case LOAD_CHAPTER:
+				stateInfo.getPersistentStateInfo().loadChapter((String) ce.getParam(0),
+						(String) ce.getParam(1), stateInfo.getResourceManager().getTriggerEventById((int) ce.getParam(2)));
+				CinematicState.cinematicSpeed = 1;
+				break;
 			case LOAD_BATTLE:
 				stateInfo.getPersistentStateInfo().loadBattle((String) ce.getParam(0), (String) ce.getParam(1), (int) ce.getParam(2));
 				CinematicState.cinematicSpeed = 1;
@@ -648,7 +653,7 @@ public class Cinematic {
 				else
 					stateInfo.getPersistentStateInfo().loadCinematic((String) ce.getParam(0), (int) ce.getParam(1));
 				CinematicState.cinematicSpeed = 1;
-				break;
+				break;	
 			case HALTING_ANIMATION:
 				actors.get(ce.getParam(0)).setAnimation(
 						(String) ce.getParam(1), (int) ce.getParam(2), true, false);

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.message.BooleanMessage;
+import tactical.engine.message.LoadChapterMessage;
 import tactical.engine.message.LoadMapMessage;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
@@ -171,7 +172,6 @@ public class StateInfo
 		
 
 		sendMessage(new BooleanMessage(MessageType.INTIIALIZE_MANAGERS, isBattleInitialized));
-
 		if (this.getClientProgress().getRetriggerablesByMap() != null)
 			for (Integer triggerId : this.getClientProgress().getRetriggerablesByMap())
 				getResourceManager().getTriggerEventById(triggerId).perform(this);
@@ -320,6 +320,12 @@ public class StateInfo
 
 				LoadMapMessage lmc = (LoadMapMessage) m;
 				psi.loadCinematic(lmc.getMapData(), lmc.getCinematicID());
+				break;
+			case LOAD_CHAPTER:
+				sendMessage(MessageType.PAUSE_MUSIC);				
+				LoadChapterMessage lcm = (LoadChapterMessage) m;
+				psi.loadChapter(lcm.getHeader(), lcm.getDescription(), 
+						this.getResourceManager().getTriggerEventById(lcm.getTriggerId()));
 				break;
 			case SAVE:
 				save();

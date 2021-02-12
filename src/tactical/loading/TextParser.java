@@ -308,6 +308,13 @@ public class TextParser
 					}
 					te.addTriggerable(te.new TriggerLoadMap(actionParams.get("mapdata"), actionParams.get("enter"), dir));
 				}
+				else if (tagType.equalsIgnoreCase("loadchapter")) {
+					String header = actionParams.get("header");
+					String description = actionParams.get("description");
+					int exitTrigger = Integer.parseInt(actionParams.get("exittrigger"));
+					
+					te.addTriggerable(te.new TriggerLoadChapter(header, description, exitTrigger));					
+				}
 				else if (tagType.equalsIgnoreCase("showshop"))
 				{
 					te.addTriggerable(te.new TriggerShowShop(actionParams.get("buypercent"), actionParams.get("sellpercent"),
@@ -628,6 +635,9 @@ public class TextParser
 					parseMultiString(area.getAttribute("heroids"), heid -> HeroResource.getHeroIdByName(heid)));
 		else if (type.equalsIgnoreCase("loadmap"))
 			return new CinematicEvent(CinematicEventType.LOAD_MAP, area.getAttribute("mapdata"), area.getAttribute("enter"));
+		else if (type.equalsIgnoreCase("loadchapter"))		
+			return new CinematicEvent(CinematicEventType.LOAD_CHAPTER, area.getAttribute("header"), area.getAttribute("description"), 
+					Integer.parseInt(area.getAttribute("exittrigger")));
 		else if (type.equalsIgnoreCase("loadbattle"))
 			return new CinematicEvent(CinematicEventType.LOAD_BATTLE, area.getAttribute("mapdata"), area.getAttribute("entrance"), Integer.parseInt(area.getAttribute("battbg")));
 		else if (type.equalsIgnoreCase("loadcin"))

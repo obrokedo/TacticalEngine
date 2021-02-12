@@ -28,6 +28,7 @@ import tactical.engine.TacticalGame;
 import tactical.engine.load.BulkLoader;
 import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
+import tactical.engine.state.MenuState.LoadTypeEnum;
 import tactical.game.dev.DevParams;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel;
@@ -284,7 +285,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				
 				persistentStateInfo.setResourceManager(mainGameFCRM);
 				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
-				applyDevParams();
+				applyDevParams();				
 				start(LoadTypeEnum.CINEMATIC, ((TacticalGame) game).getEngineConfigurator().getConfigurationValues().getIntroCinematicMap(), null, 0);				
 			}
 	
@@ -367,6 +368,30 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				game.enterState(TacticalGame.STATE_GAME_CREDITS);
 			}
 		}
+	}
+	
+	public void start(LoadTypeEnum loadType, String mapData, String entrance, int resourceId)
+	{
+		switch (loadType)
+		{
+			case CINEMATIC:
+				persistentStateInfo.loadCinematic(mapData, resourceId);
+				break;
+			case TOWN:
+				persistentStateInfo.loadMap(mapData, entrance);
+				break;
+			case BATTLE:
+				persistentStateInfo.loadBattle(mapData, entrance, resourceId);
+			break;
+		}
+		
+		LoadingState loadingState = ((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING));
+		loadingState.setLoadingRenderer(TacticalGame.ENGINE_CONFIGURATIOR.getFirstLoadScreenRenderer(container, music));
+		
+		game.enterState(TacticalGame.STATE_GAME_LOADING);
+		
+		if (container.isFullscreen())
+			container.setMouseGrabbed(true);
 	}
 
 	@Override

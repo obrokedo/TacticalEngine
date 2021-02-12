@@ -36,6 +36,7 @@ public class CinematicEvent
 		STOP_SPIN,
 		CREATE,
 		LOAD_MAP,
+		LOAD_CHAPTER,
 		LOAD_BATTLE,
 		LOAD_CIN,
 		FLASH,

@@ -14,6 +14,7 @@ import tactical.engine.config.EngineConfigurator;
 import tactical.engine.config.provided.DefaultEngineConfiguration;
 import tactical.engine.log.FileLogger;
 import tactical.engine.state.BattleState;
+import tactical.engine.state.ChapterState;
 import tactical.engine.state.CinematicState;
 import tactical.engine.state.CreditsState;
 import tactical.engine.state.MenuState;
@@ -73,6 +74,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 	public static final int STATE_GAME_BATTLE_ANIM_VIEW = 11;
 	public static final int STATE_GAME_CREDITS = 12;
 	public static final int STATE_GAME_PLANNER = 13;
+	public static final int STATE_GAME_CHAPTER = 14;
 
 	/**
 	 * A global random number generator
@@ -239,6 +241,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		addState(new BattleState(persistentStateInfo));
 		addState(new TownState(persistentStateInfo));
 		addState(new CinematicState(persistentStateInfo));
+		addState(new ChapterState(persistentStateInfo));
 		addState(new CreditsState());
 
 		// this.addState(new TestState());

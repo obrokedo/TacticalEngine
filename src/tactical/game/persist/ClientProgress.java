@@ -141,7 +141,7 @@ public class ClientProgress implements Serializable
 
 	public ArrayList<Integer> getRetriggerablesByMap()
 	{
-		if (!retriggerablesPerMapData.containsKey(mapData))
+		if (mapData == null || !retriggerablesPerMapData.containsKey(mapData))
 			return null;
 		return retriggerablesPerMapData.get(mapData);
 	}

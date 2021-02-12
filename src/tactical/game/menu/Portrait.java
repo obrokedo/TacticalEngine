@@ -95,7 +95,10 @@ public class Portrait
 			p.talkAnim = new AnimationWrapper(spriteAnim, "ProPortTalk", true);
 
 			AnimFrame af = p.blinkAnim.getCurrentAnimation().frames.get(0);
-			p.topHeight = spriteAnim.images.get(af.sprites.get(0).imageIndex).getHeight();
+			if (af.sprites.size() > 0)
+				p.topHeight = spriteAnim.images.get(af.sprites.get(0).imageIndex).getHeight();
+			else
+				p.topHeight = 0;
 			return p;
 		}
 		else if (spriteAnim.hasAnimation("UnPortIdle"))
@@ -105,7 +108,10 @@ public class Portrait
 			p.talkAnim = new AnimationWrapper(spriteAnim, "UnPortTalk", true);
 
 			AnimFrame af = p.blinkAnim.getCurrentAnimation().frames.get(0);
-			p.topHeight = spriteAnim.images.get(af.sprites.get(0).imageIndex).getHeight();
+			if (af.sprites.size() > 0)
+				p.topHeight = spriteAnim.images.get(af.sprites.get(0).imageIndex).getHeight();
+			else
+				p.topHeight = 0;
 
 			return p;
 		}

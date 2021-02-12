@@ -206,6 +206,7 @@ public class LoadingState extends BasicGameState
 			ResourceManager resourceManager, LoadableGameState nextState,
 				LoadingScreenRenderer loadingRenderer, Image intermediateImage, Transition transition)
 	{
+		System.out.println("IS FIRST LOAD " + loadResources);
 		this.errorMessage = null;
 		this.textName = textName;
 		this.loadingMap = loadMap;

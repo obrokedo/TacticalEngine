@@ -112,6 +112,7 @@ public class TownState extends LoadableGameState
 		super.enter(container, game);
 		// To allow the hero to continue moving between maps, initialize the input
 		// with any movement keys that are already pressed
+		stateInfo.getInput().clear();
 		stateInfo.getInput().setInitialMovementInput(container.getInput());
 	}
 

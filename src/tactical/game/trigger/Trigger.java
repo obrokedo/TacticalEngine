@@ -9,6 +9,7 @@ import org.newdawn.slick.util.Log;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.BattleCondMessage;
+import tactical.engine.message.LoadChapterMessage;
 import tactical.engine.message.LoadMapMessage;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.ShopMessage;
@@ -202,6 +203,27 @@ public class Trigger
 		public boolean perform(StateInfo stateInfo)
 		{
 			stateInfo.sendMessage(new LoadMapMessage(MessageType.LOAD_MAP, mapData, location, transDir), true);
+			return true;
+		}
+	}
+	
+	public class TriggerLoadChapter implements Triggerable
+	{
+		private String header;
+		private String description;
+		private int triggerId;
+
+		public TriggerLoadChapter(String header, String description, int triggerId) {
+			super();
+			this.header = header;
+			this.description = description;
+			this.triggerId = triggerId;
+		}
+
+		@Override
+		public boolean perform(StateInfo stateInfo)
+		{
+			stateInfo.sendMessage(new LoadChapterMessage(triggerId, header, description));
 			return true;
 		}
 	}

@@ -19,6 +19,7 @@ import tactical.game.constants.Direction;
 import tactical.game.persist.ClientProfile;
 import tactical.game.persist.ClientProgress;
 import tactical.game.sprite.CombatSprite;
+import tactical.game.trigger.Trigger;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.LoadingScreenRenderer;
@@ -163,6 +164,13 @@ public class PersistentStateInfo implements PacketHandler
 		this.cinematicID = cinematicID;		
 		
 		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_CINEMATIC, null, lsr);
+	}
+	
+	public void loadChapter(String header, String description, Trigger exitTrigger) {
+		((ChapterState) game.getState(TacticalGame.STATE_GAME_CHAPTER)).setChapterInfo(header, description, exitTrigger);
+		getGame().enterState(TacticalGame.STATE_GAME_CHAPTER, 
+				// Do not fade out when coming from a cinematic
+				new FadeOutTransition(Color.black, 250), new EmptyTransition());
 	}
 
 	public Camera getCamera() {

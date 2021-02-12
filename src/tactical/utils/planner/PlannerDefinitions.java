@@ -1244,6 +1244,21 @@ public class PlannerDefinitions {
 						"Loads the specified map and places the hero at the specified entrance.",
 						definingValues));
 		mapControl.add("Load Map");
+		
+		// Load Chapter
+		definingValues = new ArrayList<PlannerValueDef>();		
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING, "header", false,
+				"Chapter Header Text",
+				"The text that should appear at the top of the chapter page"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_LONG_STRING, "description", false,
+				"Chapter Description Text",
+				"The text that should appear at the bottom of the chapter page. This should NOT contain any special characters or stops."));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER, PlannerValueDef.TYPE_INT, "exittrigger", false,
+				"Exit Trigger",
+				"The trigger that should be executed once the chapter screen has been shown. This should ALWAYS load a new map or the credits"));
+		allowableLines.add(new PlannerLineDef("loadchapter", "Show Chapter",
+				"Shows the chapter page.", definingValues));
+		mapControl.add("Show Chapter");
 
 		// Load Battle
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2422,6 +2437,20 @@ public class PlannerDefinitions {
 				"If specified: the map will be transitioned out via a 'slide' effect in the direction indicated. This value should be set to the direction that the NEW map is relative to the current map."));
 		allowableLines.add(new PlannerLineDef("loadmap", "Load Map",
 				"Loads the given map and places the hero at the given location", definingValues));
+		
+		// Load Chapter
+		definingValues = new ArrayList<PlannerValueDef>();		
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING, "header", false,
+				"Chapter Header Text",
+				"The text that should appear at the top of the chapter page"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_LONG_STRING, "description", false,
+				"Chapter Description Text",
+				"The text that should appear at the bottom of the chapter page. This should NOT contain any special characters or stops."));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER, PlannerValueDef.TYPE_INT, "exittrigger", false,
+				"Exit Trigger",
+				"The trigger that should be executed once the chapter screen has been shown. This should ALWAYS load a new map or the credits"));
+		allowableLines.add(new PlannerLineDef("loadchapter", "Show Chapter",
+				"Shows the chapter page.", definingValues));
 
 		// Show Cinematic
 		definingValues = new ArrayList<PlannerValueDef>();
