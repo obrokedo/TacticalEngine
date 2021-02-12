@@ -462,7 +462,8 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 		try
 		{
 			ArrayList<PlannerContainer> pcs = new ArrayList<PlannerContainer>();
-			pcs.add(currentPC);
+			if (currentPC != null)
+				pcs.add(currentPC);
 			ArrayList<String> results = PlannerIO.export(pcs, "cinematics");
 
 			ArrayList<TagArea> tas = XMLParser.process(results, true);

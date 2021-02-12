@@ -183,7 +183,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 	public void loadMap(PlannerMap map)
 	{
 		pt =  plannerFrame.getPlannerTabAtIndex(PlannerFrame.TAB_CIN);
-
+		cinematicIds.removeItemListener(this);
 		if (mapScrollPane != null)
 		{
 			uiAspect.remove(mapScrollPane);
@@ -195,6 +195,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		mapScrollPane.getVerticalScrollBar().setUnitIncrement(map.getMapHeightInPixels() / 20);
 		mapScrollPane.getHorizontalScrollBar().setUnitIncrement(map.getMapWidthInPixels() / 20);
 		cinematicIds.addItemListener(this);
+		cinematicIds.setSelectedIndex(-1);
 		itemStateChanged(null);
 		uiAspect.repaint();
 	}
@@ -666,6 +667,10 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		// This value needs to be updated
 		cinematicIds.setModel(new DefaultComboBoxModel<String>(pt.getItemList()));
 		loadCinematicItem(timeSlider.getValue());
+	}
+	
+	public void clearSelectedCinematic() {
+		cinematicIds.setSelectedIndex(-1);
 	}
 
 	private void loadCinematicItem(int selectedTime)

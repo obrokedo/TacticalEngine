@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,7 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-public class PlannerTab implements ActionListener, TreeSelectionListener, KeyListener
+public class PlannerTab implements ActionListener, TreeSelectionListener, KeyListener, FocusListener
 {
 	protected static final long serialVersionUID = 1L;
 
@@ -70,9 +73,19 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 		plannerTree = new PlannerTree(name, listPC, this, new TabAttributeTransferHandler(listPC), this);
 		JPanel treePanel = new JPanel(new BorderLayout());
 		treePanel.add(plannerTree.getUiAspect(), BorderLayout.CENTER);
-		searchField = new JTextField();
+		
+		JPanel searchPanel = new JPanel();
+		searchField = new JTextField(15);
 		searchField.addKeyListener(this);
-		treePanel.add(searchField, BorderLayout.PAGE_END);
+		searchField.setOpaque(false);
+		searchField.setBackground(new Color(161, 208, 224));
+		searchField.addFocusListener(this);
+		searchField.setText("Enter to Search");
+		JLabel searchLabel = new JLabel("Search:");		
+		searchLabel.setLabelFor(searchField);
+		searchPanel.add(searchLabel);
+		searchPanel.add(searchField);
+		treePanel.add(searchPanel, BorderLayout.PAGE_END);
 		uiAspect.add(treePanel, BorderLayout.LINE_START);
 		
 	}
@@ -383,5 +396,15 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		searchField.setText("");
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {		
+		searchField.setText("Enter to Search");
 	}
 }

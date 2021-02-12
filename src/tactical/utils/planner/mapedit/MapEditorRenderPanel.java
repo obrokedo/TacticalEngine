@@ -229,7 +229,18 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 					mo.setHeight(plannerMap.getTileEffectiveHeight());
 					mo.determineShape();
 					
-					plannerMap.addMapObject(mo);
+					String tagAreaText = "<object name=\"" + mo.getName() + "\" x=\"0\" y=\"0\">";
+					TagArea tagArea = new TagArea(tagAreaText);
+					tagAreaText = "<polyline points=\"";
+					for (int i = 0; i < mo.getShape().getPointCount(); i++) {
+						tagAreaText += ((int) mo.getShape().getPoint(i)[0]) + "," + ((int) mo.getShape().getPoint(i)[1]);
+						if (i != mo.getShape().getPointCount() - 1) 
+							tagAreaText += " ";
+					}
+					tagAreaText += "\"/>";
+					tagArea.getChildren().add(new TagArea(tagAreaText));
+					
+					plannerMap.addMapObject(mo, tagArea);
 					
 				} else if (m.getButton() == MouseEvent.BUTTON3) {
 					this.stopStamping();
