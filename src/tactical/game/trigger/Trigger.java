@@ -163,6 +163,16 @@ public class Trigger
 		return true;
 				
 	}
+	
+	public boolean hasLoadMapMessage() 
+	{
+		return this.triggerables.size() == 1 && triggerables.get(0) instanceof HasLoadMapMessage;
+	}
+	
+	public LoadMapMessage getLoadMapMessage() 
+	{
+		return ((HasLoadMapMessage) triggerables.get(0)).getMessage();
+	}
 
 	public class TriggerToggleQuest implements Triggerable
 	{
@@ -186,7 +196,7 @@ public class Trigger
 		}
 	}
 
-	public class TriggerLoadMap implements Triggerable
+	public class TriggerLoadMap implements HasLoadMapMessage, Triggerable
 	{
 		private String mapData;
 		private String location;
@@ -204,6 +214,11 @@ public class Trigger
 		{
 			stateInfo.sendMessage(new LoadMapMessage(MessageType.LOAD_MAP, mapData, location, transDir), true);
 			return true;
+		}
+		
+		@Override
+		public LoadMapMessage getMessage() {
+			return new LoadMapMessage(MessageType.LOAD_MAP, mapData, location, transDir);
 		}
 	}
 	
@@ -226,9 +241,11 @@ public class Trigger
 			stateInfo.sendMessage(new LoadChapterMessage(triggerId, header, description));
 			return true;
 		}
+		
+		
 	}
 
-	public class TriggerStartBattle implements Triggerable
+	public class TriggerStartBattle implements HasLoadMapMessage, Triggerable
 	{
 		private String battle;
 		private String entrance;
@@ -246,6 +263,11 @@ public class Trigger
 		{
 			stateInfo.sendMessage(new LoadMapMessage(MessageType.START_BATTLE, battle, entrance, battleBG), true);
 			return true;
+		}
+
+		@Override
+		public LoadMapMessage getMessage() {
+			return new LoadMapMessage(MessageType.START_BATTLE, battle, entrance, battleBG);
 		}
 	}
 
@@ -462,7 +484,7 @@ public class Trigger
 		}
 	}
 
-	public class TriggerLoadCinematic implements Triggerable
+	public class TriggerLoadCinematic implements HasLoadMapMessage, Triggerable
 	{
 		private String mapData;
 		private int cinematicId;
@@ -476,6 +498,11 @@ public class Trigger
 		public boolean perform(StateInfo stateInfo) {
 			stateInfo.sendMessage(new LoadMapMessage(MessageType.LOAD_CINEMATIC, mapData, cinematicId), true);
 			return true;
+		}
+		
+		@Override
+		public LoadMapMessage getMessage() {
+			return new LoadMapMessage(MessageType.LOAD_CINEMATIC, mapData, cinematicId);
 		}
 	}
 
@@ -995,5 +1022,9 @@ public class Trigger
 
 	public String getName() {
 		return name;
+	}
+	
+	public interface HasLoadMapMessage {
+		public LoadMapMessage getMessage();
 	}
 }

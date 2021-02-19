@@ -2,6 +2,7 @@ package tactical.game.manager;
 
 import java.util.ArrayList;
 
+import tactical.engine.TacticalGame;
 import tactical.engine.message.IntMessage;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
@@ -10,7 +11,7 @@ import tactical.engine.message.SpeechBundleMessage;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.StringMessage;
-import tactical.game.menu.HeroStatMenu;
+import tactical.game.menu.DefaultHeroStatMenu;
 import tactical.game.menu.HeroesStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.Menu.MenuUpdate;
@@ -145,7 +146,7 @@ public class MenuManager extends Manager
 				stateInfo.setInputDelay(System.currentTimeMillis() + 200);
 				break;
 			case SHOW_HERO:
-				stateInfo.addMenu(new HeroStatMenu(stateInfo.getPaddedGameContainer(), ((SpriteContextMessage) message).getCombatSprite(
+				stateInfo.addMenu(TacticalGame.ENGINE_CONFIGURATIOR.getHeroStatMenu(stateInfo.getPaddedGameContainer(), ((SpriteContextMessage) message).getCombatSprite(
 						stateInfo.getAllHeroes()), stateInfo));
 				break;
 			case SHOW_PRIEST:

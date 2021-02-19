@@ -506,6 +506,9 @@ public class TextParser
 					te.addTriggerable(te.new TriggerSetEgressLocation(actionParams.get("mapname"), 
 							Integer.parseInt(actionParams.get("locx")), Integer.parseInt(actionParams.get("locy"))));
 				}
+				else if (tagType.equalsIgnoreCase("save")) { 
+					te.addTriggerable(te.new TriggerSave());
+				}
 				else
 				{
 					Triggerable trigger = handleCustomTrigger(tagType, actionParams);
@@ -514,7 +517,6 @@ public class TextParser
 					else
 						te.addTriggerable(trigger);
 				}
-
 			}
 		}
 

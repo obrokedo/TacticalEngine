@@ -305,27 +305,24 @@ public class StateInfo
 				break;
 			case LOAD_MAP:
 				// sendMessage(MessageType.PAUSE_MUSIC);
-
-				LoadMapMessage lmm = (LoadMapMessage) m;
-				psi.loadMap(lmm.getMapData(), lmm.getLocation(), lmm.getTransDir());
+				psi.loadMap((LoadMapMessage) m);
 				return true;
 			case START_BATTLE:
 				sendMessage(MessageType.PAUSE_MUSIC);
-
 				LoadMapMessage lmb = (LoadMapMessage) m;
-				psi.loadBattle(lmb.getMapData(), lmb.getLocation(), lmb.getBattleBG());
+				psi.loadBattle(lmb);
 				return true;
 			case LOAD_CINEMATIC:
 				sendMessage(MessageType.PAUSE_MUSIC);
 
 				LoadMapMessage lmc = (LoadMapMessage) m;
-				psi.loadCinematic(lmc.getMapData(), lmc.getCinematicID());
+				psi.loadCinematic(lmc);
 				break;
 			case LOAD_CHAPTER:
 				sendMessage(MessageType.PAUSE_MUSIC);				
 				LoadChapterMessage lcm = (LoadChapterMessage) m;
 				psi.loadChapter(lcm.getHeader(), lcm.getDescription(), 
-						this.getResourceManager().getTriggerEventById(lcm.getTriggerId()));
+						this.getResourceManager().getTriggerEventById(lcm.getTriggerId()), false);
 				break;
 			case SAVE:
 				save();

@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.newdawn.slick.util.Log;
 
+import tactical.engine.message.LoadMapMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.item.Item;
 import tactical.game.sprite.CombatSprite;
@@ -42,6 +43,7 @@ public class ClientProgress implements Serializable
 	private ArrayList<CombatSprite> battleEnemySprites;
 	private ArrayList<Integer> battleHeroSpriteIds;
 	private Integer currentTurn;
+	private LoadMapMessage chapterSaveMessage;
 	private static final String BATTLE_PREFIX = "!!";
 	private transient long lastSaveTime;
 	private transient String lastSaveMapData;
@@ -270,5 +272,13 @@ public class ClientProgress implements Serializable
 	
 	public ArrayList<Integer> getStoredItems() {
 		return new ArrayList<Integer> (this.storedItems);
+	}
+
+	public LoadMapMessage getAndClearChapterSaveMessage() {
+		return chapterSaveMessage;
+	}
+
+	public void setChapterSaveMessage(LoadMapMessage chapterSaveMessage) {
+		this.chapterSaveMessage = chapterSaveMessage;
 	}
 }

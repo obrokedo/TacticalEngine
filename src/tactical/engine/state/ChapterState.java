@@ -12,30 +12,45 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.message.SpeechMessage;
 import tactical.game.hudmenu.Panel;
 import tactical.game.input.KeyMapping;
+import tactical.game.listener.MenuListener;
+import tactical.game.manager.MenuManager;
+import tactical.game.menu.YesNoMenu;
 import tactical.game.trigger.Trigger;
+import tactical.game.trigger.Trigger.HasLoadMapMessage;
 import tactical.game.ui.PaddedGameContainer;
+import tactical.renderer.MenuRenderer;
 import tactical.utils.StringUtils;
 
-public class ChapterState extends BasicGameState {
+public class ChapterState extends BasicGameState implements MenuListener {
 
 	private Image chapterImage = null;
 	private Trigger exitTrigger = null;
 	private String header = null;
 	private StateInfo stateInfo;
+	private MenuManager menuManager;
+	private MenuRenderer menuRenderer;
 	private ArrayList<String> description;
 	private Font headerFont;
+	private boolean savedYet = false;
+	private boolean isFirst = false;
 	
 	public ChapterState(PersistentStateInfo psi)
 	{
 		this.stateInfo = new StateInfo(psi, false, false);
+		this.menuManager = new MenuManager();
+		this.menuRenderer = new MenuRenderer();
+		stateInfo.registerManager(menuManager);
+		stateInfo.registerManager(menuRenderer);
 	}
 	
-	public void setChapterInfo(String header, String description, Trigger exitTrigger) {
+	public void setChapterInfo(String header, String description, Trigger exitTrigger, boolean isFirst) {
 		stateInfo.initState();
 		this.header = header;
 		this.description = new ArrayList<>();
+		this.isFirst = isFirst;
 				
 		int idx = 0;
 		String[] splitLine = description.split(" ");
@@ -58,11 +73,11 @@ public class ChapterState extends BasicGameState {
 		this.exitTrigger = exitTrigger;
 		chapterImage = stateInfo.getResourceManager().getImage("chapter");		
 		headerFont = stateInfo.getResourceManager().getFontByName("chaptermenufont");
+		this.savedYet = false;
 	}
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -78,7 +93,6 @@ public class ChapterState extends BasicGameState {
 		g.drawImage(chapterImage, 0, 0);
 		g.setFont(Panel.PANEL_FONT);
 		g.setColor(Color.white);
-		header = "Chapter One - Slugman Cometh";
 		StringUtils.drawString(header, 50, 27, g);
 		g.setFont(Panel.SPEECH_FONT);
 				
@@ -87,19 +101,31 @@ public class ChapterState extends BasicGameState {
 		for (int i = 0; i < this.description.size(); i++) {
 			StringUtils.drawString(this.description.get(i), 41, 105 + i * 15, g);
 		}
+		
+		menuRenderer.render(g);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-		if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) || stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_3)) {
-			exitTrigger.perform(stateInfo);
-			stateInfo.processMessages();
-			
-			stateInfo.getResourceManager().reinitialize();
-			stateInfo.getInput().clear();
-			stateInfo.setInitialized(false);
-			
+		menuManager.update(delta);
+		
+		if (!savedYet && stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) || stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_3)) {
+			if (this.exitTrigger.hasLoadMapMessage() && !isFirst) {
+				savedYet = true;			
+				stateInfo.addMenu(new YesNoMenu("Would you like to save your progress now?<hardstop>", stateInfo, this));
+			} else {
+				doExit();
+			}
 		}
+	}
+
+	private void doExit() {
+		exitTrigger.perform(stateInfo);
+		stateInfo.processMessages();
+		
+		stateInfo.getResourceManager().reinitialize();
+		stateInfo.getInput().clear();
+		stateInfo.setInitialized(false);
 	}
 	
 	
@@ -113,6 +139,26 @@ public class ChapterState extends BasicGameState {
 	public int getID() {
 		// TODO Auto-generated method stub
 		return TacticalGame.STATE_GAME_CHAPTER;
+	}
+
+	@Override
+	public void valueSelected(StateInfo stateInfo, Object value) {
+		// Save here before exiting. This is a "special" type of save
+		if ((Boolean) value) {
+			stateInfo.getPersistentStateInfo().getClientProgress().setChapterSaveMessage(
+					exitTrigger.getLoadMapMessage());
+			stateInfo.getClientProfile().serializeToFile();
+			stateInfo.getClientProgress().serializeToFile();
+		}
+			
+		doExit();
+		
+	}
+
+	@Override
+	public void menuClosed() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

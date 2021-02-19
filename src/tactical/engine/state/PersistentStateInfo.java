@@ -12,6 +12,7 @@ import org.newdawn.slick.state.transition.Transition;
 import mb.tcp.network.Client;
 import mb.tcp.network.PacketHandler;
 import tactical.engine.TacticalGame;
+import tactical.engine.message.LoadMapMessage;
 import tactical.engine.message.Message;
 import tactical.engine.transition.MoveMapTransition;
 import tactical.game.Camera;
@@ -68,7 +69,11 @@ public class PersistentStateInfo implements PacketHandler
 		loadMap(mapData, entrance, null);
 	}
 	
-	public void loadMap(String mapData, String entrance, Direction transitionDir)
+	public void loadMap(LoadMapMessage lmm) {		
+		loadMap(lmm.getMapData(), lmm.getLocation(), lmm.getTransDir());
+	}
+	
+	private void loadMap(String mapData, String entrance, Direction transitionDir)
 	{	
 		this.entranceLocation = entrance;
 
@@ -145,6 +150,10 @@ public class PersistentStateInfo implements PacketHandler
 		loadMap(clientProgress.getMapData(), null);
 	}
 
+	public void loadBattle(LoadMapMessage lmm) {		
+		loadBattle(lmm.getMapData(), lmm.getLocation(), lmm.getBattleBG());
+	}
+	
 	public void loadBattle(String mapData, String entrance, int battleBGIndex)
 	{
 		this.entranceLocation = entrance;
@@ -152,6 +161,10 @@ public class PersistentStateInfo implements PacketHandler
 		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_BATTLE, null, null);
 	}
 
+	public void loadCinematic(LoadMapMessage lmm) {		
+		loadCinematic(lmm.getMapData(), lmm.getCinematicID());
+	}
+	
 	public void loadCinematic(String mapData, int cinematicID)
 	{
 		this.cinematicID = cinematicID;		
@@ -166,8 +179,8 @@ public class PersistentStateInfo implements PacketHandler
 		cleanupStateAndLoadNext(mapData, TacticalGame.STATE_GAME_CINEMATIC, null, lsr);
 	}
 	
-	public void loadChapter(String header, String description, Trigger exitTrigger) {
-		((ChapterState) game.getState(TacticalGame.STATE_GAME_CHAPTER)).setChapterInfo(header, description, exitTrigger);
+	public void loadChapter(String header, String description, Trigger exitTrigger, boolean isFirst) {
+		((ChapterState) game.getState(TacticalGame.STATE_GAME_CHAPTER)).setChapterInfo(header, description, exitTrigger, isFirst);
 		getGame().enterState(TacticalGame.STATE_GAME_CHAPTER, 
 				// Do not fade out when coming from a cinematic
 				new FadeOutTransition(Color.black, 250), new EmptyTransition());

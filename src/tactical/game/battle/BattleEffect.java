@@ -78,6 +78,8 @@ public abstract class BattleEffect implements Serializable
 	
 	public abstract boolean isDone();
 	
+	public abstract String getIconName();
+		
 	public boolean preventsMovement() {
 		return false;
 	}
@@ -135,6 +137,9 @@ public abstract class BattleEffect implements Serializable
 	public void incrementTurn() {
 		this.currentTurn++;
 	}
+	
+	public abstract int getRemainingTurns();
+	
 	public AnimationWrapper getEffectAnimation() {
 		return effectAnimation;
 	}

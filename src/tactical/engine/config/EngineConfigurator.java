@@ -5,6 +5,9 @@ import org.newdawn.slick.Music;
 
 import tactical.engine.config.intr.AnimationParser;
 import tactical.engine.state.AttackCinematicState;
+import tactical.engine.state.StateInfo;
+import tactical.game.menu.Menu;
+import tactical.game.sprite.CombatSprite;
 import tactical.loading.LoadingScreenRenderer;
 
 public interface EngineConfigurator {
@@ -47,4 +50,6 @@ public interface EngineConfigurator {
 	public AttackCinematicState getAttackCinematicState();
 	
 	public BattleStatisticConfigration getBattleStatisticsConfiguration(); 
+	
+	public Menu getHeroStatMenu(GameContainer gc, CombatSprite selectedSprite, StateInfo stateInfo);
 }

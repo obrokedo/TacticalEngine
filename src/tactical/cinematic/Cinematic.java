@@ -638,7 +638,7 @@ public class Cinematic {
 				break;
 			case LOAD_CHAPTER:
 				stateInfo.getPersistentStateInfo().loadChapter((String) ce.getParam(0),
-						(String) ce.getParam(1), stateInfo.getResourceManager().getTriggerEventById((int) ce.getParam(2)));
+						(String) ce.getParam(1), stateInfo.getResourceManager().getTriggerEventById((int) ce.getParam(2)), false);
 				CinematicState.cinematicSpeed = 1;
 				break;
 			case LOAD_BATTLE:

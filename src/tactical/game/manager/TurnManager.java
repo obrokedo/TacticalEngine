@@ -34,7 +34,7 @@ import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
 import tactical.game.item.Item;
 import tactical.game.listener.KeyboardListener;
-import tactical.game.menu.HeroStatMenu;
+import tactical.game.menu.DefaultHeroStatMenu;
 import tactical.game.menu.ItemMenu;
 import tactical.game.menu.ItemOption;
 import tactical.game.menu.LandEffectPanel;
@@ -652,7 +652,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				// if there is a combat sprite here display it's health panel
 				if (cs != null)
 				{
-					stateInfo.addMenu(new HeroStatMenu(stateInfo.getPaddedGameContainer(), cs, stateInfo));
+					stateInfo.addMenu(TacticalGame.ENGINE_CONFIGURATIOR.getHeroStatMenu(stateInfo.getPaddedGameContainer(), cs, stateInfo));
 					return true;
 				}
 				else {

@@ -14,6 +14,7 @@ import org.newdawn.slick.state.transition.Transition;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
+import tactical.engine.message.LoadMapMessage;
 import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
 import tactical.game.menu.Menu;
@@ -160,12 +161,34 @@ public class MenuState extends LoadableGameState
 		}
 		
 		persistentStateInfo.loadChapter(TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getFirstChapterHeaderText(), 
-				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getFirstChapterDescriptionText(), trigger);
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getFirstChapterDescriptionText(), trigger, true);
 			
 		if (container.isFullscreen())
 			container.setMouseGrabbed(true);
-
+	}
+	
+	public void load(LoadTypeEnum loadType, String mapData, String entrance, int resourceId) {
+		persistentStateInfo.isFirstLoad = true;
+		switch (loadType)
+		{
+			case CINEMATIC:
+				persistentStateInfo.loadCinematic(mapData, resourceId);
+				break;
+			case TOWN:
+				persistentStateInfo.loadMap(mapData, entrance);
+				break;
+			case BATTLE:
+				persistentStateInfo.loadBattle(mapData, entrance, resourceId);
+			break;
+		}
 		
+		LoadingState loadingState = ((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING));
+		loadingState.setLoadingRenderer(TacticalGame.ENGINE_CONFIGURATIOR.getFirstLoadScreenRenderer(container, music));
+
+		if (container.isFullscreen())
+			container.setMouseGrabbed(true);
+
+		game.enterState(TacticalGame.STATE_GAME_LOADING);
 	}
 
 	@Override
@@ -236,10 +259,28 @@ public class MenuState extends LoadableGameState
 				else if (menuIndex == 1)
 				{
 					LoadTypeEnum loadType = LoadTypeEnum.TOWN;
+					// This is the first time through the engine
 					if (persistentStateInfo.getClientProfile().getHeroes().size() > 0) {
-						if (persistentStateInfo.getClientProgress().isBattle())
+						LoadMapMessage lmm = null;
+						if ((lmm = persistentStateInfo.getClientProgress().getAndClearChapterSaveMessage()) != null) 
+						{
+							switch (lmm.getMessageType()) {
+								case LOAD_CINEMATIC:
+									persistentStateInfo.loadCinematic(lmm);
+									break;
+								case LOAD_MAP:
+									persistentStateInfo.loadMap(lmm);
+									break;
+								case START_BATTLE:
+									persistentStateInfo.loadBattle(lmm);
+									break;
+							}
+							return;
+							
+						}
+						else if (persistentStateInfo.getClientProgress().isBattle())
 							loadType = LoadTypeEnum.BATTLE;
-						start(loadType, persistentStateInfo.getClientProgress().getMapData(), null);
+						load(loadType, persistentStateInfo.getClientProgress().getMapData(), null, 0);
 					} else {
 						// Clobber existing save data...
 						persistentStateInfo.getClientProfile().initializeValues();

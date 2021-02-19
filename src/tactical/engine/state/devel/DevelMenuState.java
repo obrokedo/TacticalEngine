@@ -26,6 +26,7 @@ import mb.fc.utils.gif.GifFrame;
 import tactical.cinematic.Cinematic;
 import tactical.engine.TacticalGame;
 import tactical.engine.load.BulkLoader;
+import tactical.engine.message.LoadMapMessage;
 import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
 import tactical.engine.state.MenuState.LoadTypeEnum;
@@ -344,9 +345,26 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			{
 				TacticalGame.TEST_MODE_ENABLED = false;
 				LoadTypeEnum loadType = LoadTypeEnum.TOWN;
-				if (persistentStateInfo.getClientProgress().isBattle())
+				LoadMapMessage lmm = null;
+				if ((lmm = persistentStateInfo.getClientProgress().getAndClearChapterSaveMessage()) != null) 
+				{
+					switch (lmm.getMessageType()) {
+						case LOAD_CINEMATIC:
+							persistentStateInfo.loadCinematic(lmm);
+							break;
+						case LOAD_MAP:
+							persistentStateInfo.loadMap(lmm);
+							break;
+						case START_BATTLE:
+							persistentStateInfo.loadBattle(lmm);
+							break;
+					}
+					return;
+					
+				}
+				else if (persistentStateInfo.getClientProgress().isBattle())
 					loadType = LoadTypeEnum.BATTLE;
-				start(loadType, persistentStateInfo.getClientProgress().getMapData(), null);
+				load(loadType, persistentStateInfo.getClientProgress().getMapData(), null, 0);
 			}
 			
 			if (key == Input.KEY_F9)
@@ -413,7 +431,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					persistentStateInfo.setResourceManager(mainGameFCRM);
 					((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
 					applyDevParams();
-					start(LoadTypeEnum.TOWN, textSelector.getSelectedResource(), entranceSelector.getSelectedResource());
+					load(LoadTypeEnum.TOWN, textSelector.getSelectedResource(), entranceSelector.getSelectedResource(), 0);
 				}
 				if (loadCinButton.handleUserInput(x, y, true)) {
 					String id = JOptionPane.showInputDialog("Enter the cinematic id (a number) to run");
@@ -467,7 +485,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		// a use case for that now
 		persistentStateInfo.setResourceManager(mainGameFCRM);
 		((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(mainGameBulkLoader);
-		start(LoadTypeEnum.BATTLE, textSelector.getSelectedResource(), entranceSelector.getSelectedResource());
+		load(LoadTypeEnum.BATTLE, textSelector.getSelectedResource(), entranceSelector.getSelectedResource(), 0);
 		return false;
 	}
 

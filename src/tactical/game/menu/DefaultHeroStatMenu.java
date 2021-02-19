@@ -18,7 +18,7 @@ import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.utils.StringUtils;
 
-public class HeroStatMenu extends Menu
+public class DefaultHeroStatMenu extends Menu
 {
 	private CombatSprite selectedSprite;
 	private int x;
@@ -29,7 +29,7 @@ public class HeroStatMenu extends Menu
 	private Portrait portrait;
 	private SpriteSheet spellLevels;
 
-	public HeroStatMenu(GameContainer gc, CombatSprite selectedSprite, StateInfo stateInfo) {
+	public DefaultHeroStatMenu(GameContainer gc, CombatSprite selectedSprite, StateInfo stateInfo) {
 		super(PanelType.PANEL_HEROS_STATS);
 		x = (PaddedGameContainer.GAME_SCREEN_SIZE.width - 260) / 2;
 		y = (PaddedGameContainer.GAME_SCREEN_SIZE.height - 192) / 2;

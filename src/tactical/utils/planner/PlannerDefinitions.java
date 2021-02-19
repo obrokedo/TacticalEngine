@@ -2340,6 +2340,24 @@ public class PlannerDefinitions {
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef triggerContainer;
 
+		ArrayList<String> partyControl = new ArrayList<>();
+		ArrayList<String> npcControl = new ArrayList<>();
+		ArrayList<String> battleControl = new ArrayList<>();
+		ArrayList<String> soundControl = new ArrayList<>();
+		ArrayList<String> textControl = new ArrayList<>();
+		ArrayList<String> mapControl = new ArrayList<>();
+		ArrayList<String> progressControl = new ArrayList<>();
+		
+		Hashtable<String, ArrayList<String>> menuLayout = new Hashtable<>();
+		menuLayout.put("Party Control", partyControl);
+		menuLayout.put("Sprites", npcControl);
+		menuLayout.put("Speech", textControl);
+		menuLayout.put("Battle", battleControl);
+		menuLayout.put("Sound", soundControl);
+		menuLayout.put("Progress", progressControl);
+		menuLayout.put("Map", mapControl);
+		
+		
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
@@ -2383,7 +2401,7 @@ public class PlannerDefinitions {
 
 		// Setup available types
 		ArrayList<PlannerLineDef> allowableLines = new ArrayList<PlannerLineDef>();
-
+		
 		// Complete Quest
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
@@ -2392,7 +2410,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("completequest",
 				"Complete Quest", "Marks a given quest as completed",
 				definingValues));
-
+		progressControl.add("Complete Quest");
 		
 		// Uncomplete Quest
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2402,6 +2420,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("uncompletequest",
 				"Uncomplete Quest", "Marks a given quest as NOT completed. This has no effect if the quest was not already completed.",
 				definingValues));
+		progressControl.add("Complete Quest");
 		
 		// Start Battle
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2422,6 +2441,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("startbattle", "Load Battle",
 				"Starts the battle with the given triggers and map",
 				definingValues));
+		mapControl.add("Load Battle");
 
 		// Load map
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2437,6 +2457,7 @@ public class PlannerDefinitions {
 				"If specified: the map will be transitioned out via a 'slide' effect in the direction indicated. This value should be set to the direction that the NEW map is relative to the current map."));
 		allowableLines.add(new PlannerLineDef("loadmap", "Load Map",
 				"Loads the given map and places the hero at the given location", definingValues));
+		mapControl.add("Load Map");
 		
 		// Load Chapter
 		definingValues = new ArrayList<PlannerValueDef>();		
@@ -2451,6 +2472,7 @@ public class PlannerDefinitions {
 				"The trigger that should be executed once the chapter screen has been shown. This should ALWAYS load a new map or the credits"));
 		allowableLines.add(new PlannerLineDef("loadchapter", "Show Chapter",
 				"Shows the chapter page.", definingValues));
+		mapControl.add("Show Chapter");
 
 		// Show Cinematic
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2464,6 +2486,7 @@ public class PlannerDefinitions {
 				"The ID of the cinematic that should be shown"));
 		allowableLines.add(new PlannerLineDef("loadcin", "Load Cinematic",
 				"Loads the specified map and text file with the same name and then runs the specified cinematic.", definingValues));
+		mapControl.add("Load Cinematic");
 
 		// Show priest
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2472,11 +2495,13 @@ public class PlannerDefinitions {
 				"The animation file containing the priest portrait"));
 		allowableLines.add(new PlannerLineDef("showpriest", "Show Priest",
 				"Displays the priests menu", definingValues));
+		npcControl.add("Show Priest");
 		
 		// Show advisor
 		definingValues = new ArrayList<PlannerValueDef>();
 		allowableLines.add(new PlannerLineDef("showadvisor", "Show Advisor",
 				"Displays the advisor menu. The advisor portrait is defined in the ConfigurationValues script as getAdvisorPortraitAnimFile.", definingValues));
+		npcControl.add("Show Advisor");
 
 		// Play Music
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2488,16 +2513,19 @@ public class PlannerDefinitions {
 				"A number between 0-100 indicating the volume that the music will be played at"));
 		allowableLines.add(new PlannerLineDef("playmusic", "Play Music",
 				"Plays the specified music", definingValues));
+		soundControl.add("Play Music");
 		
 		// Pause Music
 		definingValues = new ArrayList<PlannerValueDef>();
 		allowableLines.add(new PlannerLineDef("pausemusic", "Pause Music",
 				"Pause any playing music", definingValues));
+		soundControl.add("Pause Music");
 		
 		// Resume Music
 		definingValues = new ArrayList<PlannerValueDef>();
 		allowableLines.add(new PlannerLineDef("resumemusic", "Resume Music",
 				"Resume paused music", definingValues));
+		soundControl.add("Resume Music");
 
 		// Play Sound
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2514,6 +2542,7 @@ public class PlannerDefinitions {
 						"A number between 1-100 that represents the percent volume the sound should be played at"));
 		allowableLines.add(new PlannerLineDef("playsound", "Play Sound",
 				"Plays the specified sound effect", definingValues));
+		soundControl.add("Play Sound");
 		
 		// Change AI - Vision
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2526,6 +2555,7 @@ public class PlannerDefinitions {
 				+ "This value can never be lower then the attack range of the combatant. A value of 0 = unlimited"));
 		allowableLines.add(new PlannerLineDef("aivision", "Change AI - Vision",
 				"Changes the range that the combatant will look for targets at", definingValues));
+		battleControl.add("Change AI - Vision");
 		
 		// Change AI - Approach Type
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2541,6 +2571,7 @@ public class PlannerDefinitions {
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
 		allowableLines.add(new PlannerLineDef("changeaiapproach", "Change AI - Approach Type",
 				"Changes the specified enemies approach AI", definingValues));
+		battleControl.add("Change AI - Approach Type");
 		
 		// Change AI - Target Hero
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2556,6 +2587,7 @@ public class PlannerDefinitions {
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
 		allowableLines.add(new PlannerLineDef("changeaitargethero", "Change AI - Target Hero",
 				"Changes the specified enemies AI to target a given hero. The target will move as quickly as possible.", definingValues));
+		battleControl.add("Change AI - Target Hero");
 		
 		// Change AI - Follow Enemy
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2571,6 +2603,7 @@ public class PlannerDefinitions {
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
 		allowableLines.add(new PlannerLineDef("changeaitargetenemy", "Change AI - Follow Enemy",
 				"Changes the specified enemies AI to follow a given enemy. The target will move as quickly as possible.", definingValues));
+		battleControl.add("Change AI - Follow Enemy");
 		
 
 		// Change AI - Move to location
@@ -2590,6 +2623,7 @@ public class PlannerDefinitions {
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
 		allowableLines.add(new PlannerLineDef("changeaimove", "Change AI - Move to Location",
 				"Changes the specified enemies AI to move to the target location. The target will move as quickly as possible.", definingValues));
+		battleControl.add("Change AI - Move to Location");
 
 		// Show Text
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2598,6 +2632,7 @@ public class PlannerDefinitions {
 				"The ID of the text that should be displayed"));
 		allowableLines.add(new PlannerLineDef("showtext", "Show Text",
 				"Shows the text with the specified ID", definingValues));
+		textControl.add("Show Text");
 
 		// Show Cinematic
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2611,6 +2646,7 @@ public class PlannerDefinitions {
 				"The ID of the trigger that should be run once this cinematic completes"));
 		allowableLines.add(new PlannerLineDef("showcin", "Show Map Event",
 				"Shows the specified cinematic on the current map", definingValues));
+		mapControl.add("Show Map Event");
 
 		// Show Shop
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2630,6 +2666,7 @@ public class PlannerDefinitions {
 				.add(new PlannerLineDef("showshop", "Show Shop",
 						"Shows the shop menu with the specified items",
 						definingValues));
+		npcControl.add("Show Shop");
 
 		// Add hero
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2638,6 +2675,7 @@ public class PlannerDefinitions {
 				"The ID of the hero that should be added to the force"));
 		allowableLines.add(new PlannerLineDef("addhero", "Add Hero",
 				"Adds a new hero to the force", definingValues));
+		partyControl.add("Add Hero");
 		
 		// Add multiple hero selection
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2646,6 +2684,7 @@ public class PlannerDefinitions {
 				"The ID of the hero that should be added to the force"));
 		allowableLines.add(new PlannerLineDef("addmultihero", "Add Hero from Selection",
 				"Displays a menu that allows the user to select one of the specified heroes to the party", definingValues));
+		partyControl.add("Add Hero from Selection");
 		
 		// Remove hero
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2654,7 +2693,8 @@ public class PlannerDefinitions {
 				"The ID of the hero that should be removed from the force"));
 		allowableLines.add(new PlannerLineDef("removehero", "Remove Hero",
 				"Removes the specified hero from the force. If this is called during a battle, then the hero will remain in the battle until the battle is ended.", definingValues));
-
+		partyControl.add("Remove Hero");
+		
 		// Hide Roof
 		/*
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2699,6 +2739,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("addnpc", "Add NPC",
 				"Adds an npc to the map at the specified location",
 				definingValues));
+		npcControl.add("Add NPC");
 		
 		// Change NPC animation
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2712,7 +2753,8 @@ public class PlannerDefinitions {
 				"Change NPC Anim",
 				"Changes an existing npcs animations to the specified animations.",
 				definingValues));
-		
+		npcControl.add("Change NPC Anim");
+
 		// Add Sprite
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SPRITE_IMAGE,
@@ -2730,7 +2772,8 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("addsprite", "Add Sprite",
 				"Adds a sprite to the map at the specified location",
 				definingValues));
-		
+		npcControl.add("Add Sprite");
+
 		// Remove Sprite
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
@@ -2739,6 +2782,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("removesprite", "Remove Sprite",
 				"Removes the sprite from the map with the specified name.",
 				definingValues));
+		npcControl.add("Remove Sprite");
 
 		// Change Sprite Image
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2752,6 +2796,7 @@ public class PlannerDefinitions {
 				"Change Sprite Image",
 				"Changes an existing sprites image to the specified image.",
 				definingValues));
+		npcControl.add("Change Sprite Image");
 
 		// Add Item
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2767,7 +2812,8 @@ public class PlannerDefinitions {
 						"Add Item to Group",
 						"Gives the specified item to the first person with room in the group.",
 						definingValues));
-
+		partyControl.add("Add Item to Group");
+		
 		// Revive Heroes
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
@@ -2780,6 +2826,7 @@ public class PlannerDefinitions {
 						"'Revives' all heroes if no specific hero is specified or revives only the specified hero; this will not bring them back in to an active battle,"
 						+ " but can be used between scenes so that they are not dead for the next battle.",
 						definingValues));
+		partyControl.add("Revive Heroes");
 		
 		// Kill Enemy
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2792,6 +2839,7 @@ public class PlannerDefinitions {
 						"Kill Enemies",
 						"'Kill all enemies with the specified unitid. This should only be usedin battle.",
 						definingValues));
+		battleControl.add("Kill Enemies");
 		
 		// Run Triggers
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2805,8 +2853,9 @@ public class PlannerDefinitions {
 				"Runs the specified triggers. This is primarily used to break up triggers with parts "
 				+ "you don't want to run multiple times into smaller parts that can be run multiple times.",
 				definingValues));
+		progressControl.add("Run Triggers");
 		
-		// Run Triggers
+		// Show NPC Speech
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "npcname", true,
@@ -2818,6 +2867,7 @@ public class PlannerDefinitions {
 				"Drives speech with the given npc as if they were spoken to directly. This allows"
 				+ " for speaking with npcs over counters and at range.",
 				definingValues));
+		textControl.add("Show NPC Speech");
 		
 		// Set egress location
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2838,6 +2888,7 @@ public class PlannerDefinitions {
 				"Set Egress Location",
 				"Sets the location that the hero should egress to if they have not saved",
 				definingValues));
+		progressControl.add("Set Egress Location");
 		
 		// Exit Game
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2847,12 +2898,21 @@ public class PlannerDefinitions {
 						"Exit Game",
 						"Causes the game to exit.",
 						definingValues));
+		progressControl.add("Exit Game");
 		
+		// Save Game
+		definingValues = new ArrayList<PlannerValueDef>();
+		allowableLines
+				.add(new PlannerLineDef(
+						"save",
+						"Save Game",
+						"Saves the game.",
+						definingValues));
+		progressControl.add("Save Game");
 		
-
 		triggerContainer = new PlannerContainerDef(definingLine,
 				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_TRIGGER - 1);
+				PlannerValueDef.REFERS_TRIGGER - 1, menuLayout);
 		containersByName.put("trigger", triggerContainer);
 	}
 	
