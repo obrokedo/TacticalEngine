@@ -30,7 +30,7 @@ public class TownMenu extends QuadMenu {
 		icons[5] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(1, 1);
 		
 		
-		enabled = new boolean[] {true, true, true, true};
+		enabled = new boolean[] {true, false, true, true};
 		text = new String[] {"Heroes", "Magic", "Item", "Search"};
 	}
 
@@ -50,14 +50,17 @@ public class TownMenu extends QuadMenu {
 	protected MenuUpdate onConfirm() {
 		switch (selected) {
 			case DOWN:
+				
 				stateInfo.sendMessage(MessageType.INVESTIGATE);
 				stateInfo.setInputDelay(System.currentTimeMillis() + 200);
-				stateInfo.checkSearchLocation();
+				if (!stateInfo.checkSearchLocation())
+					stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, MUSIC_SELECTOR.getMenuAddedSoundEffect(), 1f, false));
 				break;
 			case UP:
 				stateInfo.sendMessage(MessageType.SHOW_HEROES);
 				break;
 			case RIGHT:
+				stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, MUSIC_SELECTOR.getMenuAddedSoundEffect(), 1f, false));
 				stateInfo.sendMessage(MessageType.SHOW_TOWN_ITEM_OPTION_MENU);
 				break;
 		}
@@ -77,5 +80,15 @@ public class TownMenu extends QuadMenu {
 		*/
 	
 		return super.getTextboxWidth();
+	}
+
+	@Override
+	public boolean makeAddSounds() {
+		return true;
+	}
+	
+	@Override
+	public boolean makeRemoveSounds() {
+		return true;
 	}
 }

@@ -1367,7 +1367,7 @@ public class PlannerDefinitions {
 				"The name of the item"));
 		definingValues
 				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
-						PlannerValueDef.TYPE_STRING, "description", false,
+						PlannerValueDef.TYPE_LONG_STRING, "description", false,
 						"Description",
 						"A description of the object that will be presented to the players during item evaluation"));
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
