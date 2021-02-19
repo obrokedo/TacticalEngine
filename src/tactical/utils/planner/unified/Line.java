@@ -251,6 +251,7 @@ public class Line implements UnifiedRenderable {
 				for (PlannerLine pl : pc.getLines())
 					pl.commitChanges();
 				pc.getDefLine().commitChanges();
+				uvp.panelSelected();
 				uvp.setupPanel((String) uvp.getDrivers().getSelectedItem());
 			}
 		}
@@ -264,6 +265,7 @@ public class Line implements UnifiedRenderable {
 		
 		pl.commitChanges();
 		
+		uvp.panelSelected();
 		uvp.setupPanel((String) uvp.getDrivers().getSelectedItem());
 
 	}

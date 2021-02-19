@@ -38,6 +38,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 	private ArrayList<Object> values;
 	private boolean isDefining;
 	private JPanel uiAspect;
+	private LineCommitListener listener;
 
 	public PlannerLine(PlannerLineDef plDef, boolean isDefining)
 	{
@@ -127,9 +128,6 @@ public class PlannerLine implements FocusListener, ChangeListener
 			headDescPanel.add(headerPanel, BorderLayout.CENTER);
 			uiAspect.add(headDescPanel);
 		}
-
-
-
 
 		JPanel valuePanel = new JPanel();
 		valuePanel.setLayout(new BoxLayout(valuePanel, BoxLayout.PAGE_AXIS));
@@ -355,7 +353,6 @@ public class PlannerLine implements FocusListener, ChangeListener
 
 	public void commitChanges()
 	{
-		System.out.println("COMMIT");
 		PlannerFrame.updateSave("Saved...");
 		
 		if (components.size() > 0)
@@ -476,6 +473,8 @@ public class PlannerLine implements FocusListener, ChangeListener
 		// this.components.clear();
 		ArrayList<String> badReferences = new ArrayList<>();
 		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
+		if (listener != null)
+			listener.lineCommitted();
 	}
 
 	public ArrayList<Component> getPlannerLineComponents() {
@@ -522,5 +521,9 @@ public class PlannerLine implements FocusListener, ChangeListener
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		commitChanges();
+	}
+
+	public void setListener(LineCommitListener listener) {
+		this.listener = listener;
 	}
 }

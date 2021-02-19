@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
@@ -21,6 +22,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+
+import tactical.utils.planner.PlannerFrame.SearchResult;
 
 public class PlannerTab implements ActionListener, TreeSelectionListener, KeyListener, FocusListener
 {
@@ -173,7 +176,6 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 
 	public void setNewValues()
 	{
-
 		if (currentPCScroll != null)
 		{
 			uiAspect.remove(currentPCScroll);
@@ -182,16 +184,7 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 		if (currentPC != null)
 		{
 			currentPC.commitChanges();
-			plannerFrame.updateErrorList(PlannerReference.getBadReferences(plannerFrame.getDataInputTabs()));
-			// Check to see if the description (name) has been renamed
-			if (!currentPC.getDescription().equalsIgnoreCase(plannerTree.getTreeLabel(selectedPC)))
-			{
-				renamingItem = true;
-				plannerTree.updateTreeLabel(selectedPC, currentPC.getDescription());
-				renamingItem = false;
-				currentPC.getPcdef().getDataLines().get(selectedPC).setName(currentPC.getDescription());
-				uiAspect.validate();
-			}
+			checkForErrorsAndRename(currentPC);
 		}
 
 		if (plannerTree.getSelectedIndex() != -1)
@@ -221,6 +214,28 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 			uiAspect.add(currentPCScroll, BorderLayout.CENTER);
 			uiAspect.revalidate();
 		}
+	}
+
+	public void checkForErrorsAndRename(PlannerContainer pc) {		
+		// Check to see if the description (name) has been renamed
+		int pcIdx = listPC.indexOf(pc);
+		String oldName = plannerTree.getTreeLabel(pcIdx);
+		if (!pc.getDescription().equalsIgnoreCase(oldName))
+		{
+			renamingItem = true;
+			plannerTree.updateTreeLabel(pcIdx, pc.getDescription());
+			renamingItem = false;
+			pc.getPcdef().getDataLines().get(pcIdx).setName(pc.getDescription());
+			uiAspect.validate();
+			List<SearchResult> search = plannerFrame.searchGlobal(oldName.toLowerCase(), false);						
+			if (search.size() > 0) { 
+				JOptionPane.showMessageDialog(this.getUiAspect(), 
+						"Values may need to be updated in other map files to reflect these changes, use the search function to find and udpate these values.");
+				new PlannerSearchFrame(plannerFrame, search);
+			}
+		}
+		
+		plannerFrame.updateErrorList(PlannerReference.getBadReferences(plannerFrame.getDataInputTabs()));
 	}
 
 	public void updateAttributeList(int index)

@@ -155,11 +155,20 @@ public class PlannerIO {
 		parseContainer(
 				XMLParser.process(Files.readAllLines(
 						Paths.get(path), StandardCharsets.UTF_8), true),
-				plannerTab, itemXmlTag, containersByName);
+				plannerTab, itemXmlTag, containersByName, true);
 	}
 
+	/**
+	 * 
+	 * @param tas
+	 * @param plannerTab
+	 * @param allowableValue
+	 * @param containersByName
+	 * @param addReferences Whether references should be established, whenever loading a "background" container
+	 * this value should be false so as to not mess with the "real" container definitions.
+	 */
 	public void parseContainer(ArrayList<TagArea> tas, PlannerTab plannerTab,
-			String allowableValue, Hashtable<String, PlannerContainerDef> containersByName) {
+			String allowableValue, Hashtable<String, PlannerContainerDef> containersByName, boolean addReferences) {
 		for (TagArea ta : tas) {
 			if (!ta.getTagType().equalsIgnoreCase(allowableValue))
 				continue;
@@ -168,7 +177,8 @@ public class PlannerIO {
 			PlannerContainer plannerContainer = new PlannerContainer(pcd, plannerTab, false);
 			PlannerLine plannerLine = plannerContainer.getDefLine();
 			parseLine(plannerLine, pcd.getDefiningLine(), ta);
-			pcd.getDataLines().add(new PlannerReference(plannerContainer.getDescription()));
+			if (addReferences)
+				pcd.getDataLines().add(new PlannerReference(plannerContainer.getDescription()));
 
 			plannerTab.addPlannerContainer(plannerContainer);
 

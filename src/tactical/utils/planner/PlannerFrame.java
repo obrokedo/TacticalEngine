@@ -473,7 +473,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				searchString = searchString.toLowerCase();
 				List<SearchResult> results = null;
 				if (actionCommand.equalsIgnoreCase("findglobal")) 
-					results = searchGlobal(searchString);
+					results = searchGlobal(searchString, true);
 				else
 					results = searchLocal(searchString);
 				
@@ -515,17 +515,19 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		return results;
 	}
 	
-	private List<SearchResult> searchGlobal(String searchString) {
+	public List<SearchResult> searchGlobal(String searchString, boolean checkNonMapTabs) {
 		
 		List<SearchResult> results = new ArrayList<>();
 		
-		// Get the non map related tab search results first and only once
-		List<PlannerTab> nonMapTabs = new ArrayList<>();
-		nonMapTabs.add(plannerTabs.get(TAB_ENEMY));
-		nonMapTabs.add(plannerTabs.get(TAB_HERO));
-		nonMapTabs.add(plannerTabs.get(TAB_ITEM));
-		nonMapTabs.add(plannerTabs.get(TAB_QUEST));
-		searchPlannerTabs(nonMapTabs, searchString, results, null);
+		if (checkNonMapTabs) {
+			// Get the non map related tab search results first and only once
+			List<PlannerTab> nonMapTabs = new ArrayList<>();
+			nonMapTabs.add(plannerTabs.get(TAB_ENEMY));
+			nonMapTabs.add(plannerTabs.get(TAB_HERO));
+			nonMapTabs.add(plannerTabs.get(TAB_ITEM));
+			nonMapTabs.add(plannerTabs.get(TAB_QUEST));
+			searchPlannerTabs(nonMapTabs, searchString, results, null);
+		}
 		
 		// Go through all of the map data files searching
 		for (File file : new File(PlannerIO.PATH_MAPDATA).listFiles())
@@ -558,10 +560,10 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			tempTabs.add(new PlannerTab("Speeches", containersByName,
 					new String[] { "text" }, PlannerValueDef.REFERS_TEXT, this, TAB_TEXT));
 		
-			plannerIO.parseContainer(tagAreas, tempTabs.get(0), "trigger", containersByName);
-			plannerIO.parseContainer(tagAreas, tempTabs.get(3), "text", containersByName);
-			plannerIO.parseContainer(tagAreas, tempTabs.get(2), "cinematic", containersByName);
-			plannerIO.parseContainer(tagAreas, tempTabs.get(1), "condition", containersByName);
+			plannerIO.parseContainer(tagAreas, tempTabs.get(0), "trigger", containersByName, false);
+			plannerIO.parseContainer(tagAreas, tempTabs.get(3), "text", containersByName, false);
+			plannerIO.parseContainer(tagAreas, tempTabs.get(2), "cinematic", containersByName, false);
+			plannerIO.parseContainer(tagAreas, tempTabs.get(1), "condition", containersByName, false);
 			
 			searchPlannerTabs(tempTabs, searchString, results, file.getName());
 		}
@@ -740,10 +742,10 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			
 			this.changeAssociatedMapMenuItem.setEnabled(true);
 			
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TRIGGER), "trigger", containersByName);
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TEXT), "text", containersByName);
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CIN), "cinematic", containersByName);
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CONDITIONS), "condition", containersByName);
+			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TRIGGER), "trigger", containersByName, true);
+			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TEXT), "text", containersByName, true);
+			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CIN), "cinematic", containersByName, true);
+			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CONDITIONS), "condition", containersByName, true);
 			
 			PlannerReference.establishReferences(getTabsWithMapReferences(), referenceListByReferenceType);
 			updateErrorList(PlannerReference.getBadReferences(getDataInputTabs()));

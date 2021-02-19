@@ -14,7 +14,7 @@ import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.cinematic.CinematicTimeline;
 
-public class PlannerContainer implements ActionListener
+public class PlannerContainer implements ActionListener, LineCommitListener
 {
 	private PlannerContainerDef pcdef;
 	private ArrayList<PlannerLine> lines;
@@ -29,6 +29,7 @@ public class PlannerContainer implements ActionListener
 		this.pcdef = pcdef;
 
 		this.defLine = new PlannerLine(pcdef.getDefiningLine(), true);
+		this.defLine.setListener(this);
 		this.lines = new ArrayList<PlannerLine>();
 		this.parentTab = parentTab;			
 		
@@ -258,5 +259,10 @@ public class PlannerContainer implements ActionListener
 
 	public JPanel getUiAspect() {
 		return uiAspect;
+	}
+
+	@Override
+	public void lineCommitted() {
+		parentTab.checkForErrorsAndRename(this);
 	}
 }
