@@ -9,11 +9,8 @@ import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 import org.newdawn.slick.state.transition.Transition;
 
-import mb.tcp.network.Client;
-import mb.tcp.network.PacketHandler;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.LoadMapMessage;
-import tactical.engine.message.Message;
 import tactical.engine.transition.MoveMapTransition;
 import tactical.game.Camera;
 import tactical.game.constants.Direction;
@@ -26,8 +23,6 @@ import tactical.loading.LoadableGameState;
 import tactical.loading.LoadingScreenRenderer;
 import tactical.loading.LoadingState;
 import tactical.loading.ResourceManager;
-import tactical.network.TCPClient;
-import tactical.network.TCPServer;
 
 /**
  * Contains information that should be shared across all game states
@@ -35,7 +30,7 @@ import tactical.network.TCPServer;
  * @author Broked
  *
  */
-public class PersistentStateInfo implements PacketHandler
+public class PersistentStateInfo
 {
 	private Camera camera;
 	private StateBasedGame game;
@@ -46,8 +41,6 @@ public class PersistentStateInfo implements PacketHandler
 	private String entranceLocation = null;
 	private int cinematicID = 0;
 	private int clientId;
-	private TCPServer server = null;
-	private TCPClient client = null;
 	private StateInfo currentStateInfo;
 	public transient boolean isFirstLoad = true;
 
@@ -242,62 +235,7 @@ public class PersistentStateInfo implements PacketHandler
 		this.clientId = clientId;
 	}
 
-	public void setServer(TCPServer server) {
-		this.server = server;
-	}
-
-	public void setClient(TCPClient client) {
-		this.client = client;
-	}
-
-	public boolean isHost()
-	{
-		if (!isOnline())
-			return true;
-		return server != null;
-	}
-
-	public boolean isOnline()
-	{
-		return client != null;
-	}
-
-	/**
-	 * Sends the specified message to all connected peers if the message
-	 * is not an internal message
-	 *
-	 * @param message the message to be sent
-	 */
-	public void sendMessageToPeers(Message message)
-	{
-		if (!message.isInternal() && isOnline())
-			client.sendMessage(message);
-	}
-
-	public void sendMessage(Message message)
-	{
-		if (!message.isInternal() && isOnline())
-			client.sendMessage(message);
-		else
-			currentStateInfo.recieveMessage(message);
-	}
-
-	@Override
-	public void handleIncomingPacket(Client client, Object packet) {
-		currentStateInfo.recieveMessage((Message) packet);
-	}
-
-	@Override
-	public void handlerRegistered(Client client) {
-
-	}
-
 	public void setCurrentStateInfo(StateInfo currentStateInfo) {
 		this.currentStateInfo = currentStateInfo;
-		if (isOnline())
-		{
-			client.unregisterPacketHandler(this);
-			client.registerPacketHandler(this);
-		}
 	}
 }

@@ -9,6 +9,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.util.Log;
 
+import lombok.Getter;
+import lombok.Setter;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.SpriteContextMessage;
@@ -39,7 +41,7 @@ public class CombatSprite extends AnimatedSprite
 
 	protected transient Color fadeColor = new Color(255, 255, 255, 255);
 
-	protected int currentHP, maxHP,
+	@Getter @Setter protected int currentHP, maxHP,
 				currentMP, maxMP,
 				currentInit,
 				currentSpeed, maxSpeed,
@@ -48,44 +50,44 @@ public class CombatSprite extends AnimatedSprite
 				currentDefense, maxDefense,
 				level, exp;	
 
-	protected AI ai;
+	@Getter @Setter protected AI ai;
 
-	protected boolean isHero = false;
-	protected boolean isLeader = false;
-	protected boolean isPromoted = false;
+	@Getter protected boolean isHero = false;
+	@Getter protected boolean isLeader = false;
+	@Getter protected boolean isPromoted = false;
 
 	// This value provides a mean of differentiating between multiple enemies of the same name,
 	// in addition this value can be user specified for enemies so that they may be the target
 	// of triggers
-	protected int uniqueEnemyId = -1;
-	protected int clientId = 0;
+	@Getter @Setter protected int uniqueEnemyId = -1;
+	@Getter @Setter protected int clientId = 0;
 
-	protected ArrayList<KnownSpell> spells;
+	@Setter protected ArrayList<KnownSpell> spells;
 	protected ArrayList<Item> items;
-	protected ArrayList<Boolean> equipped;
+	@Getter protected ArrayList<Boolean> equipped;
 	protected int[] usuableWeapons;
 	protected int[] usuableArmor;
-	protected HeroProgression heroProgression;
+	@Getter protected HeroProgression heroProgression;
 	// -1 when not promoted, 0 when promoted by generic, > 0 when special promotion where
 	// promotionPath - 1 = index of the special promotion
 	protected int promotionPath = -1;
-	protected String movementType;
-	protected int kills;
-	protected int defeat;
-	protected ArrayList<BattleEffect> battleEffects;
-	protected transient Image currentWeaponImage = null;
-	protected transient SpriteAnims currentWeaponAnim = null;
+	@Getter @Setter protected String movementType;
+	@Getter protected int kills;
+	@Getter protected int defeat;
+	@Getter protected ArrayList<BattleEffect> battleEffects;
+	@Getter protected transient Image currentWeaponImage = null;
+	@Getter protected transient SpriteAnims currentWeaponAnim = null;
 	protected String attackEffectId;
 	protected int attackEffectChance;
 	protected int attackEffectLevel;
-	protected boolean drawShadow = true;
-	protected transient String customMusic = null;
+	@Getter protected boolean drawShadow = true;
+	@Getter @Setter protected transient String customMusic = null;
 
 
 	/**
 	 * A boolean indicating whether the combat sprite dodges or blocks attacks, dodges if true, blocks if false
 	 */
-	private boolean dodges;
+	@Getter private boolean dodges;
 
 	/**
 	 * Constructor to create an enemy CombatSprite
@@ -426,10 +428,6 @@ public class CombatSprite extends AnimatedSprite
 		return true;
 	}
 
-	public ArrayList<Boolean> getEquipped() {
-		return equipped;
-	}
-
 	public EquippableItem equipItem(EquippableItem item)
 	{
 		EquippableItem oldItem = null;
@@ -543,30 +541,10 @@ public class CombatSprite extends AnimatedSprite
 		facing = dir;
 	}
 
-	public int getCurrentHP() {
-		return currentHP;
-	}
-
 	public void setCurrentHP(int currentHP) {
 		if (currentHP > 0)
 			fadeColor.a = 1;
 		this.currentHP = currentHP;
-	}
-
-	public int getMaxHP() {
-		return this.maxHP;
-	}
-
-	public void setMaxHP(int maxHP) {
-		this.maxHP = maxHP;
-	}
-
-	public int getCurrentMP() {
-		return currentMP;
-	}
-
-	public void setCurrentMP(int currentMP) {
-		this.currentMP = currentMP;
 	}
 
 	public void modifyCurrentHP(int amount)
@@ -579,131 +557,6 @@ public class CombatSprite extends AnimatedSprite
 	public void modifyCurrentMP(int amount)
 	{
 		currentMP = Math.min(maxMP, Math.max(0, currentMP + amount));
-	}
-
-	public int getMaxMP() {
-		return maxMP;
-	}
-
-	public void setMaxMP(int maxMP) {
-		this.maxMP = maxMP;
-	}
-
-	public int getCurrentInit() {
-		return currentInit;
-	}
-
-	public void setCurrentInit(int currentInit) {
-		this.currentInit = currentInit;
-	}
-
-	public int getCurrentSpeed() {
-		return currentSpeed;
-	}
-
-	public void setCurrentSpeed(int currentSpeed) {
-		this.currentSpeed = currentSpeed;
-	}
-
-	public int getMaxSpeed() {
-		return maxSpeed;
-	}
-
-	public void setMaxSpeed(int maxSpeed) {
-		this.maxSpeed = maxSpeed;
-	}
-
-	public int getMaxAttack() {
-		return maxAttack;
-	}
-
-	public void setMaxAttack(int maxAttack) {
-		this.maxAttack = maxAttack;
-	}
-
-	public int getMaxDefense() {
-		return maxDefense;
-	}
-
-	public void setMaxDefense(int maxDefense) {
-		this.maxDefense = maxDefense;
-	}
-
-	public int getCurrentAttack() {
-		return currentAttack;
-	}
-
-	public void setCurrentAttack(int currentAttack) {
-		this.currentAttack = currentAttack;
-	}
-
-	public int getCurrentDefense() {
-		return currentDefense;
-	}
-
-	public void setCurrentDefense(int currentDefense) {
-		this.currentDefense = currentDefense;
-	}
-
-	public boolean isDodges() {
-		return dodges;
-	}
-
-	public void setDodges(boolean dodges) {
-		this.dodges = dodges;
-	}
-
-	public int getKills() {
-		return kills;
-	}
-
-	public void setKills(int kills) {
-		this.kills = kills;
-	}
-
-	public int getDefeat() {
-		return defeat;
-	}
-
-	public void setDefeat(int defeat) {
-		this.defeat = defeat;
-	}
-
-	public AI getAi() {
-		return ai;
-	}
-
-	public void setAi(AI ai)
-	{
-		this.ai = ai;
-	}
-
-	public int getCurrentMove() {
-		return currentMove;
-	}
-
-	public void setCurrentMove(int currentMove) {
-		this.currentMove = currentMove;
-	}
-
-	public int getMaxMove() {
-		return maxMove;
-	}
-
-	public void setMaxMove(int maxMove) {
-		this.maxMove = maxMove;
-	}
-
-	public String getMovementType() {
-		return movementType;
-	}
-
-	public void setMovementType(String characterMovementType) {
-		this.movementType = characterMovementType;
-	}
-
-	public boolean isHero() {
-		return isHero;
 	}
 
 	public Animation getAnimation(String animation)
@@ -721,35 +574,9 @@ public class CombatSprite extends AnimatedSprite
 		return spriteAnims.getImageAtIndex(index);
 	}
 
-	public int getUniqueEnemyId()
-	{
-		return this.uniqueEnemyId;
-	}
-
-	public void setUniqueEnemyId(int id)
-	{
-		this.uniqueEnemyId = id;
-	}
-
-	public boolean isLeader() {
-		return isLeader;
-	}
-
-	public void setLeader(boolean isLeader) {
-		this.isLeader = isLeader;
-	}
-
 	/************************/
 	/* Handle Progression	*/
-	/************************/
-	public int getLevel() {
-		return level;
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
-	}
-	
+	/************************/	
 	public void levelUp() {
 		LevelUpResult lur = getHeroProgression().getLevelUpResults(this);
 		this.exp += 100;
@@ -807,34 +634,14 @@ public class CombatSprite extends AnimatedSprite
 		}
 	}
 
-	public int getExp() {
-		return exp;
-	}
-
-	public void setExp(int exp) {
-		this.exp = exp;
-	}
-
 	public ArrayList<KnownSpell> getSpellsDescriptors() {
 		return spells;
 	}
-
-	public void setSpells(ArrayList<KnownSpell> spells) {
-		this.spells = spells;
-	}
-
-	public boolean isPromoted() {
-		return isPromoted;
-	}
-
+	
 	public void setPromoted(boolean isPromoted, int promotionPath) {
 		this.isPromoted = isPromoted;
 		this.promotionPath = promotionPath;
 		this.setLevel(1);
-	}
-
-	public HeroProgression getHeroProgression() {
-		return heroProgression;
 	}
 
 	public Progression getCurrentProgression() {
@@ -847,10 +654,6 @@ public class CombatSprite extends AnimatedSprite
 		}
 		else
 			return heroProgression.getUnpromotedProgression();
-	}
-
-	public ArrayList<BattleEffect> getBattleEffects() {
-		return battleEffects;
 	}
 
 	public void addBattleEffect(BattleEffect battleEffect)
@@ -876,14 +679,6 @@ public class CombatSprite extends AnimatedSprite
 	{
 		Log.debug("Removed " + battleEffect.getBattleEffectId() + " from " + this.getName());
 		this.battleEffects.remove(battleEffect);
-	}
-
-	public Image getCurrentWeaponImage() {
-		return currentWeaponImage;
-	}
-
-	public SpriteAnims getCurrentWeaponAnim() {
-		return currentWeaponAnim;
 	}
 
 	public BattleEffect getAttackEffect()
@@ -933,40 +728,10 @@ public class CombatSprite extends AnimatedSprite
 				stateInfo.getResourceManager(), stateInfo.getPaddedGameContainer()));
 	}
 
-	public int getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(int clientId) {
-		this.clientId = clientId;
-	}
-
-	// TODO THIS IS SO INCREDIBLY UGLY BECAUSE THESE ARE JUST INDEXES INTO A SCRIPT DEFINED ARRAY. NEED TO FIX THIS
 	public boolean isCaster() {		
 		return false;
 	}
 	
-	
-	/**
-	 * Returns a boolean indicating whether this CombatSprite should have a shadow drawn for it
-	 * and by extension whether the battle platform should be displayed for it
-	 * 
-	 * @return a boolean indicating whether this CombatSprite should have a shadow drawn for it
-	 * and by extension whether the battle platform should be displayed for it
-	 */
-	public boolean isDrawShadow() {
-		return drawShadow;
-	}
-
-	public String getCustomMusic() {
-		return customMusic;
-	}
-
-
-	public void setCustomMusic(String customMusic) {
-		this.customMusic = customMusic;
-	}
-
 	public String toXMLString() {
 		String out = "<hero name=" + getName() + " level=" + getLevel() + 
 				" exp=" + getExp() + " promoted=" + isPromoted() + " promotionPath=" + this.promotionPath + " ";

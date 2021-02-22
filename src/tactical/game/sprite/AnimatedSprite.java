@@ -5,6 +5,8 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+import lombok.Getter;
+import lombok.Setter;
 import tactical.engine.state.StateInfo;
 import tactical.game.Camera;
 import tactical.game.constants.Direction;
@@ -26,13 +28,13 @@ public class AnimatedSprite extends Sprite
 
 	protected transient int imageIndex;
 	protected transient int animationDelay = 0;
-	protected transient SpriteAnims spriteAnims;
+	@Getter @Setter protected transient SpriteAnims spriteAnims;
 
-	protected transient Animation currentAnim;
+	@Getter protected transient Animation currentAnim;
 	protected String imageName;
-	protected transient Direction facing;
-	private int animationUpdate = 10;
-	protected int alpha = 255;
+	@Getter @Setter protected transient Direction facing;
+	@Setter private int animationUpdate = 10;
+	@Getter @Setter protected int alpha = 255;
 
 	public AnimatedSprite(int locX, int locY, String imageName, int id) {
 		super(locX, locY, id);
@@ -146,10 +148,6 @@ public class AnimatedSprite extends Sprite
 		facing = dir;
 	}
 
-	public void setSpriteAnims(SpriteAnims spriteAnims) {
-		this.spriteAnims = spriteAnims;
-	}
-
 	/**
 	 * Sets the location of the sprite
 	 *
@@ -162,31 +160,7 @@ public class AnimatedSprite extends Sprite
 		setLocY(locY, tileHeight);
 	}
 
-	public Direction getFacing() {
-		return facing;
-	}
-
-	public void setAnimationUpdate(int animationUpdate) {
-		this.animationUpdate = animationUpdate;
-	}
-
-	public SpriteAnims getSpriteAnims() {
-		return spriteAnims;
-	}
-
-	public Animation getCurrentAnim() {
-		return currentAnim;
-	}
-
 	public void doneMoving(StateInfo stateInfo) {
 
-	}
-
-	public int getAlpha() {
-		return alpha;
-	}
-
-	public void setAlpha(int alpha) {
-		this.alpha = alpha;
 	}
 }

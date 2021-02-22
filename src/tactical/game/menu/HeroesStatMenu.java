@@ -27,9 +27,8 @@ public class HeroesStatMenu extends Menu
 	protected static final int VIEW_DIFFS = 2;
 	protected static final Color COLOR_NONE = new Color(204, 0, 70);
 
-	// Why the fuck is the yoffsettop negative?!!??!?!?!?
 	protected Image emptySpot;
-	protected int yOffsetTop = -14, yOffsetBot = 10;
+	protected int yOffsetTop = 1, yOffsetBot = 10;
 	protected int selectedIndex = 0;
 	protected ArrayList<CombatSprite> heroes;
 	protected String[][] itemNames;
@@ -165,7 +164,7 @@ public class HeroesStatMenu extends Menu
 	private void drawHeroSpecifics(Graphics graphics) {
 		// Draw hero stat box
 		TacticalGame.ENGINE_CONFIGURATIOR.getPanelRenderer().render(82,
-				yOffsetTop + 20,
+				yOffsetTop + 5,
 			218,
 			115, graphics, null);
 		graphics.setColor(Color.white);
@@ -185,7 +184,7 @@ public class HeroesStatMenu extends Menu
 		StringUtils.drawString(selectedHero.getName() + " " + selectedHero.getCurrentProgression().getClassName() +
 				" L" + selectedHero.getLevel(),
 				88,
-				yOffsetTop + 15, graphics);
+				yOffsetTop, graphics);
 
 		
 
@@ -198,7 +197,7 @@ public class HeroesStatMenu extends Menu
 
 	protected void drawHeroSpecificsRight(Graphics graphics) {
 		StringUtils.drawString("ITEMS", 200,
-				yOffsetTop + 32, graphics);
+				yOffsetTop + 17, graphics);
 		
 		// Draw hero items
 		if (itemNames != null && items.size() > 0)
@@ -208,35 +207,35 @@ public class HeroesStatMenu extends Menu
 				{
 					graphics.setColor(Color.yellow);
 					StringUtils.drawString("EQ", 190,
-							yOffsetTop + (42 + i * 20), graphics);
+							yOffsetTop + (27 + i * 20), graphics);
 					graphics.setColor(Color.red);
 					if (selectedHero.getItem(i).getDurability() == ItemDurability.DAMAGED)
 						StringUtils.drawString("DM", 190,
-							yOffsetTop + (52 + i * 20), graphics);
+							yOffsetTop + (37 + i * 20), graphics);
 					else if (selectedHero.getItem(i).getDurability() == ItemDurability.BROKEN)
 						StringUtils.drawString("BR", 190,
-								yOffsetTop + (52 + i * 20), graphics);
+								yOffsetTop + (37 + i * 20), graphics);
 					graphics.setColor(Color.white);
 				}
 
 				StringUtils.drawString(itemNames[i][0], 210,
-					yOffsetTop + (42 + i * 20), graphics);
+					yOffsetTop + (27 + i * 20), graphics);
 				if (itemNames[i].length > 1)
 					StringUtils.drawString(itemNames[i][1], 225,
-							yOffsetTop + (52 + i * 20), graphics);
+							yOffsetTop + (37 + i * 20), graphics);
 			}
 		else
 		{
 			graphics.setColor(COLOR_NONE);
 			StringUtils.drawString("NONE", 210,
-				yOffsetTop + 42, graphics);
+				yOffsetTop + 27, graphics);
 			graphics.setColor(Color.white);
 		}
 	}
 
 	protected void drawHeroSpecificsLeft(Graphics graphics) {
 		StringUtils.drawString("SPELLS", 90,
-				yOffsetTop + 32, graphics);
+				yOffsetTop + 17, graphics);
 		
 		// Draw Hero Spells
 		if (selectedHero.getSpellsDescriptors() != null && selectedHero.getSpellsDescriptors().size() > 0)
@@ -244,15 +243,15 @@ public class HeroesStatMenu extends Menu
 			{
 				StringUtils.drawString(selectedHero.getSpellsDescriptors().get(i).getSpell().getName(),
 						100,
-					yOffsetTop + (42 + i * 20), graphics);
+					yOffsetTop + (27 + i * 20), graphics);
 				StringUtils.drawString("Level " + selectedHero.getSpellsDescriptors().get(i).getMaxLevel(), 115,
-						yOffsetTop + (52 + i * 20), graphics);
+						yOffsetTop + (37 + i * 20), graphics);
 			}
 		else
 		{
 			graphics.setColor(COLOR_NONE);
 			StringUtils.drawString("NONE", 100,
-				yOffsetTop + 42, graphics);
+				yOffsetTop + 27, graphics);
 			graphics.setColor(Color.white);
 		}
 	}

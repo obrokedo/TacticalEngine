@@ -11,6 +11,7 @@ import tactical.engine.message.AudioMessage;
 import tactical.engine.message.MessageType;
 import tactical.engine.state.StateInfo;
 import tactical.game.menu.Menu.MenuUpdate;
+import tactical.game.menu.MenuTransition;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.ResourceManager;
 
@@ -62,6 +63,7 @@ public abstract class Panel
 	}
 
 	protected PanelType panelType;
+	protected MenuTransition transitionIn, transitionOut;
 	public final static Color COLOR_MOUSE_OVER = new Color(0, 0, 153);
 	public final static Color COLOR_FOREFRONT = Color.white;
 	protected static MusicConfiguration MUSIC_SELECTOR;

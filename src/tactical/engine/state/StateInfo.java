@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import org.newdawn.slick.util.Log;
 
+import lombok.Getter;
+import lombok.Setter;
 import tactical.engine.message.BooleanMessage;
 import tactical.engine.message.LoadChapterMessage;
 import tactical.engine.message.LoadMapMessage;
@@ -23,7 +25,6 @@ import tactical.game.Camera;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel;
 import tactical.game.hudmenu.Panel.PanelType;
-import tactical.game.hudmenu.WaitPanel;
 import tactical.game.input.UserInput;
 import tactical.game.listener.KeyboardListener;
 import tactical.game.listener.MouseListener;
@@ -57,29 +58,28 @@ public class StateInfo
 	private ArrayList<Manager> managers;
 	private ArrayList<Message> messagesToProcess;
 	private ArrayList<Message> newMessages;
-	private boolean initialized = false;
-	private boolean isCombat = false;
+	@Getter @Setter private boolean initialized = false;
+	@Getter private boolean isCombat = false;
 	private boolean isCinematic = false;
-	private boolean isWaiting = false;
-	private boolean showingMapEvent = false;
-	private PersistentStateInfo psi;
+	@Getter private boolean showingMapEvent = false;
+	@Getter private PersistentStateInfo persistentStateInfo;
 
 	// These values need to be reinitialized each time a map is loaded
-	private List<Sprite> sprites;
-	private List<CombatSprite> combatSprites;
+	@Getter private List<Sprite> sprites;
+	@Getter private List<CombatSprite> combatSprites;
 	private List<AnimatedSprite> followingSprites;
-	private List<Panel> panels;
-	private List<Menu> menus;
+	@Getter private List<Panel> panels;
+	@Getter private List<Menu> menus;
 	private List<MouseListener> mouseListeners;
 	private Stack<KeyboardListener> keyboardListeners;
-	private UserInput fcInput;
+	@Getter private UserInput input;
 
-	private CombatSprite currentSprite;
+	@Getter @Setter private CombatSprite currentSprite;
 
-	private long inputDelay = 0;
+	@Getter @Setter private long inputDelay = 0;
 	
 
-	private boolean showAttackCinematic = false;
+	@Getter @Setter private boolean showAttackCinematic = false;
 
 	/**************************************************/
 	/* These values are retrieved from the persistent */
@@ -87,7 +87,7 @@ public class StateInfo
 	/**************************************************/
 	public StateInfo(PersistentStateInfo psi, boolean isCombat, boolean isCinematic)
 	{
-		this.psi = psi;
+		this.persistentStateInfo = psi;
 		this.isCombat = isCombat;
 		this.isCinematic = isCinematic;
 		sprites = new ArrayList<Sprite>();
@@ -99,7 +99,7 @@ public class StateInfo
 		this.managers = new ArrayList<Manager>();
 		this.messagesToProcess = new ArrayList<Message>();
 		this.newMessages = new ArrayList<Message>();
-		this.fcInput = new UserInput();
+		this.input = new UserInput();
 	}
 
 	/************************/
@@ -109,14 +109,13 @@ public class StateInfo
 	{
 		Log.debug("Initialize State");
 
-		psi.setCurrentStateInfo(this);
+		persistentStateInfo.setCurrentStateInfo(this);
 
 		this.initialized = false;
 		this.showAttackCinematic = false;
 		this.showingMapEvent = false;
-		setWaiting();
 		
-		psi.getClientProfile().initialize();
+		persistentStateInfo.getClientProfile().initialize();
 
 		initializeSystems();
 		
@@ -131,7 +130,7 @@ public class StateInfo
 		 * to check the current turn
 		 */
 		boolean isBattleInitialized = false;
-		if (psi.getClientProgress().isBattle() && psi.getClientProgress().getCurrentTurn() != null)
+		if (persistentStateInfo.getClientProgress().isBattle() && persistentStateInfo.getClientProgress().getCurrentTurn() != null)
 		{
 			Log.debug("Initializing battle from load");
 			isBattleInitialized = true;
@@ -144,7 +143,7 @@ public class StateInfo
 			this.addAllCombatSprites(getClientProgress().getBattleSprites(this));
 			for (CombatSprite cs : this.combatSprites)
 			{
-				if (cs.getId() == psi.getClientProgress().getCurrentTurn())
+				if (cs.getId() == persistentStateInfo.getClientProgress().getCurrentTurn())
 				{
 					this.currentSprite = cs;
 					break;
@@ -182,30 +181,25 @@ public class StateInfo
 			this.getResourceManager().checkTriggerCondtions(null, false ,false, true, false, this);
 		}
 		
-		psi.getGc().getInput().addKeyListener(fcInput);
-
-		if (psi.isOnline())
-			sendMessage(MessageType.WAIT);
-		else
-		{			
-			if (isCombat)
+		persistentStateInfo.getGc().getInput().addKeyListener(input);
+		
+		if (isCombat)
+		{
+			// If the battle initialized just restart the current turn
+			if (isBattleInitialized)
 			{
-				// If the battle initialized just restart the current turn
-				if (isBattleInitialized)
-				{
-					sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, currentSprite), true);
-					initialized = true;
-				}
-				else
-				{
-					// Start the whole battle
-					sendMessage(MessageType.INITIALIZE_BATTLE);
-					sendMessage(MessageType.INITIALIZE_STATE_INFO);
-				}
+				sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, currentSprite), true);
+				initialized = true;
 			}
 			else
-				initialized = true;
+			{
+				// Start the whole battle
+				sendMessage(MessageType.INITIALIZE_BATTLE);
+				sendMessage(MessageType.INITIALIZE_STATE_INFO);
+			}
 		}
+		else
+			initialized = true;
 	}
 
 	private void initializeSystems()
@@ -233,7 +227,7 @@ public class StateInfo
 	}
 
 	public String getEntranceLocation() {
-		return psi.getEntranceLocation();
+		return persistentStateInfo.getEntranceLocation();
 	}
 
 	/************************/
@@ -242,20 +236,16 @@ public class StateInfo
 	public void sendMessage(Message message)
 	{
 		if (message.isImmediate()) {
-			// Send the message to our peers, these messages will not be received locally
-			psi.sendMessageToPeers(message);
-						
 			// Short circuit message sending if we're gonna just leave
 			processMessage(message);	
 		}
 		else
-			psi.sendMessage(message);
+			recieveMessage(message);
 	}
 
 	public void sendMessage(Message message, boolean ifHost)
 	{
-		if (psi.isHost())
-			sendMessage(message);
+		sendMessage(message);
 
 		/*
 		if (message.isImmediate())
@@ -305,23 +295,23 @@ public class StateInfo
 				break;
 			case LOAD_MAP:
 				// sendMessage(MessageType.PAUSE_MUSIC);
-				psi.loadMap((LoadMapMessage) m);
+				persistentStateInfo.loadMap((LoadMapMessage) m);
 				return true;
 			case START_BATTLE:
 				sendMessage(MessageType.PAUSE_MUSIC);
 				LoadMapMessage lmb = (LoadMapMessage) m;
-				psi.loadBattle(lmb);
+				persistentStateInfo.loadBattle(lmb);
 				return true;
 			case LOAD_CINEMATIC:
 				sendMessage(MessageType.PAUSE_MUSIC);
 
 				LoadMapMessage lmc = (LoadMapMessage) m;
-				psi.loadCinematic(lmc);
+				persistentStateInfo.loadCinematic(lmc);
 				break;
 			case LOAD_CHAPTER:
 				sendMessage(MessageType.PAUSE_MUSIC);				
 				LoadChapterMessage lcm = (LoadChapterMessage) m;
-				psi.loadChapter(lcm.getHeader(), lcm.getDescription(), 
+				persistentStateInfo.loadChapter(lcm.getHeader(), lcm.getDescription(), 
 						this.getResourceManager().getTriggerEventById(lcm.getTriggerId()), false);
 				break;
 			case SAVE:
@@ -345,7 +335,6 @@ public class StateInfo
 						sendMessage(MessageType.INITIALIZE_BATTLE);
 				}
 				this.removePanel(PanelType.PANEL_WAIT);
-				isWaiting = false;
 				break;
 			case SHOW_CINEMATIC:
 				showingMapEvent = true;
@@ -482,16 +471,6 @@ public class StateInfo
 		menus = menus.stream().filter(m -> m.getPanelType() != panelType).collect(Collectors.toList());
 	}
 
-	public Iterable<Panel> getPanels()
-	{
-		return panels;
-	}
-
-	public Iterable<Menu> getMenus()
-	{
-		return menus;
-	}
-
 	/****************************************/
 	/* Manage Mouse and Keyboard Listeners	*/
 	/****************************************/
@@ -576,12 +555,12 @@ public class StateInfo
 
 	public void setQuestStatus(String id, boolean completed)
 	{
-		psi.setQuestStatus(id, completed);
+		persistentStateInfo.setQuestStatus(id, completed);
 	}
 
 	public boolean isQuestComplete(String questId)
 	{
-		return psi.isQuestComplete(questId);
+		return persistentStateInfo.isQuestComplete(questId);
 	}
 	
 	public boolean checkSearchLocation() {
@@ -624,19 +603,19 @@ public class StateInfo
 	/*********************/
 	public int getTileWidth()
 	{
-		return psi.getResourceManager().getMap().getTileEffectiveWidth();
+		return persistentStateInfo.getResourceManager().getMap().getTileEffectiveWidth();
 		// return psi.getResourceManager().getMap().getTileWidth();
 	}
 
 	public int getTileHeight()
 	{
-		return psi.getResourceManager().getMap().getTileEffectiveHeight();
+		return persistentStateInfo.getResourceManager().getMap().getTileEffectiveHeight();
 		// return psi.getResourceManager().getMap().getTileHeight();
 	}
 
 	public Map getCurrentMap()
 	{
-		return psi.getResourceManager().getMap();
+		return persistentStateInfo.getResourceManager().getMap();
 	}
 
 	/**
@@ -738,19 +717,8 @@ public class StateInfo
 		return null;
 	}
 	
-	// Special care needs to be taken to ensure that the sprites and combat sprites are in sync with each other.
-	// Thus the actual lists should never be directly exposed
-
-	public Iterable<Sprite> getSprites() {
-		return sprites;
-	}
-	
 	public List<AnimatedSprite> getFollowers() {
 		return this.followingSprites;
-	}
-
-	public Iterable<CombatSprite> getCombatSprites() {
-		return combatSprites;
 	}
 
 	/**
@@ -799,100 +767,36 @@ public class StateInfo
 			combatSprites.add(ss);
 		}
 	}
-	
-	public UserInput getInput() {
-		return fcInput;
-	}
 
 	public ResourceManager getResourceManager() {
-		return psi.getResourceManager();
-	}
-
-	public ArrayList<Manager> getManagers() {
-		return managers;
-	}
-
-	public boolean isInitialized() {
-		return initialized;
-	}
-
-	public void setInitialized(boolean initialized) {
-		this.initialized = initialized;
+		return persistentStateInfo.getResourceManager();
 	}
 
 	public Camera getCamera() {
-		return psi.getCamera();
+		return persistentStateInfo.getCamera();
 	}
 
 	public PaddedGameContainer getPaddedGameContainer() {
-		return psi.getGc();
-	}
-
-	public boolean isCombat() {
-		return isCombat;
+		return persistentStateInfo.getGc();
 	}
 
 	public void setResourceManager(ResourceManager resourceManager) {
-		psi.setResourceManager(resourceManager);
+		persistentStateInfo.setResourceManager(resourceManager);
 	}
 	
 	public Iterable<CombatSprite> getAllHeroes() {
-		return this.psi.getClientProfile().getHeroes();
-	}
-
-	public long getInputDelay() {
-		return inputDelay;
-	}
-
-	public void setInputDelay(long inputDelay) {
-		this.inputDelay = inputDelay;
-	}
-
-	public ClientProfile getClientProfile() {
-		return psi.getClientProfile();
-	}
-
-	public ClientProgress getClientProgress() {
-		return psi.getClientProgress();
-	}
-
-	public boolean isShowAttackCinematic() {
-		return showAttackCinematic;
-	}
-
-	public void setShowAttackCinematic(boolean showAttackCinematic) {
-		this.showAttackCinematic = showAttackCinematic;
-	}
-	
-	public boolean isShowingMapEvent() {
-		return showingMapEvent;
-	}
-
-	public CombatSprite getCurrentSprite() {
-		return currentSprite;
-	}
-
-	public void setCurrentSprite(CombatSprite currentSprite) {
-		this.currentSprite = currentSprite;
-	}
-
-	public PersistentStateInfo getPersistentStateInfo() {
-		return psi;
+		return this.persistentStateInfo.getClientProfile().getHeroes();
 	}
 	
 	public boolean isInCinematicState() {
 		return isCinematic;
 	}
 
-	public boolean isWaiting() {
-		return isWaiting;
+	public ClientProfile getClientProfile() {
+		return persistentStateInfo.getClientProfile();
 	}
 
-	public void setWaiting() {
-		if (psi.isOnline())
-		{
-			this.addPanel(new WaitPanel());
-			this.isWaiting = true;
-		}
+	public ClientProgress getClientProgress() {
+		return persistentStateInfo.getClientProgress();
 	}
 }

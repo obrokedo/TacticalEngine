@@ -16,6 +16,8 @@ import org.newdawn.slick.util.pathfinding.Path;
 import org.newdawn.slick.util.pathfinding.PathFindingContext;
 import org.newdawn.slick.util.pathfinding.TileBasedMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
 import tactical.engine.state.StateInfo;
@@ -47,27 +49,27 @@ public class Map
 	 * A list of 2 dimensional int arrays, where each entry contains the tile indexs for each tile on that layer.
 	 * A value of 0 in any given layer means that no tile was selected at this location.
 	 */
-	private String name;
+	@Getter @Setter private String name;
 	private ArrayList<MapLayer> mapLayer = new ArrayList<>();
-	protected MapLayer moveableLayer;
-	private MapLayer roofLayer;
-	private MapLayer roofShadowLayer;
+	@Setter protected MapLayer moveableLayer;
+	@Setter private MapLayer roofLayer;
+	@Setter private MapLayer roofShadowLayer;
 	protected int tileWidth, tileHeight;
 	protected ArrayList<TileSet> tileSets = new ArrayList<TileSet>();
-	protected ArrayList<MapObject> mapObjects = new ArrayList<MapObject>();
+	@Getter protected ArrayList<MapObject> mapObjects = new ArrayList<MapObject>();
 	protected Hashtable<Integer, Integer> landEffectByTileId = new Hashtable<Integer, Integer>();
 	private Hashtable<Point, Terrain> overriddenTerrain = new Hashtable<Point, Terrain>();
 	private Hashtable<Integer, Roof> roofsById = new Hashtable<Integer, Roof>();
 	private Hashtable<Integer, ArrayList<MapLayer>> flashingLayersByPosition = new Hashtable<>();
-	private Shape battleRegion = null;
+	@Getter private Shape battleRegion = null;
 	private int roofCount = -1;
-	private int backgroundImageIndex;
-	private String defaultAttackPlatform = null;
+	@Getter @Setter private int backgroundImageIndex;
+	@Getter @Setter private String defaultAttackPlatform = null;
 	private EngineConfigurationValues jConfigValues;
-	private boolean disableRoofs = false;
+	@Setter private boolean disableRoofs = false;
 	private List<Stairs> stairs = new ArrayList<>();
 
-	private float tileRatio = 2f;
+	@Getter private float tileRatio = 2f;
 
 	private TileSet inUseTileset;
 
@@ -277,10 +279,6 @@ public class Map
 		return tileHeight;
 	}
 
-	public ArrayList<MapObject> getMapObjects() {
-		return mapObjects;
-	}
-
 	public void addTileset(SpriteSheet spriteSheet, int tileStartIndex, int tileWidth, int tileHeight, Hashtable<Integer, Integer> landEffectByTileId)
 	{
 		this.landEffectByTileId.putAll(landEffectByTileId);
@@ -409,10 +407,6 @@ public class Map
 		return battleRegion.contains(mapX + 1, mapY + 1);
 	}
 
-	public Shape getBattleRegion() {
-		return battleRegion;
-	}
-
 	public boolean isMarkedMoveableForTown(int tileX, int tileY)
 	{
 		if ((moveableLayer.getTiles().length > (tileY * tileRatio)) && ((moveableLayer.getTiles()[0].length > tileX * tileRatio)))
@@ -516,22 +510,6 @@ public class Map
 		return -1 != backgroundImageIndex;
 	}
 
-	public int getBackgroundImageIndex() {
-		return backgroundImageIndex;
-	}
-
-	public void setBackgroundImageIndex(int index) {
-		this.backgroundImageIndex = index;
-	}
-
-	public String getDefaultAttackPlatform() {
-		return defaultAttackPlatform;
-	}
-
-	public void setDefaultAttackPlatform(String defaultAttackPlatform) {
-		this.defaultAttackPlatform = defaultAttackPlatform;
-	}
-
 	private class MovementCost
 	{
 		private Hashtable<String, Integer> movementCostByTerrain = new Hashtable<>();
@@ -546,14 +524,6 @@ public class Map
 		{
 			return movementCostByTerrain.get(terrain);
 		}
-	}
-
-	public void setMoveableLayer(MapLayer moveableLayer) {
-		this.moveableLayer = moveableLayer;
-	}
-	
-	public void setRoofLayer(MapLayer roofLayer) {
-		this.roofLayer = roofLayer;
 	}
 
 	public void endUse()
@@ -674,30 +644,10 @@ public class Map
 		return null;
 	}
 
-	public void setRoofShadowLayer(MapLayer roofShadowLayer) {
-		this.roofShadowLayer = roofShadowLayer;
-	}
-
-	public void setDisableRoofs(boolean disableRoofs) {
-		this.disableRoofs = disableRoofs;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public int getMapLayerAmount() {
 		return (mapLayer == null ? 0 : mapLayer.size());
 	}
 
-	public float getTileRatio() {
-		return tileRatio;
-	}
-	
 	public class Terrain {
 		public String name;
 		public String platform;

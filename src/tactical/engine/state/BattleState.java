@@ -12,7 +12,6 @@ import tactical.game.manager.CinematicManager;
 import tactical.game.manager.InitiativeManager;
 import tactical.game.manager.KeyboardManager;
 import tactical.game.manager.MenuManager;
-import tactical.game.manager.PanelManager;
 import tactical.game.manager.SoundManager;
 import tactical.game.manager.SpriteManager;
 import tactical.game.manager.TurnManager;
@@ -41,7 +40,6 @@ public class BattleState extends LoadableGameState
 	private PanelRendererManager panelRenderer;
 	private MenuRenderer menuRenderer;
 	private SpriteManager spriteManager;
-	private PanelManager panelManager;
 	private MenuManager menuManager;
 	private KeyboardManager keyboardManager;
 	private SoundManager soundManager;
@@ -72,8 +70,6 @@ public class BattleState extends LoadableGameState
 		stateInfo.registerManager(initManager);
 		this.spriteManager = new SpriteManager();
 		stateInfo.registerManager(spriteManager);
-		this.panelManager = new PanelManager();
-		stateInfo.registerManager(panelManager);
 		this.menuManager = new MenuManager();
 		stateInfo.registerManager(menuManager);
 		this.keyboardManager = new KeyboardManager();
@@ -102,8 +98,6 @@ public class BattleState extends LoadableGameState
 
 		if (stateInfo.isShowAttackCinematic())
 		{
-			stateInfo.setWaiting();
-			stateInfo.sendMessage(MessageType.WAIT);
 			stateInfo.getInput().clear();
 			container.getInput().addKeyListener(stateInfo.getInput());
 			this.stateInfo.setInputDelay(System.currentTimeMillis() + 200);
@@ -173,7 +167,7 @@ public class BattleState extends LoadableGameState
 			stateInfo.processMessages();
 		}
 		
-		if (stateInfo.isInitialized() && !stateInfo.isWaiting())
+		if (stateInfo.isInitialized())
 		{
 			
 			menuManager.update(delta);

@@ -6,6 +6,8 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 
+import lombok.Getter;
+import lombok.Setter;
 import tactical.engine.state.StateInfo;
 import tactical.game.Camera;
 import tactical.loading.ResourceManager;
@@ -17,12 +19,12 @@ public class Sprite implements Serializable
 	public static final byte TYPE_COMBAT = 1;
 	public static final byte TYPE_NPC = 2;
 	public static final byte TYPE_STATIC_SPRITE = 3;
-	protected Rectangle spriteBounds;
-	private int tileX, tileY;
-	protected byte spriteType;
-	protected String name;
-	protected boolean visible = true;
-	protected int id;
+	@Getter protected Rectangle spriteBounds;
+	@Getter @Setter private int tileX, tileY;
+	@Getter protected byte spriteType;
+	@Getter protected String name;
+	@Getter @Setter protected boolean visible = true;
+	@Getter protected int id;
 
 	// protected static StateInfo stateInfo;
 
@@ -49,14 +51,6 @@ public class Sprite implements Serializable
 
 	}
 
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
 	public float getLocX() {
 		return spriteBounds.getX();
 	}
@@ -73,33 +67,5 @@ public class Sprite implements Serializable
 	public void setLocY(float locY, int tileHeight) {
 		spriteBounds.setY(locY);
 		tileY = (int) Math.ceil(locY / tileHeight);
-	}
-
-	public int getTileX() {
-		return tileX;
-	}
-
-	public int getTileY() {
-		return tileY;
-	}
-	
-	public Rectangle getSpriteBounds() {
-		return spriteBounds;
-	}
-
-	public byte getSpriteType() {
-		return spriteType;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 }

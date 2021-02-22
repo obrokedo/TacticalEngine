@@ -11,22 +11,20 @@ import tactical.engine.message.SpeechBundleMessage;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.StringMessage;
-import tactical.game.menu.DefaultHeroStatMenu;
 import tactical.game.menu.HeroesStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.Menu.MenuUpdate;
+import tactical.game.menu.MiniMapPanel;
+import tactical.game.menu.MultiHeroJoinMenu;
+import tactical.game.menu.PriestMenu;
+import tactical.game.menu.SpeechMenu;
+import tactical.game.menu.SystemMenu;
+import tactical.game.menu.YesNoMenu;
 import tactical.game.menu.advisor.AdvisorMenu;
 import tactical.game.menu.advisor.ChangePartyMenu;
 import tactical.game.menu.advisor.DepositItemMenu;
 import tactical.game.menu.advisor.RetrieveItemMenu;
 import tactical.game.menu.advisor.StorageMenu;
-import tactical.game.menu.MiniMapPanel;
-import tactical.game.menu.MultiHeroJoinMenu;
-import tactical.game.menu.PriestMenu;
-import tactical.game.menu.SelectHeroMenu;
-import tactical.game.menu.SpeechMenu;
-import tactical.game.menu.SystemMenu;
-import tactical.game.menu.YesNoMenu;
 import tactical.game.menu.battle.BattleOptionMenu;
 import tactical.game.menu.devel.DebugMenu;
 import tactical.game.menu.shop.ShopBuyMenu;
@@ -45,6 +43,7 @@ public class MenuManager extends Manager
 	@Override
 	public void initialize()
 	{
+		
 	}
 
 	public boolean isBlocking()
@@ -69,11 +68,6 @@ public class MenuManager extends Manager
 		switch (menuUpdate)
 		{
 			case MENU_CLOSE:
-				if (updatedMenu instanceof SpeechMenu)
-				{
-					stateInfo.setWaiting();
-					stateInfo.sendMessage(MessageType.WAIT);
-				}
 				stateInfo.removeMenu(updatedMenu);
 				if (updatedMenu.getMenuListener() != null)
 				{

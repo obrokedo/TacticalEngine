@@ -16,11 +16,11 @@ public class MenuRenderer extends Manager {
 	public void render(Graphics graphics)
 	{
 		if (stateInfo.areMenusDisplayed())
-		for (Menu m : stateInfo.getMenus())
-		{
-			if (m.displayWhenNotTop() || m == stateInfo.getTopMenu())
-				m.render(stateInfo.getPaddedGameContainer(), graphics);
-		}
+			for (Menu m : stateInfo.getMenus())
+			{
+				if (m.displayWhenNotTop() || m == stateInfo.getTopMenu())
+					m.render(stateInfo.getPaddedGameContainer(), graphics);
+			}
 	}
 
 	@Override

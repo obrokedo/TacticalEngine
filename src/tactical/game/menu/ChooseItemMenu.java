@@ -37,7 +37,7 @@ public class ChooseItemMenu extends HeroesStatMenu
 		if (selectingItemState) {
 			graphics.setLineWidth(2);
 			graphics.setColor(Color.white);
-			graphics.drawRoundRect(207, yOffsetTop + 50 + selectingItemIndex * 20, 80, 20, 3);
+			graphics.drawRoundRect(207, yOffsetTop + 35 + selectingItemIndex * 20, 80, 20, 3);
 		}
 	}
 	

@@ -16,7 +16,6 @@ import tactical.engine.message.MessageType;
 import tactical.game.input.KeyMapping;
 import tactical.game.manager.CinematicManager;
 import tactical.game.manager.MenuManager;
-import tactical.game.manager.PanelManager;
 import tactical.game.manager.SoundManager;
 import tactical.game.manager.SpriteManager;
 import tactical.game.manager.TownMoveManager;
@@ -50,7 +49,6 @@ public class TownState extends LoadableGameState
 	private PanelRendererManager panelRenderer;
 	private MenuRenderer menuRenderer;
 	private SpriteManager spriteManager;
-	private PanelManager panelManager;
 	private MenuManager menuManager;
 	private TownMoveManager townMoveManager;
 	private CinematicManager cinematicManager;
@@ -76,8 +74,6 @@ public class TownState extends LoadableGameState
 		stateInfo.registerManager(menuRenderer);
 		this.spriteManager = new SpriteManager();
 		stateInfo.registerManager(spriteManager);
-		this.panelManager = new PanelManager();
-		stateInfo.registerManager(panelManager);
 		this.menuManager = new MenuManager();
 		stateInfo.registerManager(menuManager);
 		this.townMoveManager = new TownMoveManager();
@@ -159,16 +155,13 @@ public class TownState extends LoadableGameState
 	{
 		stateInfo.processMessages();
 
-		if (stateInfo.isInitialized() && !stateInfo.isWaiting())
+		if (stateInfo.isInitialized())
 		{
 			menuManager.update(delta);
 			cinematicManager.update(delta);
 			if (!cinematicManager.isBlocking()) {
 				if (!menuManager.isBlocking())
 				{
-					panelManager.update(delta);
-					
-					
 					if (TacticalGame.TEST_MODE_ENABLED) {
 						if (TEST_NPCS_STACK.size() > 0) {
 							TEST_NPCS_STACK.remove(0).triggerButton1Event(stateInfo);
