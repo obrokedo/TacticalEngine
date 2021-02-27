@@ -173,6 +173,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 						if (values.size() > i)
 							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
 						((JComboBox<?>) c).setMaximumRowCount(20);
+						((JComboBox<?>) c).addFocusListener(this);
 					}
 					break;
 				case PlannerValueDef.TYPE_MULTI_STRING:
@@ -236,16 +237,10 @@ public class PlannerLine implements FocusListener, ChangeListener
 					if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE)
 					{
 						c = new JTextField(30);
+						c.addFocusListener(this);
 						if (values.size() > i)
 						{
-							try
-							{
-								((JTextField) c).setText((String) values.get(i));
-							}
-							catch (Throwable t)
-							{
-								System.out.println(t);
-							}
+							((JTextField) c).setText((String) values.get(i));
 						}
 					}
 					else
@@ -255,6 +250,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 						// We're going to leave the "" in so bad references don't default to something
 							items.add(0, "");
 						c = new JComboBox<String>(items);
+						c.addFocusListener(this);
 						((JComboBox<?>) c).setMaximumRowCount(20);
 						if (values.size() > i)
 							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
@@ -262,7 +258,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 					break;
 				case PlannerValueDef.TYPE_LONG_STRING:
 					JTextArea ta = new JTextArea(5, 40);
-
+					ta.addFocusListener(this);
 					ta.setWrapStyleWord(true);
 					ta.setLineWrap(true);
 					if (values.size() > i)

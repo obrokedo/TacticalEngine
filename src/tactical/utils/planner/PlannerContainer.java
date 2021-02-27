@@ -3,16 +3,9 @@ package tactical.utils.planner;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-
-import tactical.cinematic.event.CinematicEvent;
-import tactical.engine.TacticalGame;
-import tactical.utils.XMLParser;
-import tactical.utils.XMLParser.TagArea;
-import tactical.utils.planner.cinematic.CinematicTimeline;
 
 public class PlannerContainer implements ActionListener, LineCommitListener
 {
@@ -28,8 +21,7 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		uiAspect.setLayout(new BoxLayout(uiAspect, BoxLayout.PAGE_AXIS));
 		this.pcdef = pcdef;
 
-		this.defLine = new PlannerLine(pcdef.getDefiningLine(), true);
-		this.defLine.setListener(this);
+		this.defLine = new PlannerLine(pcdef.getDefiningLine(), true);		
 		this.lines = new ArrayList<PlannerLine>();
 		this.parentTab = parentTab;			
 		
@@ -37,6 +29,9 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 			this.setupUI();
 			this.commitChanges();
 		}
+		
+		this.defLine.commitChanges();
+		this.defLine.setListener(this);
 	}
 
 	public PlannerContainer(String newName, PlannerContainer copyContainer)
@@ -46,7 +41,7 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		this.pcdef = copyContainer.pcdef;
 
 		this.defLine = new PlannerLine(copyContainer.defLine);
-		this.defLine.getValues().add(newName);
+		this.defLine.getValues().set(0, newName);
 		this.lines = new ArrayList<PlannerLine>();
 		this.parentTab = copyContainer.parentTab;
 		for (PlannerLine l : copyContainer.lines)
@@ -83,41 +78,6 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		} */
 
 		uiAspect.add(listPanel);
-
-		if (PlannerFrame.SHOW_CIN && pcdef.getDefiningLine().getTag().equalsIgnoreCase("Cinematic"))
-		{
-			try
-			{
-				ArrayList<PlannerContainer> pcs = new ArrayList<PlannerContainer>();
-				pcs.add(this);
-				ArrayList<String> results = PlannerIO.export(pcs, "cinematics");
-
-				ArrayList<TagArea> tas = XMLParser.process(results, true);
-				if (tas.size() > 0)
-				{
-					ArrayList<CinematicEvent> initEvents = new ArrayList<CinematicEvent>();
-					if (plannerGraph == null)
-					{
-						ArrayList<CinematicEvent> ces = TacticalGame.TEXT_PARSER.parseCinematicEvents(tas.get(0), initEvents,
-								new HashSet<String>(), new HashSet<String>(), new HashSet<String>());
-						ces.addAll(0, initEvents);
-						plannerGraph = new PlannerTimeBarViewer(ces, new CinematicTimeline(), Integer.parseInt(tas.get(0).getAttribute("camerax")), Integer.parseInt(tas.get(0).getAttribute("cameray")));
-					}
-					else
-					{
-						ArrayList<CinematicEvent> ces = TacticalGame.TEXT_PARSER.parseCinematicEvents(tas.get(0), initEvents,
-								new HashSet<String>(), new HashSet<String>(), new HashSet<String>());
-						ces.addAll(0, initEvents);
-
-						plannerGraph.generateGraph(ces, new CinematicTimeline(), Integer.parseInt(tas.get(0).getAttribute("camerax")), Integer.parseInt(tas.get(0).getAttribute("cameray")));
-					// this.add(ptbv);
-					}
-				}
-			}
-			catch (Exception ex) {ex.printStackTrace();}
-
-		}
-
 		uiAspect.validate();
 		uiAspect.repaint();
 		// this.add(new JScrollPane(listPanel));

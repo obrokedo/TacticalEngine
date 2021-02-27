@@ -271,7 +271,10 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 		for (int a = 0; a < actorLocations.size(); a++)
 		{
 			Point ap = actorLocations.get(a);
-			BufferedImage bim = plannerMap.getImagesByName().get(actorImages.get(a));
+			String imageName = actorImages.get(a);
+			BufferedImage bim = null;
+			if (imageName != null)
+				bim = plannerMap.getImagesByName().get(imageName);
 			g.setColor(Color.red);
 			if (selectedActor != -1 && a == selectedActor)
 				g.setColor(Color.yellow);

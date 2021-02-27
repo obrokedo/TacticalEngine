@@ -76,7 +76,6 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private PlannerIO plannerIO = new PlannerIO();
 	private JList<String> errorList = new JList<>();
 	private JScrollPane errorScroll;
-	public static boolean SHOW_CIN = false;
 	public static boolean SHOW_CIN_LOCATION = true;
 
 	public static final int TAB_TRIGGER = 0;

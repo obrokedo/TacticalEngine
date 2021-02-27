@@ -51,10 +51,8 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent arg0) {
-		System.out.println("ADJUST");
 		this.validate();
 		this.repaint();
-		System.out.println(this.getSize());
 	}
 
 	public void generateGraph(ArrayList<CinematicEvent> ces, CinematicTimeline cinematicTimeline, int cameraStartX, int cameraStartY)

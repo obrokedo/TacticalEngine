@@ -6,7 +6,6 @@ import java.util.Iterator;
 import org.newdawn.slick.Image;
 
 import tactical.engine.TacticalGame;
-import tactical.engine.config.MenuConfiguration;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.state.StateInfo;
@@ -22,7 +21,6 @@ public class PriestMenu extends QuadMenu implements MenuListener
 	private ArrayList<PromotableHero> promotableHeroes = new ArrayList<>();
 	private ArrayList<CombatSprite> curableHeroes = new ArrayList<>();
 	private ArrayList<CombatSprite> revivableHeroes = new ArrayList<>();
-	private MenuConfiguration menuConfig;
 	
 	public PriestMenu(String portaitAnim, StateInfo stateInfo)
 	{

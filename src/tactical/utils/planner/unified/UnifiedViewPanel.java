@@ -26,7 +26,6 @@ import javax.swing.JScrollPane;
 import tactical.loading.PlannerMap;
 import tactical.map.MapObject;
 import tactical.utils.planner.PlannerContainer;
-import tactical.utils.planner.PlannerContainerDef;
 import tactical.utils.planner.PlannerFrame;
 import tactical.utils.planner.PlannerLine;
 import tactical.utils.planner.PlannerReference;
@@ -68,7 +67,9 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		newCondButton.addActionListener(this);
 		topPanel.add(newCondButton);
 		add(topPanel, BorderLayout.PAGE_START);
-		add(new JScrollPane(renderPanel), BorderLayout.CENTER);
+		JScrollPane renderScroll = new JScrollPane(renderPanel);
+		renderScroll.getVerticalScrollBar().setUnitIncrement(20);
+		add(renderScroll, BorderLayout.CENTER);
 	}
 	
 	public class UnifiedViewRenderPanel extends JPanel {
@@ -343,6 +344,17 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 				} else {
 					group.groupRenderables.add(new ArrowLine());
 					group.groupRenderables.add(new Line("A 'Run Triggers' action causes...", null, pc, pl, this));
+					group.groupRenderables.add(new ArrowLine());
+					group.groupRenderables.add((new NotSpecifiedLine(true, false, false, null, pc, pl, 0, this)));
+				}
+			} else if (pl.getPlDef().getName().equalsIgnoreCase("Show Map Event")) {
+				if (pl.getValues().size() > 0 && ((PlannerReference) pl.getValues().get(1)).getName().trim().length() > 0) {
+					PlannerReference plannerRef = (PlannerReference) pl.getValues().get(1);
+					addArrowLineArrowGroup(group.groupRenderables, "A 'Show Map Event' action causes...", pc, pl, 
+							pr -> setupTrigger(pr), plannerRef);
+				} else {
+					group.groupRenderables.add(new ArrowLine());
+					group.groupRenderables.add(new Line("A 'Show Map Event' action causes...", null, pc, pl, this));
 					group.groupRenderables.add(new ArrowLine());
 					group.groupRenderables.add((new NotSpecifiedLine(true, false, false, null, pc, pl, 0, this)));
 				}

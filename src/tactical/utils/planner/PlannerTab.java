@@ -121,7 +121,8 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 		listPC.add(newPC);
 		PlannerContainerDef pcd = containersByName.get(type);
 		pcd.getDataLines().add(new PlannerReference(newName));
-		newPC.getDefLine().getValues().add(newName);
+		newPC.getDefLine().getValues().set(0, newName);
+		newPC.commitChanges();
 		plannerTree.addItem(newName, listPC.size() - 1);
 		return newPC;
 	}
