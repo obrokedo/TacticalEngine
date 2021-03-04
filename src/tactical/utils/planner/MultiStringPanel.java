@@ -14,8 +14,9 @@ import javax.swing.JTextArea;
 public class MultiStringPanel extends JPanel implements ActionListener {
 	private List<JTextArea> textAreas;
 	private JPanel textBoxPanel;
+	private PlannerLine parentLine;
 	
-	public MultiStringPanel(String[] strings) {
+	public MultiStringPanel(String[] strings, PlannerLine parentLine) {
 		this.setLayout(new BorderLayout());
 		textAreas = new ArrayList<>();
 		JPanel buttonPanel = new JPanel();
@@ -38,6 +39,7 @@ public class MultiStringPanel extends JPanel implements ActionListener {
 	
 	private void addTextArea(String s) {
 		JTextArea jta = new JTextArea(5, 40);
+		jta.addFocusListener(parentLine);
 		jta.setWrapStyleWord(true);
 		jta.setLineWrap(true);
 		jta.setText(s);

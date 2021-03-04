@@ -125,6 +125,11 @@ public class HeroesStatMenu extends Menu
 		
 		for (int count = (selectedIndex < sizeMax ? 0 : selectedIndex - sizeMax + 1); count < Math.min(heroes.size(),  (selectedIndex < sizeMax ? sizeMax : selectedIndex + 1)); count++)
 		{				
+			if (heroes.get(count).getCurrentHP() <= 0) {
+				graphics.setColor(Color.red);
+			} else {
+				graphics.setColor(Color.white);
+			}
 			int drawY = yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1))));
 			StringUtils.drawString(heroes.get(count).getName(),
 					27,
@@ -139,17 +144,17 @@ public class HeroesStatMenu extends Menu
 			}
 			else if (view == VIEW_STATS)
 			{
-				StringUtils.drawString(heroes.get(count).getCurrentHP() + "", 92,
+				StringUtils.drawString(heroes.get(count).getMaxHP() + "", 92,
 						drawY, graphics);
-				StringUtils.drawString(heroes.get(count).getCurrentMP() + "", 127,
+				StringUtils.drawString(heroes.get(count).getMaxMP() + "", 127,
 						drawY, graphics);
-				StringUtils.drawString(heroes.get(count).getCurrentAttack() + "", 162,
+				StringUtils.drawString(heroes.get(count).getMaxAttack() + "", 162,
 						drawY, graphics);
-				StringUtils.drawString(heroes.get(count).getCurrentDefense() + "", 197,
+				StringUtils.drawString(heroes.get(count).getMaxDefense() + "", 197,
 						drawY, graphics);
-				StringUtils.drawString(heroes.get(count).getCurrentSpeed() + "", 232,
+				StringUtils.drawString(heroes.get(count).getMaxSpeed() + "", 232,
 						drawY, graphics);
-				StringUtils.drawString(heroes.get(count).getCurrentMove() + "", 267,
+				StringUtils.drawString(heroes.get(count).getMaxMove() + "", 267,
 						drawY, graphics);
 			}
 			else

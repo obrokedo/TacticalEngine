@@ -42,8 +42,8 @@ public class MultiIntPanel extends JPanel implements ActionListener
 					break;
 				}
 			}
-		}
-		parentLine.commitChanges();
+			parentLine.commitChanges();
+		}		
 		this.revalidate();
 		this.repaint();
 	}

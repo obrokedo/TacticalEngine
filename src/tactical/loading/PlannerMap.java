@@ -37,6 +37,8 @@ import tactical.utils.planner.PlannerTab;
 public class PlannerMap extends Map {
 	private final Color UNSELECTED_MO_FILL_COLOR = new Color(0, 0, 255, 50);
 	private final Color UNSELECTED_MO_LINE_COLOR = new Color(0, 0, 255);
+	
+	private final Color HOVERED_MO_LINE_COLOR = new Color(255, 0, 0);
 
 	private final Color SELECTED_MO_FILL_COLOR = new Color(0, 255, 0, 50);
 	private final Color SELECTED_MO_LINE_COLOR = new Color(0, 255, 0);
@@ -180,10 +182,10 @@ public class PlannerMap extends Map {
 
 	public void renderMapLocations(Graphics g, MapObject selectedMO, float scale)
 	{
-		renderMapLocations(g, selectedMO, true, true, true, true, true, scale);
+		renderMapLocations(g, selectedMO, null, true, true, true, true, true, scale);
 	}
 
-	public void renderMapLocations(Graphics g, MapObject selectedMO,
+	public void renderMapLocations(Graphics g, MapObject selectedMO, MapObject hoveredMO,
 			boolean displayEnemy, boolean displayOther, boolean displayTerrain,
 			boolean displayUnused, boolean displayInteractables, float scale)
 	{
@@ -219,10 +221,12 @@ public class PlannerMap extends Map {
 				g.setColor(SELECTED_MO_FILL_COLOR);
 			g.fillPolygon(xP, yP, xP.length);
 
-			if (mo != selectedMO)
-				g.setColor(UNSELECTED_MO_LINE_COLOR);
-			else
+			if (mo == selectedMO)
 				g.setColor(SELECTED_MO_LINE_COLOR);
+			else if (mo == hoveredMO)
+				g.setColor(HOVERED_MO_LINE_COLOR);
+			else
+				g.setColor(UNSELECTED_MO_LINE_COLOR);
 			
 			g.drawPolygon(xP, yP, xP.length);
 			

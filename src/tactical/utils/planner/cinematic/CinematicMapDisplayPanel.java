@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -453,7 +454,9 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 		return timeline;
 	}
 
-	public long loadCinematicItem(int index)
+	
+	
+	public long loadCinematicItem(int index) throws IOException
 	{
 		long maxTime = 0;
 		this.actorLocations.clear();
@@ -462,35 +465,25 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 		pt.setSelectedListItem(index, null);
 		currentPC = pt.getCurrentPC();
 
-		try
+		ArrayList<PlannerContainer> pcs = new ArrayList<PlannerContainer>();
+		if (currentPC != null)
+			pcs.add(currentPC);
+		ArrayList<String> results = PlannerIO.export(pcs, "cinematics");
+
+		ArrayList<TagArea> tas = XMLParser.process(results, true);
+		if (tas.size() > 0)
 		{
-			ArrayList<PlannerContainer> pcs = new ArrayList<PlannerContainer>();
-			if (currentPC != null)
-				pcs.add(currentPC);
-			ArrayList<String> results = PlannerIO.export(pcs, "cinematics");
-
-			ArrayList<TagArea> tas = XMLParser.process(results, true);
-			if (tas.size() > 0)
-			{
-				ArrayList<CinematicEvent> initEvents = new ArrayList<CinematicEvent>();
-				ArrayList<CinematicEvent> ces = TacticalGame.TEXT_PARSER.parseCinematicEvents(tas.get(0), initEvents,
-						new HashSet<String>(), new HashSet<String>(), new HashSet<String>());
-				ces.addAll(0, initEvents);
-				timeline = new CinematicTimeline();
-				new PlannerTimeBarViewer(ces, timeline, Integer.parseInt(tas.get(0).getParams().get("camerax")), Integer.parseInt(tas.get(0).getParams().get("cameray")));
-				maxTime = timeline.duration;
-			}
-
-			mapPanel.stateChanged(null);
-
+			ArrayList<CinematicEvent> initEvents = new ArrayList<CinematicEvent>();
+			ArrayList<CinematicEvent> ces = TacticalGame.TEXT_PARSER.parseCinematicEvents(tas.get(0), initEvents,
+					new HashSet<String>(), new HashSet<String>(), new HashSet<String>());
+			ces.addAll(0, initEvents);
+			timeline = new CinematicTimeline();
+			new PlannerTimeBarViewer(ces, timeline, Integer.parseInt(tas.get(0).getParams().get("camerax")), Integer.parseInt(tas.get(0).getParams().get("cameray")));
+			maxTime = timeline.duration;
 		}
-		catch (Exception ex) {
-			JOptionPane.showMessageDialog(this,
-					"An error occurred while parsing the cinematics, if you have just edited or added a new\n"
-					+ "event make sure that you have filled out all of the values. If this does not fix the\n"
-					+ "the problem then it is possible that your cinematic file has been corrupted." );
-			ex.printStackTrace();
-		}
+
+		mapPanel.stateChanged(null);
+
 		return maxTime;
 	}
 

@@ -11,6 +11,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map.Entry;
@@ -359,7 +360,12 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 			selectedCinIndex++;
 			movingToNextCin = true;
-			long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+			long maxTime = 0;
+			try {
+				maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+			} catch (IOException ex) {
+				showBadCinematicMessage();
+			}
 			timeSlider.setMaximum((int) maxTime);
 			timeSlider.revalidate();
 			timeSlider.repaint();
@@ -370,7 +376,12 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 			selectedCinIndex = Math.max(0, selectedCinIndex - 1);
 			movingToNextCin = true;
-			long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+			long maxTime = 0;
+			try {
+				maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+			} catch (IOException ex) {
+				showBadCinematicMessage();
+			}
 			timeSlider.setMaximum((int) maxTime);
 			timeSlider.revalidate();
 			timeSlider.repaint();
@@ -401,7 +412,6 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		 * that the planner container has not yet been set. In this case
 		 * set it to the value that is selected in the cinematic creator.
 		 */
-		System.out.println("REMOVE ME: " + cinematicIds.getSelectedIndex());
 		if (pt.getCurrentPC() == null)
 		{
 			pt.setSelectedListItem(cinematicIds.getSelectedIndex(), null);
@@ -417,10 +427,16 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 		pl.commitChanges();
 
-		long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
-		timeSlider.setMaximum((int) maxTime);
-		timeSlider.revalidate();
-		timeSlider.repaint();
+		try {
+			long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+			timeSlider.setMaximum((int) maxTime);
+			timeSlider.revalidate();
+			timeSlider.repaint();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, 
+					"There was an error parsing the cinematic you just edited. Please fill all required fields and make sure actor names are correct");
+			return editCinematicLine();
+		}
 		return true;
 	}
 
@@ -463,6 +479,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 			if (ct.cinematicTime.size() == 0)
 			{
 				pt.getCurrentPC().addLine(pl);
+				selectedCinIndex = 0;
 			}
 			else
 			{
@@ -481,13 +498,23 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 				if (!found)
 					pt.getCurrentPC().addLine(pl);
 					*/
-				pt.addLineToContainerAtIndex(pl, ++selectedCinIndex, cinematicIds.getSelectedIndex());
+				pt.getCurrentPC().addLine(pl, ++selectedCinIndex);
 			}
 			movingToNextCin = true;
-			long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
-			timeSlider.setMaximum((int) maxTime);
-			timeSlider.revalidate();
-			timeSlider.repaint();
+			try {
+				long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+				timeSlider.setMaximum((int) maxTime);
+				timeSlider.revalidate();
+				timeSlider.repaint();
+			} catch (Exception ex) {				
+				JOptionPane.showMessageDialog(null, 
+						"There was an error parsing the cinematic you just created. Please fill all required fields and make sure actor names are correct");
+				if (!editCinematicLine()) {
+					pt.getCurrentPC().removeLine(selectedCinIndex);
+					selectedCinIndex = Math.max(selectedCinIndex - 1, 0);
+				}
+			}
+			
 		}
 	}
 
@@ -698,8 +725,12 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 			this.prevActionButton.setEnabled(true);
 			this.duplicateButton.setEnabled(true);
 			this.removeButton.setEnabled(true);
-			long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
-			System.out.println(maxTime);
+			long maxTime = 0;
+			try {
+				maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+			} catch (IOException ex) {
+				showBadCinematicMessage();
+			}
 			timeSlider.setMaximum((int) maxTime);
 			if (selectedTime == -1)
 				this.timeSlider.setValue(0);
@@ -724,7 +755,6 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		{
 			if (e.getSource() == cinematicList)
 			{
-				System.out.println("SELECTED INDEX " + cinematicList.getSelectedIndex());
 				if (cinematicList.getSelectedIndex() > 3)
 				{
 					mdp.setSelectedActor(cinematicList.getSelectedIndex() - 4);
@@ -805,7 +835,13 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 				// attributeList.updateAttributeList(mdp.getCurrentPC(), newIndex, new MapAttributeTransferHandler(mdp.getCurrentPC()));
 				// attributeList.validate();
 
-				long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+				
+				long maxTime = 0;
+				try {
+					maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
+				} catch (IOException ex) {
+					showBadCinematicMessage();
+				}
 				timeSlider.setMaximum((int) maxTime);
 				timeSlider.revalidate();
 				timeSlider.repaint();
@@ -824,6 +860,13 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 	
 	public int getSelectedCinematicId() {
 		return cinematicIds.getSelectedIndex();
+	}
+	
+	private void showBadCinematicMessage() {
+		JOptionPane.showMessageDialog(null,
+				"An error occurred while parsing the cinematics, if you have just edited or added a new\n"
+				+ "event make sure that you have filled out all of the values. If this does not fix the\n"
+				+ "the problem then it is possible that your cinematic file has been corrupted.");
 	}
 
 	@Override

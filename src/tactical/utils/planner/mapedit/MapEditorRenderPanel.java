@@ -31,6 +31,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 
 	private PlannerMap plannerMap;
 	private MapObject selectedMapObject = null;
+	private MapObject hoveredMapObject = null;
 	private MapEditorPanel parentPanel;
 	private ArrayList<PlannerTab> tabsWithMapReferences;
 	private ArrayList<Point> creatingShapePoints = new ArrayList<>();
@@ -72,7 +73,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 				}
 			}
 			
-			plannerMap.renderMapLocations(g, selectedMapObject,
+			plannerMap.renderMapLocations(g, selectedMapObject, hoveredMapObject,
 					parentPanel.isDisplayEnemy(), parentPanel.isDisplayOther(), parentPanel.isDisplayTerrain(),
 					parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable(), scale);
 			
@@ -141,33 +142,31 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 				MapObject selected = null;
 				int size = Integer.MAX_VALUE;
 	
-				if (PlannerFrame.SHOW_CIN_LOCATION)
+				for (MapObject mo : plannerMap.getMapObjects())
 				{
-					for (MapObject mo : plannerMap.getMapObjects())
+					boolean interactable = plannerMap.isInteractableMapObject(mo);
+					
+					if (plannerMap.isMapObjectFilteredOut(mo, 
+							parentPanel.isDisplayEnemy(), parentPanel.isDisplayOther(), parentPanel.isDisplayTerrain(),
+							parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable(), interactable))
+						continue;					
+
+					if (mo.getShape().contains(m.getX() / scale, m.getY() / scale))
 					{
-						boolean interactable = plannerMap.isInteractableMapObject(mo);
-						
-						if (plannerMap.isMapObjectFilteredOut(mo, 
-								parentPanel.isDisplayEnemy(), parentPanel.isDisplayOther(), parentPanel.isDisplayTerrain(),
-								parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable(), interactable))
-							continue;					
-	
-						if (mo.getShape().contains(m.getX() / scale, m.getY() / scale))
+						int newSize = mo.getWidth() * mo.getHeight();
+
+						if (newSize < size)
 						{
-							int newSize = mo.getWidth() * mo.getHeight();
-	
-							if (newSize < size)
-							{
-								selected = mo;
-								size = newSize;
-							}
+							selected = mo;
+							size = newSize;
 						}
 					}
-					
-					if (m.getClickCount() == 2 & selected != null) {
-						parentPanel.editMapObject();
-					}
 				}
+				
+				if (m.getClickCount() == 2 & selected != null) {
+					parentPanel.editMapObject();
+				}
+			
 	
 				if (selected != null)
 				{
@@ -317,11 +316,13 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	}
 	
 	public void startCreatingLocation() {
+		this.selectedMapObject = null;
 		this.creatingShapePoints = new ArrayList<>();
 		this.creatingShape = true;
 	}
 	
 	public void startStamping() {
+		this.selectedMapObject = null;
 		this.creatingStamp = true;
 	}
 	
@@ -393,6 +394,41 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 			lastMouse = new Point((int) Math.floor(e.getX() / scale / (float) plannerMap.getTileEffectiveWidth()) * plannerMap.getTileEffectiveWidth(), 
 					(int) Math.floor(e.getY() / scale / (float) plannerMap.getTileEffectiveHeight()) * plannerMap.getTileEffectiveHeight());
 			this.repaint();
+		} else {
+			int size = Integer.MAX_VALUE;
+			MapObject selected = null;
+			for (MapObject mo : plannerMap.getMapObjects())
+			{
+				boolean interactable = plannerMap.isInteractableMapObject(mo);
+				
+				if (plannerMap.isMapObjectFilteredOut(mo, 
+						parentPanel.isDisplayEnemy(), parentPanel.isDisplayOther(), parentPanel.isDisplayTerrain(),
+						parentPanel.isDisplayUnused(), parentPanel.isDisplayInteractable(), interactable))
+					continue;					
+
+				if (mo.getShape().contains(e.getX() / scale, e.getY() / scale))
+				{
+					int newSize = mo.getWidth() * mo.getHeight();
+
+					if (newSize < size)
+					{
+						selected = mo;
+						size = newSize;
+					}
+				}
+			}
+			
+			if (selected != null && selected != selectedMapObject) {
+				if (hoveredMapObject != selected) {
+					this.hoveredMapObject = selected;
+					this.repaint();
+				}
+			} else {
+				if (this.hoveredMapObject != null) {
+					this.hoveredMapObject = null;
+					this.repaint();
+				}
+			}
 		}
 	}
 

@@ -544,6 +544,7 @@ public class CombatSprite extends AnimatedSprite
 	public void setCurrentHP(int currentHP) {
 		if (currentHP > 0)
 			fadeColor.a = 1;
+		this.alpha = 255;
 		this.currentHP = currentHP;
 	}
 

@@ -2420,7 +2420,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("uncompletequest",
 				"Uncomplete Quest", "Marks a given quest as NOT completed. This has no effect if the quest was not already completed.",
 				definingValues));
-		progressControl.add("Complete Quest");
+		progressControl.add("Uncomplete Quest");
 		
 		// Start Battle
 		definingValues = new ArrayList<PlannerValueDef>();

@@ -168,16 +168,18 @@ public class SpriteManager extends Manager
 						stateInfo.addSprite(cs);
 					}
 					
-					// We purposely don't remove the combat sprites until this point so that their
-					// spots are still taken up in the start location (as empty spaces). Otherwise
-					// it could completely fuck up split battles... but so could less people in the party...
-					Iterator<CombatSprite> csIt = heroesInState.iterator();
-					while (csIt.hasNext())
-					{
-						CombatSprite cs = csIt.next();
-						if (cs.getCurrentHP() <= 0)
-							csIt.remove();
-					}
+					
+				}
+				
+				// We purposely don't remove the combat sprites until this point so that their
+				// spots are still taken up in the start location (as empty spaces). Otherwise
+				// it could completely fuck up split battles... but so could less people in the party...
+				Iterator<CombatSprite> csIt = heroesInState.iterator();
+				while (csIt.hasNext())
+				{
+					CombatSprite cs = csIt.next();
+					if (cs.getCurrentHP() <= 0)
+						csIt.remove();
 				}
 				
 				if (heroesInState.stream().anyMatch(hs -> hs.getLocX() == -1))

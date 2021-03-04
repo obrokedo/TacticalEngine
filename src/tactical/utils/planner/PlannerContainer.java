@@ -189,11 +189,8 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 
 	public void commitChanges()
 	{
-		/*
-		defLine.commitChanges();
 		for (PlannerLine pl : lines)
 			pl.commitChanges();
-			*/
 	}
 
 	public PlannerContainerDef getPcdef() {

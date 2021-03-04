@@ -227,8 +227,9 @@ public class PlannerLine implements FocusListener, ChangeListener
 					}
 					
 					break;
-				case PlannerValueDef.TYPE_BOOLEAN:
+				case PlannerValueDef.TYPE_BOOLEAN:					
 					c = new JCheckBox();
+					c.addFocusListener(this);
 					if (values.size() > i && values.get(i) != null) {
 						((JCheckBox) c).setSelected(Boolean.parseBoolean(values.get(i).toString()));
 					}
@@ -277,9 +278,9 @@ public class PlannerLine implements FocusListener, ChangeListener
 					break;
 				case PlannerValueDef.TYPE_MULTI_LONG_STRING:
 					if (values.size() > i && values.get(i) != null)
-						c = new MultiStringPanel(((String) values.get(i)).split("<split>"));
+						c = new MultiStringPanel(((String) values.get(i)).split("<split>"), this);
 					else
-						c = new MultiStringPanel(new String[0]);
+						c = new MultiStringPanel(new String[0], this);
 					break;
 
 			}
@@ -349,6 +350,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 
 	public void commitChanges()
 	{
+		System.out.println("COMMIT");
 		PlannerFrame.updateSave("Saved...");
 		
 		if (components.size() > 0)
