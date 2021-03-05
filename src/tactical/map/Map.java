@@ -577,7 +577,11 @@ public class Map
 			
 			if (getHeightInTiles() > ty && getWidthInTiles() > tx)
 			{
-				return !isMarkedMoveableForTown(tx, ty);
+				if (stateInfo.isCombat())
+					return !isMarkedMoveableForBattle(stateInfo.getClientProfile().getMainCharacter().getMovementType(), 
+							tx, ty);
+				else
+					return !isMarkedMoveableForTown(tx, ty);
 			}
 			return true;
 		}
@@ -591,8 +595,8 @@ public class Map
 	public Path findTilePathWithPixels(int sx, int sy, int tx, int ty, StateInfo stateInfo, boolean checkSprites)
 	{
 		AStarPathFinder asf = new AStarPathFinder(new MapPathFinder(checkSprites, stateInfo), 1000, false);
-		return asf.findPath(null, sx / getTileEffectiveWidth(), sy / getTileEffectiveHeight(), 
-				tx / getTileEffectiveWidth(), ty / getTileEffectiveHeight());
+		return asf.findPath(null, sx / getTileEffectiveWidth(), (sy / getTileEffectiveHeight()) + (stateInfo.isCombat() ? 1 : 0), 
+				tx / getTileEffectiveWidth(), ty / getTileEffectiveHeight() + (stateInfo.isCombat() ? 1 : 0));
 	}
 	
 	public Path findPixelPathWithPixels(int sx, int sy, int tx, int ty, StateInfo stateInfo, boolean checkSprites)

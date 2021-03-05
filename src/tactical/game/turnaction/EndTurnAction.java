@@ -18,6 +18,7 @@ public class EndTurnAction extends TurnAction {
 
 	@Override
 	public boolean perform(int delta, TurnManager turnManager, StateInfo stateInfo, ArrayList<TurnAction> turnActions) {
+		stateInfo.removeKeyboardListeners();
 		// This moveable space is no longer needed to destroy it		
 		if (turnManager.getCurrentSprite().getCurrentHP() > 0)
 		{

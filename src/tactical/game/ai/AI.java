@@ -682,7 +682,10 @@ public abstract class AI implements Serializable
 	}
 	
 	public void setVision(int vision) {
-		this.vision = vision;
+		if (vision > 0)
+			this.vision = vision;
+		else
+			this.vision = Integer.MAX_VALUE;
 	}
 	
 	public int getVision() {

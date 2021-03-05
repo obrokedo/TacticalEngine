@@ -494,7 +494,7 @@ public class ResourceManager {
 		boolean executedCondition = false;
 		for (TriggerCondition tc : this.conditions)
 		{
-			executedCondition = executedCondition || tc.executeCondtions(location, locationEntered, immediate, onMapLoad, searching, stateInfo);
+			executedCondition = tc.executeCondtions(location, locationEntered, immediate, onMapLoad, searching, stateInfo) || executedCondition;
 		}
 		return executedCondition;
 	}
