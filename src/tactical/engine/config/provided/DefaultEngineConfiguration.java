@@ -22,8 +22,8 @@ import tactical.engine.config.intr.AnimationParser;
 import tactical.engine.state.AttackCinematicState;
 import tactical.engine.state.DefaultAttackCinematicState;
 import tactical.engine.state.StateInfo;
+import tactical.game.menu.AbstractHeroStatMenu;
 import tactical.game.menu.DefaultHeroStatMenu;
-import tactical.game.menu.Menu;
 import tactical.game.sprite.CombatSprite;
 import tactical.loading.LoadingScreenRenderer;
 
@@ -140,7 +140,7 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 	}
 
 	@Override
-	public Menu getHeroStatMenu(GameContainer gc, CombatSprite selectedSprite, StateInfo stateInfo) {
+	public AbstractHeroStatMenu getHeroStatMenu(GameContainer gc, CombatSprite selectedSprite, StateInfo stateInfo) {
 		return new DefaultHeroStatMenu(gc, selectedSprite, stateInfo);
 	}
 }

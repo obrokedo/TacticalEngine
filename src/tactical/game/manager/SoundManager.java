@@ -73,6 +73,7 @@ public class SoundManager extends Manager implements MusicListener
 	{
 		if (playingMusic != null)
 		{
+			playingMusic.setVolume(playingVolume * SoundManager.GLOBAL_VOLUME);
 			playingMusic.resume();
 		}
 	}

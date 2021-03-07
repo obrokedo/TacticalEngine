@@ -368,6 +368,15 @@ public class CombatSprite extends AnimatedSprite
 		items.add(item);
 		equipped.add(false);
 	}
+	
+	public void swapItemPositions(int item1Idx, int item2Idx) {
+		Item item = items.get(item1Idx);
+		boolean eq = equipped.get(item1Idx);
+		items.set(item1Idx, items.get(item2Idx));
+		equipped.set(item1Idx, equipped.get(item2Idx));
+		items.set(item2Idx, item);
+		equipped.set(item2Idx, eq);
+	}
 
 	public EquippableItem getEquippedWeapon()
 	{

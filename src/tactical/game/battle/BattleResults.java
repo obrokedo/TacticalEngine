@@ -400,7 +400,7 @@ public class BattleResults implements Serializable
 		int expGained = 0;
 
 		// Normal Attack
-		text = addAttack(attacker, target, br, fcrm, jBattleFunctions, false);
+		text = addAttack(attacker, target, br, fcrm, jBattleFunctions, false, false, 0);
 		damage = br.hpDamage.get(0);
 		sumDamage = damage;
 		br.remainingHP.add(target.getCurrentHP() + damage);
@@ -420,7 +420,7 @@ public class BattleResults implements Serializable
 					TacticalGame.testD100(jBattleFunctions.getCounterPercent(attacker, target), "counter"))
 			{
 				br.text.add(text);
-				text = addAttack(target, attacker, br, fcrm, jBattleFunctions, true);
+				text = addAttack(target, attacker, br, fcrm, jBattleFunctions, true, false, 0);
 				damage = br.hpDamage.get(1);
 
 				// Add the attackers remaining HP
@@ -453,8 +453,8 @@ public class BattleResults implements Serializable
 				if (TacticalGame.testD100(jBattleFunctions.getDoublePercent(attacker, target), "double"))
 				{
 					br.text.add(text);
-					text = addAttack(attacker, target, br, fcrm, jBattleFunctions, false);
-					damage = br.hpDamage.get(br.hpDamage.size() - 1);
+					text = addAttack(attacker, target, br, fcrm, jBattleFunctions, false, true, sumDamage);
+					damage = br.hpDamage.get(br.hpDamage.size() - 1) / 2;
 					sumDamage += damage;
 
 					if (damage == 0)
@@ -482,7 +482,8 @@ public class BattleResults implements Serializable
 	}
 
 	private static String addAttack(CombatSprite attacker, CombatSprite target, BattleResults br,
-			ResourceManager fcrm, BattleFunctionConfiguration jBattleFunctions, boolean counter)
+			ResourceManager fcrm, BattleFunctionConfiguration jBattleFunctions, 
+			boolean counterAttack, boolean doubleAttack, int previousDamage)
 	{
 		String text;
 
@@ -519,7 +520,11 @@ public class BattleResults implements Serializable
 			// between the two values is the damage dealt or 1 if result is less then 1.
 			int damage = jBattleFunctions.getDamageDealt(attacker, target, landEffect, TacticalGame.RANDOM);
 
-			if (counter)
+			// Second attack does half damage.
+			if (doubleAttack)
+				damage = Math.min(-1, damage / 2);
+			
+			if (counterAttack)
 				damage = Math.min(-1, (int) (damage * jBattleFunctions.getCounterDamageModifier(attacker, target)));
 
 			if (critted)
@@ -539,7 +544,7 @@ public class BattleResults implements Serializable
 			ArrayList<BattleEffect> appliedEffects = new ArrayList<>();
 
 			// This spell will NOT kill the target so effects should still be applied
-			if (target.getCurrentHP() + damage > 0)
+			if (target.getCurrentHP() + damage + previousDamage > 0)
 			{
 				BattleEffect eff = null;
 				if ((attacker.getEquippedWeapon() != null && (eff = attacker.getEquippedWeapon().getAttackEffect()) != null) || 

@@ -173,7 +173,7 @@ public class BattleSceneCreator {
 					{
 						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
 						addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
-						textToDisplay.add(target.getName() + "'s counter attack!");
+						textToDisplay.add(target.getName() + "'s counter attack!" + TextSpecialCharacters.CHAR_HARD_STOP);
 						addAttackAction(target, attacker, battleResults, attackCount++, isSpell, false);
 					}
 
@@ -181,7 +181,7 @@ public class BattleSceneCreator {
 					{
 						addCombatAnimation(attacker.isHero(), new StandCombatAnimation(attacker, platformBySprite.get(attacker)));
 						addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
-						textToDisplay.add(attacker.getName() + "'s second attack!");
+						textToDisplay.add(attacker.getName() + "'s second attack!" + TextSpecialCharacters.CHAR_HARD_STOP);
 						addAttackAction(attacker, target, battleResults, attackCount++, isSpell, false);
 					}
 				}

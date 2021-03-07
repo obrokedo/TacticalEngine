@@ -33,6 +33,7 @@ import tactical.game.hudmenu.SpriteContextPanel;
 import tactical.game.input.UserInput;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item.ItemDurability;
+import tactical.game.manager.SoundManager;
 import tactical.game.menu.Menu;
 import tactical.game.menu.Menu.MenuUpdate;
 import tactical.game.menu.PauseMenu;
@@ -150,12 +151,12 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		if (introMusic == null)
 		{
 			if (music != null)
-				music.loop(1f, musicVolume / 100f);
+				music.loop(1f, musicVolume / 100f * SoundManager.GLOBAL_VOLUME );
 		}
 		else
 		{
 			introMusic.addListener(this);
-			introMusic.play(1f, musicVolume / 100f);
+			introMusic.play(1f, musicVolume / 100f * SoundManager.GLOBAL_VOLUME);
 		}
 
 		SpriteSheet battleBGSS = frm.getSpriteSheet("battlebg");
@@ -388,7 +389,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 			if (sound != null)
 			{
 				Sound snd = frm.getSoundByName(sound);
-				snd.play();
+				snd.play(1f, SoundManager.GLOBAL_VOLUME);
 			}
 		}
 		// If we have started a spell but the current animation says no spell should
@@ -513,7 +514,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 			{
 				String sound = musicSelector.getAfterSpellFlashSoundEffect(attacker.isHero(), battleResults.battleCommand.getSpell().getName());
 				if (sound != null)
-					frm.getSoundByName(sound).play();
+					frm.getSoundByName(sound).play(1f, SoundManager.GLOBAL_VOLUME);
 				spellFlash = null;
 			}
 
@@ -641,7 +642,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		if (sound != null)
 		{
 			Sound snd = frm.getSoundByName(sound);
-			snd.play();
+			snd.play(1f, SoundManager.GLOBAL_VOLUME);
 		}
 	}
 
@@ -658,7 +659,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 	@Override
 	public void musicEnded(Music music) {
 		music.removeListener(this);
-		this.music.loop();
+		this.music.loop(1f, TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getBattleMusicVolume() / 100f * SoundManager.GLOBAL_VOLUME);
 	}
 
 	@Override

@@ -77,13 +77,19 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 					this.selectingItemState = false;				
 					return false;
 				} else if (step == TownStepEnum.GIVE_SELECT_HERO) {
-					Item tradeItem = selectedHero.getItem(selectingItemIndex);
-					selectedHero.removeItem(tradeItem);
-					
-					giveItemImpl(stateInfo);
-					
-					givingHero.addItem(tradeItem);
-					return true;
+					if (selectedHero != givingHero) {
+						Item tradeItem = selectedHero.getItem(selectingItemIndex);
+						selectedHero.removeItem(tradeItem);					
+						giveItemImpl(stateInfo);					
+						givingHero.addItem(tradeItem);
+					} else {
+						selectedHero.swapItemPositions(selectingItemIndex, givingIndex);
+					}
+					step = TownStepEnum.GIVE_SELECT_ITEM;
+					selectedIndex = heroes.indexOf(givingHero);
+					selectingItemState = false;
+					this.updateCurrentHero(stateInfo);
+					return false;
 				}
 			case DROP:
 				step = TownStepEnum.DROP_CONFIRM;
@@ -114,7 +120,7 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 	@Override
 	public void valueSelected(StateInfo stateInfo, Object value) {
 		Item item = null;
-		switch (step) {
+		switch (step) {		
 			case GIVE_SHOW_SPEECH:
 				step = TownStepEnum.GIVE_SELECT_HERO;
 				break;
@@ -198,14 +204,16 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 					selectedItemChanged();
 			} else 
 				selectedItemChanged();			
+		// This short circuits the item selection for the recipient if they have less then four items.
+		// If we are giving to ourselves then allow item selection even with less then four items
 		} else if (this.step == TownStepEnum.GIVE_SELECT_HERO 
-				&& selectedHero.getItemsSize() < 4) {
-			// If we select ourselves to give the item to then just ignore stuff
-			if (selectedHero == givingHero)
-				return true;
-			
+				&& selectedHero.getItemsSize() < 4 && selectedHero != givingHero) {
 			giveItemImpl(stateInfo);
-			return true;
+			step = TownStepEnum.GIVE_SELECT_ITEM;
+			selectedIndex = heroes.indexOf(givingHero);
+			selectingItemState = false;
+			updateCurrentHero(stateInfo);
+			return false;
 		}
 		
 		return false;

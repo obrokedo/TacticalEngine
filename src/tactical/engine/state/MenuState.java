@@ -17,9 +17,9 @@ import tactical.engine.config.EngineConfigurationValues;
 import tactical.engine.message.LoadMapMessage;
 import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
+import tactical.game.manager.SoundManager;
 import tactical.game.menu.Menu;
 import tactical.game.trigger.Trigger;
-import tactical.game.trigger.Trigger.TriggerStartBattle;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.LoadingState;
@@ -207,7 +207,7 @@ public class MenuState extends LoadableGameState
 						transition = new FadeInTransition();
 						//TODO Break this out into it's own menu renderer
 						music = fcrm.getMusicByName("lovtheme");
-						music.loop();
+						music.loop(1f, SoundManager.GLOBAL_VOLUME);
 						menuIndex = 0;
 						stateIndex = 1;			
 					}
@@ -244,7 +244,7 @@ public class MenuState extends LoadableGameState
 				container.getInput().isKeyDown(KeyMapping.BUTTON_3))
 		{
 			EngineConfigurationValues jcv = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues();
-			menuSelect.play();
+			menuSelect.play(1f, SoundManager.GLOBAL_VOLUME);
 			if (stateIndex == 1) {
 				// music.fade(500, 0f, true);
 				if (menuIndex == 0) {
@@ -310,19 +310,19 @@ public class MenuState extends LoadableGameState
 			{
 				menuIndex = 0;
 				updateDelta = 200;
-				menuMove.play();
+				menuMove.play(1f, SoundManager.GLOBAL_VOLUME);
 			}
 			else if (menuIndex != 2 && container.getInput().isKeyDown(Input.KEY_DOWN))
 			{
 				menuIndex = 2;
 				updateDelta = 200;
-				menuMove.play();
+				menuMove.play(1f, SoundManager.GLOBAL_VOLUME);
 			}
 			else if (menuIndex != 1 && container.getInput().isKeyDown(Input.KEY_RIGHT))
 			{
 				menuIndex = 1;
 				updateDelta = 200;
-				menuMove.play();
+				menuMove.play(1f, SoundManager.GLOBAL_VOLUME);
 			}
 		}
 	}

@@ -18,7 +18,7 @@ import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.utils.StringUtils;
 
-public class DefaultHeroStatMenu extends Menu
+public class DefaultHeroStatMenu extends AbstractHeroStatMenu
 {
 	private CombatSprite selectedSprite;
 	private int x;

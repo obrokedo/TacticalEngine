@@ -19,7 +19,7 @@ import tactical.game.manager.MenuManager;
 import tactical.game.manager.SoundManager;
 import tactical.game.manager.SpriteManager;
 import tactical.game.manager.TownMoveManager;
-import tactical.game.menu.DefaultHeroStatMenu;
+import tactical.game.menu.AbstractHeroStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.PauseMenu;
 import tactical.game.menu.devel.DebugMenu;
@@ -208,7 +208,7 @@ public class TownState extends LoadableGameState
 					if (top != null) {
 						switch(top.getPanelType()) {
 							case PANEL_HEROS_STATS:
-								stateInfo.addSingleInstanceMenu(new HeroContextDebugMenu(((DefaultHeroStatMenu) top).getSelectedSprite()));
+								stateInfo.addSingleInstanceMenu(new HeroContextDebugMenu(((AbstractHeroStatMenu) top).getSelectedSprite()));
 								stateInfo.setInputDelay(System.currentTimeMillis() + 200);
 								break;
 							case PANEL_HEROS_OVERVIEW:
