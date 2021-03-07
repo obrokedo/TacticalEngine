@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project TacticalEngine">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="."/>
+	
+	<property name="lib.dir"     value="lib"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+	
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="bin"/>
+        <javac target="1.8" srcdir="src" destdir="bin" classpathref="classpath"/>
+    </target>	
+	
+    <target name="create_run_jar"  depends="clean,compile">
+        <jar destfile="${dir.jarfile}/Tactical.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="tactical.utils.planner.PlannerFrame"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${dir.buildfile}/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/exp4j-0.3.11.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jaretutil-0.32.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jfilechooser-bookmarks-0.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jogg-0.0.7.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jorbis-0.0.15.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jython-standalone-2.7-b1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/lwjgl.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/QuickAnimator.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/slick.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/timebars-1.49.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/ZTCP.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jakarta.json-api-2.0.0.jar"/>
+        </jar>
+    </target>
+</project>
