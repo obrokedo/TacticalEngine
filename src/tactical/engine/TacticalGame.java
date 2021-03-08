@@ -2,6 +2,7 @@ package tactical.engine;
 
 import java.io.File;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -13,10 +14,12 @@ import org.newdawn.slick.util.Log;
 import tactical.engine.config.EngineConfigurator;
 import tactical.engine.config.provided.DefaultEngineConfiguration;
 import tactical.engine.log.FileLogger;
+import tactical.engine.log.LoggingUtils;
 import tactical.engine.state.BattleState;
 import tactical.engine.state.ChapterState;
 import tactical.engine.state.CinematicState;
 import tactical.engine.state.CreditsState;
+import tactical.engine.state.IntroState;
 import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
 import tactical.engine.state.TownState;
@@ -41,6 +44,8 @@ import tactical.utils.planner.PlannerFrame;
  *
  */
 public abstract class TacticalGame extends StateBasedGame   {
+	private static final Logger LOGGER = LoggingUtils.createLogger(TacticalGame.class);
+	
 	public static final int STATE_GAME_MENU_DEVEL = 1;
 
 	/**
@@ -75,6 +80,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 	public static final int STATE_GAME_CREDITS = 12;
 	public static final int STATE_GAME_PLANNER = 13;
 	public static final int STATE_GAME_CHAPTER = 14;
+	public static final int STATE_GAME_INTRO = 15;
 
 	/**
 	 * A global random number generator
@@ -117,7 +123,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		
 		if (gameArgs.length > 0) {
 			if (gameArgs[0].equalsIgnoreCase("injar")) {
-				System.out.println("Running in jar");
+				LOGGER.fine("Running in jar");
 				LoadingState.inJar = true;
 				DEV_MODE_ENABLED = false;
 			} else if (gameArgs[0].equalsIgnoreCase("planner")) {
@@ -243,6 +249,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		addState(new CinematicState(persistentStateInfo));
 		addState(new ChapterState(persistentStateInfo));
 		addState(new CreditsState());
+		addState(new IntroState(persistentStateInfo));
 
 		// this.addState(new TestState());
 
@@ -321,7 +328,6 @@ public abstract class TacticalGame extends StateBasedGame   {
 	
 	public static boolean testD100(int percent, String roll) {
 		int random = RANDOM.nextInt(100);
-		System.out.println("Rolled " + random + " vs " + percent + "% for " + roll);
 		return random <= percent;
 	}
 }

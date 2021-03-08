@@ -596,12 +596,8 @@ public class TextParser
 			return new CinematicEvent(CinematicEventType.MOVE, Integer.parseInt(area.getAttribute("x")),
 					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),
 					Boolean.parseBoolean(area.getAttribute("movehor")), Boolean.parseBoolean(area.getAttribute("movediag")),
-					Boolean.parseBoolean(area.getAttribute("halting")),  Boolean.parseBoolean(area.getAttribute("pathfinding")));
-		else if (type.equalsIgnoreCase("forcedmove"))
-			return new CinematicEvent(CinematicEventType.MOVE_ENFORCE_FACING, Integer.parseInt(area.getAttribute("x")),
-					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),
-						Integer.parseInt(area.getAttribute("facing")),
-						Boolean.parseBoolean(area.getAttribute("movehor")), Boolean.parseBoolean(area.getAttribute("movediag")));
+					Boolean.parseBoolean(area.getAttribute("halting")),  Boolean.parseBoolean(area.getAttribute("pathfinding")), 
+					Integer.parseInt(area.getAttribute("facing")));		
 		else if (type.equalsIgnoreCase("haltinganim"))
 			return new CinematicEvent(CinematicEventType.HALTING_ANIMATION, area.getAttribute("name"),
 					area.getAttribute("anim"), Integer.parseInt(area.getAttribute("time")));

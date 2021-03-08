@@ -242,7 +242,6 @@ public class PlannerMap extends Map {
 					PlannerContainer pc = enemyTab.getPlannerContainerByReference(new PlannerReference(im));
 					if (pc.getDefLine().getValues().size() > 23) {
 						im = ((PlannerReference) pc.getDefLine().getValues().get(23)).getName();
-						System.out.println();
 					}
 				}
 			}

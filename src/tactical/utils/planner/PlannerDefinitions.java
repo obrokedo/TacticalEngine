@@ -441,6 +441,10 @@ public class PlannerDefinitions {
 				+ "respects 'unmovable' spaces. This is the prefered way to first move an 'associated' actor during battle or town "
 				+ "where the original location is not known."));
 		
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+				PlannerValueDef.TYPE_INT, "facing", true, "Facing",
+				"If a value is selected then this actor will keep facing the same direction for the duration of the move."));
+		
 		allowableLines
 				.add(new PlannerLineDef(
 						"move",
@@ -448,57 +452,6 @@ public class PlannerDefinitions {
 						"Orders the specified actor to move to the specified coordinate.",
 						definingValues));
 		actorMove.add("Move");
-
-		// Forced Facing Move
-		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
-				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
-				"The name of the actor that should perform the action"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
-				PlannerValueDef.TYPE_INT, "x", false, "X Coordinate",
-				"The x coordinate (in pixels) that the actor should move to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
-				PlannerValueDef.TYPE_INT, "y", false, "Y Coordinate",
-				"The y coordinate (in pixels) that the actor should move to"));
-		definingValues
-				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
-						PlannerValueDef.TYPE_STRING,
-						"speed",
-						false,
-						"Move Speed",
-						"The amount of pixels that the actor will move every 'getMoveUpdate' milliseconds defined in the CinematicActorConfiguration. With the default value of 20ms a normal movement speed is 2.4"));
-		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
-						PlannerValueDef.TYPE_INT, "facing", false, "Facing",
-						"The direction that the sprite should face for the duration of the move"));
-
-		definingValues
-		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
-				PlannerValueDef.TYPE_BOOLEAN,
-				"movehor",
-				false,
-				"Move Horizontal Before Vertical",
-				"The sprite will move horizontal before it takes vertical moves if this is checked. Otherwise it will move vertical first"));
-
-		// Diagonal movement
-		definingValues
-		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
-				PlannerValueDef.TYPE_BOOLEAN,
-				"movediag",
-				false,
-				"Allow Diagonal Movement",
-				"If checked then this sprite can move diagonally"));
-
-		allowableLines
-				.add(new PlannerLineDef(
-						"forcedmove",
-						"Move Forced Facing",
-						"Orders the specified actor to move to the specified coordinate. This actor will keep facing the same direction for the duration of the move",
-						definingValues));
-		actorMove.add("Move Forced Facing");
 
 		// Loop Move
 		definingValues = new ArrayList<PlannerValueDef>();

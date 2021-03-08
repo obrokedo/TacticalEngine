@@ -775,7 +775,6 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	private void saveTriggers(boolean previousExportsSuccessful) {
 		if (triggerFile != null) {
-			LOGGER.fine("SAVE");
 			Path path = Paths.get(triggerFile.getAbsolutePath());
 			List<String> buffer = new ArrayList<>();
 			buffer.add("<area>");

@@ -192,7 +192,6 @@ public class TownState extends LoadableGameState
 				}
 				else if (stateInfo.getInput().isKeyDown(KeyMapping.BUTTON_1) && !stateInfo.areMenusDisplayed())
 				{
-					System.out.println(stateInfo.getCurrentMap().getName());
 					if (TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().isWorldMap(stateInfo.getCurrentMap().getName())) {
 						stateInfo.sendMessage(MessageType.SHOW_ADVISOR_MENU);
 						stateInfo.setInputDelay(System.currentTimeMillis() + 200);

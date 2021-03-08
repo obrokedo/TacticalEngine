@@ -350,7 +350,6 @@ public class PlannerLine implements FocusListener, ChangeListener
 
 	public void commitChanges()
 	{
-		System.out.println("COMMIT");
 		PlannerFrame.updateSave("Saved...");
 		
 		if (components.size() > 0)

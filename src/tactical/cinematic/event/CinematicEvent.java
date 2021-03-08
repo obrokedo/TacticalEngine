@@ -14,7 +14,6 @@ public class CinematicEvent
 	public enum CinematicEventType
 	{
 		MOVE,
-		MOVE_ENFORCE_FACING,
 		LOOP_MOVE,
 		STOP_LOOP_MOVE,
 		REMOVE_ACTOR,

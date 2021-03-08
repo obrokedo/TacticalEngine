@@ -1,6 +1,7 @@
 package tactical.loading;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -16,6 +17,7 @@ import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.load.BulkLoader;
+import tactical.engine.log.LoggingUtils;
 import tactical.game.hudmenu.Panel;
 import tactical.game.resource.SpellResource;
 import tactical.game.trigger.Trigger;
@@ -23,6 +25,8 @@ import tactical.game.trigger.Triggerable;
 
 public class LoadingState extends BasicGameState
 {
+	private static final Logger LOGGER = LoggingUtils.createLogger(LoadingState.class);
+	
 	private String mapName;
 	private String textName;
 	private LoadableGameState nextState;
@@ -121,6 +125,8 @@ public class LoadingState extends BasicGameState
 				// If we are not loading the map then we just want to load the specified resources
 				else if (loadResources)
 					bulkLoader.start(textName);
+				else
+					bulkLoader.start();
 				
 				
 				loadAmount = bulkLoader.getResourceAmount();
@@ -206,7 +212,7 @@ public class LoadingState extends BasicGameState
 			ResourceManager resourceManager, LoadableGameState nextState,
 				LoadingScreenRenderer loadingRenderer, Image intermediateImage, Transition transition)
 	{
-		System.out.println("IS FIRST LOAD " + loadResources);
+		LOGGER.fine("Configuring loading state... Load resources: " + loadResources);
 		this.errorMessage = null;
 		this.textName = textName;
 		this.loadingMap = loadMap;

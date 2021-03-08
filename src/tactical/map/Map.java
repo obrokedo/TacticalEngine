@@ -446,11 +446,6 @@ public class Map
 				spriteSheet.startUse();
 				inUseTileset = this;
 			}
-
-			// System.out.println((index - startIndex) % ssWidth + " " + (index - startIndex) / ssWidth);
-			// System.out.println("Bounds: " + spriteSheet.getHorizontalCount() + " " + spriteSheet.getVerticalCount());
-			//spriteSheet.renderInUse(x, y, 
-				//	(index - startIndex) % ssWidth, (index - startIndex) / ssWidth);
 			spriteSheet.getSubImage((index - startIndex) % ssWidth, (index - startIndex) / ssWidth).
 				drawEmbedded(x, y, tileWidth, tileHeight);
 		}

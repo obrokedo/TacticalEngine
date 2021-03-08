@@ -268,17 +268,6 @@ public class TownMoveManager extends Manager
 					movers.add(new MovingSprite(sprite, m.getDirection(), m.getStairs(), stateInfo));
 					return;
 				}
-
-				/*
-				for (MovingSprite ms : movers)
-				{
-					if (ms.getAnimatedSprite().getId() == sprite.getId()) {
-						System.out.println("ADD NEXT MOVMENT");
-						ms.addNextMovement(m.getDirection());
-						return;
-					}
-				}
-				*/
 				
 				int sx = sprite.getTileX();
 				int sy = sprite.getTileY();

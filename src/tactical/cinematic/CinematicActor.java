@@ -794,7 +794,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 		movePath = null;
 	}
 	
-	public void moveAlongPath(Path path, float speed, boolean haltingMove, StateInfo stateInfo)
+	public void moveAlongPath(Path path, float speed, boolean haltingMove, int direction, StateInfo stateInfo)
 	{
 		if (path.getLength() > 1)
 		{
@@ -807,6 +807,14 @@ public class CinematicActor implements Comparable<CinematicActor>
 			this.moveToLocX = step.getX();
 			this.moveToLocY = step.getY() - (this.sprite != null ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0);
 			this.moveSpeed = speed;
+			
+			if (direction != -1)
+			{
+				this.setFacing(direction);
+				this.forceFacingMove = true;
+			}
+			else
+				this.forceFacingMove = false;
 		}
 	}
 

@@ -86,14 +86,11 @@ public class Camera
 
 	private void setX(float x)
 	{
-		// System.out.println(x);
-		// nextX = x;
 		viewport.setX(fixXFloatPrecision(x));
 	}
 
 	private void setY(float y)
 	{
-		// nextY = y;
 		viewport.setY(y);
 	}
 

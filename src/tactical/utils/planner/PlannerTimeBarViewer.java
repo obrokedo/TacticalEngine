@@ -142,9 +142,6 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
 					} else
 						handleMove(currentTime, ce, rowsByName, "Move ", false);
 					break;
-				case MOVE_ENFORCE_FACING:
-					handleMove(currentTime, ce, rowsByName, "Move Face Enforced ", true);
-					break;
 				case LOOP_MOVE:
 					 ab = rowsByName.get(ce.getParam(0));
 

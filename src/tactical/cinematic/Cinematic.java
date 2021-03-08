@@ -407,26 +407,20 @@ public class Cinematic {
 						}
 						
 						if (path != null) {
-							ca.moveAlongPath(path, (float) ce.getParam(2), (boolean) ce.getParam(6), stateInfo);
+							ca.moveAlongPath(path, (float) ce.getParam(2), (boolean) ce.getParam(6), (int) ce.getParam(8), stateInfo);
 						}
 					}
 				// Not pathfinding
 				} else {
 					ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
 					moveActorToLocation(ca, (int) ce.getParam(0),
-							(int) ce.getParam(1), (float) ce.getParam(2), (boolean) ce.getParam(6), -1, (boolean) ce.getParam(4), (boolean) ce.getParam(5), stateInfo);
+							(int) ce.getParam(1), (float) ce.getParam(2), (boolean) ce.getParam(6), (int) ce.getParam(8), (boolean) ce.getParam(4), (boolean) ce.getParam(5), stateInfo);
 				}
 				
 				if ((boolean) ce.getParam(6))
 					haltedMovers++;
 				
 				break;			
-			case MOVE_ENFORCE_FACING:
-				ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
-				moveActorToLocation(ca, (int) ce.getParam(0),
-						(int) ce.getParam(1), (float) ce.getParam(2), false,
-						(int) ce.getParam(4), (boolean) ce.getParam(5), (boolean) ce.getParam(6), stateInfo);
-				break;
 			case LOOP_MOVE:
 				ca = getCinematicActorByName((String) ce.getParam(0), ce.getType());
 				ca.loopMoveToLocation((int) ce.getParam(1),
@@ -792,6 +786,19 @@ public class Cinematic {
 								new LoadingScreenRenderer(stateInfo.getPaddedGameContainer()));
 	
 				game.enterState(TacticalGame.STATE_GAME_LOADING);
+				
+				
+				// LOAD INTRO
+				/*
+				StateBasedGame game = stateInfo.getPersistentStateInfo().getGame();
+				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo(null, false, false,
+						new ResourceManager(),
+							(LoadableGameState) game.getState(TacticalGame.STATE_GAME_INTRO),
+								new LoadingScreenRenderer(stateInfo.getPaddedGameContainer()));
+	
+				game.enterState(TacticalGame.STATE_GAME_LOADING);
+				*/
+				
 			default:
 				handleCustomEvent(ce, stateInfo);
 				break;
