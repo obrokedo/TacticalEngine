@@ -136,16 +136,14 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
 						}
 					break;
 				case MOVE:
-					handleMove(currentTime, ce, rowsByName, "Move ", false);
+					// Halting
+					if ((boolean) ce.getParam(6)) {
+						currentTime += handleMove(currentTime, ce, rowsByName, "Halting Move to ", false);
+					} else
+						handleMove(currentTime, ce, rowsByName, "Move ", false);
 					break;
 				case MOVE_ENFORCE_FACING:
 					handleMove(currentTime, ce, rowsByName, "Move Face Enforced ", true);
-					break;
-				case HALTING_MOVE:
-					currentTime += handleMove(currentTime, ce, rowsByName, "Halting Move to ", false);
-					break;
-				case HALTING_MOVE_PATHFIND:
-					currentTime += handleMove(currentTime, ce, rowsByName, "Halting Move Pathfind to ", false);
 					break;
 				case LOOP_MOVE:
 					 ab = rowsByName.get(ce.getParam(0));

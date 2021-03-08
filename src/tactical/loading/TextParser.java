@@ -591,23 +591,12 @@ public class TextParser
 			return new CinematicEvent(CinematicEventType.ASSOCIATE_AS_ACTOR, area.getAttribute("name"),
 					HeroResource.getHeroIdByName(area.getAttribute("hero")), Integer.parseInt(area.getAttribute("enemyid")), area.getAttribute("npcid"), area.getAttribute("staticid"));
 		else if (type.equalsIgnoreCase("camerafollow"))
-			return new CinematicEvent(CinematicEventType.CAMERA_FOLLOW, area.getAttribute("name"));
-		else if (type.equalsIgnoreCase("haltingmove"))
-			return new CinematicEvent(CinematicEventType.HALTING_MOVE, Integer.parseInt(area.getAttribute("x")),
-					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),
-					Boolean.parseBoolean(area.getAttribute("movehor")), Boolean.parseBoolean(area.getAttribute("movediag")));
-		else if (type.equalsIgnoreCase("movepath"))
-			return new CinematicEvent(CinematicEventType.MOVE_PATHFIND, Integer.parseInt(area.getAttribute("x")),
-					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),
-					false, false);
-		else if (type.equalsIgnoreCase("haltingmovepath"))
-			return new CinematicEvent(CinematicEventType.HALTING_MOVE_PATHFIND, Integer.parseInt(area.getAttribute("x")),
-					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),
-					false, false);
+			return new CinematicEvent(CinematicEventType.CAMERA_FOLLOW, area.getAttribute("name"));		
 		else if (type.equalsIgnoreCase("move"))
 			return new CinematicEvent(CinematicEventType.MOVE, Integer.parseInt(area.getAttribute("x")),
 					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),
-					Boolean.parseBoolean(area.getAttribute("movehor")), Boolean.parseBoolean(area.getAttribute("movediag")));
+					Boolean.parseBoolean(area.getAttribute("movehor")), Boolean.parseBoolean(area.getAttribute("movediag")),
+					Boolean.parseBoolean(area.getAttribute("halting")),  Boolean.parseBoolean(area.getAttribute("pathfinding")));
 		else if (type.equalsIgnoreCase("forcedmove"))
 			return new CinematicEvent(CinematicEventType.MOVE_ENFORCE_FACING, Integer.parseInt(area.getAttribute("x")),
 					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),

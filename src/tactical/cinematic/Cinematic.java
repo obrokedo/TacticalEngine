@@ -389,59 +389,38 @@ public class Cinematic {
 		Log.debug("Handle event: " + ce.getType());
 		CinematicActor ca = null;
 		switch (ce.getType()) {
-			case HALTING_MOVE:
-				ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
-				moveActorToLocation(ca, (int) ce.getParam(0),
-						(int) ce.getParam(1), (float) ce.getParam(2), true, -1, (boolean) ce.getParam(4), (boolean) ce.getParam(5), stateInfo);
-				haltedMovers++;
-				break;
-			case HALTING_MOVE_PATHFIND:
-				if (actors.containsKey((String) ce.getParam(3))) {
-					ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
-					Path path = stateInfo.getCurrentMap().findPixelPathWithPixels
-								((int) ca.getLocX(), (int) ca.getLocY() + 
-									(!this.inCinematicState ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0), 
-									(int) ce.getParam(0), (int) ce.getParam(1), stateInfo, true);
-					
-					if (path == null) {
-						path = stateInfo.getCurrentMap().findPixelPathWithPixels
-							((int) ca.getLocX(), (int) ca.getLocY() + 
-									(!this.inCinematicState ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0), 
-									(int) ce.getParam(0), (int) ce.getParam(1), stateInfo, false);
-					}
-					
-					if (path != null) {
-						ca.moveAlongPath(path, (float) ce.getParam(2), true, stateInfo);
-						haltedMovers++;
-					}
-				}
-				break;
-			case MOVE_PATHFIND:
-				if (actors.containsKey((String) ce.getParam(3))) {
-					ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
-					
-					 Path path = stateInfo.getCurrentMap().findPixelPathWithPixels
-							((int) ca.getLocX(), (int) ca.getLocY() + 
-									(!this.inCinematicState ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0), 
-									(int) ce.getParam(0), (int) ce.getParam(1), stateInfo, true);
-					
-					if (path == null) {
-						path = stateInfo.getCurrentMap().findPixelPathWithPixels
+			case MOVE: 
+				// Is pathfinding
+				if ((boolean) ce.getParam(7)) {
+					if (actors.containsKey((String) ce.getParam(3))) {
+						ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
+						Path path = stateInfo.getCurrentMap().findPixelPathWithPixels
+									((int) ca.getLocX(), (int) ca.getLocY() + 
+										(!this.inCinematicState ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0), 
+										(int) ce.getParam(0), (int) ce.getParam(1), stateInfo, true);
+						
+						if (path == null) {
+							path = stateInfo.getCurrentMap().findPixelPathWithPixels
 								((int) ca.getLocX(), (int) ca.getLocY() + 
 										(!this.inCinematicState ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0), 
 										(int) ce.getParam(0), (int) ce.getParam(1), stateInfo, false);
+						}
+						
+						if (path != null) {
+							ca.moveAlongPath(path, (float) ce.getParam(2), (boolean) ce.getParam(6), stateInfo);
+						}
 					}
-					
-					if (path != null) {
-						ca.moveAlongPath(path, (float) ce.getParam(2), false, stateInfo);
-					}
+				// Not pathfinding
+				} else {
+					ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
+					moveActorToLocation(ca, (int) ce.getParam(0),
+							(int) ce.getParam(1), (float) ce.getParam(2), (boolean) ce.getParam(6), -1, (boolean) ce.getParam(4), (boolean) ce.getParam(5), stateInfo);
 				}
-				break;
-			case MOVE:
-				ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
-				moveActorToLocation(ca, (int) ce.getParam(0),
-						(int) ce.getParam(1), (float) ce.getParam(2), false, -1, (boolean) ce.getParam(4), (boolean) ce.getParam(5), stateInfo);
-				break;
+				
+				if ((boolean) ce.getParam(6))
+					haltedMovers++;
+				
+				break;			
 			case MOVE_ENFORCE_FACING:
 				ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
 				moveActorToLocation(ca, (int) ce.getParam(0),
