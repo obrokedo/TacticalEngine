@@ -750,6 +750,8 @@ public class Trigger
 						npcName.equalsIgnoreCase(sprite.getName())) {
 					NPCSprite npc = (NPCSprite) sprite;
 					npc.setSpriteAnims(stateInfo.getResourceManager().getSpriteAnimation(animation));
+					// Kick the facing into a different direction first to ensure that the facing animation is set correctly
+					npc.setFacing(Direction.getDirectionFromInt((facing + 1) % 4));
 					npc.setFacing(Direction.getDirectionFromInt(facing));
 					break;
 				}

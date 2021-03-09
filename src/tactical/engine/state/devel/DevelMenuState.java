@@ -526,9 +526,11 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			}
 		} catch (FileNotFoundException e) {
 			alertPanel = new AlertPanel("The selected file could not be found: " + e.getMessage());
+			e.printStackTrace();
 			return false;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			alertPanel = new AlertPanel("The selected file could not be read or is improperly formatted: " + e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 		
