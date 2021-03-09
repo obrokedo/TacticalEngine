@@ -124,6 +124,7 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 			selectedHero.unequipItem((EquippableItem) item);
 		}
 		selectedHero.removeItem(item);
+		this.updateCurrentHero(stateInfo);
 		if (item.isDeal()) {
 			stateInfo.getClientProgress().getDealItems().add(item.getItemId());
 		}

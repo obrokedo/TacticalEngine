@@ -734,11 +734,13 @@ public class Trigger
 	public class TriggerChangeNPCAnimation implements Triggerable {
 		private String animation;
 		private String npcName;
+		private int facing;
 		
-		public TriggerChangeNPCAnimation(String animation, String npcName) {
+		public TriggerChangeNPCAnimation(String animation, String npcName, int facing) {
 			super();
 			this.animation = animation;
 			this.npcName = npcName;
+			this.facing = facing;
 		}
 
 		@Override
@@ -748,7 +750,7 @@ public class Trigger
 						npcName.equalsIgnoreCase(sprite.getName())) {
 					NPCSprite npc = (NPCSprite) sprite;
 					npc.setSpriteAnims(stateInfo.getResourceManager().getSpriteAnimation(animation));
-					npc.setFacing(npc.getFacing());
+					npc.setFacing(Direction.getDirectionFromInt(facing));
 					break;
 				}
 			}

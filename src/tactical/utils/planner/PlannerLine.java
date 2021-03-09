@@ -170,6 +170,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 						items.add("No value selected");
 						items.addAll(getReferenceStringList(referenceListByReferenceType, pv));
 						c = new JComboBox<String>(items);
+						AutoCompletion.enable((JComboBox) c);
 						if (values.size() > i)
 							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
 						((JComboBox<?>) c).setMaximumRowCount(20);
@@ -202,6 +203,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 						{
 							PlannerReference plannerRef = vals.next();
 							JComboBox<String> jcb = new JComboBox<String>(mitems);
+							AutoCompletion.enable(jcb);
 							jcb.addFocusListener(this);
 							jcb.setMaximumRowCount(20);
 							if (plannerRef.getName().length() > 0) {
@@ -216,12 +218,14 @@ public class PlannerLine implements FocusListener, ChangeListener
 						// Make sure at least one box is displayed even if it's empty
 						if (!hadAValue) {
 							JComboBox<String> jcb = new JComboBox<String>(mitems);
+							AutoCompletion.enable(jcb);
 							jcb.addFocusListener(this);
 							c.add(jcb);
 						}
 					}
 					else {
 						JComboBox<String> jcb = new JComboBox<String>(mitems);
+						AutoCompletion.enable(jcb);
 						jcb.addFocusListener(this);
 						c.add(jcb);
 					}
@@ -251,6 +255,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 						// We're going to leave the "" in so bad references don't default to something
 							items.add(0, "");
 						c = new JComboBox<String>(items);
+						AutoCompletion.enable((JComboBox) c);
 						c.addFocusListener(this);
 						((JComboBox<?>) c).setMaximumRowCount(20);
 						if (values.size() > i)

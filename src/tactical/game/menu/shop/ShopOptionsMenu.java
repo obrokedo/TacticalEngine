@@ -24,13 +24,19 @@ public class ShopOptionsMenu extends QuadMenu
 		this.shopMessage = shopMessage;
 		
 		icons = new Image[8];
-
-		for (int i = 0; i < icons.length; i++)
-			icons[i] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(i % 4 + 11, i / 4);
+		icons[0] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(11, 0);
+		icons[1] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(12, 0);
+		icons[2] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(13, 0);
+		icons[3] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(14, 0);
+		
+		icons[4] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(11, 1);
+		icons[5] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(12, 1);
+		icons[6] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(13, 1);
+		icons[7] = stateInfo.getResourceManager().getSpriteSheet("actionicons").getSubImage(14, 1);
 		enabled = new boolean[4];
 		for (int i = 0; i < enabled.length; i++)
 			enabled[i] = true;
-		text = new String[] {"Buy", "Deals", "Recharge", "Sell"};
+		text = new String[] {"Buy", "Sell", "Recharge","Deals"};
 	}
 
 	@Override
@@ -53,7 +59,7 @@ public class ShopOptionsMenu extends QuadMenu
 				shopMessage.setMenuTypeShopBuy();
 				stateInfo.sendMessage(shopMessage);
 				break;
-			case LEFT:
+			case DOWN:
 				if (stateInfo.getClientProgress().getDealItems().size() > 0) {
 					shopMessage.setMenuTypeShopDeals();
 					stateInfo.sendMessage(shopMessage);
@@ -65,7 +71,7 @@ public class ShopOptionsMenu extends QuadMenu
 				shopMessage.setMenuTypeShopRepair();
 				stateInfo.sendMessage(shopMessage);
 				break;
-			case DOWN:
+			case LEFT:
 				shopMessage.setMenuTypeShopSell();
 				stateInfo.sendMessage(shopMessage);
 				break;

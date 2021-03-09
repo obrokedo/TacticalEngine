@@ -17,6 +17,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import tactical.utils.planner.AutoCompletion;
 import tactical.utils.planner.PlannerContainer;
 import tactical.utils.planner.PlannerContainerDef;
 import tactical.utils.planner.PlannerLine;
@@ -60,7 +61,8 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 			pl.setupUI(pcdef.getAllowableLines(), this, cnt++, pcdef.getListOfLists(), true, null);
 			boxPanel.add(pl.getUiAspect());
 		}						
-		jcb = new JComboBox<>();		
+		jcb = new JComboBox<>();	
+		AutoCompletion.enable(jcb);
 		for (PlannerLineDef pld : pc.getPcdef().getAllowableLines())
 			jcb.addItem(pld.getName());
 		jcb.setMaximumRowCount(40);

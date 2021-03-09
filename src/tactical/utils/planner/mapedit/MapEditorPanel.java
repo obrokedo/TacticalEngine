@@ -26,6 +26,7 @@ import javax.swing.JTable;
 
 import tactical.loading.PlannerMap;
 import tactical.map.MapObject;
+import tactical.utils.planner.AutoCompletion;
 import tactical.utils.planner.PlannerContainerDef;
 import tactical.utils.planner.PlannerFrame;
 import tactical.utils.planner.PlannerLine;
@@ -244,6 +245,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 			comboItems.add(pld.getName());
 		}
 		moCombo = new JComboBox<>(comboItems);
+		AutoCompletion.enable(moCombo);
 		moCombo.setPreferredSize(new Dimension(200, 30));
 		moCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
 		moCombo.setMaximumSize(new Dimension(moCombo.getPreferredSize().width, 30));		

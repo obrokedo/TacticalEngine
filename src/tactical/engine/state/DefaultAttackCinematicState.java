@@ -79,7 +79,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 	private int spellOverlayFadeIn = 0;
 	private int SPELL_OVERLAY_MAX_ALPHA = 80;
 	private Color spellOverlayColor = null;
-	private AnimatedParticleSystem rainParticleSystem;
+	private AnimatedParticleSystem animatedParticleSystem;
 	private int clipBackgroundWidth = 0;
 
 	// The amount that the background has been scaled to fit the screen,
@@ -219,18 +219,18 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 								*/
 				// Image im = frm.getImage(rainFile);
 				String rainAnimation =  battleResults.battleCommand.getSpell().getSpellRainAnimationName(battleResults.battleCommand.getLevel());
-				rainParticleSystem = new AnimatedParticleSystem(rainFile, rainAnimation, frm, backgroundScale);
+				animatedParticleSystem = new AnimatedParticleSystem(rainFile, rainAnimation, frm, backgroundScale);
 				ParticleEmitterConfiguration emitter = battleResults.battleCommand.getSpell().getEmitter(battleResults.battleCommand.getLevel());
 				emitter.initialize(battleResults.targets.get(0).isHero());
 				emitter.setFcResourceManager(frm);
-				rainParticleSystem.addEmitter(emitter);
+				animatedParticleSystem.addEmitter(emitter);
 			}
 			else
-				rainParticleSystem = null;
+				animatedParticleSystem = null;
 		}
 		else {
 			spellAnimation = null;
-			rainParticleSystem = null;
+			animatedParticleSystem = null;
 		}
 		
 		BattleSceneCreator bsc = BattleSceneCreator.initializeBattleScene(attacker, frm, battleResults, gc, 
@@ -293,8 +293,8 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		setCinematicClip(container, g);
 		if (drawingSpell && spellFlash == null)
 		{
-			if (rainParticleSystem != null)
-				rainParticleSystem.render();	
+			if (animatedParticleSystem != null)
+				animatedParticleSystem.render();	
 		}
 		clearCinematicClip(g);
 		
@@ -529,8 +529,8 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 			// Update the spell animation as it should
 			// be rendering at this point
 			spellAnimation.update(delta);
-			if (rainParticleSystem != null)
-				rainParticleSystem.update(delta);
+			if (animatedParticleSystem != null)
+				animatedParticleSystem.update(delta);
 		}
 	}
 

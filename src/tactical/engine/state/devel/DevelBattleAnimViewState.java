@@ -313,7 +313,6 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 			g.fillRect(300, 0, 300, 490);
 			g.setColor(Color.black);
 			g.drawString("Right click to cancel", 315, 465);
-			g.drawString("Search (Press enter)", 315, 410);
 			currentList.render(container, g);
 			
 			g.setColor(Color.white);

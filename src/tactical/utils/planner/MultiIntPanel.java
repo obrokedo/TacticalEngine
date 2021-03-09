@@ -29,6 +29,7 @@ public class MultiIntPanel extends JPanel implements ActionListener
 			vs.add("No value selected");
 			vs.addAll(mitems);
 			JComboBox<String> jc = new JComboBox<String>(vs);
+			AutoCompletion.enable(jc);
 			jc.addFocusListener(parentLine);
 			this.add(jc);			
 		}

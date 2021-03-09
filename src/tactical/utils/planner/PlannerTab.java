@@ -69,6 +69,7 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 		// uiAspect.add(listPanel, BorderLayout.PAGE_START);
 
 		typeComboBox = new JComboBox<String>(containers);
+		AutoCompletion.enable(typeComboBox);
 
 		this.refersTo = refersTo;
 		this.plannerFrame = plannerFrame;

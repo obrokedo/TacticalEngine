@@ -454,7 +454,7 @@ public class TextParser
 							actionParams.get("animation"), facing, wander, uniqueId, actionParams.get("location")));
 				}
 				else if (tagType.equalsIgnoreCase("changenpc")) {
-					te.addTriggerable(te.new TriggerChangeNPCAnimation(actionParams.get("animation"), actionParams.get("name")));
+					te.addTriggerable(te.new TriggerChangeNPCAnimation(actionParams.get("animation"), actionParams.get("name"), Integer.parseInt(actionParams.get("facing"))));
 				} else if (tagType.equalsIgnoreCase("addsprite")) {
 					int[] searchTriggers = null;
 					if (actionParams.containsKey("searchtrigger")) {

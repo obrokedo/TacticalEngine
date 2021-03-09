@@ -20,6 +20,7 @@ import tactical.game.battle.LevelUpResult;
 import tactical.game.exception.BadResourceException;
 import tactical.game.resource.HeroResource;
 import tactical.game.sprite.CombatSprite;
+import tactical.utils.planner.AutoCompletion;
 
 public class ProgressionFrame extends JFrame implements ActionListener {
 	private JComboBox<String> heroNameBox;
@@ -37,6 +38,7 @@ public class ProgressionFrame extends JFrame implements ActionListener {
 		List<String> h = HeroResource.getHeroNames();
 		heroNameBox = new JComboBox<String>(new Vector<String>(
 				HeroResource.getHeroNames()));
+		AutoCompletion.enable(heroNameBox);
 		backPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
 		JPanel topPanel = new JPanel();
 		topPanel.add(heroNameBox);

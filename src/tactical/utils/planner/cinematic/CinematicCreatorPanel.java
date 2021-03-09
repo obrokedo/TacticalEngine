@@ -37,6 +37,7 @@ import tactical.engine.log.LoggingUtils;
 import tactical.loading.PlannerMap;
 import tactical.map.MapObject;
 import tactical.utils.planner.AttributeTransferHandler;
+import tactical.utils.planner.AutoCompletion;
 import tactical.utils.planner.MapListRenderer;
 import tactical.utils.planner.MapListRenderer.MapCell;
 import tactical.utils.planner.PlannerAttributeList;
@@ -111,6 +112,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		pt =  plannerFrame.getPlannerTabAtIndex(PlannerFrame.TAB_CIN);
 		// This value needs to be updated
 		cinematicIds.setModel(new DefaultComboBoxModel<String>(pt.getItemList()));
+		AutoCompletion.enable(cinematicIds);
 		listPanel.add(cinematicIds, BorderLayout.PAGE_START);
 		listPanel.setPreferredSize(new Dimension(200, 50));
 		uiAspect.add(listPanel, BorderLayout.LINE_START);

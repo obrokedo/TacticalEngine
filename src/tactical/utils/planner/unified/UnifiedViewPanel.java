@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 
 import tactical.loading.PlannerMap;
 import tactical.map.MapObject;
+import tactical.utils.planner.AutoCompletion;
 import tactical.utils.planner.PlannerContainer;
 import tactical.utils.planner.PlannerFrame;
 import tactical.utils.planner.PlannerLine;
@@ -59,6 +60,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		JPanel topPanel = new JPanel();
 		topPanel.add(new JLabel("Select Driving Action: "));
 		drivers = new JComboBox<>();
+		AutoCompletion.enable(drivers);
 		drivers.addItemListener(this);
 		topPanel.add(drivers);
 		topPanel.add(new JLabel(" Or "));

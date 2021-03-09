@@ -2618,6 +2618,9 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "animation", false,
 				"New Animations", "The new animations for this npc"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+				PlannerValueDef.TYPE_INT, "facing", false, "Initial Facing",
+				"The direction that this npc will initially face."));
 		allowableLines.add(new PlannerLineDef("changenpc",
 				"Change NPC Anim",
 				"Changes an existing npcs animations to the specified animations.",
