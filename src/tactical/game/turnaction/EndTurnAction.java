@@ -29,7 +29,8 @@ public class EndTurnAction extends TurnAction {
 				stateInfo.checkTriggersMovement((int) turnManager.getCurrentSprite().getLocX(), (int) turnManager.getCurrentSprite().getLocY(), false);
 			}
 
-			if (turnManager.getCurrentSprite().getBattleEffects().size() > 0)
+			// Make sure that the current sprite is still in the battle
+			if (stateInfo.getCombatantById(turnManager.getCurrentSprite().getId()) != null && turnManager.getCurrentSprite().getBattleEffects().size() > 0)
 			{
 				String text = "";
 				for (int i = 0; i < turnManager.getCurrentSprite().getBattleEffects().size(); i++)

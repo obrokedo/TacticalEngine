@@ -52,7 +52,7 @@ public class AdvisorMenu extends QuadMenu {
 				stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
 				break;
 			case RIGHT:
-				stateInfo.sendMessage(new SpeechMessage("Win some battles!<hardstop>", -1, this.portrait));
+				stateInfo.sendMessage(new SpeechMessage("Win some battles!<hardstop>", this.portrait));
 				break;
 		}
 		return MenuUpdate.MENU_ACTION_LONG;

@@ -56,18 +56,16 @@ public class TextParser
 				ArrayList<Speech> speeches = new ArrayList<Speech>();
 
 				for (TagArea childTagArea : tagArea.getChildren())
-				{
-					
-					int triggerId = -1;
+				{					
 					String message = childTagArea.getAttribute("message");
 					String requires = childTagArea.getAttribute("require");
 					String excludes = childTagArea.getAttribute("exclude");
-					String trigger = childTagArea.getAttribute("trigger");
+					int[] trigger = parseMultiString(childTagArea.getAttribute("trigger"), s -> Integer.parseInt(s));
 					
-					String triggerNo = null;
+					int[] triggerNo = null;
 					if (childTagArea.getTagType().equalsIgnoreCase("yesno")) {
-						trigger = childTagArea.getAttribute("triggeryes");
-						triggerNo = childTagArea.getAttribute("triggerno");
+						trigger = parseMultiString(childTagArea.getAttribute("triggeryes"), s -> Integer.parseInt(s));
+						triggerNo = parseMultiString(childTagArea.getAttribute("triggerno"), s -> Integer.parseInt(s));
 					}
 					
 					String[] requireIds = null;
@@ -84,17 +82,13 @@ public class TextParser
 					{
 						excludeIds = excludes.split(",");
 					}
-
-
-					if (trigger != null)
-						triggerId = Integer.parseInt(trigger);
-					
+										
 					if (childTagArea.getTagType().equalsIgnoreCase("string")) {
 						String customAnim = childTagArea.getAttribute("animportrait");
 						if (StringUtils.isEmpty(customAnim))
 							customAnim = null;
 
-						speeches.add(new Speech(message, requireIds, excludeIds, triggerId,
+						speeches.add(new Speech(message, requireIds, excludeIds, trigger,
 								HeroResource.getHeroIdByName(childTagArea.getAttribute("heroportrait")),
 								EnemyResource.getEnemyIdByName(childTagArea.getAttribute("enemyportrait")),
 								customAnim));
@@ -103,7 +97,7 @@ public class TextParser
 						if (StringUtils.isEmpty(customAnim))
 							customAnim = null;
 
-						speeches.add(new YesNoSpeech(message, requireIds, excludeIds, triggerId, Integer.parseInt(triggerNo),
+						speeches.add(new YesNoSpeech(message, requireIds, excludeIds, trigger, triggerNo,
 								HeroResource.getHeroIdByName(childTagArea.getAttribute("heroportrait")),
 								EnemyResource.getEnemyIdByName(childTagArea.getAttribute("enemyportrait")),
 								customAnim));
@@ -114,7 +108,7 @@ public class TextParser
 						String customAnim2 = childTagArea.getAttribute("animportrait2");
 						if (StringUtils.isEmpty(customAnim2))
 							customAnim2 = null;
-						speeches.add(new Conversation(message.split("<split>"), requireIds, excludeIds, triggerId, 
+						speeches.add(new Conversation(message.split("<split>"), requireIds, excludeIds, trigger, 
 								HeroResource.getHeroIdByName(childTagArea.getAttribute("heroportrait1")),
 								EnemyResource.getEnemyIdByName(childTagArea.getAttribute("enemyportrait1")),
 								customAnim1,

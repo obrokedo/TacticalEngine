@@ -46,7 +46,7 @@ public class ShopOptionsMenu extends QuadMenu
 
 	@Override
 	protected MenuUpdate onBack() {
-		stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopMenuClosedText(), Trigger.TRIGGER_NONE, portrait));
+		stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopMenuClosedText(), portrait));
 		return MenuUpdate.MENU_CLOSE;
 	}
 
@@ -64,7 +64,7 @@ public class ShopOptionsMenu extends QuadMenu
 					shopMessage.setMenuTypeShopDeals();
 					stateInfo.sendMessage(shopMessage);
 				} else {
-					stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopNoDealsText(), Trigger.TRIGGER_NONE, portrait));
+					stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopNoDealsText(), portrait));
 				}
 				break;
 			case RIGHT:

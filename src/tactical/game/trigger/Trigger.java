@@ -34,6 +34,7 @@ import tactical.utils.StringUtils;
 public class Trigger
 {
 	public static final int TRIGGER_NONE = -1;
+	public static final int[] TRIGGER_LIST_NONE = new int[0];
 	public static final int TRIGGER_ID_EXIT = -2;
 	public static final int TRIGGER_ID_SAVE_AND_EXIT = -3;
 	

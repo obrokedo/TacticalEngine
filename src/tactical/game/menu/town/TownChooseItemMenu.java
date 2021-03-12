@@ -105,8 +105,7 @@ public class TownChooseItemMenu extends ChooseItemMenu implements MenuListener {
 							stateInfo, this));
 					return true;
 				} else {					
-					stateInfo.addMenu(new SpeechMenu(menuConfig.getUseFailedText(selectedHero.getName(), items.get(selectingItemIndex).getName()), 
-							null, null, stateInfo));
+					stateInfo.addMenu(new SpeechMenu(menuConfig.getUseFailedText(selectedHero.getName(), items.get(selectingItemIndex).getName()), stateInfo));
 					return true;
 				}
 			// Nothing to be done for equip

@@ -43,7 +43,7 @@ public class RetrieveItemMenu extends ShopBuyMenu {
 	@Override
 	protected void showBuyPanel(StateInfo stateInfo) {
 		speechMenu = new SpeechMenu(menuConfig.getStorageWithdrawText(), stateInfo.getPaddedGameContainer(),
-				Trigger.TRIGGER_NONE, null, null);
+				Trigger.TRIGGER_LIST_NONE, null, null);
 		currentStep = ShopStepEnum.SELECT_ITEM;
 	}
 
@@ -73,7 +73,7 @@ public class RetrieveItemMenu extends ShopBuyMenu {
 			case SALE_COMPLETED:
 				if (stateInfo.getClientProgress().getStoredItems().size() == 0) {
 					stateInfo.sendMessage(new SpeechMessage(menuConfig.getStorageWithdrawNoItemsText(), 
-							Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo)));
+							Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo)));
 					stateInfo.removeMenu(this);
 				}
 				showBuyPanel(stateInfo);

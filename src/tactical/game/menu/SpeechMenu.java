@@ -18,19 +18,18 @@ import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
 import tactical.game.listener.MenuListener;
 import tactical.game.text.Speech;
+import tactical.game.trigger.Trigger;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.utils.StringUtils;
 
 public class SpeechMenu extends Menu implements MenuListener
 {
-	public static final int NO_TRIGGER = -1;
-
 	private int x = 15;
 	private int y = 58;
 	private int width;
 	protected ArrayList<String> panelText;
 	private int textIndex = 0;
-	private int triggerId = -1;
+	private int[] triggerIds = Trigger.TRIGGER_LIST_NONE;
 	private Portrait portrait;
 	protected boolean menuIsMovedIn = false;
 	private boolean isAttackCinematic = false;
@@ -57,7 +56,7 @@ public class SpeechMenu extends Menu implements MenuListener
 	 */
 	public SpeechMenu(String text, PaddedGameContainer gc)
 	{
-		this(text, gc, NO_TRIGGER, null, null);
+		this(text, gc, Trigger.TRIGGER_LIST_NONE, null, null);
 		y = 0;
 		menuIsMovedIn = true;
 		this.isAttackCinematic = true;
@@ -73,19 +72,19 @@ public class SpeechMenu extends Menu implements MenuListener
 	 */
 	public SpeechMenu(String text, StateInfo stateInfo)
 	{
-		this(text, stateInfo.getPaddedGameContainer(), NO_TRIGGER, null, null);
+		this(text, stateInfo.getPaddedGameContainer(), Trigger.TRIGGER_LIST_NONE, null, null);
 	}
 	
 	public SpeechMenu(String text, StateInfo stateInfo, Supplier<Boolean> onCloseSupplier)
 	{
-		this(text, stateInfo.getPaddedGameContainer(), NO_TRIGGER, null, null);
+		this(text, stateInfo.getPaddedGameContainer(), Trigger.TRIGGER_LIST_NONE, null, null);
 		this.onCloseSupplier = onCloseSupplier;
 		this.listener = this;
 	}
 	
 	public SpeechMenu(String text, Portrait portrait, StateInfo stateInfo, Supplier<Boolean> onCloseSupplier)
 	{
-		this(text, stateInfo.getPaddedGameContainer(), NO_TRIGGER, portrait, null);
+		this(text, stateInfo.getPaddedGameContainer(), Trigger.TRIGGER_LIST_NONE, portrait, null);
 		this.onCloseSupplier = onCloseSupplier;
 		this.listener = this;
 	}
@@ -102,7 +101,7 @@ public class SpeechMenu extends Menu implements MenuListener
 	 */
 	public SpeechMenu(String text, Portrait portrait, MenuListener listener, StateInfo stateInfo)
 	{
-		this(text, stateInfo.getPaddedGameContainer(), NO_TRIGGER, portrait, listener);
+		this(text, stateInfo.getPaddedGameContainer(), Trigger.TRIGGER_LIST_NONE, portrait, listener);
 	}
 	
 	/**
@@ -113,7 +112,7 @@ public class SpeechMenu extends Menu implements MenuListener
 	 * @param stateInfo the stateinfo that resources should be retrieved from
 	 */
 	public SpeechMenu(Speech speech, StateInfo stateInfo) {
-		this(speech.getMessage(), stateInfo.getPaddedGameContainer(), speech.getTriggerId(), speech.getPortrait(stateInfo), null);
+		this(speech.getMessage(), stateInfo.getPaddedGameContainer(), speech.getTriggerIds(), speech.getPortrait(stateInfo), null);
 		this.speech = speech;
 	}
 	
@@ -126,20 +125,20 @@ public class SpeechMenu extends Menu implements MenuListener
 	 * @param portrait
 	 * @param stateInfo
 	 */
-	public SpeechMenu(String text, int triggerId,
+	public SpeechMenu(String text, int[] triggerIds,
 			Portrait portrait, StateInfo stateInfo)
 	{
-		this(text, stateInfo.getPaddedGameContainer(), triggerId, portrait, null);
+		this(text, stateInfo.getPaddedGameContainer(), triggerIds, portrait, null);
 	}
 
-	public SpeechMenu(String text, PaddedGameContainer gc, int triggerId,
+	public SpeechMenu(String text, PaddedGameContainer gc, int[] triggerIds,
 			Portrait portrait, MenuListener listener)
 	{
 		super(PanelType.PANEL_SPEECH);
 		this.listener = listener;
 		width = PaddedGameContainer.GAME_SCREEN_SIZE.width - 30;
 		x = 15;
-		this.triggerId = triggerId;
+		this.triggerIds = triggerIds;
 		timer = new Timer(18);
 		
 		
@@ -375,9 +374,13 @@ public class SpeechMenu extends Menu implements MenuListener
 	}
 
 	protected MenuUpdate speechCompleted(StateInfo stateInfo) {
-		if (triggerId != NO_TRIGGER) {
-			Log.debug("Speech Menu: Send Trigger " + triggerId);
-			stateInfo.getResourceManager().getTriggerEventById(triggerId).perform(stateInfo);
+		if (triggerIds.length > 0) {
+			for (int triggerId : triggerIds) {
+				if (triggerId == -1)
+					break;
+				Log.debug("Speech Menu: Send Trigger " + triggerId);
+				stateInfo.getResourceManager().getTriggerEventById(triggerId).perform(stateInfo);
+			}
 		}
 		else if (stateInfo != null)
 			stateInfo.sendMessage(MessageType.MENU_CLOSED);

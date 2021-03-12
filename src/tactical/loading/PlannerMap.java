@@ -297,6 +297,9 @@ public class PlannerMap extends Map {
 
 	public boolean isInteractableMapObject(MapObject mo) {
 		boolean interactable = false;
+		if (mo == null)
+			return false;
+		
 		if (mo.getName() != null) {
 			if (getPCReferencingMapObject(mo) != null)
 				interactable = true;

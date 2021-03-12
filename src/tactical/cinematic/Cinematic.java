@@ -592,7 +592,7 @@ public class Cinematic {
 
 				
 				Portrait port = Portrait.getPortrait(heroPortrait, enemyPortrait, specificAnim, stateInfo);
-				stateInfo.sendMessage(new SpeechMessage((String) ce.getParam(0), Trigger.TRIGGER_NONE, port));
+				stateInfo.sendMessage(new SpeechMessage((String) ce.getParam(0), port));
 				break;
 		
 			case MULTI_HERO_JOIN_MENU:

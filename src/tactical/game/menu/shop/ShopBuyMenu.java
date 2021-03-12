@@ -266,10 +266,10 @@ public class ShopBuyMenu extends Menu implements MenuListener
 	{
 		if (shopMessage.getMessageType() == MessageType.SHOW_SHOP_BUY)
 			speechMenu = new SpeechMenu(menuConfig.getShopLookAtNormalText(), stateInfo.getPaddedGameContainer(),
-				Trigger.TRIGGER_NONE, null, null);
+				Trigger.TRIGGER_LIST_NONE, null, null);
 		else
 			speechMenu = new SpeechMenu(menuConfig.getShopLookAtDealsText(), stateInfo.getPaddedGameContainer(),
-					Trigger.TRIGGER_NONE, null, null);
+					Trigger.TRIGGER_LIST_NONE, null, null);
 		currentStep = ShopStepEnum.SELECT_ITEM;
 	}
 
@@ -298,10 +298,10 @@ public class ShopBuyMenu extends Menu implements MenuListener
 						currentStep = ShopStepEnum.WHO_WILL_USE;
 						speechMenu = null;
 						stateInfo.addMenu(new SpeechMenu(menuConfig.getShopPromptWhoGetsItemText(), stateInfo.getPaddedGameContainer(),
-								Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+								Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 					} else {
 						stateInfo.addMenu(new SpeechMenu(menuConfig.getShopNotEnoughGoldText(), stateInfo.getPaddedGameContainer(),
-								Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+								Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 						currentStep = ShopStepEnum.SALE_COMPLETED;
 					}
 					//
@@ -316,7 +316,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 				{
 					currentStep = ShopStepEnum.SALE_COMPLETED;
 					stateInfo.addMenu(new SpeechMenu(menuConfig.getShopTransactionCancelledText(), stateInfo.getPaddedGameContainer(),
-							Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+							Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 				}
 				else
 				{
@@ -329,7 +329,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 						{
 							currentStep = ShopStepEnum.EQUIP_NOW;
 							stateInfo.addMenu(new YesNoMenu(menuConfig.getShopPromptEquipItNowText(),
-									Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), stateInfo, this));
+									Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), stateInfo, this));
 						}
 						// Otherwise it's not equippable or this hero can't equip it so just
 						// put it in their inventor
@@ -343,7 +343,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 							
 							currentStep = ShopStepEnum.SALE_COMPLETED;
 							stateInfo.addMenu(new SpeechMenu(getTransactionCompletedText(), stateInfo.getPaddedGameContainer(),
-									Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+									Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 						}
 					}
 					// No room for items
@@ -351,7 +351,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 					{
 						currentStep = ShopStepEnum.WHO_WILL_USE;
 						stateInfo.addMenu(new SpeechMenu(menuConfig.getShopCantCarryMoreText(selectedHero.getName()), stateInfo.getPaddedGameContainer(),
-								Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+								Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 					}
 				}
 				break;
@@ -359,7 +359,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 			case SALE_COMPLETED:
 				if (shopMessage.getMessageType() == MessageType.SHOW_SHOP_DEALS) {
 					if (stateInfo.getClientProgress().getDealItems().size() == 0) {
-						stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopNoMoreDealsText(), Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo)));
+						stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopNoMoreDealsText(), Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo)));
 						stateInfo.removeMenu(this);
 					}
 				}
@@ -379,7 +379,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 				}
 				currentStep = ShopStepEnum.SALE_COMPLETED;
 				stateInfo.addMenu(new SpeechMenu(getTransactionCompletedText(), stateInfo.getPaddedGameContainer(),
-						Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+						Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 				break;
 			case EQUIP_NOW:
 				// Equip the item now
@@ -397,13 +397,13 @@ public class ShopBuyMenu extends Menu implements MenuListener
 						selectedHero.equipItem((EquippableItem) selectedItem);
 						currentStep = ShopStepEnum.SALE_COMPLETED;
 						stateInfo.addMenu(new SpeechMenu(getTransactionCompletedText(), stateInfo.getPaddedGameContainer(),
-								Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+								Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 					}
 					else
 					{
 						currentStep = ShopStepEnum.SELL_OLD_WEAPON;
 						stateInfo.addMenu(new YesNoMenu(menuConfig.getShopPromptSellOldText(equipped.getName(), (int) (equipped.getCost() * sellPercent) + ""), 
-								Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), stateInfo, this));
+								Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), stateInfo, this));
 					}
 					
 					// Check if we purchased a "deal" if so remove it from the deals list
@@ -419,7 +419,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 					currentStep = ShopStepEnum.SALE_COMPLETED;
 					handleDealPurchase(stateInfo);
 					stateInfo.addMenu(new SpeechMenu(getTransactionCompletedText(), stateInfo.getPaddedGameContainer(),
-							Trigger.TRIGGER_NONE, getMenuPortrait(stateInfo), this));
+							Trigger.TRIGGER_LIST_NONE, getMenuPortrait(stateInfo), this));
 				}
 				break;
 		}

@@ -1,4 +1,4 @@
-package tactical.utils.planner;
+package tactical.utils.planner.custom;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +10,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
+import tactical.utils.planner.PlannerLine;
 
 public class MultiStringPanel extends JPanel implements ActionListener {
 	private List<JTextArea> textAreas;

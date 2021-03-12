@@ -67,7 +67,7 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 		} else {
 			sellText = menuConfig.getShopPromptSellNormalText(item.getName(), (int) (item.getCost() * shopMessage.getSellPercent()) + "");
 		}
-		stateInfo.addMenu(new YesNoMenu(sellText, Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo), stateInfo, this));
+		stateInfo.addMenu(new YesNoMenu(sellText, Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo), stateInfo, this));
 	}
 	
 	private void promptRepairItem(StateInfo stateInfo) {
@@ -76,15 +76,15 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 		case BROKEN:
 			
 			stateInfo.addMenu(new YesNoMenu(menuConfig.getShopPromptRepairBrokenText(item.getName(), (int) (item.getCost() * .5) + ""),
-					Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo), stateInfo, this));
+					Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo), stateInfo, this));
 			break;
 		case DAMAGED:
 			stateInfo.addMenu(new YesNoMenu(menuConfig.getShopPromptRepairDamagedText(item.getName(), (int) (item.getCost() * .2) + ""), 
-					Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo),stateInfo, this));
+					Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo),stateInfo, this));
 			break;
 		case PERFECT:
 			stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopItemNotDamagedText(item.getName()), 
-					Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo)));
+					Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo)));
 			break;
 		default:
 			break;
@@ -110,10 +110,10 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 		} else {
 			if (isSellMenu)
 				stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopTransactionCancelledText(), 
-						Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo)));
+						Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo)));
 			else
 				stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopRepairCancelledText(), 
-						Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo)));
+						Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo)));
 		}
 		selectingItemState = false;
 	}
@@ -131,7 +131,7 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 		stateInfo.getClientProfile().setGold(stateInfo.getClientProfile().getGold() + (int) (item.getCost() * shopMessage.getSellPercent()));
 		goldAmountText.setText(stateInfo.getClientProfile().getGold() + "");
 		stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopTransactionSuccessfulText(), 
-				Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo)));
+				Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo)));
 	}
 	
 	private void repairItem(StateInfo stateInfo) {
@@ -145,14 +145,14 @@ public class ShopChooseItemMenu extends ChooseItemMenu implements MenuListener
 		
 		if (cost > stateInfo.getClientProfile().getGold()) {
 			stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopNotEnoughGoldText(), 
-					Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo)));
+					Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo)));
 		} else {
 			stateInfo.getClientProfile().setGold(stateInfo.getClientProfile().getGold() - cost);
 			item.setDurability(ItemDurability.PERFECT);
 			goldAmountText.setText(stateInfo.getClientProfile().getGold() + "");
 			
 			stateInfo.sendMessage(new SpeechMessage(menuConfig.getShopItemRepairedText(), 
-					Trigger.TRIGGER_NONE, shopMessage.getPortrait(stateInfo)));
+					Trigger.TRIGGER_LIST_NONE, shopMessage.getPortrait(stateInfo)));
 		}
 	}
 

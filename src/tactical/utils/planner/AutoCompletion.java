@@ -84,10 +84,18 @@ public class AutoCompletion extends PlainDocument {
         if (editor != null) {
             editor.removeKeyListener(editorKeyListener);
             editor.removeFocusListener(editorFocusListener);
+            for (FocusListener fl : comboBox.getFocusListeners()) {
+            	if (fl instanceof PlannerLine)
+            		editor.removeFocusListener(fl);
+            }
         }
         
         if (newEditor != null) {
             editor = (JTextComponent) newEditor.getEditorComponent();
+            for (FocusListener fl : comboBox.getFocusListeners()) {
+            	if (fl instanceof PlannerLine)
+            		editor.addFocusListener(fl);
+            }
             editor.addKeyListener(editorKeyListener);
             editor.addFocusListener(editorFocusListener);
             editor.setDocument(this);
@@ -177,26 +185,5 @@ public class AutoCompletion extends PlainDocument {
     // checks if str1 starts with str2 - ignores case
     private boolean startsWithIgnoreCase(String str1, String str2) {
         return str1.toUpperCase().startsWith(str2.toUpperCase());
-    }
-    
-    private static void createAndShowGUI() {
-        // the combo box (add/modify items if you like to)
-        final JComboBox comboBox = new JComboBox(new Object[] {"Ester", "Jordi", "Jordina", "Jorge", "Sergi"});
-        enable(comboBox);
-
-        // create and show a window containing the combo box
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(3);
-        frame.getContentPane().add(comboBox);
-        frame.pack(); frame.setVisible(true);
-    }
-    
-    
-    public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });
     }
 }

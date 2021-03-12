@@ -4,22 +4,22 @@ import tactical.game.trigger.Trigger;
 
 public class YesNoSpeech extends Speech {
 
-	private int yesTrigger;
-	private int noTrigger;
+	private int[] yesTriggers;
+	private int[] noTriggers;
 	
-	public YesNoSpeech(String message, String[] requires, String[] excludes, int yesTrigger, int noTrigger, int heroPortrait,
+	public YesNoSpeech(String message, String[] requires, String[] excludes, int[] yesTriggers, int[] noTriggers, int heroPortrait,
 			int enemyPortrait, String spriteAnimsName) {
-		super(message, requires, excludes, Trigger.TRIGGER_NONE, heroPortrait, enemyPortrait, spriteAnimsName);
-		this.yesTrigger = yesTrigger;
-		this.noTrigger = noTrigger;
+		super(message, requires, excludes, Trigger.TRIGGER_LIST_NONE, heroPortrait, enemyPortrait, spriteAnimsName);
+		this.yesTriggers = yesTriggers;
+		this.noTriggers = noTriggers;
 	}
 
-	public int getYesTrigger() {
-		return yesTrigger;
+	public int[] getYesTriggers() {
+		return yesTriggers;
 	}
 
-	public int getNoTrigger() {
-		return noTrigger;
+	public int[] getNoTriggers() {
+		return noTriggers;
 	}
 	
 	

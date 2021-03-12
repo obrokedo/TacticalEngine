@@ -7,7 +7,6 @@ import org.newdawn.slick.Image;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
-import tactical.engine.config.MenuConfiguration;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.MessageType;
 import tactical.engine.state.StateInfo;
@@ -17,6 +16,7 @@ import tactical.game.menu.QuadMenu;
 import tactical.game.menu.SelectHeroMenu;
 import tactical.game.menu.SpeechMenu;
 import tactical.game.sprite.CombatSprite;
+import tactical.game.trigger.Trigger;
 import tactical.utils.StringUtils;
 
 public class ChangePartyMenu extends QuadMenu implements MenuListener {
@@ -96,10 +96,10 @@ public class ChangePartyMenu extends QuadMenu implements MenuListener {
 				
 				// We've already got everyone available in the party
 				if (stateInfo.getClientProfile().getHeroes().size() == stateInfo.getClientProfile().getHeroesInParty().size()) {
-					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyNoOneToJoinText(), -1, this.portrait, stateInfo));
+					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyNoOneToJoinText(), Trigger.TRIGGER_LIST_NONE, this.portrait, stateInfo));
 				// Group is full
 				} else if (stateInfo.getClientProfile().getHeroesInParty().size() == maxHeros) { 
-					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyGroupIsFull(), -1, this.portrait, stateInfo));
+					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyGroupIsFull(), Trigger.TRIGGER_LIST_NONE, this.portrait, stateInfo));
 				// We can add someone
 				} else {
 					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyWhoToAdd(), this.portrait, stateInfo, this::showAbsentSelectHeroMenu));
@@ -111,7 +111,7 @@ public class ChangePartyMenu extends QuadMenu implements MenuListener {
 					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyWhoToRemove(), this.portrait,stateInfo, this::showCurrentSelectHeroMenu));
 				// No one to remove
 				} else {
-					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyNoOneToRemove(), -1, this.portrait,stateInfo));
+					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyNoOneToRemove(), Trigger.TRIGGER_LIST_NONE, this.portrait,stateInfo));
 				}					
 				break;
 			case RIGHT:
@@ -142,18 +142,18 @@ public class ChangePartyMenu extends QuadMenu implements MenuListener {
 				case ADD_HERO:
 					stateInfo.getClientProfile().addHeroToParty((CombatSprite) value);
 					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyMemberAdded(((CombatSprite) value).getName())
-							, -1, this.portrait, stateInfo));
+							, Trigger.TRIGGER_LIST_NONE, this.portrait, stateInfo));
 					break;
 				case INSPECT_HERO:
 					String desc = ((CombatSprite) value).getCurrentProgression().getClassDescription();
 					if (StringUtils.isEmpty(desc))
 						desc = ((CombatSprite) value).getName() + " enjoys staring at walls and sorting small pieces of paper.<softstop> His favorite food is hotdog and his greatest fear is slow moving objects.<hardstop>";
-					stateInfo.addMenu(new SpeechMenu(desc, -1, this.portrait, stateInfo));
+					stateInfo.addMenu(new SpeechMenu(desc, Trigger.TRIGGER_LIST_NONE, this.portrait, stateInfo));
 					break;
 				case REMOVE_HERO:
 					stateInfo.getClientProfile().removeHeroFromParty((CombatSprite) value);
 					stateInfo.addMenu(new SpeechMenu(menuConfig.getPartyMemberRemoved(((CombatSprite) value).getName()),
-							-1, this.portrait, stateInfo));
+							Trigger.TRIGGER_LIST_NONE, this.portrait, stateInfo));
 					break;
 				default:
 					break;				

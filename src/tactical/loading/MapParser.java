@@ -29,7 +29,6 @@ public class MapParser
 	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser, HashSet<TagArea> mapAreas,
 			ResourceManager frm) throws IOException, SlickException
 	{
-		HashSet<String> spriteToLoad = new HashSet<String>();
 		ArrayList<TagArea> tagAreas = XMLParser.process(mapFile, false);
 
 		TagArea tagArea = tagAreas.get(0);
@@ -175,7 +174,11 @@ public class MapParser
 			{
 				for (TagArea objectTag : childArea.getChildren())
 				{
-					parseMapObject(map, spriteToLoad, objectTag);
+					MapObject mapObject = parseMapObject(objectTag); 
+					if (map instanceof PlannerMap)
+						((PlannerMap) map).addMapObject(mapObject, objectTag);
+					else
+						map.addMapObject(mapObject);					
 				}
 			}
 			else if (childArea.getTagType().equalsIgnoreCase("properties"))
@@ -241,7 +244,7 @@ public class MapParser
 			frm.addAnimResource(resource);*/
 	}
 
-	protected static void parseMapObject(Map map, HashSet<String> spriteToLoad, TagArea objectTag) {
+	public static MapObject parseMapObject(TagArea objectTag) {
 		MapObject mapObject = new MapObject();
 		mapObject.setName(objectTag.getAttribute("name"));
 		if (objectTag.getAttribute("x") != null)
@@ -258,13 +261,6 @@ public class MapParser
 			{
 				mapObject.setKey(propArea.getChildren().get(0).getAttribute("name"));
 				mapObject.setValue(propArea.getChildren().get(0).getAttribute("value"));
-
-				if (mapObject.getKey().equalsIgnoreCase("sprite"))
-				{
-					String image = mapObject.getParam("image");
-					if (image != null)
-						spriteToLoad.add(image);
-				}
 			}
 			else if (propArea.getTagType().equalsIgnoreCase("polyline"))
 			{
@@ -282,11 +278,7 @@ public class MapParser
 		}
 
 		mapObject.determineShape();
-
-		if (map instanceof PlannerMap)
-			((PlannerMap) map).addMapObject(mapObject, objectTag);
-		else
-			map.addMapObject(mapObject);
+		return mapObject;
 	}
 
 	/** The code used to decode Base64 encoding */

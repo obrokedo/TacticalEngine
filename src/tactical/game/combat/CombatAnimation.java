@@ -77,11 +77,13 @@ public class CombatAnimation
 		}
 
 		// TODO Scale battle animations
-		for (BattleEffect be : parentSprite.getBattleEffects())
-		{
-			if (be.getEffectAnimation() != null)
-				be.getEffectAnimation().drawAnimation(xOffset + (int) ((parentSprite.isHero() ? 276 : 50)),
-					yDrawPos, g);
+		if (parentSprite.getCurrentHP() > 0) {
+			for (BattleEffect be : parentSprite.getBattleEffects())
+			{
+				if (be.getEffectAnimation() != null)
+					be.getEffectAnimation().drawAnimation(xOffset + (int) ((parentSprite.isHero() ? 175 : 60)),
+							(parentSprite.isHero() ? yDrawPos - 30: yDrawPos - 40), g);
+			}
 		}
 	}
 

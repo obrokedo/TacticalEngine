@@ -1570,11 +1570,13 @@ public class PlannerDefinitions {
 						PlannerValueDef.TYPE_MULTI_STRING, "exclude", true,
 						"Exclude Quest",
 						"The ID of the quest that CAN NOT be complete for this to be shown"));
+		//FIX THIS
+		
 		definingValues
 				.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
-						PlannerValueDef.TYPE_INT, "trigger", true,
+						PlannerValueDef.TYPE_MULTI_INT, "trigger", true,
 						"Trigger ID",
-						"The ID of the trigger that should be run after this message is complete."));
+						"The IDs of the triggers that should be run after this message is complete."));
 		definingValues.add(new PlannerValueDef(
 				PlannerValueDef.REFERS_HERO, PlannerValueDef.TYPE_STRING,
 				"heroportrait", true, "Hero Portrait",
@@ -1603,7 +1605,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("string", "Message Text",
 				"A message that should be displayed", definingValues));
 		
-		// Text
+		// Yes or No
 		definingValues = new ArrayList<PlannerValueDef>();
 		
 		definingValues
@@ -1618,12 +1620,12 @@ public class PlannerDefinitions {
 						"The ID of the quest that CAN NOT be complete for this to be shown"));
 		definingValues
 				.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
-						PlannerValueDef.TYPE_INT, "triggeryes", true,
+						PlannerValueDef.TYPE_MULTI_INT, "triggeryes", true,
 						"Yes Trigger ID",
 						"The ID of the trigger that should be run if a 'yes' is selected."));
 		definingValues
 		.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
-				PlannerValueDef.TYPE_INT, "triggerno", true,
+				PlannerValueDef.TYPE_MULTI_INT, "triggerno", true,
 				"No Trigger ID",
 				"The ID of the trigger that should be run if a 'no' is selected."));
 		definingValues.add(new PlannerValueDef(
@@ -1669,7 +1671,7 @@ public class PlannerDefinitions {
 						"The ID of the quest that CAN NOT be complete for this to be shown"));
 		definingValues
 				.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
-						PlannerValueDef.TYPE_INT, "trigger", true,
+						PlannerValueDef.TYPE_MULTI_INT, "trigger", true,
 						"Trigger ID",
 						"The ID of the trigger that should be run after this message is complete."));
 		definingValues.add(new PlannerValueDef(

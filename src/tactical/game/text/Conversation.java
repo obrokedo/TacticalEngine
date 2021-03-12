@@ -10,9 +10,9 @@ public class Conversation extends Speech {
 	private String[] messages;
 	private int messageIndex;
 	
-	public Conversation(String[] messages, String[] requires, String[] excludes, int triggerId, int heroPortrait,
+	public Conversation(String[] messages, String[] requires, String[] excludes, int[] triggerIds, int heroPortrait,
 			int enemyPortrait, String spriteAnimsName, int heroPortrait2, int enemyPortrait2, String spriteAnimsName2) {
-		super(null, requires, excludes, triggerId, heroPortrait, enemyPortrait, spriteAnimsName);
+		super(null, requires, excludes, triggerIds, heroPortrait, enemyPortrait, spriteAnimsName);
 		this.heroPortrait2 = heroPortrait2;
 		this.enemyPortrait2 = enemyPortrait2;
 		this.spriteAnimsName2 = spriteAnimsName2;

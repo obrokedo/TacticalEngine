@@ -46,7 +46,7 @@ public class PriestMenu extends QuadMenu implements MenuListener
 
 	@Override
 	protected MenuUpdate onBack() {
-		stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestMenuClosedText(), Trigger.TRIGGER_NONE, portrait));
+		stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestMenuClosedText(), portrait));
 		return MenuUpdate.MENU_CLOSE;
 	}
 
@@ -101,7 +101,7 @@ public class PriestMenu extends QuadMenu implements MenuListener
 			}
 		}
 		if (!found) 
-			stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestNoOneToPromoteText(), Trigger.TRIGGER_NONE, portrait));
+			stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestNoOneToPromoteText(), portrait));
 		else
 			promptNextCombatSprite();
 		
@@ -117,7 +117,7 @@ public class PriestMenu extends QuadMenu implements MenuListener
 		}
 		
 		if (!found)
-			stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestNoOneToResurrectText(), Trigger.TRIGGER_NONE, portrait));
+			stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestNoOneToResurrectText(), portrait));
 		else
 			promptNextCombatSprite();
 	}
@@ -142,13 +142,13 @@ public class PriestMenu extends QuadMenu implements MenuListener
 		}
 		
 		if (!found)
-			stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestNoOneToCureText(), Trigger.TRIGGER_NONE, portrait));
+			stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestNoOneToCureText(), portrait));
 		else
 			promptNextCombatSprite();
 	}
 
 	private void saveGame() {
-		stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestSaveText(), Trigger.TRIGGER_NONE, portrait));
+		stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestSaveText(), portrait));
 		stateInfo.sendMessage(MessageType.SAVE);
 	}
 	
@@ -160,7 +160,7 @@ public class PriestMenu extends QuadMenu implements MenuListener
 			if (ph.spriteHoldingItem != null)
 				itemUsed = ItemResource.getUninitializedItem(ph.progressionToPromoteTo.getSpecialPromotionItemId()).getName();
 			stateInfo.addMenu(new YesNoMenu(menuConfig.getPriestSelectSomeoneToPromoteText(
-					ph.spriteToPromote.getName(), ph.progressionToPromoteTo.getClassName(), itemUsed), Trigger.TRIGGER_NONE, portrait, stateInfo, this));
+					ph.spriteToPromote.getName(), ph.progressionToPromoteTo.getClassName(), itemUsed), Trigger.TRIGGER_LIST_NONE, portrait, stateInfo, this));
 		} else if (curableHeroes.size() > 0) {
 			CombatSprite cs = curableHeroes.get(0);
 			String[] effectNames = new String[cs.getBattleEffects().size()];
@@ -170,11 +170,11 @@ public class PriestMenu extends QuadMenu implements MenuListener
 				effectLevels[i] = cs.getBattleEffects().get(i).getEffectLevel();
 			}
 			stateInfo.addMenu(new YesNoMenu(menuConfig.getPriestSelectSomeoneToCureText(cs.getName(), effectNames,
-					menuConfig.getPriestCureCost(effectNames, effectLevels)), Trigger.TRIGGER_NONE, portrait, stateInfo, this, true));
+					menuConfig.getPriestCureCost(effectNames, effectLevels)), Trigger.TRIGGER_LIST_NONE, portrait, stateInfo, this, true));
 		} else if (revivableHeroes.size() > 0) {
 			CombatSprite cs = revivableHeroes.get(0);
 			stateInfo.addMenu(new YesNoMenu(menuConfig.getPriestSelectSomeoneToResurrectText(cs.getName(), 
-					menuConfig.getPriestResurrectCost(cs.getLevel(), cs.isPromoted())), Trigger.TRIGGER_NONE, portrait, stateInfo, this, true));
+					menuConfig.getPriestResurrectCost(cs.getLevel(), cs.isPromoted())), Trigger.TRIGGER_LIST_NONE, portrait, stateInfo, this, true));
 		} else {
 			this.visible = true;
 		}
@@ -209,7 +209,7 @@ public class PriestMenu extends QuadMenu implements MenuListener
 					itemName = ItemResource.getUninitializedItem(ph.progressionToPromoteTo.getSpecialPromotionItemId()).getName();
 				stateInfo.sendMessage(new SpeechMessage(
 						menuConfig.getPriestTargetHasBeenPromotedText(ph.spriteToPromote.getName(), ph.progressionToPromoteTo.getClassName(), 
-								itemName), Trigger.TRIGGER_NONE, portrait));
+								itemName), portrait));
 				// This is lazy, but it we promote someone just completely re-establish the promotables
 				// establishPromotables();
 				this.promptNextCombatSprite();
@@ -237,13 +237,13 @@ public class PriestMenu extends QuadMenu implements MenuListener
 			String notEnoughGoldString, String hasBeenRestoredString, StateInfo stateInfo, Object value) {
 		if ((boolean) value) {
 			if (stateInfo.getClientProfile().getGold() < cost) {
-				stateInfo.sendMessage(new SpeechMessage(notEnoughGoldString, Trigger.TRIGGER_NONE, portrait));
+				stateInfo.sendMessage(new SpeechMessage(notEnoughGoldString, portrait));
 			// If we have the gold then update the parties gold amount and "restore" the character
 			} else {
 				stateInfo.getClientProfile().setGold(stateInfo.getClientProfile().getGold() - cost);
 				cs.setCurrentHP(cs.getMaxHP());
 				cs.getBattleEffects().clear();
-				stateInfo.sendMessage(new SpeechMessage(hasBeenRestoredString, Trigger.TRIGGER_NONE, portrait));
+				stateInfo.sendMessage(new SpeechMessage(hasBeenRestoredString, portrait));
 			}
 		}
 	}

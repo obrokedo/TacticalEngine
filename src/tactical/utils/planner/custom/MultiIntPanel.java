@@ -1,4 +1,4 @@
-package tactical.utils.planner;
+package tactical.utils.planner.custom;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,6 +7,9 @@ import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+
+import tactical.utils.planner.AutoCompletion;
+import tactical.utils.planner.PlannerLine;
 
 public class MultiIntPanel extends JPanel implements ActionListener 
 {
@@ -29,8 +32,8 @@ public class MultiIntPanel extends JPanel implements ActionListener
 			vs.add("No value selected");
 			vs.addAll(mitems);
 			JComboBox<String> jc = new JComboBox<String>(vs);
-			AutoCompletion.enable(jc);
-			jc.addFocusListener(parentLine);
+			jc.addItemListener(parentLine);
+			AutoCompletion.enable(jc);			
 			this.add(jc);			
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("REMOVE") && this.getComponentCount() > 3)

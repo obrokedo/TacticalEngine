@@ -19,45 +19,45 @@ import tactical.game.ui.TextUI;
 public class YesNoMenu extends SpeechMenu
 {
 	private boolean yesSelected = true;
-	private Integer yesTrigger = null;
-	private Integer noTrigger = null;
+	private int[] yesTriggers = null;
+	private int[] noTriggers = null;
 	private boolean consumeInput = true;
 	private RectUI goldPanel = null;
 	private TextUI goldTitleText = null, goldAmountText = null;
 	
 	private YesNoMenuRenderer renderer;
 
-	public YesNoMenu(String text, int yesTrigger, int noTrigger, StateInfo stateInfo) {
-		this(text, Trigger.TRIGGER_NONE, null, stateInfo, null);
-		this.yesTrigger = yesTrigger;
-		this.noTrigger = noTrigger;
+	public YesNoMenu(String text, int[] yesTriggers, int[] noTriggers, StateInfo stateInfo) {
+		this(text, Trigger.TRIGGER_LIST_NONE, null, stateInfo, null);
+		this.yesTriggers = yesTriggers;
+		this.noTriggers = noTriggers;
 	}
 	
-	public YesNoMenu(String text, int yesTrigger, int noTrigger, Portrait portrait, StateInfo stateInfo) {
-		this(text, Trigger.TRIGGER_NONE, portrait, stateInfo, null);
-		this.yesTrigger = yesTrigger;
-		this.noTrigger = noTrigger;
+	public YesNoMenu(String text, int[] yesTriggers, int[] noTriggers, Portrait portrait, StateInfo stateInfo) {
+		this(text, Trigger.TRIGGER_LIST_NONE, portrait, stateInfo, null);
+		this.yesTriggers = yesTriggers;
+		this.noTriggers = noTriggers;
 	}
 	
-	public YesNoMenu(String text, int yesTrigger, int noTrigger, StateInfo stateInfo, boolean showGold) {
-		this(text, Trigger.TRIGGER_NONE, null, stateInfo, null, showGold);
-		this.yesTrigger = yesTrigger;
-		this.noTrigger = noTrigger;
+	public YesNoMenu(String text, int[] yesTriggers, int[] noTriggers, StateInfo stateInfo, boolean showGold) {
+		this(text, Trigger.TRIGGER_LIST_NONE, null, stateInfo, null, showGold);
+		this.yesTriggers = yesTriggers;
+		this.noTriggers = noTriggers;
 		
 	}
 	
 	public YesNoMenu(String text, StateInfo stateInfo, MenuListener listener) {
-		this(text, Trigger.TRIGGER_NONE, null, stateInfo, listener, false);
+		this(text, Trigger.TRIGGER_LIST_NONE, null, stateInfo, listener, false);
 	}
 	
-	public YesNoMenu(String text, int triggerId,
+	public YesNoMenu(String text, int[] triggerIds,
 			Portrait portrait, StateInfo stateInfo, MenuListener listener) {
-		this(text, triggerId, portrait, stateInfo, listener, false);	
+		this(text, triggerIds, portrait, stateInfo, listener, false);	
 	}
 
-	public YesNoMenu(String text, int triggerId,
+	public YesNoMenu(String text, int[] triggerIds,
 			Portrait portrait, StateInfo stateInfo, MenuListener listener, boolean showGold) {
-		super(replaceLastHardstop(text), stateInfo.getPaddedGameContainer(),triggerId, portrait, listener);
+		super(replaceLastHardstop(text), stateInfo.getPaddedGameContainer(),triggerIds, portrait, listener);
 		
 		renderer = TacticalGame.ENGINE_CONFIGURATIOR.getYesNoMenuRenderer();
 		renderer.initialize(stateInfo);
@@ -91,14 +91,18 @@ public class YesNoMenu extends SpeechMenu
 			{
 				stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
 				// Handle unlistened to selections
-				if (this.getMenuListener() == null && yesTrigger != null && noTrigger != null) {
+				if (this.getMenuListener() == null && yesTriggers != null && noTriggers != null) {
 					if (yesSelected) {
-						if (yesTrigger != Trigger.TRIGGER_NONE)
-							stateInfo.getResourceManager().getTriggerEventById(yesTrigger).perform(stateInfo);
+						if (yesTriggers.length > 0)
+							for (int yesTrigger : yesTriggers)
+								if (yesTrigger != -1)
+									stateInfo.getResourceManager().getTriggerEventById(yesTrigger).perform(stateInfo);
 					}
 					else {
-						if (noTrigger != Trigger.TRIGGER_NONE)
-							stateInfo.getResourceManager().getTriggerEventById(noTrigger).perform(stateInfo);
+						if (noTriggers.length > 0)
+							for (int noTrigger : noTriggers)
+								if (noTrigger != -1)
+									stateInfo.getResourceManager().getTriggerEventById(noTrigger).perform(stateInfo);
 					}
 				}
 				if (stateInfo != null)

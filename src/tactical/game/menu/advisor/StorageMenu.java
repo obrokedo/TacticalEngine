@@ -13,6 +13,7 @@ import tactical.game.menu.Portrait;
 import tactical.game.menu.QuadMenu;
 import tactical.game.menu.SpeechMenu;
 import tactical.game.sprite.CombatSprite;
+import tactical.game.trigger.Trigger;
 import tactical.utils.StringUtils;
 
 public class StorageMenu extends QuadMenu implements MenuListener {
@@ -83,7 +84,7 @@ public class StorageMenu extends QuadMenu implements MenuListener {
 				if (stateInfo.getClientProgress().getStoredItems().size() > 0)
 					showWithdrawMenu();
 				else
-					stateInfo.addMenu(new SpeechMenu(menuConfig.getStorageWithdrawNoItemsText(), -1, this.portrait, stateInfo));
+					stateInfo.addMenu(new SpeechMenu(menuConfig.getStorageWithdrawNoItemsText(), Trigger.TRIGGER_LIST_NONE, this.portrait, stateInfo));
 				stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
 				break;
 		}
@@ -111,7 +112,7 @@ public class StorageMenu extends QuadMenu implements MenuListener {
 			String desc = i.getDescription();
 			if (StringUtils.isEmpty(desc))
 				desc = "Only slightly more damaging then a stern glare.<hardstop>";
-			stateInfo.addMenu(new SpeechMenu(desc, -1, this.portrait, stateInfo));
+			stateInfo.addMenu(new SpeechMenu(desc, Trigger.TRIGGER_LIST_NONE, this.portrait, stateInfo));
 		}		
 	}
 

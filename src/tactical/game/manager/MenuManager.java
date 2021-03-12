@@ -100,9 +100,9 @@ public class MenuManager extends Manager
 				if (message instanceof SpeechMessage) {
 					SpeechMessage spm = (SpeechMessage) message;
 					if (spm.isYesNoMessage())
-						stateInfo.addMenu(new YesNoMenu(spm.getText(), spm.getTriggerId(), spm.getNoTriggerId(), stateInfo));
+						stateInfo.addMenu(new YesNoMenu(spm.getText(), spm.getTriggerIds(), spm.getNoTriggerIds(), stateInfo));
 					else
-						stateInfo.addMenu(new SpeechMenu(spm.getText(), spm.getTriggerId(), spm.getPortrait(), stateInfo));
+						stateInfo.addMenu(new SpeechMenu(spm.getText(), spm.getTriggerIds(), spm.getPortrait(), stateInfo));
 				} else if (message instanceof SpeechBundleMessage) {
 					
 					SpeechBundleMessage sbm = (SpeechBundleMessage) message;
@@ -112,8 +112,8 @@ public class MenuManager extends Manager
 						stateInfo.addMenu(new SpeechMenu(speech, stateInfo));
 					else {
 						YesNoSpeech yns = (YesNoSpeech) speech;
-						stateInfo.addMenu(new YesNoMenu(speech.getMessage(), yns.getYesTrigger(), 
-								yns.getNoTrigger(), yns.getPortrait(stateInfo), stateInfo));
+						stateInfo.addMenu(new YesNoMenu(speech.getMessage(), yns.getYesTriggers(), 
+								yns.getNoTriggers(), yns.getPortrait(stateInfo), stateInfo));
 					}
 				}
 				break;

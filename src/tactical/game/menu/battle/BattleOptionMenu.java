@@ -52,7 +52,7 @@ public class BattleOptionMenu extends QuadMenu {
 				break;
 			case DOWN:
 				stateInfo.sendMessage(new SpeechMessage("Are you sure you want to exit?", 
-						Trigger.TRIGGER_ID_SAVE_AND_EXIT, Trigger.TRIGGER_NONE, null));
+						new int[] {Trigger.TRIGGER_ID_SAVE_AND_EXIT}, new int[] {Trigger.TRIGGER_NONE}, null));
 		}
 
 		return MenuUpdate.MENU_ACTION_LONG;

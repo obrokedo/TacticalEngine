@@ -259,7 +259,8 @@ public class SpriteManager extends Manager
 	}
 
 	private boolean handleSpriteDying(boolean isEnemyAlive, Iterator<Sprite> spriteItr, Sprite s, CombatSprite cs) {
-		if (cs.getAlpha() <= 0)
+		// We use alpha to determine when the spite should actually be removed
+		if (cs.getCurrentHP() <= 0 && cs.getAlpha() <= 0)
 		{
 			// Add dropped items to deals
 			if (!cs.isHero()) {

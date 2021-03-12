@@ -293,7 +293,7 @@ public class CombatSprite extends AnimatedSprite
 			super.setLocY(-1, 0);
 		}
 	
-		// addBattleEffect(GlobalPythonFactory.createJBattleEffect("Burn", 1));
+		// this.addBattleEffect(TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().createEffect("Bleed", 1));
 	}
 
 	@Override
@@ -301,16 +301,10 @@ public class CombatSprite extends AnimatedSprite
 	{
 		super.update(stateInfo);
 
+		// Dead people spin
 		if (currentHP <= 0)
 		{
-			if (this.getFacing() == Direction.DOWN)
-				this.setFacing(Direction.RIGHT);
-			else if (this.getFacing() == Direction.RIGHT)
-				this.setFacing(Direction.UP);
-			else if (this.getFacing() == Direction.UP)
-				this.setFacing(Direction.LEFT);
-			else if (this.getFacing() == Direction.LEFT)
-				this.setFacing(Direction.DOWN);			
+			this.setFacing(Direction.getDirectionFromInt((this.getFacing().ordinal() + 1) % 4));
 		}
 	}
 

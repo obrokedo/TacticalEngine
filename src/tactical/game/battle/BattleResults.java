@@ -129,11 +129,12 @@ public class BattleResults implements Serializable
 		}
 
 		int expGained = 0;
-		br.goldGained = 0;
+		br.goldGained = 0;		
 
 		int index = 0;
 		for (int targetIndex = 0; targetIndex < targets.size(); targetIndex++)
 		{
+			int sumDamage = 0;
 			CombatSprite target = targets.get(targetIndex);
 
 			CommandResult commandResult = new CommandResult();
@@ -141,7 +142,7 @@ public class BattleResults implements Serializable
 			// If we are doing a simple attack command then we need to get the dodge chance and calculate damage dealt
 			if (battleCommand.getCommand() == BattleCommand.COMMAND_ATTACK)
 			{
-				handleAttackAction(attacker, fcrm, jBattleFunctions, br, target, commandResult);
+				sumDamage = handleAttackAction(attacker, fcrm, jBattleFunctions, br, target, commandResult);
 			}
 			// Check to see if the battle command indicates a spell is being used
 			else if (spell != null)
@@ -158,7 +159,7 @@ public class BattleResults implements Serializable
 			
 			// Check to see if the target will die, if so peel off the special characters at the end
 			// and add the combatant death text
-			if (target.getCurrentHP() + br.hpDamage.get(index) <= 0 ||
+			if (target.getCurrentHP() + sumDamage <= 0 ||
 					(br.battleCommand.getCommand() == BattleCommand.COMMAND_ATTACK && br.death && !br.attackerDeath))
 			{
 				text = addCombatantDeathText(attacker, target, text, br, jBattleFunctions);
@@ -392,7 +393,7 @@ public class BattleResults implements Serializable
 		commandResult.text = text;
 	}
 
-	private static void handleAttackAction(CombatSprite attacker, ResourceManager fcrm,
+	private static int handleAttackAction(CombatSprite attacker, ResourceManager fcrm,
 			BattleFunctionConfiguration jBattleFunctions, BattleResults br, CombatSprite target, CommandResult commandResult) {
 		int damage = 0;
 		int sumDamage = 0;
@@ -479,6 +480,7 @@ public class BattleResults implements Serializable
 		
 		commandResult.expGained = expGained;
 		commandResult.text = text;
+		return sumDamage;
 	}
 
 	private static String addAttack(CombatSprite attacker, CombatSprite target, BattleResults br,
