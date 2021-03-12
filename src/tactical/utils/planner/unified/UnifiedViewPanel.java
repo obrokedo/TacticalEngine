@@ -95,7 +95,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		JScrollPane jsp = new JScrollPane(panel);
 		jsp.getVerticalScrollBar().setUnitIncrement(40);
 		if (forNewItem)
-			jsp.setPreferredSize(new Dimension(600, 400));
+			jsp.setPreferredSize(new Dimension(1000, 600));
 		else
 			jsp.setPreferredSize(new Dimension(jsp.getPreferredSize().width + 50, 
 				Math.min((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 200), jsp.getPreferredSize().height)));			
@@ -122,13 +122,13 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	}
 	
 	public void setupPanel(String item) {
-		if (item.startsWith("Condition: ")) {
+		if (item.contains("- Conditions are met")) {
 			setupCondition(tabsWithMapRefs.get(PlannerFrame.TAB_CONDITIONS).
-					getPlannerContainerByReference(new PlannerReference(item.replace("Condition: ", ""))));
-		} else if (item.startsWith("Search Area (")) {
-			setupSearchArea(parseMapObjectId(item, "Search Area ("));
-		} else if (item.startsWith("Talk with NPC (")) {				
-			setupNPC(parseMapObjectId(item, "Talk with NPC ("));
+					getPlannerContainerByReference(new PlannerReference(item.substring(0, item.indexOf(" - Conditions are met")))));
+		} else if (item.contains(" - Searched")) {
+			setupSearchArea(parseMapObjectId(item, "- Searched"));
+		} else if (item.contains(" - Talk with NPC")) {				
+			setupNPC(parseMapObjectId(item, " - Talk with NPC"));
 		}
 		
 
@@ -139,8 +139,9 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 	}
 	
 	private MapObject parseMapObjectId(String item, String prefix) {
-		item = item.replace(prefix, "");
-		int id = Integer.parseInt(item.substring(0, item.indexOf(")")));
+		int id = Integer.parseInt(item.substring(item.indexOf("(") + 1, item.indexOf(")")));
+		item = item.substring(0, item.indexOf(prefix));
+		
 		return plannerMap.getMapObjects().get(id);
 	}
 	
@@ -170,7 +171,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			valueToSelect = (String) drivers.getSelectedItem();
 		drivers.removeAllItems();
 		for (PlannerContainer pc : tabsWithMapRefs.get(PlannerFrame.TAB_CONDITIONS).getListPC()) {
-			drivers.addItem("Condition: " + (String) pc.getDefLine().getValues().get(0));
+			drivers.addItem((String) pc.getDefLine().getValues().get(0) + " - Conditions are met");
 		}		
 		
 		int idx = 0;
@@ -178,10 +179,10 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		for (MapObject mo : plannerMap.getMapObjects()) {
 			String text = null;
 			if ("searcharea".equalsIgnoreCase(mo.getKey())) {
-				text = "Search Area (" + idx + "): " + mo.getName();
+				text = mo.getName() + " - Searched (" + idx + ")";
 				drivers.addItem(text);				
 			} else if ("npc".equalsIgnoreCase(mo.getKey())) {
-				text = "Talk with NPC (" + idx + "): " + mo.getName();
+				text = mo.getName() + " - Talk with NPC (" + idx + ")";
 				drivers.addItem(text);
 			}
 			
@@ -201,7 +202,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 					*/
 					
 					if (pc != null)
-						valueToSelect = "Condition: " + (String) pc.getDefLine().getValues().get(0);
+						valueToSelect = (String) pc.getDefLine().getValues().get(0) + " - Conditions are met";
 				}
 			}
 			idx++;
@@ -407,11 +408,11 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			speechGroup.groupRenderables.add(subLine);
 			speechGroup.groupRenderables.add(new ArrowLine());						
 			
-			getSingleTriggerId(2, pc, pl, speechGroup);		
+			getMultiTriggerId(2, pc, pl, speechGroup);		
 			
 			if (pl.getPlDef().getName().equalsIgnoreCase("Yes or No Text")) {
 				speechGroup.groupRenderables.add(new OrLine());
-				getSingleTriggerId(3, pc, pl, speechGroup);		
+				getMultiTriggerId(3, pc, pl, speechGroup);		
 			}
 			
 			group.groupRenderables.add(speechGroup);
@@ -424,18 +425,29 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		return group;
 	}
 
-	private void getSingleTriggerId(int idx, PlannerContainer pc, PlannerLine pl, Group speechGroup) {
-		PlannerReference speechRef;
-		if (pl.getValues().size() <= idx) 
-			speechRef = new PlannerReference("");
-		else
-			speechRef = (PlannerReference) pl.getValues().get(idx);
-		if (speechRef.getName().trim().length() == 0) {
+	private void getMultiTriggerId(int idx, PlannerContainer pc, PlannerLine pl, Group speechGroup) {
+		ArrayList<PlannerReference> speechRefs = (ArrayList<PlannerReference>) pl.getValues().get(idx);
+		if (pl.getValues().size() <= idx) { 
+			speechRefs = new ArrayList<>();
+			speechRefs.add(new PlannerReference(""));
+		}
+		else {
+			speechRefs = (ArrayList<PlannerReference>) pl.getValues().get(idx);
+		}
+		
+		if (speechRefs.get(0).getName().trim().length() == 0)
 			speechGroup.groupRenderables.add(new NotSpecifiedLine(true, true, false, null, pc, pl, idx, this));
-		} else {			
-			speechGroup.groupRenderables.add(new Line("A 'Run Trigger on Text end' causes...", null, pc, pl, this));
+		else {
+			for (int index = 0 ; index < speechRefs.size(); index++) {
+				PlannerReference pr = speechRefs.get(index);			
+					if (index != 0)
+						speechGroup.groupRenderables.add(new ArrowLine());
+					speechGroup.groupRenderables.add(new Line("A 'Run Trigger on Text end' causes...", null, pc, pl, this));
+					speechGroup.groupRenderables.add(new ArrowLine());
+					speechGroup.groupRenderables.add(setupTrigger(pr));
+			}
 			speechGroup.groupRenderables.add(new ArrowLine());
-			speechGroup.groupRenderables.add(setupTrigger(speechRef));
+			speechGroup.groupRenderables.add(new NotSpecifiedLine(true, true, true, null, pc, pl, idx, this));			
 		}
 	}
 
@@ -519,9 +531,9 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		if ("createcond".equalsIgnoreCase(e.getActionCommand())) {
 			PlannerContainer pc = createNewContainer(PlannerFrame.TAB_CONDITIONS, null);
 			if (pc != null) {
-				String newEntry = "Condition: " + (String) pc.getDefLine().getValues().get(0);
+				String newEntry = (String) pc.getDefLine().getValues().get(0) + " - Conditions are met";
 				drivers.addItem(newEntry);
-				drivers.setSelectedItem("Condition: " + (String) pc.getDefLine().getValues().get(0));
+				drivers.setSelectedItem((String) pc.getDefLine().getValues().get(0) + " - Conditions are met");
 			}
 		}
 		

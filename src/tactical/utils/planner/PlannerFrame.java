@@ -3,6 +3,7 @@ package tactical.utils.planner;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -47,6 +49,7 @@ import tactical.engine.state.MenuState;
 import tactical.loading.MapParser;
 import tactical.loading.PlannerMap;
 import tactical.loading.PlannerTilesetParser;
+import tactical.utils.ImageUtility;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
 import tactical.utils.planner.cinematic.CinematicCreatorPanel;
@@ -62,6 +65,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private Hashtable<String, PlannerContainerDef> containersByName;
 	public static ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType;
 	private JTabbedPane jtp;
+	private JTabbedPane majorJTP;
 	private File triggerFile;
 	private ArrayList<PlannerTab> plannerTabs = new ArrayList<PlannerTab>();
 	private static String version = TacticalGame.VERSION;
@@ -265,77 +269,83 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	
 
 	private void initUI() {
-		jtp = new JTabbedPane();
+		jtp = new JTabbedPane(JTabbedPane.LEFT);
 
 		// Add triggers
 		PlannerTab tempPlannerTab = new PlannerTab("Triggers", containersByName,
 				new String[] { "trigger" }, PlannerValueDef.REFERS_TRIGGER, this, TAB_TRIGGER);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Trigger Actions", tempPlannerTab.getUiAspect());
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/triggericon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)),
+				tempPlannerTab.getUiAspect());
 
 		// Add conditions
 		tempPlannerTab = new PlannerTab("Conditions", containersByName,
 				new String[] { "condition" }, PlannerValueDef.REFERS_CONDITIONS, this, TAB_CONDITIONS);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Condition", tempPlannerTab.getUiAspect());
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/conditionicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
+				tempPlannerTab.getUiAspect());
 		
 		// Add cinematics
 		tempPlannerTab = new PlannerTab("Cinematics", containersByName,
 				new String[] { "cinematic" }, PlannerValueDef.REFERS_CINEMATIC,
 				this, TAB_CIN);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Cinematic", tempPlannerTab.getUiAspect());
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/cinematicicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
+				tempPlannerTab.getUiAspect());
 
 		// Add speech
 		tempPlannerTab = new PlannerTab("Speeches", containersByName,
 				new String[] { "text" }, PlannerValueDef.REFERS_TEXT, this, TAB_TEXT);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Speech", tempPlannerTab.getUiAspect());
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/speechicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 		
 		// Add heroes
 		tempPlannerTab = new PlannerTab("Heroes", containersByName,
 				new String[] { "hero" }, PlannerValueDef.REFERS_HERO, this, TAB_HERO);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Heroes", tempPlannerTab.getUiAspect());
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/heroicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 
 		// Add enemies
 		tempPlannerTab = new PlannerTab("Enemies", containersByName,
 				new String[] { "enemy" }, PlannerValueDef.REFERS_ENEMY, this, TAB_ENEMY);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Enemies", tempPlannerTab.getUiAspect());
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/enemyicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 
 		// Add items
 		tempPlannerTab = new PlannerTab("Items", containersByName,
 				new String[] { "item" }, PlannerValueDef.REFERS_ITEM, this, TAB_ITEM);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Items", tempPlannerTab.getUiAspect());
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/itemsicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 
 		// Add quests
 		tempPlannerTab = new PlannerTab("Quests", containersByName,
 				new String[] { "quest" }, PlannerValueDef.REFERS_QUEST, this, TAB_QUEST);
 		plannerTabs.add(tempPlannerTab);
-		jtp.addTab("Quests", tempPlannerTab.getUiAspect());
-
-		// Add maps
-		cinematicMapPanel = new CinematicCreatorPanel(this);
-		jtp.addTab("Cinematic Creator", cinematicMapPanel.getUiAspect());
-		mapEditorPanel = new MapEditorPanel(this, referenceListByReferenceType);
-		jtp.addTab("Map Editor", mapEditorPanel.getUIAspect());
-		unifiedViewPanel = new UnifiedViewPanel(mapEditorPanel);
-		jtp.addTab("Unified View" , unifiedViewPanel);
-		// jtp.addTab("Battle Functions", new PlannerFunctionPanel());
-		// jtp.addTab("Map Triggers", new MapTriggerPanel(containersByName));
+		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/questicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 		jtp.addChangeListener(this);
-		jtp.setEnabledAt(TAB_TRIGGER, false);
-		jtp.setEnabledAt(TAB_CIN, false);
-		jtp.setEnabledAt(TAB_TEXT, false);
-		jtp.setEnabledAt(TAB_CONDITIONS, false);
-		jtp.setEnabledAt(TAB_CIN_MAP, false);
-		jtp.setEnabledAt(TAB_EDIT_MAP, false);
-		jtp.setEnabledAt(TAB_UNIFIED_VIEW, false);
+
+		// Add maps		
+		majorJTP = new JTabbedPane();
+		cinematicMapPanel = new CinematicCreatorPanel(this);
+		majorJTP.addTab("Cinematic Creator", cinematicMapPanel.getUiAspect());
+		mapEditorPanel = new MapEditorPanel(this, referenceListByReferenceType);
+		majorJTP.addTab("Map Editor", mapEditorPanel.getUIAspect());
+		unifiedViewPanel = new UnifiedViewPanel(mapEditorPanel);
+		majorJTP.addTab("Unified View" , unifiedViewPanel);
+		majorJTP.addChangeListener(this);		
+		
+		setTabEnabled(TAB_TRIGGER, false);
+		setTabEnabled(TAB_CIN, false);
+		setTabEnabled(TAB_TEXT, false);
+		setTabEnabled(TAB_CONDITIONS, false);
+		setTabEnabled(TAB_CIN_MAP, false);
+		setTabEnabled(TAB_EDIT_MAP, false);
+		setTabEnabled(TAB_UNIFIED_VIEW, false);
+		
 		jtp.setSelectedIndex(TAB_HERO);
 		JPanel backPanel = new JPanel(new BorderLayout());
-		backPanel.add(jtp, BorderLayout.CENTER);
+		backPanel.add(jtp, BorderLayout.LINE_START);
+		backPanel.add(majorJTP, BorderLayout.CENTER);
 		errorScroll = new JScrollPane(errorList);
 		errorScroll.setPreferredSize(new Dimension(errorScroll.getPreferredSize().width, 120));
 		// backPanel.add(saveLabel, BorderLayout.PAGE_END);
@@ -376,8 +386,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					plannerTabs.get(TAB_CONDITIONS).clearValues();
 				}
 				
-				jtp.setEnabledAt(TAB_CIN_MAP, false);
-				jtp.setEnabledAt(TAB_EDIT_MAP, false);
+				setTabEnabled(TAB_CIN_MAP, false);
+				setTabEnabled(TAB_EDIT_MAP, false);
 				plannerMap = null;
 				triggerFile = fc.getSelectedFile();
 
@@ -399,11 +409,11 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					return;
 				}
 
-				jtp.setEnabledAt(TAB_TRIGGER, true);
-				jtp.setEnabledAt(TAB_CIN, true);
-				jtp.setEnabledAt(TAB_TEXT, true);
-				jtp.setEnabledAt(TAB_CONDITIONS, true);
-				jtp.setEnabledAt(TAB_UNIFIED_VIEW, true);
+				setTabEnabled(TAB_TRIGGER, true);
+				setTabEnabled(TAB_CIN, true);
+				setTabEnabled(TAB_TEXT, true);
+				setTabEnabled(TAB_CONDITIONS, true);
+				setTabEnabled(TAB_UNIFIED_VIEW, true);
 			}
 		} else if (actionCommand.equalsIgnoreCase("open")) {
 			JFileChooser fc = createFileChooser();
@@ -683,9 +693,9 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		mapEditorPanel.loadMap(plannerMap, fileName, tabsWithMapRefs);
 		cinematicMapPanel.loadMap(plannerMap);
 		unifiedViewPanel.loadMap(plannerMap, tabsWithMapRefs);
-		jtp.setEnabledAt(TAB_CIN_MAP, true);
-		jtp.setEnabledAt(TAB_EDIT_MAP, true);
-		jtp.setSelectedIndex(TAB_EDIT_MAP);
+		setTabEnabled(TAB_CIN_MAP, true);
+		setTabEnabled(TAB_EDIT_MAP, true);
+		setSelectedTabIndex(TAB_EDIT_MAP);
 		return true;
 	}
 
@@ -758,11 +768,11 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		}
 
 
-		jtp.setEnabledAt(TAB_TRIGGER, true);
-		jtp.setEnabledAt(TAB_CIN, true);
-		jtp.setEnabledAt(TAB_TEXT, true);
-		jtp.setEnabledAt(TAB_CONDITIONS, true);
-		jtp.setEnabledAt(TAB_UNIFIED_VIEW, true);
+		setTabEnabled(TAB_TRIGGER, true);
+		setTabEnabled(TAB_CIN, true);
+		setTabEnabled(TAB_TEXT, true);
+		setTabEnabled(TAB_CONDITIONS, true);
+		setTabEnabled(TAB_UNIFIED_VIEW, true);
 	}
 
 	private ArrayList<PlannerTab> getTabsWithMapReferences() {
@@ -819,22 +829,25 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		// Commit changes for each tab that this isn't non-sensical for 
-		getDataInputTabs().stream().forEach(pt -> pt.commitChanges());
+		if (e != null) {
+			if (e.getSource() == jtp) {
+				// Commit changes for each tab that this isn't non-sensical for 
+				getDataInputTabs().stream().forEach(pt -> pt.commitChanges());
+				if (jtp.getSelectedIndex() <= TAB_QUEST) {
+					// plannerTabs.get(jtp.getSelectedIndex()).setNewValues();
+				}
+			} else {		
+				playCinematicMenuItem.setEnabled(false);
 		
-		playCinematicMenuItem.setEnabled(false);
-
-		if (jtp.getSelectedIndex() == TAB_CIN_MAP)
-		{
-			cinematicMapPanel.reloadCinematicItem();
-			if (menuState != null)
-				playCinematicMenuItem.setEnabled(true);
-		} else if (jtp.getSelectedIndex() == TAB_UNIFIED_VIEW) {
-			unifiedViewPanel.panelSelected();
-		}
-		
-		if (jtp.getSelectedIndex() <= TAB_QUEST) {
-			plannerTabs.get(jtp.getSelectedIndex()).setNewValues();
+				if (majorJTP.getSelectedIndex() == TAB_CIN_MAP - 8)
+				{
+					cinematicMapPanel.reloadCinematicItem();
+					if (menuState != null)
+						playCinematicMenuItem.setEnabled(true);
+				} else if (majorJTP.getSelectedIndex() == TAB_UNIFIED_VIEW - 8) {
+					unifiedViewPanel.panelSelected();
+				}		
+			}
 		}
 	}
 
@@ -845,7 +858,18 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	public void setSelectedTabIndex(int index)
 	{
-		jtp.setSelectedIndex(index);
+		if (index < 8)
+			jtp.setSelectedIndex(index);
+		else
+			majorJTP.setSelectedIndex(index - 8);
+	}
+	
+	public void setTabEnabled(int index, boolean enabled)
+	{
+		if (index < 8)
+			jtp.setEnabledAt(index, enabled);
+		else
+			majorJTP.setEnabledAt(index - 8, enabled);
 	}
 	
 	public void setSelectedTab(PlannerTab pt) { 
@@ -899,4 +923,6 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	public UnifiedViewPanel getUnifiedViewPanel() {
 		return unifiedViewPanel;
 	}
+	
+	
 }

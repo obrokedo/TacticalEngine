@@ -2,30 +2,39 @@ package tactical.utils.planner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import tactical.utils.planner.PlannerFrame.SearchResult;
+import tactical.utils.planner.unified.SingleEditPanel;
 
-public class PlannerTab implements ActionListener, TreeSelectionListener, KeyListener, FocusListener
+public class PlannerTab implements ActionListener, KeyListener, FocusListener, MouseListener
 {
 	protected static final long serialVersionUID = 1L;
 
@@ -177,24 +186,78 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 	}
 
 	public void setNewValues()
-	{
-		if (currentPCScroll != null)
-		{
-			uiAspect.remove(currentPCScroll);
-		}
-
-		if (currentPC != null)
-		{
-			currentPC.commitChanges();
-			checkForErrorsAndRename(currentPC);
+	{		
+		if (false) {
+			if (currentPCScroll != null)
+			{
+				uiAspect.remove(currentPCScroll);
+			}
+	
+			if (currentPC != null)
+			{
+				currentPC.commitChanges();
+				// IS RENAMING WORKING?
+				checkForErrorsAndRename(currentPC);
+			}
 		}
 
 		if (plannerTree.getSelectedIndex() != -1)
 		{
 			currentPC = listPC.get(plannerTree.getSelectedIndex());
+
+			
+			
+			SingleEditPanel sep = null;
+			int selectedAttributeIndex = plannerTree.getSelectedAttributeIndex();
+			if (currentPC.getLines().size() > 0) {
+				if (selectedAttributeIndex != -1) {
+					sep = new SingleEditPanel(selectedAttributeIndex, currentPC);
+				} else {
+					sep = new SingleEditPanel(-2, currentPC);
+				}
+			}
+			else
+				sep = new SingleEditPanel(currentPC);
+			
+			if (sep != null) {
+				JScrollPane jsp = new JScrollPane(sep);
+				jsp.getVerticalScrollBar().setUnitIncrement(40);
+				//if (forNewItem)
+					//jsp.setPreferredSize(new Dimension(1000, 600));
+				//else
+					jsp.setPreferredSize(new Dimension(jsp.getPreferredSize().width + 50, 
+						Math.min((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 200), jsp.getPreferredSize().height)));			
+				
+				
+				JFrame frame = new JFrame("Edit " + currentPC.getDescription() + 
+						(selectedAttributeIndex != -1 ? " - " + currentPC.getLines().get(selectedAttributeIndex).getPlDef().getName() : ""));
+				frame.setLocation(plannerFrame.getLocation().x + 50, plannerFrame.getLocation().y + 50);
+				frame.setContentPane(jsp);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				frame.pack();
+				frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Close");
+				frame.getRootPane().getActionMap().put("Close", new AbstractAction(){ //$NON-NLS-1$
+		            public void actionPerformed(ActionEvent e)
+		            {
+		                frame.dispose();
+		            }
+		        });
+				frame.setVisible(true);
+				frame.getRootPane().requestFocus();
+				
+				// JOptionPane.showMessageDialog(this.getUiAspect(), jsp, "Edit", JOptionPane.PLAIN_MESSAGE);
+				
+				for (PlannerLine pl : currentPC.getLines())
+					pl.commitChanges();
+				currentPC.getDefLine().commitChanges();
+			}
+			
+			if (true)
+				return;
+			
 			selectedPC = plannerTree.getSelectedIndex();
-			if (plannerTree.getSelectedAttributeIndex() != -1)
-				currentPC.setupUI(plannerTree.getSelectedAttributeIndex());
+			if (selectedAttributeIndex != -1)
+				currentPC.setupUI(selectedAttributeIndex);
 			else
 				currentPC.setupUI();
 
@@ -211,6 +274,8 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 		}
 		else
 		{
+			if (true)
+				return;
 			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			currentPCScroll = new JScrollPane(panel);
 			uiAspect.add(currentPCScroll, BorderLayout.CENTER);
@@ -360,16 +425,6 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 		listPC.get(indexOfContainer).addLine(lineToAdd, indexOfLine);
 	}
 
-	@Override
-	public void valueChanged(TreeSelectionEvent tse) {
-		if (tse.getNewLeadSelectionPath() != null && 
-				plannerTree.getSelectedIndex() != -1 && 
-				!renamingItem)
-		{
-			setNewValues();
-		}
-	}
-
 	public JPanel getUiAspect() {
 		return uiAspect;
 	}
@@ -423,5 +478,48 @@ public class PlannerTab implements ActionListener, TreeSelectionListener, KeyLis
 	@Override
 	public void focusLost(FocusEvent e) {		
 		searchField.setText("Enter to Search");
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	/*
+	@Override
+	public void valueChanged(TreeSelectionEvent tse) {
+		if (tse.getNewLeadSelectionPath() != null && 
+				plannerTree.getSelectedIndex() != -1 && 
+				!renamingItem)
+		{
+			setNewValues();
+		}
+	}*/
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (e.getClickCount() == 2) {
+			setNewValues();
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

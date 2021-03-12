@@ -9,6 +9,8 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +33,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
 
-public class PlannerLine implements FocusListener, ChangeListener
+import tactical.utils.planner.custom.MapReferencePanel;
+import tactical.utils.planner.custom.MultiIntPanel;
+import tactical.utils.planner.custom.MultiStringPanel;
+
+public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 {
 	private PlannerLineDef plDef;
 	private ArrayList<Component> components;
@@ -66,12 +72,20 @@ public class PlannerLine implements FocusListener, ChangeListener
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, PlannerTab parentTab)
 	{
 		setupUI(allowableValues, aListener,
-				index, referenceListByReferenceType, false, parentTab);
+				index, referenceListByReferenceType, false, parentTab, true);
 	}
-
+	
 	public void setupUI(ArrayList<PlannerLineDef> allowableValues, ActionListener aListener,
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
 			boolean displayButtons, PlannerTab parentTab)
+	{
+		setupUI(allowableValues, aListener, index, referenceListByReferenceType, displayButtons, parentTab, true);
+	}
+	
+
+	public void setupUI(ArrayList<PlannerLineDef> allowableValues, ActionListener aListener,
+			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
+			boolean displayButtons, PlannerTab parentTab, boolean showHeader)
 	{
 		ArrayList<String> badReferences = new ArrayList<>();
 		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
@@ -96,7 +110,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 		{
 			headerLabel.setForeground(Color.WHITE);
 		}
-		else
+		else if (showHeader)
 		{
 			if (displayButtons)
 			{
@@ -169,12 +183,13 @@ public class PlannerLine implements FocusListener, ChangeListener
 						Vector<String> items = new Vector<String>();
 						items.add("No value selected");
 						items.addAll(getReferenceStringList(referenceListByReferenceType, pv));
-						c = new JComboBox<String>(items);
-						AutoCompletion.enable((JComboBox) c);
+						c = new JComboBox<String>(items);						
 						if (values.size() > i)
 							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
+						((JComboBox<?>) c).addItemListener(this);
+						AutoCompletion.enable((JComboBox) c);
 						((JComboBox<?>) c).setMaximumRowCount(20);
-						((JComboBox<?>) c).addFocusListener(this);
+						
 					}
 					break;
 				case PlannerValueDef.TYPE_MULTI_STRING:
@@ -202,9 +217,7 @@ public class PlannerLine implements FocusListener, ChangeListener
 						while (vals.hasNext())
 						{
 							PlannerReference plannerRef = vals.next();
-							JComboBox<String> jcb = new JComboBox<String>(mitems);
-							AutoCompletion.enable(jcb);
-							jcb.addFocusListener(this);
+							JComboBox<String> jcb = new JComboBox<String>(mitems);							;							
 							jcb.setMaximumRowCount(20);
 							if (plannerRef.getName().length() > 0) {
 								jcb.setSelectedItem(plannerRef.getName());
@@ -213,20 +226,22 @@ public class PlannerLine implements FocusListener, ChangeListener
 							} else {
 								vals.remove();
 							}
+							jcb.addItemListener(this);
+							AutoCompletion.enable(jcb);
 						}
 						
 						// Make sure at least one box is displayed even if it's empty
 						if (!hadAValue) {
 							JComboBox<String> jcb = new JComboBox<String>(mitems);
-							AutoCompletion.enable(jcb);
-							jcb.addFocusListener(this);
+							jcb.addItemListener(this);
+							AutoCompletion.enable(jcb);							
 							c.add(jcb);
 						}
 					}
 					else {
 						JComboBox<String> jcb = new JComboBox<String>(mitems);
-						AutoCompletion.enable(jcb);
-						jcb.addFocusListener(this);
+						jcb.addItemListener(this);
+						AutoCompletion.enable(jcb);						
 						c.add(jcb);
 					}
 					
@@ -253,13 +268,25 @@ public class PlannerLine implements FocusListener, ChangeListener
 						Vector<String> items = new Vector<String>(getReferenceStringList(referenceListByReferenceType, pv));
 						// if (pv.isOptional())
 						// We're going to leave the "" in so bad references don't default to something
-							items.add(0, "");
-						c = new JComboBox<String>(items);
-						AutoCompletion.enable((JComboBox) c);
-						c.addFocusListener(this);
-						((JComboBox<?>) c).setMaximumRowCount(20);
+						items.add(0, "");
+						
+						String selected = null;
 						if (values.size() > i)
-							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
+							selected = ((PlannerReference) values.get(i)).getName();
+						
+						if (pv.getRefersTo() != PlannerValueDef.REFERS_MAPDATA) {
+							c = new JComboBox<String>(items);											
+							((JComboBox<?>) c).setMaximumRowCount(20);
+							
+							if (selected != null)
+								((JComboBox<?>) c).setSelectedItem(selected);
+							
+							((JComboBox) c).addItemListener(this);
+							AutoCompletion.enable((JComboBox) c);
+						} else {
+							c = new MapReferencePanel(this, items, selected);
+						}
+						
 					}
 					break;
 				case PlannerValueDef.TYPE_LONG_STRING:
@@ -294,25 +321,6 @@ public class PlannerLine implements FocusListener, ChangeListener
 			c.setToolTipText(pv.getDisplayDescription());
 			c.addFocusListener(this);
 			
-			/*
-			JLabel descriptionLabel = new JLabel(pv.getDisplayDescription());
-			descriptionLabel.setOpaque(true);
-			descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.BOLD));
-			*/
-			/*
-			JTextArea descriptionArea = new JTextArea(pv.getDisplayDescription());
-			descriptionArea.setOpaque(false);
-			descriptionArea.setFont(descriptionArea.getFont().deriveFont(Font.BOLD));
-			descriptionArea.setForeground(Color.black);
-			descriptionArea.setLineWrap(true);
-			descriptionArea.setWrapStyleWord(true);
-			descriptionArea.setEditable(false);
-			descriptionArea.setBackground(Color.GRAY);
-			descriptionArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			*/
-			// descriptionArea.setEnabled(false);
-			
-			// descriptionLabel.setBackground(Color.DARK_GRAY);
 			JLabel descriptionLabel = new JLabel(convertToConstantWidth(pv.getDisplayDescription()));
 			descriptionLabel.setOpaque(true);
 			descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.BOLD));
@@ -355,6 +363,9 @@ public class PlannerLine implements FocusListener, ChangeListener
 
 	public void commitChanges()
 	{
+		//System.out.println("----------------- COMMIT");
+		//for (Component c : components)
+		//	System.out.println("   " + c);
 		PlannerFrame.updateSave("Saved...");
 		
 		if (components.size() > 0)
@@ -386,10 +397,16 @@ public class PlannerLine implements FocusListener, ChangeListener
 						}
 						else
 						{
-							if (i >= values.size())
-								values.add(((JComboBox<?>) components.get(i)).getSelectedItem());
+							Object val = null; 
+							if (pv.getRefersTo() != PlannerValueDef.REFERS_MAPDATA) 
+								val = ((JComboBox<?>) components.get(i)).getSelectedItem();
 							else
-								values.set(i, ((JComboBox<?>) components.get(i)).getSelectedItem());
+								val = ((MapReferencePanel) components.get(i)).getSelectedItem();
+								
+							if (i >= values.size())
+								values.add(val);
+							else
+								values.set(i, val);
 						}
 						break;
 					case PlannerValueDef.TYPE_LONG_STRING:
@@ -479,14 +496,6 @@ public class PlannerLine implements FocusListener, ChangeListener
 			listener.lineCommitted();
 	}
 
-	public ArrayList<Component> getPlannerLineComponents() {
-		return components;
-	}
-
-	public void setComponents(ArrayList<Component> components) {
-		this.components = components;
-	}
-
 	public ArrayList<Object> getValues() {
 		return values;
 	}
@@ -527,5 +536,10 @@ public class PlannerLine implements FocusListener, ChangeListener
 
 	public void setListener(LineCommitListener listener) {
 		this.listener = listener;
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		commitChanges();
 	}
 }

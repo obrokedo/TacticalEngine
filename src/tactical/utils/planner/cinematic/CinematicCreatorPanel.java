@@ -79,6 +79,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 	private JPanel uiAspect;
 	private int currentTilePixelX = 0, currentTilePixelY = 0;
 	private PlannerTab pt = null;
+	private JPanel listPanel = null;
 
 	public CinematicCreatorPanel(PlannerFrame plannerFrame)
 	{
@@ -107,7 +108,8 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		cinematicList.setListData(cinematicListItems);
 		cinematicList.addListSelectionListener(this);
 
-		JPanel listPanel = new JPanel(new BorderLayout());
+				
+		listPanel = new JPanel(new BorderLayout());
 		listPanel.add(cinematicListScrollPane, BorderLayout.CENTER);
 		pt =  plannerFrame.getPlannerTabAtIndex(PlannerFrame.TAB_CIN);
 		// This value needs to be updated
@@ -115,7 +117,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		AutoCompletion.enable(cinematicIds);
 		listPanel.add(cinematicIds, BorderLayout.PAGE_START);
 		listPanel.setPreferredSize(new Dimension(200, 50));
-		uiAspect.add(listPanel, BorderLayout.LINE_START);
+		// uiAspect.add(listPanel, BorderLayout.LINE_START);
 
 		locationLabel.setFont(locationLabel.getFont().deriveFont(18f));
 		rememberedLocationLabel.setFont(rememberedLocationLabel.getFont().deriveFont(18f));
@@ -132,6 +134,11 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		cinButton.setActionCommand("cin");
 		cinButton.setEnabled(false);
 		listPanel.add(cinButton, BorderLayout.PAGE_END);
+		
+		JPanel backPanel = new JPanel(new BorderLayout());
+		backPanel.add(listPanel, BorderLayout.LINE_END);
+		uiAspect.add(backPanel, BorderLayout.CENTER);
+		
 		// timelinePanel.add(cinButton, BorderLayout.LINE_START);
 
 		timeSlider.setMinimum(0);
@@ -174,6 +181,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		this.editActionButton.setEnabled(false);
 		this.duplicateButton.setEnabled(false);
 		this.removeButton.setEnabled(false);
+		
 		JPanel rightPanel = new JPanel(new BorderLayout());
 		rightPanel.add(actionPanel, BorderLayout.CENTER);
 		attributeList = new PlannerAttributeList(this, this);
@@ -189,12 +197,19 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		cinematicIds.removeItemListener(this);
 		if (mapScrollPane != null)
 		{
-			uiAspect.remove(mapScrollPane);
+			//uiAspect.remove(mapScrollPane);
+			((JPanel) ((BorderLayout) this.getUiAspect().getLayout()).getLayoutComponent(BorderLayout.CENTER)).remove(mapScrollPane);
 			uiAspect.removeMouseMotionListener(this);
+			
+			// ((JPanel) ((BorderLayout) this.getUiAspect().getLayout()).getLayoutComponent(BorderLayout.CENTER)).remove(listPanel);			
+			
 		}
+		
 		mdp = new CinematicMapDisplayPanel(map, this);
 		mapScrollPane = new JScrollPane(mdp);
-		uiAspect.add(mapScrollPane, BorderLayout.CENTER);
+		
+		((JPanel) ((BorderLayout) this.getUiAspect().getLayout()).getLayoutComponent(BorderLayout.CENTER)).add(mapScrollPane, BorderLayout.CENTER);
+		
 		mapScrollPane.getVerticalScrollBar().setUnitIncrement(map.getMapHeightInPixels() / 20);
 		mapScrollPane.getHorizontalScrollBar().setUnitIncrement(map.getMapWidthInPixels() / 20);
 		cinematicIds.addItemListener(this);
@@ -703,7 +718,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 	}
 
 	private void loadCinematicItem(int selectedTime)
-	{
+	{		
 		if (cinematicIds.getSelectedIndex() == -1)
 		{
 			this.timeSlider.setEnabled(false);
