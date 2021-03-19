@@ -68,22 +68,22 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 		this.isDefining = plannerLine.isDefining;
 	}
 
-	public void setupUI(ArrayList<PlannerLineDef> allowableValues, ActionListener aListener,
+	public void setupUI(ActionListener aListener,
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, PlannerTab parentTab)
 	{
-		setupUI(allowableValues, aListener,
+		setupUI(aListener,
 				index, referenceListByReferenceType, false, parentTab, true);
 	}
 	
-	public void setupUI(ArrayList<PlannerLineDef> allowableValues, ActionListener aListener,
+	public void setupUI(ActionListener aListener,
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
 			boolean displayButtons, PlannerTab parentTab)
 	{
-		setupUI(allowableValues, aListener, index, referenceListByReferenceType, displayButtons, parentTab, true);
+		setupUI(aListener, index, referenceListByReferenceType, displayButtons, parentTab, true);
 	}
 	
 
-	public void setupUI(ArrayList<PlannerLineDef> allowableValues, ActionListener aListener,
+	public void setupUI(ActionListener aListener,
 			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
 			boolean displayButtons, PlannerTab parentTab, boolean showHeader)
 	{
@@ -321,16 +321,21 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 			c.setToolTipText(pv.getDisplayDescription());
 			c.addFocusListener(this);
 			
-			JLabel descriptionLabel = new JLabel(convertToConstantWidth(pv.getDisplayDescription()));
-			descriptionLabel.setOpaque(true);
-			descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.BOLD));
+			//JLabel descriptionLabel = new JLabel(convertToConstantWidth(pv.getDisplayDescription()));
+			//descriptionLabel.setOpaque(true);
+			//descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.BOLD));
 			
-			panel.add(descriptionLabel, BorderLayout.PAGE_START);
-			panel.add(c);
+			// panel.add(descriptionLabel, BorderLayout.PAGE_START);
 			components.add(c);
-			valuePanel.add(panel);
-			valuePanel.add(Box.createRigidArea(new Dimension(5, 15)));
+			
+			if (plDef.getPanelLayout() == null) {
+				panel.add(c);				
+				valuePanel.add(panel);
+				valuePanel.add(Box.createRigidArea(new Dimension(5, 10)));
+			}
 		}
+		if (plDef.getPanelLayout() != null)
+			plDef.getPanelLayout().layoutPanel(valuePanel, components, plDef.getPlannerValues());
 		uiAspect.add(valuePanel);
 	}
 	

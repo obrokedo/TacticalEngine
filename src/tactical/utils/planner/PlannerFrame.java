@@ -35,6 +35,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.ChangeEvent;
@@ -80,6 +81,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private PlannerIO plannerIO = new PlannerIO();
 	private JList<String> errorList = new JList<>();
 	private JScrollPane errorScroll;
+	private JPanel leftPanel;
 	public static boolean SHOW_CIN_LOCATION = true;
 
 	public static final int TAB_TRIGGER = 0;
@@ -270,7 +272,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	private void initUI() {
 		jtp = new JTabbedPane(JTabbedPane.LEFT);
-
+		
 		// Add triggers
 		PlannerTab tempPlannerTab = new PlannerTab("Triggers", containersByName,
 				new String[] { "trigger" }, PlannerValueDef.REFERS_TRIGGER, this, TAB_TRIGGER);
@@ -323,6 +325,41 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		plannerTabs.add(tempPlannerTab);
 		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/questicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 		jtp.addChangeListener(this);
+		
+		leftPanel = new JPanel(new BorderLayout());
+		leftPanel.add(jtp, BorderLayout.CENTER);
+		JPanel minPanel = new JPanel();
+		JLabel defLabel = new JLabel("Definitions");
+		defLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		defLabel.setPreferredSize(new Dimension(200, 20));
+		minPanel.add(defLabel, BorderLayout.CENTER);
+		
+		ImageIcon minImage = new ImageIcon(ImageUtility.loadBufferedImage("image/planner/minimize.png").getScaledInstance(16, 16, Image.SCALE_DEFAULT));
+		ImageIcon maxImage = new ImageIcon(ImageUtility.loadBufferedImage("image/planner/maximize.png").getScaledInstance(16, 16, Image.SCALE_DEFAULT));
+		
+		JButton minButton = new JButton(minImage);
+		minButton.setContentAreaFilled(false);
+		minButton.setBorder(null);
+		// minButton.setOpaque(false);
+		
+		minButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {	
+				jtp.setVisible(!jtp.isVisible());
+				defLabel.setVisible(!defLabel.isVisible());
+				if (!jtp.isVisible())
+					minButton.setIcon(maxImage);
+				else
+					minButton.setIcon(minImage);
+				// leftPanel.setVisible(!leftPanel.isVisible());
+				leftPanel.repaint();
+				leftPanel.validate();
+			}
+		});
+		minPanel.add(minButton, BorderLayout.LINE_END);
+		minPanel.setOpaque(true);
+		minPanel.setBackground(Color.LIGHT_GRAY);
+		leftPanel.add(minPanel, BorderLayout.PAGE_START);
 
 		// Add maps		
 		majorJTP = new JTabbedPane();
@@ -344,7 +381,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		
 		jtp.setSelectedIndex(TAB_HERO);
 		JPanel backPanel = new JPanel(new BorderLayout());
-		backPanel.add(jtp, BorderLayout.LINE_START);
+		backPanel.add(leftPanel, BorderLayout.LINE_START);
 		backPanel.add(majorJTP, BorderLayout.CENTER);
 		errorScroll = new JScrollPane(errorList);
 		errorScroll.setPreferredSize(new Dimension(errorScroll.getPreferredSize().width, 120));
@@ -430,27 +467,27 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			if (triggerFile != null)
 				openFile(triggerFile);
 		} else if (actionCommand.equalsIgnoreCase("save")) {
-			getDataInputTabs().stream().forEach(pt -> pt.setNewValues());
+			getDataInputTabs().stream().forEach(pt -> pt.editSelectedPlannerLine());
 
 			saveTriggers(true);
 		} else if (actionCommand.equalsIgnoreCase("saveall")) {
-			plannerTabs.get(TAB_ENEMY).setNewValues();
+			plannerTabs.get(TAB_ENEMY).editSelectedPlannerLine();
 			boolean success = true;
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ENEMY).getListPC(),
 					PlannerIO.PATH_ENEMIES, false, "enemies"))
 				success = false;
 
-			plannerTabs.get(TAB_HERO).setNewValues();
+			plannerTabs.get(TAB_HERO).editSelectedPlannerLine();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_HERO).getListPC(),
 					PlannerIO.PATH_HEROES, false, "heroes"))
 				success = false;
 
-			plannerTabs.get(TAB_ITEM).setNewValues();
+			plannerTabs.get(TAB_ITEM).editSelectedPlannerLine();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ITEM).getListPC(),
 					PlannerIO.PATH_ITEMS, false, "items"))
 				success = false;
 
-			plannerTabs.get(TAB_QUEST).setNewValues();
+			plannerTabs.get(TAB_QUEST).editSelectedPlannerLine();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_QUEST).getListPC(),
 					PlannerIO.PATH_QUESTS, false, "quests"))
 				success = false;
@@ -793,16 +830,16 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			
 			
 			try {
-				plannerTabs.get(TAB_TRIGGER).setNewValues();
+				plannerTabs.get(TAB_TRIGGER).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TRIGGER).getListPC(), null));
 	
-				plannerTabs.get(TAB_TEXT).setNewValues();
+				plannerTabs.get(TAB_TEXT).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TEXT).getListPC(), null));
 	
-				plannerTabs.get(TAB_CIN).setNewValues();
+				plannerTabs.get(TAB_CIN).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CIN).getListPC(), null));
 				
-				plannerTabs.get(TAB_CONDITIONS).setNewValues();
+				plannerTabs.get(TAB_CONDITIONS).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CONDITIONS).getListPC(), null));
 				
 				buffer.add(plannerMap.outputNewMap());

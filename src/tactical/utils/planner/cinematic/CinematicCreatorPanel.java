@@ -66,9 +66,6 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 	private JButton cinButton;
 	private JLabel currentActionLabel = new JLabel("Action: NONE");
 	private JLabel currentTimeLabel = new JLabel("Time: 0");
-	private JButton nextActionButton = new JButton("Go to next action");
-	private JButton prevActionButton = new JButton("Go to previous action");
-	private JButton editActionButton = new JButton("Edit action");
 	private JButton duplicateButton = new JButton("Duplicate Action");
 	private JButton removeButton = new JButton("Remove Action");
 	private JPanel currentActionPanel = new JPanel();
@@ -157,28 +154,15 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.PAGE_AXIS));
 		actionPanel.add(currentActionLabel);
 		actionPanel.add(currentTimeLabel);
-		actionPanel.add(editActionButton);
-		actionPanel.add(prevActionButton);
-		actionPanel.add(nextActionButton);
 		actionPanel.add(duplicateButton);
 		actionPanel.add(removeButton);
 		currentActionPanel.setLayout(new BoxLayout(currentActionPanel, BoxLayout.PAGE_AXIS));
 		currentActionPanel.setMinimumSize(new Dimension(100, 400));
 		actionPanel.add(currentActionPanel);
-		editActionButton.addActionListener(this);
-		editActionButton.setActionCommand("editaction");
-		editActionButton.setPreferredSize(new Dimension(actionPanel.getWidth(), 30));
-		nextActionButton.addActionListener(this);
-		nextActionButton.setActionCommand("nextaction");		
-		prevActionButton.addActionListener(this);
-		prevActionButton.setActionCommand("prevaction");
 		duplicateButton.addActionListener(this);
 		duplicateButton.setActionCommand("dupaction");
 		removeButton.addActionListener(this);
 		removeButton.setActionCommand("remaction");
-		this.prevActionButton.setEnabled(false);
-		this.nextActionButton.setEnabled(false);
-		this.editActionButton.setEnabled(false);
 		this.duplicateButton.setEnabled(false);
 		this.removeButton.setEnabled(false);
 		
@@ -423,21 +407,11 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		if (!timeSlider.isEnabled())
 			return false;
 
-		/*
-		 * Depending on what order the map and text files were opened and
-		 * whether the "Cinematic" tab has been accessed yet it's possible
-		 * that the planner container has not yet been set. In this case
-		 * set it to the value that is selected in the cinematic creator.
-		 */
-		if (pt.getCurrentPC() == null)
-		{
-			pt.setSelectedListItem(cinematicIds.getSelectedIndex(), null);
-			System.out.println("Set the selected index " + pt.getCurrentPC());
-		}
+		pt.setSelectedListItem(cinematicIds.getSelectedIndex(), null);
 
 		PlannerLine pl = pt.getCurrentPC().getLines().get(selectedCinIndex);
 		PlannerContainerDef pcdef = pt.getPlannerContainerDef();
-		pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, null);
+		pl.setupUI(this, 1, pcdef.getListOfLists(), false, null);
 		int rc = JOptionPane.showConfirmDialog(uiAspect, pl.getUiAspect(), "Edit cinematic action", JOptionPane.OK_OPTION);
 		if (rc == JOptionPane.NO_OPTION)
 			return false;
@@ -474,7 +448,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 			pl.getValues().add(xLoc);
 			pl.getValues().add(yLoc);
 		}
-		pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, null);
+		pl.setupUI(this, 1, pcdef.getListOfLists(), false, null);
 		// pl.getUiAspect().setPreferredSize(new Dimension(480, pl.getUiAspect().getPreferredSize().height + 50));
 		//JScrollPane jsp = new JScrollPane(pl.getUiAspect());
 		//jsp.setPreferredSize(new Dimension(600, jsp.getPreferredSize().height));
@@ -724,9 +698,6 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 			this.timeSlider.setEnabled(false);
 			this.cinButton.setEnabled(false);
 			mdp.setSelectedActor(-1);
-			this.nextActionButton.setEnabled(false);
-			this.editActionButton.setEnabled(false);
-			this.prevActionButton.setEnabled(false);
 			this.duplicateButton.setEnabled(false);
 			this.removeButton.setEnabled(false);
 			this.currentActionLabel.setText("Action: NONE");
@@ -737,9 +708,6 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		{
 			currentActionPanel.removeAll();
 			currentTimeLabel.setText("Time: 0");
-			this.nextActionButton.setEnabled(true);
-			this.editActionButton.setEnabled(true);
-			this.prevActionButton.setEnabled(true);
 			this.duplicateButton.setEnabled(true);
 			this.removeButton.setEnabled(true);
 			long maxTime = 0;
@@ -906,7 +874,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (e.getClickCount() == 2) {
+		if (e.getClickCount() == 2 || e.getButton() == MouseEvent.BUTTON3) {
 			editCinematicLine();
 		}
 		

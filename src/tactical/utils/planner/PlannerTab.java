@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -185,28 +186,12 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 			*/
 	}
 
-	public void setNewValues()
+	public void editSelectedPlannerLine()
 	{		
-		if (false) {
-			if (currentPCScroll != null)
-			{
-				uiAspect.remove(currentPCScroll);
-			}
-	
-			if (currentPC != null)
-			{
-				currentPC.commitChanges();
-				// IS RENAMING WORKING?
-				checkForErrorsAndRename(currentPC);
-			}
-		}
-
 		if (plannerTree.getSelectedIndex() != -1)
 		{
 			currentPC = listPC.get(plannerTree.getSelectedIndex());
 
-			
-			
 			SingleEditPanel sep = null;
 			int selectedAttributeIndex = plannerTree.getSelectedAttributeIndex();
 			if (currentPC.getLines().size() > 0) {
@@ -218,68 +203,35 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 			}
 			else
 				sep = new SingleEditPanel(currentPC);
-			
-			if (sep != null) {
-				JScrollPane jsp = new JScrollPane(sep);
-				jsp.getVerticalScrollBar().setUnitIncrement(40);
-				//if (forNewItem)
-					//jsp.setPreferredSize(new Dimension(1000, 600));
-				//else
-					jsp.setPreferredSize(new Dimension(jsp.getPreferredSize().width + 50, 
-						Math.min((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 200), jsp.getPreferredSize().height)));			
-				
-				
-				JFrame frame = new JFrame("Edit " + currentPC.getDescription() + 
-						(selectedAttributeIndex != -1 ? " - " + currentPC.getLines().get(selectedAttributeIndex).getPlDef().getName() : ""));
-				frame.setLocation(plannerFrame.getLocation().x + 50, plannerFrame.getLocation().y + 50);
-				frame.setContentPane(jsp);
-				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				frame.pack();
-				frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Close");
-				frame.getRootPane().getActionMap().put("Close", new AbstractAction(){ //$NON-NLS-1$
-		            public void actionPerformed(ActionEvent e)
-		            {
-		                frame.dispose();
-		            }
-		        });
-				frame.setVisible(true);
-				frame.getRootPane().requestFocus();
-				
-				// JOptionPane.showMessageDialog(this.getUiAspect(), jsp, "Edit", JOptionPane.PLAIN_MESSAGE);
-				
-				for (PlannerLine pl : currentPC.getLines())
-					pl.commitChanges();
-				currentPC.getDefLine().commitChanges();
-			}
-			
-			if (true)
-				return;
-			
-			selectedPC = plannerTree.getSelectedIndex();
-			if (selectedAttributeIndex != -1)
-				currentPC.setupUI(selectedAttributeIndex);
-			else
-				currentPC.setupUI();
 
-			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			panel.add(currentPC.getUiAspect());
-			currentPCScroll = new JScrollPane(panel);
-			currentPCScroll.getVerticalScrollBar().setUnitIncrement(75);
-
-			uiAspect.add(currentPCScroll, BorderLayout.CENTER);
-
-			currentPCScroll.revalidate();
-			uiAspect.validate();
-			uiAspect.repaint();
-		}
-		else
-		{
-			if (true)
-				return;
-			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			currentPCScroll = new JScrollPane(panel);
-			uiAspect.add(currentPCScroll, BorderLayout.CENTER);
-			uiAspect.revalidate();
+			JScrollPane jsp = new JScrollPane(sep);
+			jsp.getVerticalScrollBar().setUnitIncrement(40);
+			jsp.setPreferredSize(new Dimension(jsp.getPreferredSize().width + 50, 
+				Math.min((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 200), jsp.getPreferredSize().height)));			
+			
+			
+			JFrame frame = new JFrame("Edit " + currentPC.getDescription() + 
+					(selectedAttributeIndex != -1 ? " - " + currentPC.getLines().get(selectedAttributeIndex).getPlDef().getName() : ""));
+			frame.setLocation(plannerFrame.getLocation().x + 50, plannerFrame.getLocation().y + 50);
+			jsp.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			frame.setContentPane(jsp);
+			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			frame.pack();
+			frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Close");
+			frame.getRootPane().getActionMap().put("Close", new AbstractAction(){ //$NON-NLS-1$
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                frame.dispose();
+	            }
+	        });
+			frame.setVisible(true);
+			frame.getRootPane().requestFocus();
+			
+			// JOptionPane.showMessageDialog(this.getUiAspect(), jsp, "Edit", JOptionPane.PLAIN_MESSAGE);
+			
+			for (PlannerLine pl : currentPC.getLines())
+				pl.commitChanges();
+			currentPC.getDefLine().commitChanges();
 		}
 	}
 
@@ -324,30 +276,6 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 	{
 		this.currentPC = null;
 		this.listPC.clear();
-		// plannerTree.updateTreeValues(name, listPC);
-		/*
-		if (currentPCScroll != null)
-		{
-			this.remove(currentPCScroll);
-		}
-
-		System.out.println("SET NEW VALUES");
-
-		if (currentPC != null && currentPC.getDefLine() != null)
-		{
-			System.out.println("REMOVE DEF LINE");
-			this.remove(currentPC.getDefLine().getDefiningPanel());
-		}
-
-		for (int i = 0; i < this.getComponentCount(); i++)
-		{
-			if (this.getComponent(i) instanceof PlannerTimeBarViewer)
-			{
-				this.remove(i);
-				i--;
-			}
-		}
-		*/
 		uiAspect.revalidate();
 		uiAspect.repaint();
 	}
@@ -362,6 +290,7 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 				this.plannerTree.setSelectedIndex(index);
 			}
 			
+			currentPC = listPC.get(plannerTree.getSelectedIndex());
 			return true;
 		}
 		
@@ -501,7 +430,7 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getClickCount() == 2) {
-			setNewValues();
+			editSelectedPlannerLine();
 		}
 	}
 

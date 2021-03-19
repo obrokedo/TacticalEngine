@@ -406,7 +406,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 
 		try
 		{
-			pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, null);
+			pl.setupUI(this, 1, pcdef.getListOfLists(), false, null);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

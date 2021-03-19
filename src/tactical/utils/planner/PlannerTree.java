@@ -73,6 +73,8 @@ public class PlannerTree
 				TreePath path = attributeTree.getPathForLocation(me.getX(), me.getY());
 				if (path == null)
 					return;
+				
+				attributeTree.setSelectionPath(path);
 
 				selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 
@@ -84,6 +86,7 @@ public class PlannerTree
 				else if (rootNode.getIndex(selectedNode) == -1)
 				{
 					contextMenu = new JPopupMenu();
+					contextMenu.add(newMenuItem("Edit Planner Attribute"));
 					contextMenu.add(newMenuItem("Remove Planner Attribute"));
 					contextMenu.add(newMenuItem("Duplicate Planner Attribute"));
 					contextMenu.add(new JSeparator());
@@ -144,6 +147,9 @@ public class PlannerTree
 					plannerContainers.get(parentIndex).removeLine(nodeIndex);
 				else if (e.getActionCommand().equalsIgnoreCase("Duplicate Planner Attribute"))
 					plannerContainers.get(parentIndex).duplicateLine(nodeIndex);
+				else if (e.getActionCommand().equalsIgnoreCase("Edit Planner Attribute")) {
+					parentTab.editSelectedPlannerLine();
+				}
 				else
 				{
 					for (int i = 0; i < containerDef.getAllowableLines().size(); i++)
