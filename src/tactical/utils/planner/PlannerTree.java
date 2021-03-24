@@ -292,14 +292,20 @@ public class PlannerTree
 	public void setSelectedIndex(int index)
 	{
 		Object root = attributeTree.getModel().getRoot();
-		attributeTree.setSelectionPath(new TreePath(attributeTree.getModel().getChild(root, index)));
+		Object child = attributeTree.getModel().getChild(root, index);
+		TreePath newPath = new TreePath(new Object[] {root, child});
+		attributeTree.setSelectionPath(newPath);
+		attributeTree.scrollPathToVisible(newPath);
 	}
 	
 	public void setSelectedIndex(int index, int leafIndex)
 	{
 		Object root = attributeTree.getModel().getRoot();
-		attributeTree.setSelectionPath(new TreePath(
-				attributeTree.getModel().getChild(attributeTree.getModel().getChild(root, index), leafIndex)));
+		Object child = attributeTree.getModel().getChild(root, index);
+		Object leaf = attributeTree.getModel().getChild(child, leafIndex);
+		TreePath newPath = new TreePath(new Object[] {root, child, leaf});
+		attributeTree.setSelectionPath(newPath);
+		attributeTree.scrollPathToVisible(newPath);
 	}
 
 	public Vector<String> getItemList()
@@ -332,6 +338,7 @@ public class PlannerTree
 		attributeTreeModel.insertNodeInto(dmtn,
 				child, attributeIndex);
 		attributeTree.scrollPathToVisible(new TreePath(dmtn));
+		
 
 	}
 

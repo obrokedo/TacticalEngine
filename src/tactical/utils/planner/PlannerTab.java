@@ -383,8 +383,11 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-			for (int i = selectedPC + 1; i != selectedPC; i = (i + 1) % (plannerTree.getItemList().size() - 1)) {
-				if (plannerTree.getItemList().get(i).toUpperCase().contains(searchField.getText().toUpperCase())) {					
+			selectedPC = plannerTree.getSelectedIndex();
+			for (int i = selectedPC + 1; i != selectedPC; i = (i + 1) % (plannerTree.getItemList().size())) {
+				String search = searchField.getText().toUpperCase();
+				String searchSpace = plannerTree.getItemList().get(i).toUpperCase();
+				if (searchSpace.contains(search)) {		
 					this.setSelectedListItem(i, -1);
 					break;
 				}

@@ -467,27 +467,21 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			if (triggerFile != null)
 				openFile(triggerFile);
 		} else if (actionCommand.equalsIgnoreCase("save")) {
-			getDataInputTabs().stream().forEach(pt -> pt.editSelectedPlannerLine());
-
 			saveTriggers(true);
-		} else if (actionCommand.equalsIgnoreCase("saveall")) {
-			plannerTabs.get(TAB_ENEMY).editSelectedPlannerLine();
+		} else if (actionCommand.equalsIgnoreCase("saveall")) {			
 			boolean success = true;
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ENEMY).getListPC(),
 					PlannerIO.PATH_ENEMIES, false, "enemies"))
 				success = false;
 
-			plannerTabs.get(TAB_HERO).editSelectedPlannerLine();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_HERO).getListPC(),
 					PlannerIO.PATH_HEROES, false, "heroes"))
 				success = false;
 
-			plannerTabs.get(TAB_ITEM).editSelectedPlannerLine();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ITEM).getListPC(),
 					PlannerIO.PATH_ITEMS, false, "items"))
 				success = false;
 
-			plannerTabs.get(TAB_QUEST).editSelectedPlannerLine();
 			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_QUEST).getListPC(),
 					PlannerIO.PATH_QUESTS, false, "quests"))
 				success = false;
@@ -830,16 +824,12 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			
 			
 			try {
-				plannerTabs.get(TAB_TRIGGER).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TRIGGER).getListPC(), null));
 	
-				plannerTabs.get(TAB_TEXT).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TEXT).getListPC(), null));
 	
-				plannerTabs.get(TAB_CIN).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CIN).getListPC(), null));
 				
-				plannerTabs.get(TAB_CONDITIONS).editSelectedPlannerLine();
 				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CONDITIONS).getListPC(), null));
 				
 				buffer.add(plannerMap.outputNewMap());
