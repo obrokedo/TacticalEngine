@@ -707,6 +707,8 @@ public class TextParser
 			return new CinematicEvent(CinematicEventType.SHOW_CREDITS);
 		else if (type.equalsIgnoreCase("showmainmenu"))
 			return new CinematicEvent(CinematicEventType.SHOW_MAIN_MENU);
+		else if (type.equalsIgnoreCase("showintro"))
+			return new CinematicEvent(CinematicEventType.SHOW_INTRO);
 		else if (type.equalsIgnoreCase("addhero"))
 		{
 			CinematicEvent ce = new CinematicEvent(CinematicEventType.ADD_HERO, 

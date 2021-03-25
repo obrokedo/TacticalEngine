@@ -779,26 +779,23 @@ public class Cinematic {
 				break;
 			case SHOW_MAIN_MENU:
 				StateBasedGame game = stateInfo.getPersistentStateInfo().getGame();
-				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setBulkLoader(null);
-				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo("/menu/MainMenu", false, true,
-						new ResourceManager(),
+				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo(null, false, false,
+						stateInfo.getResourceManager(),
 							(LoadableGameState) game.getState(TacticalGame.STATE_GAME_MENU),
 								new LoadingScreenRenderer(stateInfo.getPaddedGameContainer()));
 	
 				game.enterState(TacticalGame.STATE_GAME_LOADING);
-				
-				
-				// LOAD INTRO
-				/*
-				StateBasedGame game = stateInfo.getPersistentStateInfo().getGame();
+				break;
+			case SHOW_INTRO:				
+				game = stateInfo.getPersistentStateInfo().getGame();
 				((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo(null, false, false,
-						new ResourceManager(),
+						stateInfo.getResourceManager(),
 							(LoadableGameState) game.getState(TacticalGame.STATE_GAME_INTRO),
 								new LoadingScreenRenderer(stateInfo.getPaddedGameContainer()));
 	
 				game.enterState(TacticalGame.STATE_GAME_LOADING);
-				*/
 				
+				break;
 			default:
 				handleCustomEvent(ce, stateInfo);
 				break;

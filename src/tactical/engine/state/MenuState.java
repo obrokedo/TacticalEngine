@@ -79,15 +79,16 @@ public class MenuState extends LoadableGameState
 		container.getInput().addKeyListener(this);
 	}
 
-
-
 	/**
 	 * Initializes this state, this only gets called when coming
 	 * from a loading state
 	 */
 	@Override
 	public void initAfterLoad() {
-		
+		fcrm = persistentStateInfo.getResourceManager();
+		menuMove = fcrm.getSoundByName("menumove");
+		menuSelect = fcrm.getSoundByName("menuselect");
+		initialized = true;		
 	}
 
 	@Override
@@ -205,9 +206,6 @@ public class MenuState extends LoadableGameState
 				if (transition.isComplete()) {
 					if (transition instanceof FadeOutTransition) {
 						transition = new FadeInTransition();
-						//TODO Break this out into it's own menu renderer
-						music = fcrm.getMusicByName("lovtheme");
-						music.loop(1f, SoundManager.GLOBAL_VOLUME);
 						menuIndex = 0;
 						stateIndex = 1;			
 					}
@@ -339,10 +337,7 @@ public class MenuState extends LoadableGameState
 
 	@Override
 	public void stateLoaded(ResourceManager resourceManager) {
-		fcrm = resourceManager;
-		menuMove = fcrm.getSoundByName("menumove");
-		menuSelect = fcrm.getSoundByName("menuselect");
-		initialized = true;		
+
 	}
 	
 	

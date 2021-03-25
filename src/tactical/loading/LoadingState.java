@@ -143,8 +143,6 @@ public class LoadingState extends BasicGameState
 		{
 			bulkLoader.update();
 		}
-
-		
 		
 		if (loadingStatus != null)
 		{

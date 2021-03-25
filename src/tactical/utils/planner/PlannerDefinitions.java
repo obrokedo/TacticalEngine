@@ -1178,6 +1178,11 @@ public class PlannerDefinitions {
 				"Show the game main menu.", definingValues));
 		mapControl.add("Show Main Menu");
 		
+		definingValues = new ArrayList<PlannerValueDef>();		
+		allowableLines.add(new PlannerLineDef("showintro", "Show Intro",
+				"Show the intro scene.", definingValues));
+		mapControl.add("Show Intro");
+		
 		// Exit Game
 		definingValues = new ArrayList<PlannerValueDef>();
 		allowableLines.add(new PlannerLineDef("exit", "Exit Game",

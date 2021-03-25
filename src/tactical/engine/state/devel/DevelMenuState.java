@@ -18,6 +18,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
@@ -29,7 +30,6 @@ import tactical.engine.load.BulkLoader;
 import tactical.engine.message.LoadMapMessage;
 import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
-import tactical.engine.state.MenuState.LoadTypeEnum;
 import tactical.game.dev.DevParams;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel;
@@ -75,6 +75,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	private Button loadTownButton = new Button(0, 550, 150, 25, "Load Town");
 	private Button loadCinButton = new Button(0, 580, 150, 25, "Load Cin");
 	private Button loadBattleButton = new Button(0, 610, 150, 25, "Load Battle");
+	private TextField cinematicIDField;
 	
 	protected int totalResources = 0;
 	private ResourceManager mainGameFCRM = null;
@@ -102,6 +103,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		loadBattleButton.setEnabled(false);
 		loadCinButton.setEnabled(false);
 		
+		cinematicIDField = new TextField(container, container.getDefaultFont(), 260, 580, 100, 20);
+		cinematicIDField.setBackgroundColor(Color.white);
+		cinematicIDField.setTextColor(Color.black);
+		cinematicIDField.setBorderColor(Color.blue);
 		if (!LoadingState.inJar)
 			 plannerFrame = new PlannerFrame(this);
 		
@@ -161,9 +166,17 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		container.getInput().addKeyListener(this);
 		container.getInput().addMouseListener(this);
 		
+
+		container.getInput().addKeyListener(cinematicIDField);
+		container.getInput().addMouseListener(cinematicIDField);
+		container.getInput().addControllerListener(cinematicIDField);
 		
 		textSelector.registerListeners(container);
 		loadoutSelector.registerListeners(container);		
+	}
+
+	@Override
+	public void initAfterLoad() {
 	}
 
 	protected void initializeBulkLoader() {
@@ -212,6 +225,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		loadTownButton.render(g);
 		loadBattleButton.render(g);
 		loadCinButton.render(g);
+		
+		g.setColor(Color.white);
+		g.drawString("Cinematic ID:", 170, 580);
+		cinematicIDField.render(container, g);
 
 		g.drawString(version, container.getWidth() / 2, container.getHeight() - 30);
 		
@@ -438,9 +455,9 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					applyDevParams();
 					load(LoadTypeEnum.TOWN, textSelector.getSelectedResource(), entranceSelector.getSelectedResource(), 0);
 				}
-				if (loadCinButton.handleUserInput(x, y, true)) {
-					String id = JOptionPane.showInputDialog("Enter the cinematic id (a number) to run");
+				if (loadCinButton.handleUserInput(x, y, true)) {					
 					try {
+						String id = cinematicIDField.getText();
 						int iId = Integer.parseInt(id);							
 						
 						// This whole line of logic is somewhat terrifying... We set the resource manager
@@ -457,7 +474,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 						start(LoadTypeEnum.CINEMATIC, textSelector.getSelectedResource(), entranceSelector.getSelectedResource(), iId);
 						
 					} catch (NumberFormatException e) {
-						alertPanel = new AlertPanel("The value must be a number: " + e.getMessage());
+						alertPanel = new AlertPanel("The value entered in the text box must be a number: " + e.getMessage());
 					}
 					
 				}

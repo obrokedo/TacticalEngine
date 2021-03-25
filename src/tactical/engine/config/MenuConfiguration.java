@@ -73,4 +73,12 @@ public interface MenuConfiguration {
 	public String getPartyWhoToInpsect();
 	public String getPartyMemberRemoved(String hero);
 	public String getPartyMemberAdded(String hero);
+	
+	public int getIntroScrollSpeed();
+	public int getIntroExitTime();
+	public int getIntroTextEnterDelayTime();
+	public int getIntroTextMaxWidth();
+	public String getIntroMusicName();
+	public String getIntroAnimationFileName();
+	public String getIntroText();
 }
