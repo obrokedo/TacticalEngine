@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
@@ -17,16 +18,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public class PlannerTree implements TreeModelListener
+public class PlannerTree
 {
 	private JTree attributeTree;
 	private DefaultTreeModel attributeTreeModel;
@@ -39,18 +37,17 @@ public class PlannerTree implements TreeModelListener
 	private static final long serialVersionUID = 1L;
 
 	public PlannerTree(String rootName, ArrayList<PlannerContainer> listPC,
-			TreeSelectionListener tsl, TreeAttributeTransferHandler transferHandler,
+			MouseListener ml, TreeAttributeTransferHandler transferHandler,
 			PlannerTab parentTab)
 	{
 		rootNode = new DefaultMutableTreeNode(rootName);
 		attributeTreeModel = new DefaultTreeModel(rootNode);
 		attributeTree = new JTree(attributeTreeModel);
-		attributeTreeModel.addTreeModelListener(this);
 
 		uiAspect = new JScrollPane();
 		uiAspect.setViewportView(attributeTree);
 		attributeTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		attributeTree.addTreeSelectionListener(tsl);
+		attributeTree.addMouseListener(ml);
 		attributeTree.setTransferHandler(transferHandler);
 		attributeTree.setDropMode(DropMode.INSERT);
 		attributeTree.setDragEnabled(true);
@@ -58,7 +55,8 @@ public class PlannerTree implements TreeModelListener
 		this.parentTab = parentTab;
 		this.plannerContainers = listPC;
 
-		uiAspect.setPreferredSize(new Dimension(250, 400));
+		uiAspect.setPreferredSize(new Dimension(150, 400));
+		uiAspect.setMaximumSize(new Dimension(150, 400));
 	}
 
 	private class TreeContextMenu extends MouseAdapter implements ActionListener
@@ -75,6 +73,8 @@ public class PlannerTree implements TreeModelListener
 				TreePath path = attributeTree.getPathForLocation(me.getX(), me.getY());
 				if (path == null)
 					return;
+				
+				attributeTree.setSelectionPath(path);
 
 				selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 
@@ -86,6 +86,7 @@ public class PlannerTree implements TreeModelListener
 				else if (rootNode.getIndex(selectedNode) == -1)
 				{
 					contextMenu = new JPopupMenu();
+					contextMenu.add(newMenuItem("Edit Planner Attribute"));
 					contextMenu.add(newMenuItem("Remove Planner Attribute"));
 					contextMenu.add(newMenuItem("Duplicate Planner Attribute"));
 					contextMenu.add(new JSeparator());
@@ -146,6 +147,9 @@ public class PlannerTree implements TreeModelListener
 					plannerContainers.get(parentIndex).removeLine(nodeIndex);
 				else if (e.getActionCommand().equalsIgnoreCase("Duplicate Planner Attribute"))
 					plannerContainers.get(parentIndex).duplicateLine(nodeIndex);
+				else if (e.getActionCommand().equalsIgnoreCase("Edit Planner Attribute")) {
+					parentTab.editSelectedPlannerLine();
+				}
 				else
 				{
 					for (int i = 0; i < containerDef.getAllowableLines().size(); i++)
@@ -201,7 +205,6 @@ public class PlannerTree implements TreeModelListener
 
 	public void updateTreeValues(String rootName, ArrayList<PlannerContainer> listPC)
 	{
-		attributeTreeModel.removeTreeModelListener(this);
 		containerDef = parentTab.containersByName.get(parentTab.containers[0]);
 
 		TreePath currentlySelected = attributeTree.getSelectionPath();
@@ -226,7 +229,6 @@ public class PlannerTree implements TreeModelListener
 		this.plannerContainers = listPC;
 		attributeTree.setSelectionPath(new TreePath(attributeTree.getModel().getRoot()));
 		// attributeTree.setSelectionPath(currentlySelected);
-		attributeTreeModel.addTreeModelListener(this);
 	}
 
 	public void refreshItem(PlannerContainer pc, int containerIndex)
@@ -290,14 +292,20 @@ public class PlannerTree implements TreeModelListener
 	public void setSelectedIndex(int index)
 	{
 		Object root = attributeTree.getModel().getRoot();
-		attributeTree.setSelectionPath(new TreePath(attributeTree.getModel().getChild(root, index)));
+		Object child = attributeTree.getModel().getChild(root, index);
+		TreePath newPath = new TreePath(new Object[] {root, child});
+		attributeTree.setSelectionPath(newPath);
+		attributeTree.scrollPathToVisible(newPath);
 	}
 	
 	public void setSelectedIndex(int index, int leafIndex)
 	{
 		Object root = attributeTree.getModel().getRoot();
-		attributeTree.setSelectionPath(new TreePath(
-				attributeTree.getModel().getChild(attributeTree.getModel().getChild(root, index), leafIndex)));
+		Object child = attributeTree.getModel().getChild(root, index);
+		Object leaf = attributeTree.getModel().getChild(child, leafIndex);
+		TreePath newPath = new TreePath(new Object[] {root, child, leaf});
+		attributeTree.setSelectionPath(newPath);
+		attributeTree.scrollPathToVisible(newPath);
 	}
 
 	public Vector<String> getItemList()
@@ -330,26 +338,8 @@ public class PlannerTree implements TreeModelListener
 		attributeTreeModel.insertNodeInto(dmtn,
 				child, attributeIndex);
 		attributeTree.scrollPathToVisible(new TreePath(dmtn));
+		
 
-	}
-
-	@Override
-	public void treeNodesChanged(TreeModelEvent e) {
-
-	}
-
-	@Override
-	public void treeNodesInserted(TreeModelEvent e) {
-
-	}
-
-	@Override
-	public void treeNodesRemoved(TreeModelEvent e) {
-
-	}
-
-	@Override
-	public void treeStructureChanged(TreeModelEvent e) {
 	}
 
 	public JScrollPane getUiAspect() {

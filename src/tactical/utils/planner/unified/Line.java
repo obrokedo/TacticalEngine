@@ -259,7 +259,7 @@ public class Line implements UnifiedRenderable {
 
 	private void editPL(PlannerLine pl) {
 		PlannerContainerDef pcdef = pc.getPcdef();			
-		pl.setupUI(pcdef.getAllowableLines(), null, 1, pcdef.getListOfLists(), false, null);
+		pl.setupUI(null, 1, pcdef.getListOfLists(), false, null);
 
 		uvp.showScrollableOptionPane(pl.getUiAspect(), false);
 		

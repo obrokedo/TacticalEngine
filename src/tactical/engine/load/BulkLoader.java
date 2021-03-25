@@ -87,12 +87,6 @@ public class BulkLoader {
 			}
 		}
 	}
-	
-	public static void main(String args[]) {
-		File f = new File("Apple/Man/Dog/Frame");
-		System.out.println(f.getAbsolutePath().replaceAll("\\\\", "/"));
-		System.out.println(f.getAbsolutePath());
-	}
 
 	private void loadSoundOrMusic(String[] split, String type) {
 		for (File file : DirectoryLister.listFilesInDir(split[1]))

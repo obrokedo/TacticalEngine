@@ -8,6 +8,9 @@ import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
 import tactical.game.constants.AttributeStrength;
 import tactical.utils.DirectoryLister;
+import tactical.utils.planner.layout.PlannerEnemyStatLayout;
+import tactical.utils.planner.layout.PlannerEquippableItemLayout;
+import tactical.utils.planner.layout.PlannerHeroStatLayout;
 
 public class PlannerDefinitions {
 	private static String PATH_ANIMATIONS = "animations/animationsheets";
@@ -1175,6 +1178,11 @@ public class PlannerDefinitions {
 				"Show the game main menu.", definingValues));
 		mapControl.add("Show Main Menu");
 		
+		definingValues = new ArrayList<PlannerValueDef>();		
+		allowableLines.add(new PlannerLineDef("showintro", "Show Intro",
+				"Show the intro scene.", definingValues));
+		mapControl.add("Show Intro");
+		
 		// Exit Game
 		definingValues = new ArrayList<PlannerValueDef>();
 		allowableLines.add(new PlannerLineDef("exit", "Exit Game",
@@ -1414,7 +1422,7 @@ public class PlannerDefinitions {
 
 		allowableLines.add(new PlannerLineDef("equippable", "Equippable Item",
 				"Marks this item as equippable and defines stats for it",
-				definingValues));
+				definingValues, new PlannerEquippableItemLayout()));
 		
 		
 		// Use Custom
@@ -1861,7 +1869,7 @@ public class PlannerDefinitions {
 		// "Unique Trigger Id",
 		// "Unique id that can be used to identify a given trigger"));
 		PlannerLineDef definingLine = new PlannerLineDef("enemy", "Enemy", "",
-				definingValues);
+				definingValues, new PlannerEnemyStatLayout());
 
 		// Setup available types
 		ArrayList<PlannerLineDef> allowableLines = new ArrayList<PlannerLineDef>();
@@ -2168,7 +2176,7 @@ public class PlannerDefinitions {
 				"The name of this characters class."));
 		allowableLines.add(new PlannerLineDef("progression",
 				"Hero Progression", "This heroes statistic progression",
-				definingValues));
+				definingValues, new PlannerHeroStatLayout()));
 
 		// Spell Progression
 		definingValues = new ArrayList<PlannerValueDef>();

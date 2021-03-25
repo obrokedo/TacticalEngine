@@ -289,7 +289,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		// DEVELOPMENT MODE
 		
 		if (DEV_MODE_ENABLED)
-			loadingState.setLoadingInfo("/menu/MainMenu", false, true,
+			loadingState.setLoadingInfo("loader/Menu", false, true,
 				new ResourceManager(),
 					(LoadableGameState) this.getState(STATE_GAME_MENU_DEVEL),
 						new LoadingScreenRenderer(gameContainer));
@@ -297,7 +297,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		// RELEASE MODE
 		else {
 			/*
-			loadingState.setLoadingInfo("/menu/MainMenu", false, true,
+			loadingState.setLoadingInfo(null, false, true,
 				new ResourceManager(),
 					(LoadableGameState) this.getState(STATE_GAME_MENU),
 						TacticalGame.ENGINE_CONFIGURATIOR.getLogoLoadScreenRenderer(gameContainer));

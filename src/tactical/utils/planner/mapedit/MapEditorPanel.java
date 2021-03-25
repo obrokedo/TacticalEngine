@@ -67,7 +67,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 		sidePanel = new JPanel();
 		sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.PAGE_AXIS));
 		sidePanel.setPreferredSize(new Dimension(200, 100));
-		backPanel.add(sidePanel, BorderLayout.LINE_START);
+		backPanel.add(sidePanel, BorderLayout.LINE_END);
 		JPanel locationVisiblePanel = new JPanel();
 		locationVisiblePanel.setBackground(Color.DARK_GRAY);
 
@@ -406,7 +406,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 
 		try
 		{
-			pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists(), false, null);
+			pl.setupUI(this, 1, pcdef.getListOfLists(), false, null);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

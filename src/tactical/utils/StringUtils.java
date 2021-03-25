@@ -31,6 +31,14 @@ public class StringUtils {
 		g.scale(PaddedGameContainer.GAME_SCREEN_SCALE, PaddedGameContainer.GAME_SCREEN_SCALE);
 	}
 	
+	public static void drawString(String string, float x, float y, Graphics g)
+	{
+		g.resetTransform();
+		g.drawString(string, x * PaddedGameContainer.GAME_SCREEN_SCALE + PaddedGameContainer.GAME_SCREEN_PADDING, y * PaddedGameContainer.GAME_SCREEN_SCALE);
+		g.translate(PaddedGameContainer.GAME_SCREEN_PADDING, 0);
+		g.scale(PaddedGameContainer.GAME_SCREEN_SCALE, PaddedGameContainer.GAME_SCREEN_SCALE);
+	}
+	
 	public static int getStringWidth(String string, UnicodeFont font)
 	{
 		return font.getWidth(string) / PaddedGameContainer.GAME_SCREEN_SCALE;

@@ -72,7 +72,8 @@ public class CinematicEvent
 		EXIT_GAME,
 		SHOW_CREDITS,
 		ADD_HERO,
-		SHOW_MAIN_MENU
+		SHOW_MAIN_MENU,
+		SHOW_INTRO
 	}
 
 	private CinematicEventType type;

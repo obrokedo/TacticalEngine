@@ -28,11 +28,11 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 	private PlannerContainer pc;
 	private JComboBox<String> jcb;
 	
-	public SingleEditPanel(PlannerContainer pc) {
+	public SingleEditPanel(int lineIndex, PlannerContainer pc) {
 		super(new BorderLayout());
 		this.pc = pc;
 		
-		setupUI();
+		setupUI(lineIndex);
 		JPanel jp = this;
 		
 		addHierarchyListener(new HierarchyListener() {
@@ -49,31 +49,52 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 		this.setMaximumSize(new Dimension(this.getPreferredSize().width, Integer.MAX_VALUE));
 	}
 	
+	public SingleEditPanel(PlannerContainer pc) {
+		this(-1, pc);
+		
+	}
+	
 	private void setupUI() {
+		setupUI(-1);
+	}
+	
+	private void setupUI(int lineIndex) {
 		JPanel boxPanel = new JPanel();
 		boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.PAGE_AXIS));
+		
 		PlannerContainerDef pcdef = pc.getPcdef();		
-		PlannerLine plDef = pc.getDefLine();
-		plDef.setupUI(pcdef.getAllowableLines(), this, 0, pcdef.getListOfLists(), true, null);
-		boxPanel.add(plDef.getUiAspect());
+		if (lineIndex < 0) {	
+			PlannerLine plDef = pc.getDefLine();
+			plDef.setupUI(this, 0, pcdef.getListOfLists(), true, null);
+			boxPanel.add(plDef.getUiAspect());
+		}
+		
+		
 		int cnt = 1;
 		for (PlannerLine pl : pc.getLines()) {
-			pl.setupUI(pcdef.getAllowableLines(), this, cnt++, pcdef.getListOfLists(), true, null);
-			boxPanel.add(pl.getUiAspect());
-		}						
-		jcb = new JComboBox<>();	
-		AutoCompletion.enable(jcb);
-		for (PlannerLineDef pld : pc.getPcdef().getAllowableLines())
-			jcb.addItem(pld.getName());
-		jcb.setMaximumRowCount(40);
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.add(new JLabel("Add new entry:"));
-		buttonPanel.add(jcb);
-		JButton button = new JButton("Add");
-		button.setActionCommand("addbutton");
-		button.addActionListener(this);
-		buttonPanel.add(button);
-		this.add(buttonPanel, BorderLayout.PAGE_START);
+			if (lineIndex == -1 || lineIndex == (cnt - 1)) {				
+				pl.setupUI(this, cnt++, pcdef.getListOfLists(), true, null, lineIndex == -1);
+				boxPanel.add(pl.getUiAspect());
+			} else {
+				cnt++;
+			}
+		}					
+		if (lineIndex == -1) {
+			jcb = new JComboBox<>();	
+			AutoCompletion.enable(jcb);
+			for (PlannerLineDef pld : pc.getPcdef().getAllowableLines())
+				jcb.addItem(pld.getName());
+			jcb.setMaximumRowCount(40);
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.add(new JLabel("Add new entry:"));
+			buttonPanel.add(jcb);
+			JButton button = new JButton("Add");
+			button.setActionCommand("addbutton");
+			button.addActionListener(this);
+			buttonPanel.add(button);
+			this.add(buttonPanel, BorderLayout.PAGE_START);
+		}
+		
 		this.add(boxPanel,BorderLayout.CENTER);
 	}
 	
