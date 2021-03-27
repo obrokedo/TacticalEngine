@@ -541,6 +541,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				break;
 			case RETURN_FROM_ATTACK_CIN:
 				turnActions.add(new CheckDeathAction());
+				turnActions.add(new EndTurnAction());
 				break;
 			case PLAYER_END_TURN:
 				turnActions.add(new EndTurnAction());

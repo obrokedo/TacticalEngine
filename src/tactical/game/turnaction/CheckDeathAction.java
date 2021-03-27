@@ -14,16 +14,11 @@ public class CheckDeathAction extends TurnAction {
 
 	@Override
 	public boolean perform(int delta, TurnManager turnManager, StateInfo stateInfo, ArrayList<TurnAction> turnActions) {
-		if (turnManager.getBattleResults().death)
-		{
-			for (CombatSprite cs : stateInfo.getCombatSprites()) {
-				if (cs.getCurrentHP() <= 0) {							
-					turnActions.add(0, new WaitAction(0));
-					return false;
-				}
+		for (CombatSprite cs : stateInfo.getCombatSprites()) {
+			if (cs.getCurrentHP() <= 0) {							
+				return false;
 			}
 		}
-		turnActions.add(new EndTurnAction());
 		return true;
 	}
 }

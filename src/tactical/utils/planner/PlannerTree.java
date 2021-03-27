@@ -203,16 +203,16 @@ public class PlannerTree
 		return (String) ((DefaultMutableTreeNode) attributeTreeModel.getChild(attributeTreeModel.getRoot(), index)).getUserObject();
 	}
 
-	public void updateTreeValues(String rootName, ArrayList<PlannerContainer> listPC)
+	public void updateTreeValues(ArrayList<PlannerContainer> listPC)
 	{
 		containerDef = parentTab.containersByName.get(parentTab.containers[0]);
 
-		TreePath currentlySelected = attributeTree.getSelectionPath();
 		DefaultMutableTreeNode item = null;
 		
 		int itemIndex = 0;
 		while (rootNode.getChildCount() > 0)
 			attributeTreeModel.removeNodeFromParent((MutableTreeNode) rootNode.getChildAt(0));
+		
 		for (PlannerContainer pc : listPC)
 		{
 			item = new DefaultMutableTreeNode(pc.getDefLine().getValues().get(0));
@@ -228,7 +228,6 @@ public class PlannerTree
 
 		this.plannerContainers = listPC;
 		attributeTree.setSelectionPath(new TreePath(attributeTree.getModel().getRoot()));
-		// attributeTree.setSelectionPath(currentlySelected);
 	}
 
 	public void refreshItem(PlannerContainer pc, int containerIndex)
@@ -243,17 +242,9 @@ public class PlannerTree
 		DefaultMutableTreeNode firstNode = null;
 		for (PlannerLine pl : pc.getLines())
 		{
-			if (firstNode == null)
-			{
-				firstNode = new DefaultMutableTreeNode(pl.getPlDef().getName());
-				attributeTreeModel.insertNodeInto(firstNode, childNode, attIndex);
-			}
-			else
-				attributeTreeModel.insertNodeInto(new DefaultMutableTreeNode(pl.getPlDef().getName()), childNode, attIndex);
+			attributeTreeModel.insertNodeInto(new DefaultMutableTreeNode(pl.getPlDef().getName()), childNode, attIndex);
 			attIndex++;
-
 		}
-
 
 		attributeTree.expandPath(new TreePath(childNode.getPath()));
 	}
@@ -338,8 +329,6 @@ public class PlannerTree
 		attributeTreeModel.insertNodeInto(dmtn,
 				child, attributeIndex);
 		attributeTree.scrollPathToVisible(new TreePath(dmtn));
-		
-
 	}
 
 	public JScrollPane getUiAspect() {

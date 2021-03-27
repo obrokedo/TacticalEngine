@@ -24,8 +24,7 @@ public class PerformEffectsAction extends TurnAction {
 				turnActions.add(new WaitAction(TurnManager.SPIN_TIME / TurnManager.UPDATE_TIME));
 				turnActions.add(new CurrentSpriteDeathAction());
 				break;
-			}
-			be.incrementTurn();
+			}			
 		}
 		
 		turnActions.add(new WaitForSpeechAction());

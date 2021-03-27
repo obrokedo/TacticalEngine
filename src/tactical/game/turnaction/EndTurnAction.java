@@ -37,7 +37,7 @@ public class EndTurnAction extends TurnAction {
 				{
 					String effectText = null;
 					BattleEffect be = turnManager.getCurrentSprite().getBattleEffects().get(i);
-
+					be.incrementTurn();
 					 
 					Log.debug("The battle effect: " + be.getBattleEffectId() + " was performed on " + turnManager.getCurrentSprite());
 					effectText = be.getPerformEffectText(turnManager.getCurrentSprite());
@@ -49,7 +49,10 @@ public class EndTurnAction extends TurnAction {
 						Log.debug("The battle effect: " + be.getBattleEffectId() + " has ended on " + turnManager.getCurrentSprite());
 						turnManager.getCurrentSprite().getBattleEffects().remove(i--);
 						be.effectEnded(turnManager.getCurrentSprite());
-						effectText = effectText + "} " + be.effectEndedText(turnManager.getCurrentSprite());
+						if (effectText == null)
+							effectText = be.effectEndedText(turnManager.getCurrentSprite());
+						else
+							effectText = effectText + "} " + be.effectEndedText(turnManager.getCurrentSprite());
 						turnManager.getCurrentSprite().removeBattleEffect(be);
 					}
 					

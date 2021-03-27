@@ -168,13 +168,11 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 		if (refersTo == PlannerValueDef.REFERS_TRIGGER)
 			plannerFrame.getPlannerMap().removeReferences(true, index);
 		else if (refersTo == PlannerValueDef.REFERS_TEXT)
-			plannerFrame.getPlannerMap().removeReferences(false, index);
-		plannerFrame.updateErrorList(PlannerReference.getBadReferences(plannerFrame.getDataInputTabs()));
-		uiAspect.remove(currentPCScroll);
+			plannerFrame.getPlannerMap().removeReferences(false, index);		
 		uiAspect.repaint();
-
 		currentPC = null;
 		listPC.remove(index);
+		plannerFrame.updateErrorList(PlannerReference.getBadReferences(plannerFrame.getDataInputTabs()));
 	}
 
 	public void commitChanges()
@@ -259,7 +257,7 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 
 	public void updateAttributeList(int index)
 	{
-		plannerTree.updateTreeValues(name, listPC);
+		plannerTree.updateTreeValues(listPC);
 		uiAspect.validate();
 	}
 

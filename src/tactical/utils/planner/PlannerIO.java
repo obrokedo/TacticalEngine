@@ -343,7 +343,7 @@ public class PlannerIO {
 			} else if (pvd.getValueType() == PlannerValueDef.TYPE_MULTI_INT) {
 				String newVals = "";
 
-				if (ta.getAttribute(pvd.getTag()) != null) {
+				if (ta.getAttribute(pvd.getTag()) != null && ta.getAttribute(pvd.getTag()).trim().length() > 0) {
 					String[] values = ta.getAttribute(pvd.getTag())
 							.split(",");
 					for (int j = 0; j < values.length; j++) {
