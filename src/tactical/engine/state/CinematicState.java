@@ -150,8 +150,13 @@ public class CinematicState extends LoadableGameState
 	
 	@Override
 	protected Menu getPauseMenu() {
-		stateInfo.sendMessage(MessageType.PAUSE_MUSIC);
-		return new PauseMenu(stateInfo);
+		if (cinematicManager.getCinematic() != null && cinematicManager.getCinematic().isSkippable()) {
+			cinematicManager.getCinematic().skipCinematic(stateInfo);
+			return null;
+		} else {
+			stateInfo.sendMessage(MessageType.PAUSE_MUSIC);
+			return new PauseMenu(stateInfo);
+		}
 	}
 
 	@Override

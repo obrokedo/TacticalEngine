@@ -102,4 +102,8 @@ public class CinematicManager extends Manager
 	{
 		return cinematic != null;
 	}
+
+	public Cinematic getCinematic() {
+		return cinematic;
+	}
 }

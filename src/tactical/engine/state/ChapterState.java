@@ -145,10 +145,8 @@ public class ChapterState extends BasicGameState implements MenuListener {
 	public void valueSelected(StateInfo stateInfo, Object value) {
 		// Save here before exiting. This is a "special" type of save
 		if ((Boolean) value) {
-			stateInfo.getPersistentStateInfo().getClientProgress().setChapterSaveMessage(
-					exitTrigger.getLoadMapMessage());
+			stateInfo.getPersistentStateInfo().getClientProgress().saveViaChapter(exitTrigger.getLoadMapMessage());
 			stateInfo.getClientProfile().serializeToFile();
-			stateInfo.getClientProgress().serializeToFile();
 		}
 			
 		doExit();

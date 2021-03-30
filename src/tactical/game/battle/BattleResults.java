@@ -458,7 +458,7 @@ public class BattleResults implements Serializable
 					damage = br.hpDamage.get(br.hpDamage.size() - 1) / 2;
 					sumDamage += damage;
 
-					if (damage == 0)
+					if (attacker.isHero() && damage == 0)
 						expGained += 1;
 					
 					// Add the targets remaining HP

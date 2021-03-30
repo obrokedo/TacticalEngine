@@ -32,6 +32,7 @@ import tactical.game.manager.Manager;
 import tactical.game.menu.Menu;
 import tactical.game.persist.ClientProfile;
 import tactical.game.persist.ClientProgress;
+import tactical.game.persist.SaveLocation;
 import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.Sprite;
@@ -130,7 +131,10 @@ public class StateInfo
 		 * to check the current turn
 		 */
 		boolean isBattleInitialized = false;
-		if (persistentStateInfo.getClientProgress().isBattle() && persistentStateInfo.getClientProgress().getCurrentTurn() != null)
+		
+		SaveLocation saveLoc = persistentStateInfo.getClientProgress().getLastSaveLocation();
+		if (persistentStateInfo.getClientProgress().isBattle() && 
+				saveLoc.getCurrentTurn() != null)
 		{
 			Log.debug("Initializing battle from load");
 			isBattleInitialized = true;
@@ -140,10 +144,10 @@ public class StateInfo
 			 * be the same (in memory) as the CombatSprites in the client profile, this is not
 			 * the case. 
 			 */
-			this.addAllCombatSprites(getClientProgress().getBattleSprites(this));
+			this.addAllCombatSprites(saveLoc.getBattleSprites(this));
 			for (CombatSprite cs : this.combatSprites)
 			{
-				if (cs.getId() == persistentStateInfo.getClientProgress().getCurrentTurn())
+				if (cs.getId() == saveLoc.getCurrentTurn())
 				{
 					this.currentSprite = cs;
 					break;
@@ -154,8 +158,9 @@ public class StateInfo
 			 * Clear these values here so that when we load a battle
 			 * we don't think that we're loading from a mid-battle save
 			 */
-			getClientProgress().setCurrentTurn(null);
-			getClientProgress().setBattleSprites(null);
+			saveLoc.setCurrentTurn(null);
+			saveLoc.setBattleEnemySprites(null);
+			saveLoc.setBattleHeroSpriteIds(null);
 		}
 		else if (isCombat)
 		{
@@ -317,9 +322,6 @@ public class StateInfo
 			case SAVE:
 				save();
 				break;
-			case SAVE_BATTLE:
-			saveBattle();
-				break;
 			case COMPLETE_QUEST:
 				this.setQuestStatus(((StringMessage) m).getString(), true);
 				break;
@@ -363,18 +365,14 @@ public class StateInfo
 	}
 
 	public void save() {
-		getClientProgress().setInTownLocation(new Point((int) currentSprite.getLocX(), (int) currentSprite.getLocY()));
 		getClientProfile().serializeToFile();
-		getClientProgress().serializeToFile();
+		getClientProgress().saveViaPriest(new Point((int) currentSprite.getLocX(), (int) currentSprite.getLocY()));
 	}
 
 	public void saveBattle() {
 		this.currentSprite.setVisible(true);
-		getClientProgress().setBattle(true);
-		getClientProgress().setBattleSprites(combatSprites);
-		getClientProgress().setCurrentTurn(currentSprite);
 		getClientProfile().serializeToFile();
-		getClientProgress().serializeToFile();
+		getClientProgress().saveViaBattle(combatSprites, currentSprite);
 	}
 
 	/********************************/

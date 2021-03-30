@@ -21,8 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.newdawn.slick.util.Log;
 
+import lombok.Getter;
+import lombok.Setter;
 import tactical.engine.message.LoadMapMessage;
-import tactical.engine.state.StateInfo;
 import tactical.game.item.Item;
 import tactical.game.sprite.CombatSprite;
 
@@ -31,23 +32,22 @@ public class ClientProgress implements Serializable
 	private static final long serialVersionUID = 1L;
 	public static final String PROGRESS_EXTENSION = ".progress";
 
-	private HashSet<String> questsCompleted;
+	@Getter private HashSet<String> questsCompleted;
 	private Hashtable<String, ArrayList<Integer>> retriggerablesPerMapData;
 	private Hashtable<String, ArrayList<Integer>> nonretriggerablesPerMapData;
-	private ArrayList<Integer> dealItems;
-	private Point inTownLocation;
+	@Getter @Setter private ArrayList<Integer> dealItems;
 	private String name;
-	private String mapData;
+	
 	private long timePlayed;
-	private boolean isBattle = false;
-	private ArrayList<CombatSprite> battleEnemySprites;
-	private ArrayList<Integer> battleHeroSpriteIds;
-	private Integer currentTurn;
-	private LoadMapMessage chapterSaveMessage;
 	private static final String BATTLE_PREFIX = "!!";
 	private transient long lastSaveTime;
-	private transient String lastSaveMapData;
 	private ArrayList<Integer> storedItems;
+	@Getter private SaveLocation lastSaveLocation;
+	@Getter private EgressLocation lastEgressLocation;
+	private boolean isBattle = false;
+	
+	// This value is used to load from AND is the current map that the player is on
+	@Getter @Setter private transient String mapData;
 
 	public ClientProgress(String name)
 	{		
@@ -60,13 +60,10 @@ public class ClientProgress implements Serializable
 		retriggerablesPerMapData = new Hashtable<String, ArrayList<Integer>>();
 		nonretriggerablesPerMapData = new Hashtable<String, ArrayList<Integer>>();
 		dealItems = new ArrayList<>();
-		inTownLocation = null;
+		lastSaveLocation = new SaveLocation();
+		lastEgressLocation = new EgressLocation();
 		mapData = null;
 		timePlayed = 0;
-		isBattle = false;
-		battleEnemySprites = null;
-		battleHeroSpriteIds = null;
-		currentTurn = 0;
 		lastSaveTime = System.currentTimeMillis();
 		storedItems = new ArrayList<>(); 
 	}
@@ -83,12 +80,62 @@ public class ClientProgress implements Serializable
 	{
 		return questsCompleted.contains(questId);
 	}
+	
+	public void saveViaPriest(Point point) {
+		this.lastSaveLocation = new SaveLocation();
+		lastSaveLocation.setInTownPoint(point);
+		lastSaveLocation.setLastSaveMapData(mapData);
+		
+		this.lastEgressLocation = new EgressLocation();
+		this.lastEgressLocation.setInTownPoint(point);
+		this.lastEgressLocation.setLastSaveMapData(mapData);
+		serializeToFile();
+	}
+	
+	public void saveViaBattle(List<CombatSprite> battleSprites, CombatSprite currentTurn) {
+							
+		this.lastSaveLocation = new SaveLocation();
+		this.isBattle = true;
+		if (currentTurn != null)
+			this.lastSaveLocation.setCurrentTurn(currentTurn.getId());
+		this.lastSaveLocation.setLastSaveMapData(mapData);
+		
+		if (battleSprites != null)
+		{
+			this.lastSaveLocation.setBattleHeroSpriteIds(new ArrayList<>());
+			this.lastSaveLocation.setBattleEnemySprites(new ArrayList<>());
+			for (CombatSprite cs : battleSprites)
+			{
+				if (cs.isHero())
+					this.lastSaveLocation.getBattleHeroSpriteIds().add(cs.getId());
+				else
+					this.lastSaveLocation.getBattleEnemySprites().add(cs);
+			}
+		}
+		serializeToFile();
+	}
+	
+	public void saveViaChapter(LoadMapMessage mapMessage) {
+		this.lastSaveLocation = new SaveLocation();
+		this.lastSaveLocation.setChapterSaveMessage(mapMessage);
+		serializeToFile();
+	}
+	
+	public void setEgressLocation(Point point, String map) {
+		this.lastEgressLocation = new EgressLocation();
+		this.lastEgressLocation.setInTownPoint(point);
+		this.lastEgressLocation.setLastSaveMapData(map);
+	}
+	
+	public void setEgressLocation(String location, String map) {
+		this.lastEgressLocation = new EgressLocation();
+		this.lastEgressLocation.setInTownLocation(location);
+		this.lastEgressLocation.setLastSaveMapData(map);
+	}
 
 	public void serializeToFile()
 	{
 		this.timePlayed += (System.currentTimeMillis() - lastSaveTime);
-		this.lastSaveTime = System.currentTimeMillis();
-		this.lastSaveMapData = mapData;
 		try
 		{
 			OutputStream file = new FileOutputStream(name + ".progress");
@@ -112,7 +159,7 @@ public class ClientProgress implements Serializable
 
 	      ClientProgress cp = (ClientProgress) input.readObject();
 	      cp.lastSaveTime = System.currentTimeMillis();
-	      cp.lastSaveMapData = cp.mapData;
+	      cp.mapData = cp.lastSaveLocation.getLastSaveMapData();
 	      file.close();
 	      return cp;
 	    }
@@ -185,55 +232,8 @@ public class ClientProgress implements Serializable
 	public void setBattle(boolean isBattle) {
 		this.isBattle = isBattle;
 	}
-
-	public ArrayList<CombatSprite> getBattleSprites(StateInfo stateInfo) {
-		for (Integer heroID : battleHeroSpriteIds)
-		{
-			this.battleEnemySprites.add(stateInfo.getHeroById(heroID));
-		}
-		
-		return battleEnemySprites;
-	}
-
-	public void setBattleSprites(List<CombatSprite> battleSprites) {
-		if (battleSprites == null)
-		{
-			this.battleHeroSpriteIds = null;
-			this.battleEnemySprites = null;
-		}
-		else
-		{
-			battleHeroSpriteIds = new ArrayList<>();
-			battleEnemySprites = new ArrayList<>();
-			for (CombatSprite cs : battleSprites)
-			{
-				if (cs.isHero())
-					battleHeroSpriteIds.add(cs.getId());
-				else
-					battleEnemySprites.add(cs);
-			}
-		}
-	}
-
-	public Integer getCurrentTurn() {
-		return currentTurn;
-	}
-
-	public void setCurrentTurn(CombatSprite currentTurn) {
-		if (currentTurn == null)
-			this.currentTurn = null;
-		else
-			this.currentTurn = currentTurn.getId();
-	}
-
-	public String getMapData() {
-		return mapData;
-	}
-
-	public void setMapData(String mapData) {
-		this.mapData = mapData;
-	}
 	
+	/*
 	public Point getInTownLocation() {
 		return inTownLocation;
 	}
@@ -241,19 +241,9 @@ public class ClientProgress implements Serializable
 	public void setInTownLocation(Point inTownLocation) {
 		this.inTownLocation = inTownLocation;
 	}
-
-	public ArrayList<Integer> getDealItems() {
-		return dealItems;
-	}
-
-	public void setDealItems(ArrayList<Integer> dealItems) {
-		this.dealItems = dealItems;
-	}
-
-	public HashSet<String> getQuestsCompleted() {
-		return questsCompleted;
-	}
+	*/
 	
+	/*
 	public String getLastSaveMapData() {
 		return lastSaveMapData;
 	}
@@ -261,6 +251,7 @@ public class ClientProgress implements Serializable
 	public void setLastSaveMapData(String lastSaveMapData) {
 		this.lastSaveMapData = lastSaveMapData;
 	}
+	*/
 	
 	public void depositItem(Item item) {
 		this.storedItems.add(item.getItemId());
@@ -275,10 +266,9 @@ public class ClientProgress implements Serializable
 	}
 
 	public LoadMapMessage getAndClearChapterSaveMessage() {
-		return chapterSaveMessage;
-	}
-
-	public void setChapterSaveMessage(LoadMapMessage chapterSaveMessage) {
-		this.chapterSaveMessage = chapterSaveMessage;
+		
+		LoadMapMessage lmm = this.lastSaveLocation.getChapterSaveMessage();
+		this.lastSaveLocation.setChapterSaveMessage(null);
+		return lmm;
 	}
 }

@@ -11,6 +11,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
 import org.newdawn.slick.util.pathfinding.Path;
 
+import lombok.Getter;
 import tactical.cinematic.event.CinematicEvent;
 import tactical.cinematic.event.CinematicEvent.CinematicEventType;
 import tactical.engine.TacticalGame;
@@ -34,12 +35,10 @@ import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.NPCSprite;
 import tactical.game.sprite.Sprite;
 import tactical.game.sprite.StaticSprite;
-import tactical.game.trigger.Trigger;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.LoadingScreenRenderer;
 import tactical.loading.LoadingState;
-import tactical.loading.ResourceManager;
 import tactical.map.Map;
 import tactical.utils.StringUtils;
 
@@ -201,6 +200,8 @@ public class Cinematic {
 	private ArrayList<StaticSprite> staticSprites = new ArrayList<StaticSprite>();
 
 	private boolean rendering = false;
+	
+	@Getter private boolean skippable = false;
 
 	/**
 	 * Constructor to create the Cinematic with the given events and
@@ -212,7 +213,7 @@ public class Cinematic {
 	 * @param cameraY The start y location in pixels for the camera
 	 */
 	public Cinematic(ArrayList<CinematicEvent> initializeEvents,
-			ArrayList<CinematicEvent> cinematicEvents, int cameraX, int cameraY) {
+			ArrayList<CinematicEvent> cinematicEvents, int cameraX, int cameraY, boolean skippable) {
 		this.initializeEvents = initializeEvents;
 		this.cinematicEvents = cinematicEvents;
 		actors = new Hashtable<String, CinematicActor>();
@@ -223,11 +224,12 @@ public class Cinematic {
 		this.waitTime = 0;
 		this.cameraStartX = cameraX;
 		this.cameraStartY = cameraY;
+		this.skippable = skippable;
 	}
 	
 	public Cinematic duplicateCinematic() {
 		return new Cinematic(new ArrayList<CinematicEvent>(initializeEvents), 
-				new ArrayList<CinematicEvent>(cinematicEvents), cameraStartX, cameraStartY);
+				new ArrayList<CinematicEvent>(cinematicEvents), cameraStartX, cameraStartY, skippable);
 	}
 
 	/**
@@ -915,5 +917,19 @@ public class Cinematic {
 	
 	public Color getFadingColor() {
 		return fadingColor;
+	}
+	
+	public void skipCinematic(StateInfo stateInfo) {
+		/*
+		this.cinematicEvents.stream().filter(ce -> (
+				ce.getType() == CinematicEventType.LOAD_CIN ||
+				ce.getType() == CinematicEventType.LOAD_BATTLE ||
+				ce.getType() == CinematicEventType.LOAD_MAP ||
+				ce.getType() == CinematicEventType.LOAD_CHAPTER || 
+				ce.getType() == CinematicEventType.SHOW_MAIN_MENU || 
+				ce.getType() == CinematicEventType.SHOW_CREDITS ||
+				ce.getType() == CinematicEventType.SHOW_INTRO)) */
+		for (CinematicEvent ce : cinematicEvents) 
+			handleEvent(ce, stateInfo);
 	}
 }

@@ -223,6 +223,27 @@ public class Trigger
 		}
 	}
 	
+	public class TriggerGoToEgress implements Triggerable
+	{
+		@Override
+		public boolean perform(StateInfo stateInfo)
+		{			
+			for (CombatSprite cs : stateInfo.getPersistentStateInfo().getClientProfile().getHeroes()) {
+				if (cs.isLeader())
+				{
+					cs.setCurrentHP(cs.getMaxHP());
+					cs.getBattleEffects().clear();
+				}
+			}
+			
+	
+			stateInfo.getPersistentStateInfo().loadMap(
+					stateInfo.getPersistentStateInfo().getClientProgress().getLastEgressLocation().getLastSaveMapData(),
+					stateInfo.getPersistentStateInfo().getClientProgress().getLastEgressLocation().getInTownLocation());
+			return true;
+		}
+	}
+	
 	public class TriggerLoadChapter implements Triggerable
 	{
 		private String header;
@@ -999,12 +1020,12 @@ public class Trigger
 		
 	}
 	
-	public class TriggerSetEgressLocation implements Triggerable {
+	public class TriggerSetEgressPoint implements Triggerable {
 
 		private String map;
 		private int tileX, tileY;
 		
-		public TriggerSetEgressLocation(String map, int tileX, int tileY) {
+		public TriggerSetEgressPoint(String map, int tileX, int tileY) {
 			super();
 			this.map = map;
 			this.tileX = tileX;
@@ -1013,9 +1034,26 @@ public class Trigger
 
 		@Override
 		public boolean perform(StateInfo stateInfo) {
-			stateInfo.getClientProgress().setInTownLocation(new Point(tileX * stateInfo.getTileWidth(), 
-					tileY * stateInfo.getTileHeight()));
-			stateInfo.getClientProgress().setLastSaveMapData(map);
+			stateInfo.getClientProgress().setEgressLocation(new Point(tileX * stateInfo.getTileWidth(), 
+					tileY * stateInfo.getTileHeight()), map);
+			return true;
+		}
+	}
+	
+	public class TriggerSetEgressLocation implements Triggerable {
+
+		private String map;
+		private String location;
+		
+		public TriggerSetEgressLocation(String map, String location) {
+			super();
+			this.map = map;
+			this.location = location;
+		}
+
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			stateInfo.getClientProgress().setEgressLocation(location, map);
 			return true;
 		}
 		

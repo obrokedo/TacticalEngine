@@ -73,6 +73,24 @@ public class SpriteManager extends Manager
 
 			boolean foundStart = false;
 			String entranceLocation = stateInfo.getEntranceLocation();
+			
+			// If entrance is null then we are coming from a save or egress
+			if (entranceLocation == null) {
+				Point savedPoint = null;
+				if (fromLoad) {
+					savedPoint = stateInfo.getClientProgress().getLastSaveLocation().getInTownPoint();
+				} else {
+					entranceLocation = stateInfo.getClientProgress().getLastEgressLocation().getInTownLocation();
+					savedPoint = stateInfo.getClientProgress().getLastEgressLocation().getInTownPoint();
+				}
+				
+				if (entranceLocation == null && savedPoint == null)
+					throw new BadMapException("The selected map does not contain a start location or a start point. Your save file may be bad");
+				
+				// Use integer division to place the hero at the nearest tile
+				stateInfo.getCurrentSprite().setLocation((savedPoint.x / stateInfo.getTileWidth()) * stateInfo.getTileWidth(), 
+						(savedPoint.y / stateInfo.getTileHeight()) * stateInfo.getTileHeight(), stateInfo.getTileWidth(), stateInfo.getTileHeight());				
+			}
 
 			// Get any npcs from the map
 			for (MapObject mo : stateInfo.getResourceManager().getMap().getMapObjects())
@@ -93,16 +111,7 @@ public class SpriteManager extends Manager
 				}
 			}
 			
-			if (entranceLocation == null) {
-				Point savedPoint = stateInfo.getClientProgress().getInTownLocation();
-				if (savedPoint == null)
-					throw new BadMapException("The selected map does not contain a start location or a start point. Your save file may be bad");
-				
-				// Use integer division to place the hero at the nearest tile
-				stateInfo.getCurrentSprite().setLocation((savedPoint.x / stateInfo.getTileWidth()) * stateInfo.getTileWidth(), 
-						(savedPoint.y / stateInfo.getTileHeight()) * stateInfo.getTileHeight(), stateInfo.getTileWidth(), stateInfo.getTileHeight());
-			}
-			else if (!foundStart)
+			if (!foundStart)
 			{
 				throw new BadMapException("The selected map does not contain a start location with the name " + entranceLocation);
 			}

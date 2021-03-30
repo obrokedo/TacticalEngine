@@ -209,6 +209,9 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_INT, "cameray", false,
 				"Camera Start Y",
 				"The initial Y location of the camera (in pixels)"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN, "skippable", false, "Is Skippable",
+				"Whether this cinematic is skippable with the enter key"));
 		PlannerLineDef definingLine = new PlannerLineDef("cinematic",
 				"Cinematic", "", definingValues);
 
@@ -2352,6 +2355,12 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("loadchapter", "Show Chapter",
 				"Shows the chapter page.", definingValues));
 		mapControl.add("Show Chapter");
+		
+		// Load Egress
+		definingValues = new ArrayList<PlannerValueDef>();		
+		allowableLines.add(new PlannerLineDef("loadegress", "Go to Egress Location",
+				"Transitions to the current egress location and revives dead leaders.", definingValues));
+		mapControl.add("Go to Egress Location");
 
 		// Show Cinematic
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2751,9 +2760,9 @@ public class PlannerDefinitions {
 				definingValues));
 		textControl.add("Show NPC Speech");
 		
-		// Set egress location
+		// Set egress point
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapname", false,
 				"Map name",
 				"The name of map (map data) that the hero should egress to"));
@@ -2767,6 +2776,23 @@ public class PlannerDefinitions {
 				"The Y coordinate of the tile that the hero should egress to"));
 		allowableLines.add(new PlannerLineDef(
 				"setegress",
+				"Set Egress Point",
+				"Sets the location that the hero should egress to if they have not saved",
+				definingValues));
+		progressControl.add("Set Egress Point");
+		
+		// Set egress location
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+				PlannerValueDef.TYPE_STRING, "mapname", false,
+				"Map name",
+				"The name of map (map data) that the hero should egress to"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_STRING, "location", false,
+				"Egress Location",
+				"The name of the map location that the hero should egress to"));
+		allowableLines.add(new PlannerLineDef(
+				"setegressloc",
 				"Set Egress Location",
 				"Sets the location that the hero should egress to if they have not saved",
 				definingValues));

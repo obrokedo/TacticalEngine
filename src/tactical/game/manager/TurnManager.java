@@ -437,10 +437,22 @@ public class TurnManager extends Manager implements KeyboardListener
 					displayMoveable = true;
 					// Once we've targeted a sprite there can not be anymore keyboard input
 					stateInfo.removeKeyboardListeners();
-					if (battleCommand.getCommand() == BattleCommand.COMMAND_SPELL && !battleCommand.getSpell().showCombatAnimation()) {
+					if (battleCommand.getCommand() == BattleCommand.COMMAND_SPELL && 
+						!battleCommand.getSpell().showCombatAnimation())
+					{
 						battleCommand.getSpell().performSkippedSpellAction(stateInfo);						
 						turnActions.add(new EndTurnAction());
-					} else
+					} 
+					else if (battleCommand.getCommand() == BattleCommand.COMMAND_ITEM && 
+							battleCommand.getItem().getSpellUse() != null && 
+							!battleCommand.getItem().getSpellUse().getSpell().showCombatAnimation())
+					{
+						if (battleCommand.getItem().getSpellUse().isSingleUse())
+							currentSprite.removeItem(battleCommand.getItem());
+						battleCommand.getItem().getSpellUse().getSpell().performSkippedSpellAction(stateInfo);						
+						turnActions.add(new EndTurnAction());
+					}
+					else
 						turnActions.add(new AttackSpriteAction(
 								((SpriteContextMessage) message).getSprites(stateInfo.getCombatSprites()), battleCommand));
 				} else {

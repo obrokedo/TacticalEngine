@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
@@ -112,7 +113,8 @@ public class IntroState extends LoadableGameState {
 	@Override
 	public void doUpdate(PaddedGameContainer container, StateBasedGame game, int delta) throws SlickException {
 		time -= delta / (float) TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration().getIntroScrollSpeed();		
-		if (time <= exitTime|| container.getInput().isKeyDown(KeyMapping.BUTTON_1) || container.getInput().isKeyDown(KeyMapping.BUTTON_3)) {
+		if (time <= exitTime|| container.getInput().isKeyDown(KeyMapping.BUTTON_1) || container.getInput().isKeyDown(KeyMapping.BUTTON_3) ||
+				container.getInput().isKeyDown(Input.KEY_ENTER)) {
 			((LoadingState) game.getState(TacticalGame.STATE_GAME_LOADING)).setLoadingInfo(null, false, false,
 					psi.getResourceManager(),
 						(LoadableGameState) game.getState(TacticalGame.STATE_GAME_MENU),

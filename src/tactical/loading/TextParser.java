@@ -130,13 +130,16 @@ public class TextParser
 				int cinematicId = Integer.parseInt(tagArea.getAttribute("id"));
 				int cameraX = Integer.parseInt(tagArea.getAttribute("camerax"));
 				int cameraY = Integer.parseInt(tagArea.getAttribute("cameray"));
+				boolean skippable = false;
+				if (tagArea.getAttribute("skippable") != null)
+					skippable = Boolean.parseBoolean(tagArea.getAttribute("skippable"));
 
 				ArrayList<CinematicEvent> initEvents = new ArrayList<CinematicEvent>();
 				ArrayList<CinematicEvent> events = parseCinematicEvents(tagArea, initEvents,
 						animToLoad, musicToLoad, soundToLoad);
 
 
-				cinematicById.put(cinematicId, createNewCinematic(cameraX, cameraY, initEvents, events));
+				cinematicById.put(cinematicId, createNewCinematic(cameraX, cameraY, initEvents, events, skippable));
 			}
 			else if (tagArea.getTagType().equalsIgnoreCase("condition"))
 			{
@@ -301,6 +304,9 @@ public class TextParser
 							dir = Direction.valueOf(dirString);
 					}
 					te.addTriggerable(te.new TriggerLoadMap(actionParams.get("mapdata"), actionParams.get("enter"), dir));
+				}
+				else if (tagType.equalsIgnoreCase("loadegress")) {
+					te.addTriggerable(te.new TriggerGoToEgress());
 				}
 				else if (tagType.equalsIgnoreCase("loadchapter")) {
 					String header = actionParams.get("header");
@@ -497,8 +503,12 @@ public class TextParser
 					te.addTriggerable(te.new TriggerNPCSpeech(actionParams.get("npcname")));
 				}
 				else if (tagType.equalsIgnoreCase("setegress")) {
-					te.addTriggerable(te.new TriggerSetEgressLocation(actionParams.get("mapname"), 
+					te.addTriggerable(te.new TriggerSetEgressPoint(actionParams.get("mapname"), 
 							Integer.parseInt(actionParams.get("locx")), Integer.parseInt(actionParams.get("locy"))));
+				}
+				else if (tagType.equalsIgnoreCase("setegressloc")) {
+					te.addTriggerable(te.new TriggerSetEgressLocation(actionParams.get("mapname"), 
+							actionParams.get("location")));
 				}
 				else if (tagType.equalsIgnoreCase("save")) { 
 					te.addTriggerable(te.new TriggerSave());
@@ -744,7 +754,7 @@ public class TextParser
 	}
 	
 	protected Cinematic createNewCinematic(int cameraX, int cameraY, ArrayList<CinematicEvent> initEvents,
-			ArrayList<CinematicEvent> events) {
-		return new Cinematic(initEvents, events, cameraX, cameraY);
+			ArrayList<CinematicEvent> events, boolean skippable) {
+		return new Cinematic(initEvents, events, cameraX, cameraY, skippable);
 	}
 }

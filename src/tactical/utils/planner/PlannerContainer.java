@@ -66,6 +66,7 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		if (index != -1 && index < lines.size())
 		{
 			lines.get(index).setupUI(this, index + 1, pcdef.getListOfLists(), parentTab);
+			lines.get(index).setListener(this);
 			listPanel.add(lines.get(index).getUiAspect());
 		}
 
@@ -110,6 +111,7 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 	{
 		PlannerLine pl = lines.remove(index);
 		parentTab.refreshItem(this);
+		parentTab.checkForErrorsAndRename(this);
 		return pl;
 	}
 
