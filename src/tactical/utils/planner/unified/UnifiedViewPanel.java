@@ -338,6 +338,13 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			} else if (pl.getPlDef().getName().equalsIgnoreCase("Run Triggers")) {
 				if (pl.getValues().size() > 0 && ((ArrayList<PlannerReference>) pl.getValues().get(0)).get(0).getName().trim().length() > 0) {
 					ArrayList<PlannerReference> refs = (ArrayList<PlannerReference>) pl.getValues().get(0);
+					for (int i = 0; i < refs.size(); i++) {
+						if (refs.get(i).getName() == null || refs.get(i).getName().trim().length() == 0) {
+							refs.remove(i);
+							i--;
+						}
+					}
+					
 					for (PlannerReference plannerRef : refs) {
 						addArrowLineArrowGroup(group.groupRenderables, "A 'Run Triggers' action causes...", pc, pl, 
 								pr -> setupTrigger(pr), plannerRef);

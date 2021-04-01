@@ -89,7 +89,8 @@ public class SpriteManager extends Manager
 				
 				// Use integer division to place the hero at the nearest tile
 				stateInfo.getCurrentSprite().setLocation((savedPoint.x / stateInfo.getTileWidth()) * stateInfo.getTileWidth(), 
-						(savedPoint.y / stateInfo.getTileHeight()) * stateInfo.getTileHeight(), stateInfo.getTileWidth(), stateInfo.getTileHeight());				
+						(savedPoint.y / stateInfo.getTileHeight()) * stateInfo.getTileHeight(), stateInfo.getTileWidth(), stateInfo.getTileHeight());
+				foundStart = true;
 			}
 
 			// Get any npcs from the map

@@ -236,7 +236,6 @@ public class Trigger
 				}
 			}
 			
-	
 			stateInfo.getPersistentStateInfo().loadMap(
 					stateInfo.getPersistentStateInfo().getClientProgress().getLastEgressLocation().getLastSaveMapData(),
 					stateInfo.getPersistentStateInfo().getClientProgress().getLastEgressLocation().getInTownLocation());

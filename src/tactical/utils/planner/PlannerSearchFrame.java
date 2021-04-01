@@ -16,7 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 
-import tactical.utils.planner.PlannerFrame.SearchResult;
+import tactical.utils.planner.ResourceSearcher.SearchResult;
 
 public class PlannerSearchFrame extends JFrame implements ActionListener {
 	

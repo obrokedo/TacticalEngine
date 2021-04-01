@@ -53,6 +53,7 @@ import tactical.loading.PlannerTilesetParser;
 import tactical.utils.ImageUtility;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
+import tactical.utils.planner.ResourceSearcher.SearchResult;
 import tactical.utils.planner.cinematic.CinematicCreatorPanel;
 import tactical.utils.planner.mapedit.MapEditorPanel;
 import tactical.utils.planner.unified.UnifiedViewPanel;
@@ -82,6 +83,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private JList<String> errorList = new JList<>();
 	private JScrollPane errorScroll;
 	private JPanel leftPanel;
+	private ResourceSearcher resourceSearcher;
 	public static boolean SHOW_CIN_LOCATION = true;
 
 	public static final int TAB_TRIGGER = 0;
@@ -187,6 +189,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		/*******************/
 		PlannerDefinitions.setupDefintions(referenceListByReferenceType, containersByName);			
 		
+		resourceSearcher = new ResourceSearcher(containersByName);
+		
 		initUI();
 
 		getSavedData();
@@ -215,17 +219,16 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	
 	private void createAndAddFileMenu(JMenuBar menuBar) {
 		JMenu fileMenu = new JMenu("File");
-		addMenuItem("New Triggers/Speech/Cinematic", "new", fileMenu);
-		addMenuItem("Open Triggers/Speech/Cinematic", "open", fileMenu);
+		addMenuItem("New", "new", fileMenu);
+		addMenuItem("Open", "open", fileMenu);
 		changeAssociatedMapMenuItem = addMenuItem("Change Associated Map", "openmap", fileMenu);
 		changeAssociatedMapMenuItem.setEnabled(false);
 		//exportMapItem = addMenuItem("Export Map", "exportmap", fileMenu);
 		// exportMapItem.setEnabled(false);
-		addMenuItem("Reload Triggers/Speech/Cinematic", "reload", fileMenu);
+		addMenuItem("Reload", "reload", fileMenu);
 		// addMenuItem("Create Triggers Based on Map", "generate", fileMenu);
-		addMenuItem("Save Triggers/Speech/Cinematic", "save", fileMenu);
-		addMenuItem("Save All", "saveall", fileMenu);
-		addMenuItem("Export Enemy Cheat Sheet", "enemycheat", fileMenu);
+		addMenuItem("Save", "saveall", fileMenu);
+		// addMenuItem("Export Enemy Cheat Sheet", "enemycheat", fileMenu);
 		addMenuItem("Exit", "exit", fileMenu);
 		menuBar.add(fileMenu);
 	}
@@ -551,13 +554,13 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	private List<SearchResult> searchLocal(String searchString) {
 		List<SearchResult> results = new ArrayList<>();
-		searchPlannerTabs(getDataInputTabs(), searchString, results, null);
+		resourceSearcher.searchPlannerTabs(getDataInputTabs(), searchString, results, null);
 		return results;
 	}
 	
 	public List<SearchResult> searchGlobal(String searchString, boolean checkNonMapTabs) {
 		
-		List<SearchResult> results = new ArrayList<>();
+		List<SearchResult> results = resourceSearcher.searchGlobal(searchString);
 		
 		if (checkNonMapTabs) {
 			// Get the non map related tab search results first and only once
@@ -566,100 +569,10 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			nonMapTabs.add(plannerTabs.get(TAB_HERO));
 			nonMapTabs.add(plannerTabs.get(TAB_ITEM));
 			nonMapTabs.add(plannerTabs.get(TAB_QUEST));
-			searchPlannerTabs(nonMapTabs, searchString, results, null);
+			resourceSearcher.searchPlannerTabs(nonMapTabs, searchString, results, null);
 		}
-		
-		// Go through all of the map data files searching
-		for (File file : new File(PlannerIO.PATH_MAPDATA).listFiles())
-		{
-			ArrayList<TagArea> tagAreas = null;
-			try {
-				tagAreas = XMLParser.process(Files.readAllLines(
-					Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8), true);
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(this, 
-						"An error occurred while trying to parse file " + file.getPath() + " it will not be included in search results");
-				e.printStackTrace();
-				continue;
-			}
-			List<PlannerTab> tempTabs = new ArrayList<>();
-			// Add triggers
-			tempTabs.add(new PlannerTab("Triggers", containersByName,
-					new String[] { "trigger" }, PlannerValueDef.REFERS_TRIGGER, this, TAB_TRIGGER));
 
-			// Add conditions
-			tempTabs.add(new PlannerTab("Conditions", containersByName,
-					new String[] { "condition" }, PlannerValueDef.REFERS_CONDITIONS, this, TAB_CONDITIONS));
-			
-			// Add cinematics
-			tempTabs.add(new PlannerTab("Cinematics", containersByName,
-					new String[] { "cinematic" }, PlannerValueDef.REFERS_CINEMATIC,
-					this, TAB_CIN));
-
-			// Add speech
-			tempTabs.add(new PlannerTab("Speeches", containersByName,
-					new String[] { "text" }, PlannerValueDef.REFERS_TEXT, this, TAB_TEXT));
-		
-			plannerIO.parseContainer(tagAreas, tempTabs.get(0), "trigger", containersByName, false);
-			plannerIO.parseContainer(tagAreas, tempTabs.get(3), "text", containersByName, false);
-			plannerIO.parseContainer(tagAreas, tempTabs.get(2), "cinematic", containersByName, false);
-			plannerIO.parseContainer(tagAreas, tempTabs.get(1), "condition", containersByName, false);
-			
-			searchPlannerTabs(tempTabs, searchString, results, file.getName());
-		}
-		
 		return results;
-	}
-	
-	private void searchPlannerTabs(List<PlannerTab> plannerTabs, String searchString, 
-			List<SearchResult> results, String optionalFile) {
-		for (PlannerTab pt : plannerTabs) {
-			for (PlannerContainer pc : pt.getListPC()) {
-				searchPlannerLine(searchString, pt, pc, pc.getDefLine(), results, optionalFile);
-				for (PlannerLine pl : pc.getLines())
-					searchPlannerLine(searchString, pt, pc, pl, results, optionalFile);
-			}
-		}
-	}
-	
-	private void searchPlannerLine(String searchString, PlannerTab pt, 
-			PlannerContainer pc, PlannerLine pl, List<SearchResult> results, String optionalFile) {
-		for (Object o : pl.getValues()) {
-			
-			
-			String searchMe = null;
-			if (o != null) {
-				if (o instanceof String && 
-						((String) o).trim().length() > 0) {
-					searchMe = ((String) o).trim();
-				}
-				else if (o instanceof PlannerReference && 
-						((PlannerReference) o).getName() != null &&
-						((PlannerReference) o).getName().trim().length() > 0)
-					searchMe = ((PlannerReference) o).getName().trim();
-			}
-			
-			if (searchMe != null && searchMe.toLowerCase().contains(searchString)) {
-				results.add(new SearchResult(pt, pc, pl, searchMe, optionalFile));
-			}
-		}
-	}
-	
-	class SearchResult {
-		public final PlannerTab pt; 
-		public final PlannerContainer pc; 
-		public final PlannerLine pl;
-		public final String value;
-		public final String file;
-		
-		public SearchResult(PlannerTab pt, PlannerContainer pc, PlannerLine pl, String value, String file) {
-			super();
-			this.pt = pt;
-			this.pc = pc;
-			this.pl = pl;
-			this.value = value;
-			this.file = file;
-		}
 	}
 	
 	private boolean promptAndLoadPlannerMap(HashSet<TagArea> mapAreas) 

@@ -278,7 +278,8 @@ public class MenuState extends LoadableGameState
 						}
 						else if (persistentStateInfo.getClientProgress().isBattle())
 							loadType = LoadTypeEnum.BATTLE;
-						load(loadType, persistentStateInfo.getClientProgress().getMapData(), null, 0);
+						load(loadType, persistentStateInfo.getClientProgress().getLastSaveLocation().getLastSaveMapData(), 
+								null, 0);
 					} else {
 						// Clobber existing save data...
 						persistentStateInfo.getClientProfile().initializeValues();
