@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.function.Function;
 
 import tactical.cinematic.Cinematic;
@@ -38,7 +39,7 @@ public class TextParser
 {
 	public String parseText(String file, Hashtable<Integer, ArrayList<Speech>> speechesById,
 			Hashtable<Integer, Trigger> triggerEventById, Hashtable<Integer, Cinematic> cinematicById,
-			HashSet<TriggerCondition> conditions, HashSet<TagArea> mapAreas) throws IOException
+			HashSet<TriggerCondition> conditions, List<TagArea> mapAreas) throws IOException
 	{
 		HashSet<String> animToLoad = new HashSet<String>();
 		HashSet<String> soundToLoad = new HashSet<String>();

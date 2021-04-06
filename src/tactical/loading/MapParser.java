@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.newdawn.slick.Color;
@@ -26,7 +26,7 @@ public class MapParser
 {
 	private static float tileResize = 1;
 	
-	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser, HashSet<TagArea> mapAreas,
+	public static void parseMap(String mapFile, Map map, TilesetParser tilesetParser, List<TagArea> mapAreas,
 			ResourceManager frm) throws IOException, SlickException
 	{
 		ArrayList<TagArea> tagAreas = XMLParser.process(mapFile, false);

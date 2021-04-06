@@ -526,10 +526,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	public boolean resourceSelected(String selectedItem,
 			ListUI parentSelector) {
 		
-		HashSet<TagArea> mapArea = new HashSet<TagArea>();
+		List<TagArea> mapArea;
 		try {			
 			String firstLine = ResourceManager.readAllLines("/mapdata/" + selectedItem).get(1);		
-			mapArea = new HashSet<TagArea>();
+			mapArea = new ArrayList<TagArea>();
 			TacticalGame.TEXT_PARSER.parseText("/mapdata/" + selectedItem, 
 					new Hashtable<Integer, ArrayList<Speech>>(), new Hashtable<Integer, Trigger>(), 
 					new Hashtable<Integer, Cinematic>(), new HashSet<TriggerCondition>(), mapArea);

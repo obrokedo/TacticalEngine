@@ -575,7 +575,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		return results;
 	}
 	
-	private boolean promptAndLoadPlannerMap(HashSet<TagArea> mapAreas) 
+	private boolean promptAndLoadPlannerMap(List<TagArea> mapAreas) 
 	{
 		JFileChooser fc = createFileChooser();
 		int returnVal = fc.showOpenDialog(this);
@@ -593,7 +593,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		}
 	}
 
-	private boolean loadPlannerMap(String fileName, HashSet<TagArea> mapAreas) {
+	private boolean loadPlannerMap(String fileName, List<TagArea> mapAreas) {
 		plannerMap = new PlannerMap(fileName, 
 				referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1), plannerTabs.get(PlannerFrame.TAB_ENEMY));
 
@@ -654,7 +654,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					Paths.get(triggerFile.getAbsolutePath()), StandardCharsets.UTF_8), true);
 			String mapFile = null;
 			
-			HashSet<TagArea> mapAreas = new HashSet<TagArea>();
+			List<TagArea> mapAreas = new ArrayList<TagArea>();
 			
 			for (TagArea ta : tagAreas)
 				if (ta.getTagType().equalsIgnoreCase("map")) {

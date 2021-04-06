@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -163,7 +164,7 @@ public class ResourceManager {
 		}
 		else if (split[0].equalsIgnoreCase("text"))
 		{
-			HashSet<TagArea> mapAreas = new HashSet<>();
+			List<TagArea> mapAreas = new ArrayList<>();
 			String mapName = TacticalGame.TEXT_PARSER.parseText(split[1], speechesById, triggerEventById, cinematicById, conditions, mapAreas);
 			Log.debug("Load map: " + mapName);
 			map.setName(mapName);
