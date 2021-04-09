@@ -75,6 +75,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	private Button loadTownButton = new Button(0, 550, 150, 25, "Load Town");
 	private Button loadCinButton = new Button(0, 580, 150, 25, "Load Cin");
 	private Button loadBattleButton = new Button(0, 610, 150, 25, "Load Battle");
+	private Button saveEnableButton = new Button(0, 480, 150, 25, "Save Disabled");
 	private TextField cinematicIDField;
 	
 	protected int totalResources = 0;
@@ -111,6 +112,8 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			 plannerFrame = new PlannerFrame(this);
 		
 		backgroundIm = new Image("image/engine/BlackGeo.jpg");
+		
+		saveEnableButton.setForegroundColor(Color.red);
 		
 		// Checks to see if any mapdata has errors
 		/*
@@ -225,6 +228,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		loadTownButton.render(g);
 		loadBattleButton.render(g);
 		loadCinButton.render(g);
+		saveEnableButton.render(g);
 		
 		g.setColor(Color.white);
 		g.drawString("Cinematic ID:", 170, 580);
@@ -272,6 +276,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		loadTownButton.handleUserInput(x, y, false);
 		loadCinButton.handleUserInput(x, y, false);
 		loadBattleButton.handleUserInput(x, y, false);
+		saveEnableButton.handleUserInput(x, y, false);
 		
 		if (updateDelta > 0)
 			updateDelta = Math.max(0, updateDelta - delta);
@@ -481,6 +486,16 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				if (loadBattleButton.handleUserInput(x, y, true)) {					
 					applyDevParams();
 					startBattle();
+				}
+				if (saveEnableButton.handleUserInput(x, y, true)) {
+					TacticalGame.SAVE_ENABLED = !TacticalGame.SAVE_ENABLED;
+					if (TacticalGame.SAVE_ENABLED) {
+						saveEnableButton.setText("Save Enabled");
+						saveEnableButton.setForegroundColor(Color.green);
+					} else {
+						saveEnableButton.setText("Save Disabled");
+						saveEnableButton.setForegroundColor(Color.red);
+					}
 				}
 				
 				this.textSelector.handleInput(x, y, true);

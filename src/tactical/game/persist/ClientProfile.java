@@ -150,6 +150,8 @@ public class ClientProfile implements Serializable
 
 	public void serializeToFile()
 	{
+		if (!TacticalGame.SAVE_ENABLED)
+			return;
 		try
 		{
 			OutputStream file = new FileOutputStream(name + ".profile");

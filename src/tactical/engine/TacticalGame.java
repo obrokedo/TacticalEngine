@@ -104,6 +104,8 @@ public abstract class TacticalGame extends StateBasedGame   {
 	
 	public static boolean MUTE_MUSIC = false;
 	
+	public static boolean SAVE_ENABLED = !DEV_MODE_ENABLED;
+	
 	private PersistentStateInfo persistentStateInfo;
 	
 	public static TextParser TEXT_PARSER = new TextParser();
@@ -118,6 +120,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		GAME_TITLE = gameTitle;
 		VERSION = version;
 		DEV_MODE_ENABLED = devMode;
+		SAVE_ENABLED = !devMode;
 		
 		TacticalGame.ENGINE_CONFIGURATIOR = getEngineConfigurator();
 		

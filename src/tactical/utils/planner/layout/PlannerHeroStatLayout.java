@@ -16,7 +16,8 @@ public class PlannerHeroStatLayout extends ThreeColumnPanelLayout {
 				{"counterStrength", "evadeStrength"},
 				{"doubleStrength", "critStrength"},
 				{"usuableitems"},
-				{"class"}};
+				{"class"},
+				{"evaluation"}};
 		return layout;
 	}
 }

@@ -23,6 +23,7 @@ import org.newdawn.slick.util.Log;
 
 import lombok.Getter;
 import lombok.Setter;
+import tactical.engine.TacticalGame;
 import tactical.engine.message.LoadMapMessage;
 import tactical.game.item.Item;
 import tactical.game.sprite.CombatSprite;
@@ -136,6 +137,8 @@ public class ClientProgress implements Serializable
 	public void serializeToFile()
 	{
 		this.timePlayed += (System.currentTimeMillis() - lastSaveTime);
+		if (!TacticalGame.SAVE_ENABLED)
+			return;
 		try
 		{
 			OutputStream file = new FileOutputStream(name + ".progress");
