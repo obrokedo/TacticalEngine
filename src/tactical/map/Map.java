@@ -138,7 +138,8 @@ public class Map
 			}
 			else if (mo.getKey().equalsIgnoreCase("chest")) {
 				mo.setName("Chest " + incrementingIds++);
-				stateInfo.addSprite(mo.establishChest(incrementingIds++, incrementingIds++, stateInfo.getResourceManager()));
+				stateInfo.addSprite(mo.establishChest(incrementingIds++, incrementingIds++, incrementingIds++, 
+						stateInfo.getResourceManager()));
 			} 
 			else if (mo.getKey().equalsIgnoreCase("stairs")) {
 				Point p1 = null;

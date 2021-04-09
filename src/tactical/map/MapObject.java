@@ -366,13 +366,16 @@ public class MapObject
 		}
 	}
 	
-	public Sprite establishChest(int triggerId1, int triggerId2, ResourceManager fcrm) {
+	public Sprite establishChest(int triggerId1, 
+			int triggerId2, 
+			int triggerId3, 
+			ResourceManager fcrm) {
 		// parse sprite image
 		// setup chest sprite
 		// create trigger
 		// 1. give item
 		// 2. remove sprite
-		// add search vondition
+		// add search condition
 		
 		String spriteImage = params.get("spriteimage");
 		String itemString = params.get("itemid");
@@ -381,7 +384,7 @@ public class MapObject
 			item = ItemResource.getItem(Integer.parseInt(itemString), fcrm);
 		}
 		
-		Trigger searchTrigger1 = new Trigger("SearchChest" + triggerId1, triggerId1, true, false, true, false,
+		Trigger searchTriggerRemoveLid = new Trigger("SearchChest" + triggerId1, triggerId1, true, false, true, false,
 				 null, null);
 		Trigger searchTrigger2 = new Trigger("SearchChest" + triggerId2, triggerId2, false, 
 				true, true, false, null, null);
@@ -390,21 +393,27 @@ public class MapObject
 		chestSprite.setLocX(getX(), fcrm.getMap().getTileEffectiveWidth());
 		chestSprite.setLocY(getY(), fcrm.getMap().getTileEffectiveHeight());
 		chestSprite.setOffsetUp(false);
-		searchTrigger1.addTriggerable(searchTrigger1.new TriggerRemoveSprite(name));
-		searchTrigger1.addTriggerable(searchTrigger1.new TriggerAddSearchArea(this, Trigger.TRIGGER_CHEST_NO_ITEM));
+		searchTriggerRemoveLid.addTriggerable(searchTriggerRemoveLid.new TriggerRemoveSprite(name));
+		searchTriggerRemoveLid.addTriggerable(searchTriggerRemoveLid.new TriggerAddSearchArea(this, Trigger.TRIGGER_CHEST_NO_ITEM));
 		if (item != null) {
 			Trigger t = new Trigger();
 			
-			searchTrigger2.addTriggerable(searchTrigger2.new TriggerAddItem(item.getItemId(), 
-					t.new TriggerShowText(TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration().getItemInChestTextNoRoom(item.getName()))));
+			searchTrigger2.addTriggerable(searchTrigger2.new TriggerAddItem(item.getItemId()));
 			searchTrigger2.addTriggerable(searchTrigger2.new TriggerShowText(
-					TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration().getItemInChestText(item.getName())));
-			searchTrigger2.addTriggerable(searchTrigger2.new TriggerRunTriggers(new int[] {triggerId1}));
+					TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration().getItemInChestText(item.getName())));			
+			searchTrigger2.addTriggerable(searchTrigger2.new TriggerRunTriggers(new int[] {triggerId1}));								
+			
+			// Add a default trigger for chest static sprite to show text
+			chestSprite.setDefaultTriggerId(triggerId3);
+			Trigger triggerPartyFull = new Trigger("SearchChest" + triggerId3, triggerId3, 
+					false, false, false, false, null, null);
+			triggerPartyFull.addTriggerable(t.new TriggerShowText(TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration().getItemInChestTextNoRoom(item.getName())));
+			fcrm.addTriggerEvent(triggerId3, triggerPartyFull);
 		} else {
 			searchTrigger2.addTriggerable(searchTrigger2.new TriggerShowText(TacticalGame.ENGINE_CONFIGURATIOR.getMenuConfiguration().getNoItemInChestText()));
 			searchTrigger2.addTriggerable(searchTrigger2.new TriggerRunTriggers(new int[] {triggerId1}));
 		}
-		fcrm.addTriggerEvent(triggerId1, searchTrigger1);
+		fcrm.addTriggerEvent(triggerId1, searchTriggerRemoveLid);
 		fcrm.addTriggerEvent(triggerId2, searchTrigger2);
 		
 		return chestSprite;
