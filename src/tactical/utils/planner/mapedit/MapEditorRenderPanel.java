@@ -35,7 +35,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 	private MapEditorPanel parentPanel;
 	private ArrayList<PlannerTab> tabsWithMapReferences;
 	private ArrayList<Point> creatingShapePoints = new ArrayList<>();
-	private boolean creatingShape = false, creatingStamp = false;
+	private boolean creatingShape = false, creatingStamp = false, editingShape = false;
 	private Point lastMouse;
 	private float scale = 1.0f;
 	private int dragStartX, dragStartY = 0;
@@ -257,28 +257,37 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 			if (creatingShapePoints.size() > 2 && p.x == creatingShapePoints.get(0).x && 
 					p.y == creatingShapePoints.get(0).y) {			
 				this.creatingShape = false;
-				String name = null;
-				do
-				{
-					name = JOptionPane.showInputDialog("What is the name of this new location (Cannot be empty)?");
-					if (name == null) {
-						this.repaint();
-						return;
-					}
-					
-					name = name.trim();
-					
-					for (MapObject mapObjectCheckForDups : plannerMap.getMapObjects()) {
-						if (name.equalsIgnoreCase(mapObjectCheckForDups.getName())) {
-							name = "";
-							JOptionPane.showMessageDialog(this, "A location with that name already exists");
-						}
-					}
-					
-				} while (name.length() == 0);
 				
-				MapObject mo = new MapObject();
+				MapObject mo = null;
+				String name = null;
+				if (editingShape) {					
+					mo = selectedMapObject;
+					name = mo.getName();
+				} else {				
+					mo = new MapObject();
+					do
+					{
+						name = JOptionPane.showInputDialog("What is the name of this location (Cannot be empty)?");
+						if (name == null) {
+							this.repaint();
+							return;
+						}
+						
+						name = name.trim();
+						
+						for (MapObject mapObjectCheckForDups : plannerMap.getMapObjects()) {
+							if (name.equalsIgnoreCase(mapObjectCheckForDups.getName())) {
+								name = "";
+								JOptionPane.showMessageDialog(this, "A location with that name already exists");
+							}
+						}
+						
+					} while (name.length() == 0);
+				}
+				
 				mo.setPolyPoints(creatingShapePoints);
+				mo.setX(0);
+				mo.setY(0);
 				String tagAreaText = "<object name=\"" + name + "\" x=\"0\" y=\"0\">";
 				TagArea tagArea = new TagArea(tagAreaText);
 				tagAreaText = "<polyline points=\"";
@@ -290,9 +299,15 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 				tagAreaText += "\"/>";
 				tagArea.getChildren().add(new TagArea(tagAreaText));
 				mo.determineShape();
-				mo.setName(name);
-				mo.setKey("");
-				plannerMap.addMapObject(mo, tagArea);
+				
+				if (editingShape) {
+					plannerMap.updateMapObjectLocation(mo, tagArea);
+					editingShape = false;
+				} else {
+					mo.setName(name);
+					mo.setKey("");
+					plannerMap.addMapObject(mo, tagArea);
+				}
 				this.repaint();
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -301,6 +316,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 				this.repaint();
 			} else {
 				this.creatingShape = false;
+				this.editingShape = false;
 				this.repaint();
 			}
 		}
@@ -346,6 +362,31 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 		return false;
 	}
 	
+	public void renameLocation() {
+		if (selectedMapObject != null) {
+			String name;
+			do
+			{
+				name = JOptionPane.showInputDialog("What is the name of this location (Cannot be empty)?", selectedMapObject.getName());
+				if (name == null) {
+					this.repaint();
+					return;
+				}
+				
+				name = name.trim();
+				
+				for (MapObject mapObjectCheckForDups : plannerMap.getMapObjects()) {
+					if (name.equalsIgnoreCase(mapObjectCheckForDups.getName())) {
+						name = "";
+						JOptionPane.showMessageDialog(this, "A location with that name already exists");
+					}
+				}
+				
+			} while (name.length() == 0);
+			plannerMap.renameMapObject(name, selectedMapObject);
+		}
+	}
+	
 	public boolean stopMakingLocation() {
 		if (this.creatingShape) {
 			creatingShape = false;
@@ -354,10 +395,18 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 		}
 		return false;
 	}
+	
+	public void editLocationShape() {
+		if (selectedMapObject != null) {			
+			this.creatingShapePoints = new ArrayList<> (selectedMapObject.getPolyPoints());
+			creatingShape = true;
+			this.editingShape = true;
+		}
+	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (selectedMapObject != null) {		
+		if (selectedMapObject != null && !creatingShape) {		
 			Point p = new Point(Math.round(e.getX() / scale), 
 						Math.round(e.getY() / scale));
 			//selectedMapObject.determineShape();

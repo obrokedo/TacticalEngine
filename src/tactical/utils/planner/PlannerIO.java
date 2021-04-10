@@ -14,12 +14,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonBuilderFactory;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.stream.JsonGenerator;
 import tactical.engine.log.LoggingUtils;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;

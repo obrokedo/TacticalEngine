@@ -133,7 +133,7 @@ public class StateInfo
 		boolean isBattleInitialized = false;
 		
 		SaveLocation saveLoc = persistentStateInfo.getClientProgress().getLastSaveLocation();
-		if (persistentStateInfo.getClientProgress().isBattle() && 
+		if (isCombat && persistentStateInfo.getClientProgress().isBattle() && 
 				saveLoc.getCurrentTurn() != null)
 		{
 			Log.debug("Initializing battle from load");

@@ -71,15 +71,25 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 		JPanel locationVisiblePanel = new JPanel();
 		locationVisiblePanel.setBackground(Color.DARK_GRAY);
 
-		JButton createLocation = new JButton("Create Map Location");
+		JButton createLocation = new JButton("Create");
 		createLocation.addActionListener(this);
 		createLocation.setActionCommand("createloc");
 		locationVisiblePanel.add(createLocation);
 		
-		JButton deleteLocation = new JButton("Delete Map Location");
+		JButton deleteLocation = new JButton("Delete");
 		deleteLocation.addActionListener(this);
 		deleteLocation.setActionCommand("deleteloc");
 		locationVisiblePanel.add(deleteLocation);
+		
+		JButton editLocation = new JButton("Edit");
+		editLocation.addActionListener(this);
+		editLocation.setActionCommand("editloc");
+		locationVisiblePanel.add(editLocation);
+		
+		JButton renameLocation = new JButton("Rename");
+		renameLocation.addActionListener(this);
+		renameLocation.setActionCommand("renameloc");
+		locationVisiblePanel.add(renameLocation);
 		
 		locationVisiblePanel.add(createCheckBox("Enemies", COMMAND_DISPLAY_ENEMY));
 		locationVisiblePanel.add(createCheckBox("Terrain", COMMAND_DISPLAY_TERRAIN));
@@ -315,6 +325,10 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 			mapPanel.startCreatingLocation();
 		} else if ("deleteloc".equalsIgnoreCase(command)) {
 			mapPanel.deleteLocation();
+		} else if ("editloc".equalsIgnoreCase(command)) {
+			mapPanel.editLocationShape();			
+		} else if ("renameloc".equalsIgnoreCase(command)) {
+			mapPanel.renameLocation();
 		} else if ("newdoor".equalsIgnoreCase(command)) {
 			MapObject mo = new MapObject();
 			mo.setKey("door");
@@ -416,6 +430,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 		}
 		int ret = JOptionPane.showConfirmDialog(mapPanel, pl.getUiAspect(), "Edit Map Location Attributes", JOptionPane.OK_CANCEL_OPTION);
 
+		
 		if (ret == JOptionPane.OK_OPTION)
 		{
 			pl.commitChanges();

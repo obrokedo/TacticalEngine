@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -349,7 +350,18 @@ public class PlannerMap extends Map {
 		}
 	}
 	
+	public void renameMapObject(String newName, MapObject mo) {
+		Optional<PlannerReference> ref = 
+				locationReferences.stream().filter(lr -> lr.getName().equalsIgnoreCase(mo.getName())).findFirst();
+		
+		if (ref.isPresent())
+			ref.get().setName(newName);
+		mo.setName(newName);
+	}
+	
 	public void updateMapObjectType(MapObject mo, String newType) {
+		if (mo.getKey().equalsIgnoreCase(newType))
+			return;
 		removeMapObjectReference(mo);
 		mo.setKey(newType);
 		addMapObjectReference(mo);

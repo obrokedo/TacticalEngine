@@ -9,8 +9,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-import javax.swing.JOptionPane;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -34,6 +32,7 @@ import tactical.game.dev.DevParams;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel;
 import tactical.game.menu.Menu.MenuUpdate;
+import tactical.game.persist.ClientProgress;
 import tactical.game.resource.SpellResource;
 import tactical.game.text.Speech;
 import tactical.game.trigger.Trigger;
@@ -235,6 +234,27 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		cinematicIDField.render(container, g);
 
 		g.drawString(version, container.getWidth() / 2, container.getHeight() - 30);
+		
+		ClientProgress cp = persistentStateInfo.getClientProgress();
+		
+		int startDrawY = container.getHeight() - 270;
+		int startDrawX = container.getWidth() - 570;
+		g.drawString("Current Save Data", startDrawX, startDrawY += 30);
+		if (cp.getLastSaveLocation() != null) {
+			
+			g.drawString("Map: "+ cp.getMapData(), startDrawX, startDrawY += 30);
+			boolean inBattle = (cp.getLastSaveLocation().getBattleHeroSpriteIds() != null);
+			g.drawString("In battle: " + inBattle, 
+					startDrawX, startDrawY += 30);
+			if (inBattle) {
+				g.setColor(Color.red);
+				g.drawString("You MUST load (F8) or remove your Test.progress", 
+						startDrawX, startDrawY += 30);
+				g.drawString("or things may not work correctly", 
+						startDrawX, startDrawY += 30);
+				g.setColor(Color.white);
+			}
+		}
 		
 		int amount = 8;
 		g.drawString("F1 - Toggle Main/Dev Menu", container.getWidth() - 250, container.getHeight() - amount-- * 30);
