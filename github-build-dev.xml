@@ -42,7 +42,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/ZTCP.jar"/>
         	<zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jakarta.json-api-2.0.0.jar"/>
         </jar>
-    	<copy file="${dir.jarfile}/Tactical.jar" tofile="${dir.jarfile}/LegaciesOfVeridocia/lib/Tactical.jar"/>
-    	<ant antfile="LoV-Ant-Dev.xml" target="create_run_jar" dir="${dir.buildfile}/LegaciesOfVeridocia/" inheritAll="false"/>
+    	<copy file="${dir.jarfile}/Tactical.jar" tofile="${dir.jarfile}/Legacies/LegaciesOfVeridocia/lib/Tactical.jar"/>
+    	<ant antfile="LoV-Ant-Dev.xml" target="create_run_jar" dir="${dir.buildfile}/Legacies/LegaciesOfVeridocia/" inheritAll="false"/>
     </target>
 </project>
