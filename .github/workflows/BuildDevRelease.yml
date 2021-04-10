@@ -31,8 +31,7 @@ jobs:
     
     - uses: actions/checkout@master
       with:
-      name: obrokedo/LegaciesOfVeridocia     <-- clone https://github.com/org1/repo1
-      ref: refs/heads/release
+      name: obrokedo/LegaciesOfVeridocia
     
     - name: Build with Ant
       run: ls
