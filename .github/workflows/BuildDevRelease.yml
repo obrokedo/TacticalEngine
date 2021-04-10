@@ -20,9 +20,10 @@ jobs:
         java-version: 1.8
     
     
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       with:
-        name: obrokedo/LegaciesOfVeridocia
+        repository: obrokedo/LegaciesOfVeridocia
+        path: Legacies
     
     - name: Build with Ant
       run: ls
