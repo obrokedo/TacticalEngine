@@ -27,3 +27,8 @@ jobs:
 
     - name: Build with Ant
       run: ant -noinput -buildfile github-build-dev.xml
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: LoV-Dev
+        path: Legacies/LegaciesOfVeridocia/LoV-Dev.jar
