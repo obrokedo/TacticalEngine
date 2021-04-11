@@ -311,7 +311,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		if (TacticalGame.DEV_MODE_ENABLED && heroCombatAnimations.size() == 0)
 		{
 			g.setColor(Color.white);
-			StringUtils.drawString("Press R to restart attack cinematic", 20, 90, g);
+			StringUtils.drawString("Press R to restart attack cinematic", 20, 40, g);
 		}
 	}
 

@@ -189,23 +189,19 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 		{
 			currentAnimation.setAnimation(selectedItem, false);
 			Point p = currentAnimation.getCurrentAnimation().getFirstFramePosition();
-
-			System.out.println(p.getX() + " " + p.getY());
+			
 			if (p.getX() > 50) {
-				drawX = 200;
-				drawY = 125;
-				System.out.println("HERO");
+				drawX = 150;
+				drawY = 220;
 			} else if (p.getX() < 0) {
 				drawX = 200;
-				drawY = 125;
-				System.out.println("NOT ATTACK");
+				drawY = 250;
 			} else {
 				drawX = 150;
-				drawY = 300;
-				System.out.println("ENEMY");
+				drawY = 220;
 			}
-			drawX = 125;
-			drawY = 180;
+			// drawX = 125;
+			// drawY = 180;
 			
 		}
 		else if (parentSelector == weaponSelector)
