@@ -18,6 +18,7 @@ import tactical.engine.TacticalGame;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.IntMessage;
 import tactical.engine.message.MessageType;
+import tactical.engine.message.ShowCinMessage;
 import tactical.engine.message.SpeechMessage;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.state.CinematicState;
@@ -191,6 +192,8 @@ public class Cinematic {
 	 * will result in "shakes" of a greater magnitude in terms of pixels offset
 	 */
 	private int cameraShakeSeverity;
+	
+	@Getter private boolean overrideShowRoofs = false;
 
 	/**
 	 * The amount of pixels that the last shake offset the camera in the x and y direction
@@ -213,7 +216,8 @@ public class Cinematic {
 	 * @param cameraY The start y location in pixels for the camera
 	 */
 	public Cinematic(ArrayList<CinematicEvent> initializeEvents,
-			ArrayList<CinematicEvent> cinematicEvents, int cameraX, int cameraY, boolean skippable) {
+			ArrayList<CinematicEvent> cinematicEvents, int cameraX, int cameraY, 
+				boolean skippable, boolean showRoofs) {
 		this.initializeEvents = initializeEvents;
 		this.cinematicEvents = cinematicEvents;
 		actors = new Hashtable<String, CinematicActor>();
@@ -225,11 +229,12 @@ public class Cinematic {
 		this.cameraStartX = cameraX;
 		this.cameraStartY = cameraY;
 		this.skippable = skippable;
+		this.overrideShowRoofs = showRoofs;
 	}
 	
 	public Cinematic duplicateCinematic() {
 		return new Cinematic(new ArrayList<CinematicEvent>(initializeEvents), 
-				new ArrayList<CinematicEvent>(cinematicEvents), cameraStartX, cameraStartY, skippable);
+				new ArrayList<CinematicEvent>(cinematicEvents), cameraStartX, cameraStartY, skippable, overrideShowRoofs);
 	}
 
 	/**
@@ -391,6 +396,10 @@ public class Cinematic {
 		Log.debug("Handle event: " + ce.getType());
 		CinematicActor ca = null;
 		switch (ce.getType()) {
+			case JUMP:
+				actors.get(ce.getParam(0)).jump((int) ce.getParam(1), (int) ce.getParam(2), 
+						(int) ce.getParam(3), (boolean) ce.getParam(4));
+				break;
 			case MOVE: 
 				// Is pathfinding
 				if ((boolean) ce.getParam(7)) {
@@ -409,14 +418,15 @@ public class Cinematic {
 						}
 						
 						if (path != null) {
-							ca.moveAlongPath(path, (float) ce.getParam(2), (boolean) ce.getParam(6), (int) ce.getParam(8), stateInfo);
+							ca.moveAlongPath(path, (float) ce.getParam(2), (boolean) ce.getParam(6), 
+									(int) ce.getParam(8), (boolean) ce.getParam(9), stateInfo);
 						}
 					}
 				// Not pathfinding
 				} else {
 					ca = getCinematicActorByName((String) ce.getParam(3), ce.getType());
 					moveActorToLocation(ca, (int) ce.getParam(0),
-							(int) ce.getParam(1), (float) ce.getParam(2), (boolean) ce.getParam(6), (int) ce.getParam(8), (boolean) ce.getParam(4), (boolean) ce.getParam(5), stateInfo);
+							(int) ce.getParam(1), (float) ce.getParam(2), (boolean) ce.getParam(6), (int) ce.getParam(8), (boolean) ce.getParam(4), (boolean) ce.getParam(5), (boolean) ce.getParam(9), stateInfo);
 				}
 				
 				if ((boolean) ce.getParam(6))
@@ -622,7 +632,7 @@ public class Cinematic {
 				break;
 			case LOAD_CIN:
 				if (stateInfo.getClientProgress().getMapData().equalsIgnoreCase((String) ce.getParam(0))) {
-					stateInfo.sendMessage(new IntMessage(MessageType.SHOW_CINEMATIC, (int) ce.getParam(1)));
+					stateInfo.sendMessage(new ShowCinMessage((int) ce.getParam(1)));
 					cinematicEvents.add(new CinematicEvent(CinematicEventType.WAIT, 500));
 				}
 				else
@@ -816,10 +826,10 @@ public class Cinematic {
 	}
 		
 	private void moveActorToLocation(CinematicActor ca, int moveToLocX, int moveToLocY, float speed, boolean haltingMove, 
-			int direction, boolean moveHorFirst, boolean moveDiag, StateInfo stateInfo)
+			int direction, boolean moveHorFirst, boolean moveDiag, boolean noAnimate,  StateInfo stateInfo)
 	{
 		ca.moveToLocation(moveToLocX, moveToLocY, 
-				speed, haltingMove, direction, moveHorFirst, moveDiag);;
+				speed, haltingMove, direction, moveHorFirst, moveDiag, noAnimate);
 	}
 
 	/**

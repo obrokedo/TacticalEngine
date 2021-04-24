@@ -357,7 +357,7 @@ public class StateInfo
 	{
 		messagesToProcess.addAll(newMessages);
 		newMessages.clear();
-		MESSAGES: for (int i = 0; i < messagesToProcess.size(); i = 0)
+		for (int i = 0; i < messagesToProcess.size(); i = 0)
 		{
 			if (processMessage(messagesToProcess.remove(i)))
 				break;

@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +16,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,6 +35,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -220,14 +221,14 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private void createAndAddFileMenu(JMenuBar menuBar) {
 		JMenu fileMenu = new JMenu("File");
 		addMenuItem("New", "new", fileMenu);
-		addMenuItem("Open", "open", fileMenu);
+		addMenuItem("Open", "open", fileMenu, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
 		changeAssociatedMapMenuItem = addMenuItem("Change Associated Map", "openmap", fileMenu);
 		changeAssociatedMapMenuItem.setEnabled(false);
 		//exportMapItem = addMenuItem("Export Map", "exportmap", fileMenu);
 		// exportMapItem.setEnabled(false);
 		addMenuItem("Reload", "reload", fileMenu);
 		// addMenuItem("Create Triggers Based on Map", "generate", fileMenu);
-		addMenuItem("Save", "saveall", fileMenu);
+		addMenuItem("Save", "saveall", fileMenu, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 		// addMenuItem("Export Enemy Cheat Sheet", "enemycheat", fileMenu);
 		addMenuItem("Exit", "exit", fileMenu);
 		menuBar.add(fileMenu);
@@ -264,9 +265,16 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	}
 	
 	private JMenuItem addMenuItem(String text, String actionCommand, JMenu parentMenu) {
+		return this.addMenuItem(text, actionCommand, parentMenu, null);
+	}
+	
+	private JMenuItem addMenuItem(String text, String actionCommand, JMenu parentMenu, KeyStroke shortcut) {
 		JMenuItem menuItem = new JMenuItem(text);
 		menuItem.addActionListener(this);
 		menuItem.setActionCommand(actionCommand);
+		if (shortcut != null) {
+			menuItem.setAccelerator(shortcut);
+		}
 		parentMenu.add(menuItem);
 		return menuItem;
 	}
@@ -490,6 +498,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				success = false;
 
 			saveTriggers(success);
+			JOptionPane.showMessageDialog(this, "Resources have been saved.");
 		} else if (actionCommand.equalsIgnoreCase("exit")) {
 			System.exit(0);
 		}

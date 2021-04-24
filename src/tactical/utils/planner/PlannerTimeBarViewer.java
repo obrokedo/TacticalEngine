@@ -135,6 +135,9 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
 							staticSprites.get(i).timeRemoved = currentTime;
 						}
 					break;
+				case JUMP:
+					handleJump(currentTime, ce, rowsByName, "Jump");
+					break;
 				case MOVE:
 					// Halting
 					if ((boolean) ce.getParam(6)) {
@@ -661,6 +664,23 @@ public class PlannerTimeBarViewer extends TimeBarViewer implements AdjustmentLis
 		ab.dt.addInterval(zi);
 		ab.changeLocations((int) ce.getParam(0), (int) ce.getParam(1), currentTime + duration);
 		return duration;
+	}
+	
+	private void handleJump(long currentTime, CinematicEvent ce, Hashtable<String, ActorBar> rowsByName, String title)
+	{
+		ActorBar ab = rowsByName.get(ce.getParam(0));
+		// Get the current location that the actor is at
+		Point currentPoint =  ab.getActorLocationAtTime((int) currentTime, true).currentPoint;
+
+		int duration = (int) ce.getParam(3);
+		
+		ZIntervalImpl zi = new ZMoveIntervalImpl(title + (int) ce.getParam(1) + " " + (int) ce.getParam(2), currentPoint.x, currentPoint.y, (int) ce.getParam(1), (int) ce.getParam(2),
+				currentTime, duration, false, false);
+		zi.setBegin(new JaretDate(currentTime));
+
+		zi.setEnd(new JaretDate(currentTime + duration));
+		ab.dt.addInterval(zi);
+		ab.changeLocations((int) ce.getParam(1), (int) ce.getParam(2), currentTime + duration);
 	}
 
 	public class ZHeaderRenderer extends DefaultHeaderRenderer

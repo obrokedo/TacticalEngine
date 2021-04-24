@@ -1,6 +1,7 @@
 package tactical.game.menu.devel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -10,8 +11,10 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 
+import tactical.engine.TacticalGame;
 import tactical.engine.state.StateInfo;
 import tactical.game.Camera;
+import tactical.game.battle.BattleEffect;
 import tactical.game.constants.Direction;
 import tactical.game.input.UserInput;
 import tactical.game.manager.TurnManager;
@@ -37,12 +40,13 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 	private StateInfo stateInfo;
 	private ListUI triggerList;
 	private ListUI questList;
+	private ListUI effectList;
 	private CombatSprite selectedSprite = null;
-	private Button moveButton = new Button(270, 25, 140, 20, "Move Combatant");
-	private Button killButton = new Button(270, 55, 140, 20, "Kill Combatant");
-	private Button levelButton = new Button(270, 85, 140, 20, "Level Up Hero");
-	private Button healButton = new Button(270, 115, 140, 20, "Heal");
-	private Button setToOneButton = new Button(270, 145, 140, 20, "Set to 1 HP");	
+	private Button moveButton = new Button(270, 35, 140, 20, "Move Combatant");
+	private Button killButton = new Button(270, 65, 140, 20, "Kill Combatant");
+	private Button levelButton = new Button(270, 95, 140, 20, "Level Up Hero");
+	private Button healButton = new Button(270, 125, 140, 20, "Heal");
+	private Button setToOneButton = new Button(270, 155, 140, 20, "Set to 1 HP");	
 	
 	private Button setDisplayAttributes = new Button(15, 600, 140, 20, "Display Options");
 	
@@ -141,8 +145,16 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 			}
 			if (state == DebugMenuState.CHOOSE_SPRITE) {
 				this.selectedSprite = cs;
-				if (selectedSprite != null)
+				if (selectedSprite != null) {
 					state = DebugMenuState.SPRITE_OPTIONS;
+					
+					if (effectList != null)
+						effectList.unregisterListeners(stateInfo.getPaddedGameContainer());
+					
+					effectList = new ListUI(stateInfo.getPaddedGameContainer(), "Add Effects", 250, 200,
+							Arrays.asList(TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().getBattleEffectList()));
+					effectList.setListener(this);
+				}
 			} else if (state == DebugMenuState.PLACE_SPRITE && cs == null) {
 				selectedSprite.setLocation(tilePixelX, tilePixelY, stateInfo.getTileWidth(), stateInfo.getTileHeight());
 				selectedSprite.setFacing(Direction.DOWN);
@@ -181,6 +193,8 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 				selectedSprite.setCurrentHP(1);
 				timerReset();
 			}
+			
+			effectList.update(stateInfo.getPaddedGameContainer(), (int) delta);
 		} 
 		if (state == DebugMenuState.CHOOSE_TRIGGER) {
 			if (setDisplayAttributes.handleUserInput(x, y, leftClick)) {
@@ -227,6 +241,8 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 		
 		
 		// stateInfo.getCamera().setLocation(x, y, stateInfo);
+		
+			
 		triggerList.update(stateInfo.getPaddedGameContainer(), (int) delta);
 		return super.update(delta, stateInfo);
 	}
@@ -264,6 +280,8 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 			levelButton.render(graphics);
 			healButton.render(graphics);
 			setToOneButton.render(graphics);
+			
+			effectList.render(gc, graphics);
 		} 
 		
 		if (state == DebugMenuState.CHOOSE_TRIGGER) {
@@ -285,32 +303,39 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 
 	@Override
 	public boolean resourceSelected(String selectedItem, ListUI parentSelector) {
+		// What the fuck is this for?
 		if (!selectedItem.equalsIgnoreCase(parentSelector.getSelectedResource())) {
-			Optional<Trigger> trigger = stateInfo.getResourceManager().getTriggers().stream().filter(t -> t.getName().equalsIgnoreCase(selectedItem)).findFirst();
-			if (trigger.isPresent()) {
-				switch (trigger.get().perform(stateInfo)) {
-				case EXCLUDED_QUEST_DONE:
-					triggerStatus = "Trigger Not Run: Excluded Quest Completed";
-					break;
-				case IS_IMMEDIATE:
-					trigger.get().perform(stateInfo, true);
-					break;
-				case NON_RETRIG:
-					triggerStatus = "Trigger Not Run: Can only be run once per game";
-					break;
-				case REQUIRED_QUEST_NOT_DONE:
-					triggerStatus = "Trigger Not Run: Required Quest Incomplete";
-					break;
-				case TRIGGERED:
-					triggerStatus = "Trigger Run (May need to close menu)";
-					break;
-				case TRIGGER_ONCE:
-					triggerStatus = "Trigger Not Run: Can only be run once per map";
-					break;
-				default:
-					break;
-				
+			if (parentSelector == triggerList) {
+				Optional<Trigger> trigger = stateInfo.getResourceManager().getTriggers().stream().filter(t -> t.getName().equalsIgnoreCase(selectedItem)).findFirst();
+				if (trigger.isPresent()) {
+					switch (trigger.get().perform(stateInfo)) {
+					case EXCLUDED_QUEST_DONE:
+						triggerStatus = "Trigger Not Run: Excluded Quest Completed";
+						break;
+					case IS_IMMEDIATE:
+						trigger.get().perform(stateInfo, true);
+						break;
+					case NON_RETRIG:
+						triggerStatus = "Trigger Not Run: Can only be run once per game";
+						break;
+					case REQUIRED_QUEST_NOT_DONE:
+						triggerStatus = "Trigger Not Run: Required Quest Incomplete";
+						break;
+					case TRIGGERED:
+						triggerStatus = "Trigger Run (May need to close menu)";
+						break;
+					case TRIGGER_ONCE:
+						triggerStatus = "Trigger Not Run: Can only be run once per map";
+						break;
+					default:
+						break;
+					
+					}
 				}
+			} else if (parentSelector == effectList) {
+				BattleEffect be = TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().createEffect(selectedItem, 1);
+				be.effectStarted(null, selectedSprite);
+				selectedSprite.addBattleEffect(be);
 			}
 		}
 		return true;
@@ -319,6 +344,9 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 	@Override
 	public void dispose() {
 		triggerList.unregisterListeners(stateInfo.getPaddedGameContainer());
+		
+		if (effectList != null)
+			effectList.unregisterListeners(stateInfo.getPaddedGameContainer());
 		if (questList != null)
 			questList.unregisterListeners(stateInfo.getPaddedGameContainer());
 	}

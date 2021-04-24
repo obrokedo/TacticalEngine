@@ -4,7 +4,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 import tactical.cinematic.Cinematic;
-import tactical.engine.message.IntMessage;
 import tactical.engine.message.Message;
 import tactical.engine.message.ShowCinMessage;
 import tactical.game.trigger.Trigger;
@@ -32,7 +31,8 @@ public class CinematicManager extends Manager
 	{
 		if (cinematic != null)
 		{
-			stateInfo.getCurrentMap().checkRoofs((int) stateInfo.getCamera().getCenterOfCamera().getX(),
+			if (!cinematic.isOverrideShowRoofs())
+				stateInfo.getCurrentMap().checkRoofs((int) stateInfo.getCamera().getCenterOfCamera().getX(),
 					(int) stateInfo.getCamera().getCenterOfCamera().getY());
 			
 			if (cinematic.update(delta, stateInfo.getCamera(),
@@ -72,20 +72,18 @@ public class CinematicManager extends Manager
 		switch (message.getMessageType())
 		{
 			case SHOW_CINEMATIC:
-				if (stateInfo.isInCinematicState())
-					stateInfo.getCurrentMap().setDisableRoofs(true);
-				int cinId = -1;
-				if (message instanceof ShowCinMessage) {
-					ShowCinMessage m = ((ShowCinMessage) message);
-					cinId = m.getCinId();
-					this.exitTrigId = m.getExitTrigId();
-				} else if (message instanceof IntMessage) {
-					cinId = ((IntMessage) message).getValue();
-					this.exitTrigId = Trigger.TRIGGER_NONE;
-				}
+				ShowCinMessage m = ((ShowCinMessage) message);
+				int cinId = m.getCinId();
+				this.exitTrigId = m.getExitTrigId();
 				
 				fadingColor = null;
 				Cinematic cin = stateInfo.getResourceManager().getCinematicById(cinId).duplicateCinematic();
+				
+				if (stateInfo.isInCinematicState() && !cin.isOverrideShowRoofs())
+					stateInfo.getCurrentMap().setDisableRoofs(true);
+				else
+					stateInfo.getCurrentMap().setDisableRoofs(false);
+				
 				cin.initialize(stateInfo, initializeCamera);
 				cinematic = cin;
 				break;

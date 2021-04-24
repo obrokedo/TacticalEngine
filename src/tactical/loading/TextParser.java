@@ -134,13 +134,17 @@ public class TextParser
 				boolean skippable = false;
 				if (tagArea.getAttribute("skippable") != null)
 					skippable = Boolean.parseBoolean(tagArea.getAttribute("skippable"));
+				
+				boolean showRoofs = false;
+				if (tagArea.getAttribute("showroofs") != null)
+					showRoofs = Boolean.parseBoolean(tagArea.getAttribute("showroofs"));
 
 				ArrayList<CinematicEvent> initEvents = new ArrayList<CinematicEvent>();
 				ArrayList<CinematicEvent> events = parseCinematicEvents(tagArea, initEvents,
 						animToLoad, musicToLoad, soundToLoad);
 
 
-				cinematicById.put(cinematicId, createNewCinematic(cameraX, cameraY, initEvents, events, skippable));
+				cinematicById.put(cinematicId, createNewCinematic(cameraX, cameraY, initEvents, events, skippable, showRoofs));
 			}
 			else if (tagArea.getTagType().equalsIgnoreCase("condition"))
 			{
@@ -598,11 +602,21 @@ public class TextParser
 		else if (type.equalsIgnoreCase("camerafollow"))
 			return new CinematicEvent(CinematicEventType.CAMERA_FOLLOW, area.getAttribute("name"));		
 		else if (type.equalsIgnoreCase("move"))
+		{
+			boolean freeze = false;
+			if (area.getAttribute("freezeanim") != null) {
+				freeze = Boolean.parseBoolean(area.getAttribute("freezeanim"));
+			}
 			return new CinematicEvent(CinematicEventType.MOVE, Integer.parseInt(area.getAttribute("x")),
 					Integer.parseInt(area.getAttribute("y")), Float.parseFloat(area.getAttribute("speed")), area.getAttribute("name"),
 					Boolean.parseBoolean(area.getAttribute("movehor")), Boolean.parseBoolean(area.getAttribute("movediag")),
 					Boolean.parseBoolean(area.getAttribute("halting")),  Boolean.parseBoolean(area.getAttribute("pathfinding")), 
-					Integer.parseInt(area.getAttribute("facing")));		
+					Integer.parseInt(area.getAttribute("facing")), freeze);
+		}
+		else if (type.equalsIgnoreCase("jump"))
+			return new CinematicEvent(CinematicEventType.JUMP, area.getAttribute("name"),
+					Integer.parseInt(area.getAttribute("jumpx")), Integer.parseInt(area.getAttribute("height")), 
+					Integer.parseInt(area.getAttribute("duration")), Boolean.parseBoolean(area.getAttribute("landing")));
 		else if (type.equalsIgnoreCase("haltinganim"))
 			return new CinematicEvent(CinematicEventType.HALTING_ANIMATION, area.getAttribute("name"),
 					area.getAttribute("anim"), Integer.parseInt(area.getAttribute("time")));
@@ -755,7 +769,7 @@ public class TextParser
 	}
 	
 	protected Cinematic createNewCinematic(int cameraX, int cameraY, ArrayList<CinematicEvent> initEvents,
-			ArrayList<CinematicEvent> events, boolean skippable) {
-		return new Cinematic(initEvents, events, cameraX, cameraY, skippable);
+			ArrayList<CinematicEvent> events, boolean skippable, boolean showRoofs) {
+		return new Cinematic(initEvents, events, cameraX, cameraY, skippable, showRoofs);
 	}
 }

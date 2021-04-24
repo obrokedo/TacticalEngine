@@ -16,6 +16,7 @@ public class CinematicEvent
 		MOVE,
 		LOOP_MOVE,
 		STOP_LOOP_MOVE,
+		JUMP,
 		REMOVE_ACTOR,
 		ADD_ACTOR,
 		ASSOCIATE_AS_ACTOR,

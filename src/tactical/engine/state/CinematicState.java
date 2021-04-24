@@ -7,8 +7,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import tactical.engine.TacticalGame;
-import tactical.engine.message.IntMessage;
 import tactical.engine.message.MessageType;
+import tactical.engine.message.ShowCinMessage;
 import tactical.game.manager.CinematicManager;
 import tactical.game.manager.MenuManager;
 import tactical.game.manager.SoundManager;
@@ -72,7 +72,7 @@ public class CinematicState extends LoadableGameState
 		super.enter(container, game);
 
 		// Get the first cinematic
-		stateInfo.sendMessage(new IntMessage(MessageType.SHOW_CINEMATIC, stateInfo.getPersistentStateInfo().getCinematicID()));
+		stateInfo.sendMessage(new ShowCinMessage(stateInfo.getPersistentStateInfo().getCinematicID()));
 		// cinematic = stateInfo.getResourceManager().getCinematicById(stateInfo.getPsi().getCinematicID());
 		// cinematic.initialize(stateInfo);
 		stateInfo.setInitialized(true);

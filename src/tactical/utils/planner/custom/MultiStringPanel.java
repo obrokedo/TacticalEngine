@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -71,7 +72,13 @@ public class MultiStringPanel extends JPanel implements ActionListener {
 	
 	public List<String> getTextStrings() {
 		List<String> texts = new ArrayList<>();
-		textAreas.forEach(ta -> texts.add(ta.getText()));
+		for (JTextArea textArea : textAreas) {
+			String textToCheck = textArea.getText();
+			JOptionPane.showMessageDialog(null, "Newlines have been stripped in the text field, verify that it still looks correct.");
+			textToCheck = textToCheck.replaceAll("\n", "");
+			textArea.setText(textToCheck);			
+			texts.add(textToCheck);
+		}
 		return texts;
 	}
 }

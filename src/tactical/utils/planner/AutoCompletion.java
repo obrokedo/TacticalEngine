@@ -137,7 +137,11 @@ public class AutoCompletion extends PlainDocument {
             // provide feedback to the user that his input has been received but can not be accepted
             comboBox.getToolkit().beep(); // when available use: UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
         }
-        setText(item.toString());
+        
+        if (item != null)
+        	setText(item.toString());
+        else
+        	setText("");
         // select the completed part
         highlightCompletedText(offs+str.length());
     }

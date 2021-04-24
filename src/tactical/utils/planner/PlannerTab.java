@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import lombok.Setter;
 import tactical.utils.planner.ResourceSearcher.SearchResult;
 import tactical.utils.planner.unified.SingleEditPanel;
 
@@ -39,7 +40,7 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 	protected Hashtable<String, PlannerContainerDef> containersByName;
 	protected String[] containers;
 	protected ArrayList<PlannerContainer> listPC;
-	protected PlannerContainer currentPC;
+	@Setter protected PlannerContainer currentPC;
 	protected int selectedPC;
 	protected JScrollPane currentPCScroll;
 	protected JComboBox<String> typeComboBox;
@@ -440,8 +441,7 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

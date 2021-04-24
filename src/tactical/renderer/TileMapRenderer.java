@@ -109,10 +109,10 @@ public class TileMapRenderer extends Manager
 
 		if (map.getRoofLayer() != null) {
 			for (Roof roof : map.getRoofIterator())
-			{
-				if (!roof.isVisible())
+			{				
+				if (!roof.isVisible()) {
 					continue;
-	
+				}
 				for (int mapX = (int) roof.getRoofShape().getMinX() / map.getTileRenderWidth(); 
 						mapX < roof.getRoofShape().getMaxX() / map.getTileRenderWidth(); mapX++)
 				{

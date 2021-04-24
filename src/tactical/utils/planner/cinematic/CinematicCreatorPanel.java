@@ -110,7 +110,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		listPanel.add(cinematicListScrollPane, BorderLayout.CENTER);
 		pt =  plannerFrame.getPlannerTabAtIndex(PlannerFrame.TAB_CIN);
 		// This value needs to be updated
-		cinematicIds.setModel(new DefaultComboBoxModel<String>(pt.getItemList()));
+		initializeCinematicIdList();
 		AutoCompletion.enable(cinematicIds);
 		listPanel.add(cinematicIds, BorderLayout.PAGE_START);
 		listPanel.setPreferredSize(new Dimension(200, 50));
@@ -175,6 +175,13 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		uiAspect.add(rightPanel, BorderLayout.LINE_END);
 	}
 
+	private void initializeCinematicIdList() {
+		DefaultComboBoxModel<String> ids = new DefaultComboBoxModel<String>(pt.getItemList());
+		ids.addElement("Create new cinematic...");
+		cinematicIds.setModel(ids);
+		cinematicIds.setSelectedIndex(-1);
+	}
+
 	public void loadMap(PlannerMap map)
 	{
 		pt =  plannerFrame.getPlannerTabAtIndex(PlannerFrame.TAB_CIN);
@@ -234,9 +241,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		// Check to see if there is a move action selected, if so
 		// then open up the edit window with the new values entered. If
 		// the edit is cancelled then reset the original values
-		if (pl.getPlDef().getName().equalsIgnoreCase("Move") ||
-			pl.getPlDef().getName().equalsIgnoreCase("Halting Move") ||
-			pl.getPlDef().getName().equalsIgnoreCase("Move Forced Facing"))
+		if (pl.getPlDef().getName().equalsIgnoreCase("Move"))
 		{
 			int origX = (Integer) pl.getValues().get(1);
 			int origY = (Integer) pl.getValues().get(2);
@@ -676,14 +681,25 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		if (e == null || e.getStateChange() == ItemEvent.SELECTED)
-			loadCinematicItem(-1);
+		if (e == null || e.getStateChange() == ItemEvent.SELECTED) {
+			if (cinematicIds.getSelectedIndex() <  pt.getListPC().size()) {
+				loadCinematicItem(-1);
+			// Create a new cinematic
+			} else {
+				if (pt.addNewContainer() == null)
+					cinematicIds.setSelectedIndex(-1);
+				else {
+					reloadCinematicItem();
+					cinematicIds.setSelectedIndex(pt.getListPC().size() - 1);
+				}
+			}
+		}
 	}
 
 	public void reloadCinematicItem()
 	{
 		// This value needs to be updated
-		cinematicIds.setModel(new DefaultComboBoxModel<String>(pt.getItemList()));
+		initializeCinematicIdList();
 		loadCinematicItem(timeSlider.getValue());
 	}
 	

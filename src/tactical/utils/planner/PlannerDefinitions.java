@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import tactical.cinematic.event.CinematicEvent;
+import tactical.cinematic.event.CinematicEvent.CinematicEventType;
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
 import tactical.game.constants.AttributeStrength;
@@ -38,7 +40,7 @@ public class PlannerDefinitions {
 
 	public static void setupRefererList(ArrayList<ArrayList<PlannerReference>> listOfLists)
 	{
-		TacticalGame.ENGINE_CONFIGURATIOR.initialize();
+		// TacticalGame.ENGINE_CONFIGURATIOR.initialize();
 		
 		for (int i = 0; i < 50; i++)
 			listOfLists.add(new ArrayList<PlannerReference>());
@@ -212,6 +214,9 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "skippable", false, "Is Skippable",
 				"Whether this cinematic is skippable with the enter key"));
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN, "showroofs", false, "Show Roofs ",
+				"If true then roofs will be visible in the cinematic"));
 		PlannerLineDef definingLine = new PlannerLineDef("cinematic",
 				"Cinematic", "", definingValues);
 
@@ -451,6 +456,10 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_INT, "facing", true, "Facing",
 				"If a value is selected then this actor will keep facing the same direction for the duration of the move."));
 		
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN, "freezeanim", true, "Freeze Animations",
+				"If this value is selected then the current animation will be used for the duration of the movement. This overrides fixed facing."));
+		
 		allowableLines
 				.add(new PlannerLineDef(
 						"move",
@@ -500,7 +509,54 @@ public class PlannerDefinitions {
 						"Causes the specified actor to stop looping their move, they will still walk to their target location but will not teleport",
 						definingValues));
 		actorMove.add("Stop Actor Looping Move");
+	
+		// Jump
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
+				"The name of the actor that should perform the action"));
+		definingValues
+				.add(new PlannerValueDef(
+						PlannerValueDef.REFERS_NONE,
+						PlannerValueDef.TYPE_INT,
+						"jumpx",
+						false,
+						"Ending Location X",
+						"The x location in pixels that the actor will end the jump at"));
+		definingValues
+		.add(new PlannerValueDef(
+				PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT,
+				"height",
+				false,
+				"Ending Location Y",
+				"The y location  in pixels that the actor will end the jump at"));
+		definingValues
+		.add(new PlannerValueDef(
+				PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT,
+				"duration",
+				false,
+				"Duration",
+				"The duration that the whole jump action should "));
+		
+		definingValues
+		.add(new PlannerValueDef(
+				PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_BOOLEAN,
+				"landing",
+				false,
+				"Is Landing",
+				"If checked this jump is the 'landing' portion, (speed increases over time). Otherwise speed decreases over time"));
 
+		allowableLines
+				.add(new PlannerLineDef(
+						"jump",
+						"Jump",
+						"Causes the specified actor to jump in to the air, adding move or special effect actions while they are in the air may have undetermined effects. This action is NOT halting.",
+						definingValues));
+		actorControl.add("Jump");
+		
 		// Halting Anim
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,

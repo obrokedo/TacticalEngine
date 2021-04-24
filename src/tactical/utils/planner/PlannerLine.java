@@ -24,6 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
@@ -419,11 +420,19 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 						{
 							throw new IllegalArgumentException();
 						}
-
+						
+						String textToCheck = ((JTextArea) components.get(i)).getText();
+						if (textToCheck.contains("\n")) {
+							JOptionPane.showMessageDialog(null, "Newlines have been stripped in the text field, verify that it still looks correct.");
+							textToCheck = textToCheck.replaceAll("\n", "");
+							((JTextArea) components.get(i)).setText(textToCheck);
+						}
+						
+						
 						if (i >= values.size())
-							values.add(((JTextArea) components.get(i)).getText());
+							values.add(textToCheck);
 						else
-							values.set(i, ((JTextArea) components.get(i)).getText());
+							values.set(i, textToCheck);
 						break;
 					case PlannerValueDef.TYPE_UNBOUNDED_INT:
 					case PlannerValueDef.TYPE_INT:

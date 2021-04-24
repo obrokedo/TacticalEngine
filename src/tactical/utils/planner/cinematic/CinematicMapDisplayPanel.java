@@ -123,8 +123,7 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 		actorPopup.add(createMenuItem("Remove Actor"));
 
 		actorMovePopup = new JPopupMenu();
-		actorMovePopup.add(createMenuItem("Halting Move"));
-		actorMovePopup.add(createMenuItem("Halting Move with Pathfinding"));
+		actorMovePopup.add(createMenuItem("Jump"));
 		actorMovePopup.add(createMenuItem("Move"));
 		actorMovePopup.add(createMenuItem("Move Forced Facing"));
 		actorMovePopup.add(createMenuItem("Move Actor in Loop"));
@@ -464,6 +463,7 @@ public class CinematicMapDisplayPanel extends JPanel implements ActionListener, 
 		PlannerTab pt = mapPanel.getPlannerFrame().getPlannerTabAtIndex(PlannerFrame.TAB_CIN);
 		// pt.setSelectedListItem(index, null);
 		currentPC = pt.getListPC().get(index);
+		pt.setCurrentPC(currentPC);
 
 		ArrayList<PlannerContainer> pcs = new ArrayList<PlannerContainer>();
 		if (currentPC != null)

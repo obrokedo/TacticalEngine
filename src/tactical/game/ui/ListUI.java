@@ -1,6 +1,7 @@
 package tactical.game.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.newdawn.slick.Color;
@@ -16,8 +17,8 @@ import tactical.game.Timer;
 import tactical.utils.StringUtils;
 
 public class ListUI implements ComponentListener {
-	protected ArrayList<Button> resourceFileButtons = new ArrayList<Button>();
-	protected ArrayList<String> values;
+	protected List<Button> resourceFileButtons = new ArrayList<Button>();
+	protected List<String> values;
 	protected int longestNameWidth = 0;
 	protected Button selectedItem = null;
 	protected int drawX, drawY = 0;
@@ -47,12 +48,21 @@ public class ListUI implements ComponentListener {
 		this(container, title, 0, new ArrayList<String>(), 15, setupTextField);
 	}
 	
-	public ListUI(GameContainer container, String title, int drawX, ArrayList<String> values)
+	public ListUI(GameContainer container, String title, int drawX, List<String> values)
 	{
-		this(container, title, drawX, values, 15, true);
+		this(container, title, drawX, 0, values, 15, true);
+	}
+	
+	public ListUI(GameContainer container, String title, int drawX, int drawY, List<String> values)
+	{
+		this(container, title, drawX, drawY, values, 15, true);
+	}
+	
+	public ListUI(GameContainer container, String title, int drawX, List<String> values, int listLength, boolean setupTextField) {
+		this(container, title, drawX, 0, values, listLength, setupTextField);
 	}
 
-	public ListUI(GameContainer container, String title, int drawX, ArrayList<String> values, int listLength, boolean setupTextField)
+	public ListUI(GameContainer container, String title, int drawX, int drawY, List<String> values, int listLength, boolean setupTextField)
 	{
 		longestNameWidth = 150;
 		this.font = StringUtils.loadFont("Times New Roman", 14, false, false);
@@ -64,6 +74,7 @@ public class ListUI implements ComponentListener {
 		longestNameWidth += 10;
 		this.listLength = listLength;
 		this.drawX = drawX;
+		this.drawY = drawY;
 		
 		this.title = title;
 		this.values = values;

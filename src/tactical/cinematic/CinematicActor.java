@@ -62,7 +62,13 @@ public class CinematicActor implements Comparable<CinematicActor>
 	private StaticSprite staticSprite;
 	private boolean visible = true;
 	private boolean drawShadow = true;
+	
+	private float jumpVx, jumpVy, jumpStartX, jumpStartY;
+	private int jumpDuration, jumpElapsed; 
 
+	private boolean jumping = false, landing = false;
+	private float gravity = 9.8f;
+	
 	// Moving location
 	private float locX;
 	private float locY;
@@ -501,6 +507,8 @@ public class CinematicActor implements Comparable<CinematicActor>
 					}
 				}
 			// }
+		} else if (jumping) {
+			updateJump(delta);
 		}
 
 		if (specialEffectType != SE_NONE)
@@ -770,9 +778,76 @@ public class CinematicActor implements Comparable<CinematicActor>
 		this.animDelta = 0;
 		this.animUpdate = time / currentAnim.frames.size();
 	}
+	
+	public void jump(int jumpEndX, int jumpEndY, int jumpDuration, boolean landing) {
+		float jumpHeight = locY - jumpEndY + 12;
+		jumpDuration = jumpDuration * 2;
+		// This is a bit confusing, we are using the freefall equation for finding gravity,
+		// so we divide the jump duration in half
+		gravity = (float) (jumpHeight * 2 / Math.pow(jumpDuration / 2, 2));
+		jumpVx = (float) ((jumpEndX - locX) * 2 / jumpDuration);
+		// We are using the max height formula here so jump duration needs to get cut in
+		// half because that's when height happens
+		jumpVy = (float) (gravity * jumpDuration / 2);
+		this.jumping = true;
+		this.jumpDuration = jumpDuration / 2;
+		this.jumpStartX = locX;
+		this.jumpStartY = locY;
+		this.jumpElapsed = 0;
+		this.landing = landing;
+	}
+	
+	private void updateJump(int delta) {
+		delta = Math.min(jumpDuration - jumpElapsed, delta);
+		if (delta == 0) {
+			jumping = false;
+		} else {
+			jumpElapsed += delta;
+			this.locX = jumpStartX + jumpVx * jumpElapsed;
+			float deltaY;
+			if (!landing)
+				deltaY = (float) (jumpVy * jumpElapsed - gravity * Math.pow(jumpElapsed, 2) / 2);
+			else
+				deltaY = (float) (gravity * Math.pow(jumpElapsed, 2) / 2);
+			this.locY = (float) (jumpStartY - deltaY);
+		}
+	}
+
+	
+	public void fullJump(int jumpEndX, int jumpHeight, int jumpDuration) {
+		jumpHeight = 48;
+		// This is a bit confusing, we are using the freefall equation for finding gravity,
+		// so we divide the jump duration in half
+		gravity = (float) (jumpHeight * 2 / Math.pow(jumpDuration / 2, 2));
+		jumpVx = (float) ((jumpEndX - locX) / jumpDuration);
+		// We are using the max height formula here so jump duration needs to get cut in
+		// half because that's when height happens
+		jumpVy = (float) (gravity * jumpDuration / 2);
+		this.jumping = true;
+		this.jumpDuration = jumpDuration;
+		this.jumpStartX = locX;
+		this.jumpStartY = locY;
+	}
+	
+	private void updateFullJump(int delta) {
+		delta = Math.min(jumpDuration - jumpElapsed, delta);
+		System.out.println(delta);
+		if (delta == 0) {
+			jumping = false;
+			System.out.println("FINISHED AT " + locX + " " + locY);
+		} else {
+			jumpElapsed += delta;
+			this.locX = jumpStartX + jumpVx * jumpElapsed;
+			System.out.println(locX + " X");
+			float deltaY = (float) (jumpVy * jumpElapsed - gravity * Math.pow(jumpElapsed, 2) / 2);
+			System.out.println(deltaY + " Y DELTA");
+			this.locY = (float) (jumpStartY - deltaY);
+			System.out.println(locY + " Y");
+		}
+	}
 
 	public void moveToLocation(int moveToLocX, int moveToLocY, float speed, boolean haltingMove, 
-			int direction, boolean moveHorFirst, boolean moveDiag)
+			int direction, boolean moveHorFirst, boolean moveDiag, boolean noAnimate)
 	{
 		this.loopMoving = false;
 		this.moveToLocX = moveToLocX;
@@ -780,34 +855,16 @@ public class CinematicActor implements Comparable<CinematicActor>
 		this.haltingMove = haltingMove;
 		this.moveSpeed = speed;
 		this.animDelta = 0;
-		this.animUpdate = (long) jCinematicActor.getAnimSpeedForMoveSpeed(speed);
+		
 		this.moveHorFirst = moveHorFirst;
 		this.moveDiag = moveDiag;
-		if (direction != -1)
-		{
-			this.setFacing(direction);
+		
+		if (noAnimate) {
+			this.animUpdate = Long.MAX_VALUE;
+			// Don't allow the actor to turn
 			this.forceFacingMove = true;
-		}
-		else
-			this.forceFacingMove = false;
-		moving = true;
-		movePath = null;
-	}
-	
-	public void moveAlongPath(Path path, float speed, boolean haltingMove, int direction, StateInfo stateInfo)
-	{
-		if (path.getLength() > 1)
-		{
-			this.moving = true;
-			this.haltingMove = haltingMove;
-			this.movePathIndex = 1;
-			this.movePath = path;
+		} else {
 			this.animUpdate = (long) jCinematicActor.getAnimSpeedForMoveSpeed(speed);
-			Step step = this.movePath.getStep(movePathIndex);
-			this.moveToLocX = step.getX();
-			this.moveToLocY = step.getY() - (this.sprite != null ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0);
-			this.moveSpeed = speed;
-			
 			if (direction != -1)
 			{
 				this.setFacing(direction);
@@ -816,13 +873,45 @@ public class CinematicActor implements Comparable<CinematicActor>
 			else
 				this.forceFacingMove = false;
 		}
+		moving = true;
+		movePath = null;
+	}
+	
+	public void moveAlongPath(Path path, float speed, boolean haltingMove, int direction, boolean noAnimate, StateInfo stateInfo)
+	{
+		if (path.getLength() > 1)
+		{
+			this.moving = true;
+			this.haltingMove = haltingMove;
+			this.movePathIndex = 1;
+			this.movePath = path;
+			Step step = this.movePath.getStep(movePathIndex);
+			this.moveToLocX = step.getX();
+			this.moveToLocY = step.getY() - (this.sprite != null ? stateInfo.getCurrentMap().getTileEffectiveHeight() / 2 : 0);
+			this.moveSpeed = speed;
+			
+			if (noAnimate) {
+				this.animUpdate = Long.MAX_VALUE;
+				// Don't allow the actor to turn
+				this.forceFacingMove = true;
+			} else {
+				this.animUpdate = (long) jCinematicActor.getAnimSpeedForMoveSpeed(speed);
+				if (direction != -1)
+				{
+					this.setFacing(direction);
+					this.forceFacingMove = true;
+				}
+				else
+					this.forceFacingMove = false;
+			}
+		}
 	}
 
 	public void loopMoveToLocation(int moveToLocX, int moveToLocY, float speed)
 	{
 		this.startLoopX = this.locX;
 		this.startLoopY = this.locY;
-		moveToLocation(moveToLocX, moveToLocY, speed, haltingMove, -1, false, false);
+		moveToLocation(moveToLocX, moveToLocY, speed, haltingMove, -1, false, false, false);
 		this.loopMoving = true;
 		this.movePath = null;
 	}
