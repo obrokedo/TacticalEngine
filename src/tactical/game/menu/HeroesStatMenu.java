@@ -30,6 +30,7 @@ public class HeroesStatMenu extends Menu
 	protected Image emptySpot;
 	protected int yOffsetTop = 1, yOffsetBot = 10;
 	protected int selectedIndex = 0;
+	protected int listPosition = 0;
 	protected ArrayList<CombatSprite> heroes;
 	protected String[][] itemNames;
 	protected ArrayList<Item> items;
@@ -62,6 +63,7 @@ public class HeroesStatMenu extends Menu
 		}
 		updateCurrentHero(stateInfo);
 		this.listener = listener;
+		this.listPosition = 0;
 	}
 	
 	protected HeroesStatMenu(PanelType panelType, Iterable<CombatSprite> chooseableSprites, StateInfo stateInfo, MenuListener listener) {
@@ -71,6 +73,7 @@ public class HeroesStatMenu extends Menu
 			heroes.add(cs);
 		updateCurrentHero(stateInfo);
 		this.listener = listener;
+		this.listPosition = 0;
 	}
 
 	@Override
@@ -84,7 +87,7 @@ public class HeroesStatMenu extends Menu
 	public void render(PaddedGameContainer gc, Graphics graphics) {
 		int sizeMax = 6;
 		drawHeroSpecifics(graphics);
-
+		
 		TacticalGame.ENGINE_CONFIGURATIOR.getPanelRenderer().render(20,
 				yOffsetBot + 117,
 				PaddedGameContainer.GAME_SCREEN_SIZE.width - 40,
@@ -94,7 +97,7 @@ public class HeroesStatMenu extends Menu
 		graphics.setColor(Color.white);
 		graphics.setLineWidth(2);
 		graphics.drawRoundRect(25,
-				yOffsetBot + (134 + 15 * Math.min(selectedIndex, sizeMax - 1)),
+				yOffsetBot + (134 + 15 * (selectedIndex - listPosition)),
 				269, 15, 3);
 		StringUtils.drawString("NAME", 27,
 				yOffsetBot + 113, graphics);
@@ -123,14 +126,14 @@ public class HeroesStatMenu extends Menu
 		}
 
 		
-		for (int count = (selectedIndex < sizeMax ? 0 : selectedIndex - sizeMax + 1); count < Math.min(heroes.size(),  (selectedIndex < sizeMax ? sizeMax : selectedIndex + 1)); count++)
+		for (int count = listPosition; count < Math.min(heroes.size(),  listPosition + sizeMax); count++)
 		{				
 			if (heroes.get(count).getCurrentHP() <= 0) {
 				graphics.setColor(Color.red);
 			} else {
 				graphics.setColor(Color.white);
 			}
-			int drawY = yOffsetBot + (128 + 15 * (count - (selectedIndex < sizeMax ? 0 : selectedIndex - (sizeMax - 1))));
+			int drawY = yOffsetBot + (128 + 15 * (count - (listPosition)));
 			StringUtils.drawString(heroes.get(count).getName(),
 					27,
 					drawY, graphics);
@@ -339,6 +342,8 @@ public class HeroesStatMenu extends Menu
 	{
 		if (selectedIndex > 0)
 		{
+			if (listPosition > (selectedIndex - 1)) 
+				listPosition--;
 			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
 			selectedIndex--;
 			updateCurrentHero(stateInfo);
@@ -349,8 +354,12 @@ public class HeroesStatMenu extends Menu
 
 	protected MenuUpdate onDown(StateInfo stateInfo)
 	{
+		int MAX_HEROES_SHOWN = 6;
 		if (selectedIndex < heroes.size() - 1)
 		{
+			if (listPosition + MAX_HEROES_SHOWN <= (selectedIndex + 1)) 
+				listPosition++;
+			
 			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menumove", 1f, false));
 			selectedIndex++;
 			updateCurrentHero(stateInfo);

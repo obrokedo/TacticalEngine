@@ -52,9 +52,16 @@ public class PlannerAttributeList extends JScrollPane
 		attributeListModel.removeAllElements();
 		if (currentPC != null)
 		{
+			String actorName = "";
 			for (PlannerLine pl : currentPC.getLines())
 			{
-				attributeListModel.addElement(pl.getPlDef().getName());
+				for (int i = 0; i < pl.getPlDef().getPlannerValues().size(); i++) {
+					if (pl.getPlDef().getPlannerValues().get(i).getTag().equalsIgnoreCase("name")) {
+						actorName = (String) pl.getValues().get(i);
+						break;
+					}
+				}
+				attributeListModel.addElement(pl.getPlDef().getName() + " (" + actorName + ")");
 			}
 		}
 
