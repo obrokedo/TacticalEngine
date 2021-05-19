@@ -194,6 +194,13 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					}
 					break;
 				case PlannerValueDef.TYPE_MULTI_STRING:
+					if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE) {
+						if (values.size() > i && values.get(i) != null)
+							c = new MultiStringPanel(((String) values.get(i)).split("<split>"), this, false);
+						else
+							c = new MultiStringPanel(new String[0], this, false);
+						break;
+					}
 				case PlannerValueDef.TYPE_MULTI_INT:
 					Vector<String> mitems = new Vector<String>();
 					mitems.add("No value selected");
@@ -311,9 +318,9 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					break;
 				case PlannerValueDef.TYPE_MULTI_LONG_STRING:
 					if (values.size() > i && values.get(i) != null)
-						c = new MultiStringPanel(((String) values.get(i)).split("<split>"), this);
+						c = new MultiStringPanel(((String) values.get(i)).split("<split>"), this, true);
 					else
-						c = new MultiStringPanel(new String[0], this);
+						c = new MultiStringPanel(new String[0], this, true);
 					break;
 
 			}
@@ -452,24 +459,36 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 						}
 						break;
 					case PlannerValueDef.TYPE_MULTI_STRING:
-						String multi = "";
-						MultiIntPanel mip = (MultiIntPanel) components.get(i);
-						for (int j = 2; j < mip.getComponentCount(); j++)
-						{
-							multi = multi + ((JComboBox<?>)mip.getComponent(j)).getSelectedItem();
-							if (j + 1 != mip.getComponentCount())
-								multi = multi + ",";
+						if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE) {
+							String multi = "";
+							for (String text : ((MultiStringPanel) components.get(i)).getTextStrings()) {
+								multi = multi + "<split>" + text;
+							}
+							multi = multi.replaceFirst("<split>", "");
+							if (i >= values.size())
+								values.add(multi);
+							else
+								values.set(i, multi);
+						} else {
+							String multi = "";
+							MultiIntPanel mip = (MultiIntPanel) components.get(i);
+							for (int j = 2; j < mip.getComponentCount(); j++)
+							{
+								multi = multi + ((JComboBox<?>)mip.getComponent(j)).getSelectedItem();
+								if (j + 1 != mip.getComponentCount())
+									multi = multi + ",";
+							}
+	
+							if (i >= values.size())
+								values.add(multi);
+							else
+								values.set(i, multi);
 						}
-
-						if (i >= values.size())
-							values.add(multi);
-						else
-							values.set(i, multi);
 
 						break;
 					case PlannerValueDef.TYPE_MULTI_INT:
-						multi = "";
-						mip = (MultiIntPanel) components.get(i);
+						String multi = "";
+						MultiIntPanel mip = (MultiIntPanel) components.get(i);
 						
 						for (int j = 2; j < mip.getComponentCount(); j++)
 						{														

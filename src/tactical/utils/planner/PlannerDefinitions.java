@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import tactical.cinematic.event.CinematicEvent;
-import tactical.cinematic.event.CinematicEvent.CinematicEventType;
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
 import tactical.game.constants.AttributeStrength;
@@ -1595,9 +1593,18 @@ public class PlannerDefinitions {
 		// "Unique id that can be used to identify a given trigger"));
 		PlannerLineDef definingLine = new PlannerLineDef("quest", "Quest", "",
 				definingValues);
-
+		
 		// Setup available types
 		ArrayList<PlannerLineDef> allowableLines = new ArrayList<PlannerLineDef>();
+		
+		// Complete Quest
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_MULTI_STRING, "subquestnames", false, "Subquest Name",
+				"A list of the names of subquests of this quest"));
+		allowableLines.add(new PlannerLineDef("completequest",
+				"Subquests", "Defines subquests for the parent quest",
+				definingValues));
 
 		textContainer = new PlannerContainerDef(definingLine,
 				allowableLines, listOfLists,
