@@ -119,9 +119,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		super(gameTitle);
 		GAME_TITLE = gameTitle;
 		VERSION = version;
-		DEV_MODE_ENABLED = devMode;
-		SAVE_ENABLED = !devMode;
-		
+	
 		TacticalGame.ENGINE_CONFIGURATIOR = getEngineConfigurator();
 		
 		if (gameArgs.length > 0) {
@@ -135,6 +133,9 @@ public abstract class TacticalGame extends StateBasedGame   {
 				pf.setVisible(true);
 			}
 		}
+		
+		DEV_MODE_ENABLED = devMode;
+		SAVE_ENABLED = !devMode;
 		
 		Log.setLogSystem(new FileLogger());
 	}
@@ -241,17 +242,17 @@ public abstract class TacticalGame extends StateBasedGame   {
 	public void initStatesList(GameContainer gameContainer) throws SlickException
 	{		
 		loadingState = new LoadingState(STATE_GAME_LOADING);
+		addState(new CreditsState());
+		this.addState(new DevelAnimationViewState());
 		this.addState(new MenuState(persistentStateInfo));
 		this.addState(ENGINE_CONFIGURATIOR.getAttackCinematicState());
 		this.addState(new DevelMenuState(persistentStateInfo));
-		this.addState(new DevelAnimationViewState());
 		this.addState(loadingState);
 		this.addState(new DevelBattleAnimViewState());
 		addState(new BattleState(persistentStateInfo));
 		addState(new TownState(persistentStateInfo));
 		addState(new CinematicState(persistentStateInfo));
 		addState(new ChapterState(persistentStateInfo));
-		addState(new CreditsState());
 		addState(new IntroState(persistentStateInfo));
 
 		// this.addState(new TestState());

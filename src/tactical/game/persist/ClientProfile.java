@@ -38,10 +38,10 @@ public class ClientProfile implements Serializable
 	public ClientProfile(String name)
 	{
 		this.name = name;
-		initializeValues();
+		initializeStartingValues();
 	}
 	
-	public void initializeValues() {
+	public void initializeStartingValues() {
 		heroes = new ArrayList<>();
 		inBattleHeroIds = new HashSet<>();
 		networkHeroes = new ArrayList<>();
@@ -185,7 +185,7 @@ public class ClientProfile implements Serializable
 	    return null;
 	}
 	
-	public void initialize()
+	public void initializeStartingHeroes()
 	{
 		// Add starting heroes if they haven't been added yet
 		if (getHeroes().size() == 0)

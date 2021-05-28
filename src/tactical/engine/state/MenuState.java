@@ -234,7 +234,16 @@ public class MenuState extends LoadableGameState
 		}
 	}
 
-
+	protected void startNewGame(EngineConfigurationValues jcv) {
+		// Clobber existing save data...
+		persistentStateInfo.getClientProfile().initializeStartingValues();
+		persistentStateInfo.getClientProgress().initializeValues();
+		persistentStateInfo.getClientProfile().initializeStartingHeroes();
+		// persistentStateInfo.getClientProfile().serializeToFile();
+		// persistentStateInfo.getClientProgress().serializeToFile();
+		start(LoadTypeEnum.valueOf(jcv.getStartingState()), 
+				jcv.getStartingMapData(), jcv.getStartingLocation());
+	}
 
 	protected void handleInput(PaddedGameContainer container) {
 		if (container.getInput().isKeyDown(Input.KEY_ENTER) || 
@@ -246,13 +255,7 @@ public class MenuState extends LoadableGameState
 			if (stateIndex == 1) {
 				// music.fade(500, 0f, true);
 				if (menuIndex == 0) {
-					// Clobber existing save data...
-					persistentStateInfo.getClientProfile().initializeValues();
-					persistentStateInfo.getClientProgress().initializeValues();
-					// persistentStateInfo.getClientProfile().serializeToFile();
-					// persistentStateInfo.getClientProgress().serializeToFile();
-					start(LoadTypeEnum.valueOf(jcv.getStartingState()), 
-							jcv.getStartingMapData(), jcv.getStartingLocation());
+					startNewGame(jcv);
 				}
 				else if (menuIndex == 1)
 				{
@@ -281,13 +284,7 @@ public class MenuState extends LoadableGameState
 						load(loadType, persistentStateInfo.getClientProgress().getLastSaveLocation().getLastSaveMapData(), 
 								null, 0);
 					} else {
-						// Clobber existing save data...
-						persistentStateInfo.getClientProfile().initializeValues();
-						persistentStateInfo.getClientProgress().initializeValues();
-						// persistentStateInfo.getClientProfile().serializeToFile();
-						// persistentStateInfo.getClientProgress().serializeToFile();
-						start(LoadTypeEnum.valueOf(jcv.getStartingState()), 
-								jcv.getStartingMapData(), jcv.getStartingLocation());
+						startNewGame(jcv);
 					}
 				}
 				else if (menuIndex == 2)

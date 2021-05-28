@@ -174,7 +174,8 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		container.getInput().addControllerListener(cinematicIDField);
 		
 		textSelector.registerListeners(container);
-		loadoutSelector.registerListeners(container);		
+		loadoutSelector.registerListeners(container);
+		persistentStateInfo.getClientProfile().initializeStartingHeroes();
 	}
 
 	@Override
@@ -437,6 +438,9 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	
 	public void start(LoadTypeEnum loadType, String mapData, String entrance, int resourceId)
 	{
+
+		persistentStateInfo.getClientProfile().initializeStartingHeroes();
+		
 		switch (loadType)
 		{
 			case CINEMATIC:

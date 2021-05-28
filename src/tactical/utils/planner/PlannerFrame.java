@@ -85,19 +85,21 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private JScrollPane errorScroll;
 	private JPanel leftPanel;
 	private ResourceSearcher resourceSearcher;
+	private boolean isRootPlanner = false;
+	private PlannerFrame rootPlanner;
 	public static boolean SHOW_CIN_LOCATION = true;
 
 	public static final int TAB_TRIGGER = 0;
 	public static final int TAB_CIN = 2;
 	public static final int TAB_TEXT = 3;
 	public static final int TAB_CONDITIONS = 1;
-	public static final int TAB_HERO = 4;
-	public static final int TAB_ENEMY = 5;
-	public static final int TAB_ITEM = 6;
-	public static final int TAB_QUEST = 7;
-	public static final int TAB_CIN_MAP = 8;
-	public static final int TAB_EDIT_MAP = 9;
-	public static final int TAB_UNIFIED_VIEW = 10;
+	public static final int TAB_HERO = 0;
+	public static final int TAB_ENEMY = 1;
+	public static final int TAB_ITEM = 2;
+	public static final int TAB_QUEST = 3;
+	public static final int TAB_CIN_MAP = 4;
+	public static final int TAB_EDIT_MAP = 5;
+	public static final int TAB_UNIFIED_VIEW = 6;
 	
 	private static Object saveLock = new Object();
 	private static Color saveColor = Color.GREEN;
@@ -149,9 +151,18 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	public PlannerFrame(MenuState menuState) {
 		super("Planner: NO TRIGGERS LOADED " + version);
-
+		this.isRootPlanner = true;
 		this.menuState = menuState;	
 		initialize();
+	}
+	
+	public PlannerFrame(File triggerFile, MenuState menuState, PlannerFrame rootPlanner) {
+		super("Planner: " + triggerFile + " " + version);
+		this.triggerFile = triggerFile;
+		this.menuState = menuState;	
+		this.rootPlanner = rootPlanner;
+		initialize();
+		this.setVisible(true);
 	}
 
 	protected void initialize() {
@@ -228,7 +239,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		// exportMapItem.setEnabled(false);
 		addMenuItem("Reload", "reload", fileMenu);
 		// addMenuItem("Create Triggers Based on Map", "generate", fileMenu);
-		addMenuItem("Save", "saveall", fileMenu, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+		addMenuItem("Save", "save", fileMenu, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 		// addMenuItem("Export Enemy Cheat Sheet", "enemycheat", fileMenu);
 		addMenuItem("Exit", "exit", fileMenu);
 		menuBar.add(fileMenu);
@@ -284,58 +295,61 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private void initUI() {
 		jtp = new JTabbedPane(JTabbedPane.LEFT);
 		
-		// Add triggers
-		PlannerTab tempPlannerTab = new PlannerTab("Triggers", containersByName,
-				new String[] { "trigger" }, PlannerValueDef.REFERS_TRIGGER, this, TAB_TRIGGER);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/triggericon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)),
-				tempPlannerTab.getUiAspect());
-
-		// Add conditions
-		tempPlannerTab = new PlannerTab("Conditions", containersByName,
-				new String[] { "condition" }, PlannerValueDef.REFERS_CONDITIONS, this, TAB_CONDITIONS);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/conditionicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
-				tempPlannerTab.getUiAspect());
+		if (!isRootPlanner) {
 		
-		// Add cinematics
-		tempPlannerTab = new PlannerTab("Cinematics", containersByName,
-				new String[] { "cinematic" }, PlannerValueDef.REFERS_CINEMATIC,
-				this, TAB_CIN);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/cinematicicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
-				tempPlannerTab.getUiAspect());
-
-		// Add speech
-		tempPlannerTab = new PlannerTab("Speeches", containersByName,
-				new String[] { "text" }, PlannerValueDef.REFERS_TEXT, this, TAB_TEXT);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/speechicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
-		
-		// Add heroes
-		tempPlannerTab = new PlannerTab("Heroes", containersByName,
-				new String[] { "hero" }, PlannerValueDef.REFERS_HERO, this, TAB_HERO);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/heroicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
-
-		// Add enemies
-		tempPlannerTab = new PlannerTab("Enemies", containersByName,
-				new String[] { "enemy" }, PlannerValueDef.REFERS_ENEMY, this, TAB_ENEMY);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/enemyicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
-
-		// Add items
-		tempPlannerTab = new PlannerTab("Items", containersByName,
-				new String[] { "item" }, PlannerValueDef.REFERS_ITEM, this, TAB_ITEM);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/itemsicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
-
-		// Add quests
-		tempPlannerTab = new PlannerTab("Quests", containersByName,
-				new String[] { "quest" }, PlannerValueDef.REFERS_QUEST, this, TAB_QUEST);
-		plannerTabs.add(tempPlannerTab);
-		jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/questicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
-		jtp.addChangeListener(this);
+			// Add triggers
+			PlannerTab tempPlannerTab = new PlannerTab("Triggers", containersByName,
+					new String[] { "trigger" }, PlannerValueDef.REFERS_TRIGGER, this, TAB_TRIGGER);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/triggericon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)),
+					tempPlannerTab.getUiAspect());
+	
+			// Add conditions
+			tempPlannerTab = new PlannerTab("Conditions", containersByName,
+					new String[] { "condition" }, PlannerValueDef.REFERS_CONDITIONS, this, TAB_CONDITIONS);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/conditionicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
+					tempPlannerTab.getUiAspect());
+			
+			// Add cinematics
+			tempPlannerTab = new PlannerTab("Cinematics", containersByName,
+					new String[] { "cinematic" }, PlannerValueDef.REFERS_CINEMATIC,
+					this, TAB_CIN);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/cinematicicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
+					tempPlannerTab.getUiAspect());
+	
+			// Add speech
+			tempPlannerTab = new PlannerTab("Speeches", containersByName,
+					new String[] { "text" }, PlannerValueDef.REFERS_TEXT, this, TAB_TEXT);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/speechicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
+		} else {
+			// Add heroes
+			PlannerTab tempPlannerTab = new PlannerTab("Heroes", containersByName,
+					new String[] { "hero" }, PlannerValueDef.REFERS_HERO, this, TAB_HERO);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/heroicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
+	
+			// Add enemies
+			tempPlannerTab = new PlannerTab("Enemies", containersByName,
+					new String[] { "enemy" }, PlannerValueDef.REFERS_ENEMY, this, TAB_ENEMY);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/enemyicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
+	
+			// Add items
+			tempPlannerTab = new PlannerTab("Items", containersByName,
+					new String[] { "item" }, PlannerValueDef.REFERS_ITEM, this, TAB_ITEM);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/itemsicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
+	
+			// Add quests
+			tempPlannerTab = new PlannerTab("Quests", containersByName,
+					new String[] { "quest" }, PlannerValueDef.REFERS_QUEST, this, TAB_QUEST);
+			plannerTabs.add(tempPlannerTab);
+			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/questicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
+			jtp.addChangeListener(this);
+		}
 		
 		leftPanel = new JPanel(new BorderLayout());
 		leftPanel.add(jtp, BorderLayout.CENTER);
@@ -382,26 +396,27 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		majorJTP.addTab("Unified View" , unifiedViewPanel);
 		majorJTP.addChangeListener(this);		
 		
-		setTabEnabled(TAB_TRIGGER, false);
-		setTabEnabled(TAB_CIN, false);
-		setTabEnabled(TAB_TEXT, false);
-		setTabEnabled(TAB_CONDITIONS, false);
-		setTabEnabled(TAB_CIN_MAP, false);
-		setTabEnabled(TAB_EDIT_MAP, false);
-		setTabEnabled(TAB_UNIFIED_VIEW, false);
-		
 		jtp.setSelectedIndex(TAB_HERO);
 		JPanel backPanel = new JPanel(new BorderLayout());
 		backPanel.add(leftPanel, BorderLayout.LINE_START);
-		backPanel.add(majorJTP, BorderLayout.CENTER);
+		if (!isRootPlanner) {
+			backPanel.add(majorJTP, BorderLayout.CENTER);
+			this.setPreferredSize(new Dimension(900, 600));
+		}
+		else {
+			this.setPreferredSize(new Dimension(300, 600));
+		}
 		errorScroll = new JScrollPane(errorList);
 		errorScroll.setPreferredSize(new Dimension(errorScroll.getPreferredSize().width, 120));
 		// backPanel.add(saveLabel, BorderLayout.PAGE_END);
 		backPanel.add(errorScroll, BorderLayout.PAGE_END);
 		this.setContentPane(backPanel);
 
-		this.setPreferredSize(new Dimension(900, 600));
-		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		
+		if (triggerFile == null)
+			this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		else
+			this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.pack();
 		this.setVisible(false);
 	}
@@ -468,9 +483,9 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			int returnVal = fc.showOpenDialog(this);
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				triggerFile = fc.getSelectedFile();
+				File newTriggerFile = fc.getSelectedFile();
 
-				openFile(triggerFile);
+				openFile(newTriggerFile);
 			}
 		} else if (actionCommand.equalsIgnoreCase("openmap")) {
 			// promptAndLoadPlannerMap();
@@ -478,27 +493,28 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			if (triggerFile != null)
 				openFile(triggerFile);
 		} else if (actionCommand.equalsIgnoreCase("save")) {
-			saveTriggers(true);
-		} else if (actionCommand.equalsIgnoreCase("saveall")) {			
-			boolean success = true;
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ENEMY).getListPC(),
-					PlannerIO.PATH_ENEMIES, false, "enemies"))
-				success = false;
+			if (isRootPlanner) {
+				boolean success = true;
+				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ENEMY).getListPC(),
+						PlannerIO.PATH_ENEMIES, false, "enemies"))
+					success = false;
 
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_HERO).getListPC(),
-					PlannerIO.PATH_HEROES, false, "heroes"))
-				success = false;
+				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_HERO).getListPC(),
+						PlannerIO.PATH_HEROES, false, "heroes"))
+					success = false;
 
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ITEM).getListPC(),
-					PlannerIO.PATH_ITEMS, false, "items"))
-				success = false;
+				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ITEM).getListPC(),
+						PlannerIO.PATH_ITEMS, false, "items"))
+					success = false;
 
-			if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_QUEST).getListPC(),
-					PlannerIO.PATH_QUESTS, false, "quests"))
-				success = false;
-
-			saveTriggers(success);
-			JOptionPane.showMessageDialog(this, "Resources have been saved.");
+				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_QUEST).getListPC(),
+						PlannerIO.PATH_QUESTS, false, "quests"))
+					success = false;
+				JOptionPane.showMessageDialog(this, "Base resources have been saved.");
+			} else {
+				saveTriggers(true);
+				JOptionPane.showMessageDialog(this, "Map resources have been saved.");
+			}			
 		} else if (actionCommand.equalsIgnoreCase("exit")) {
 			System.exit(0);
 		}
@@ -604,7 +620,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	private boolean loadPlannerMap(String fileName, List<TagArea> mapAreas) {
 		plannerMap = new PlannerMap(fileName, 
-				referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1), plannerTabs.get(PlannerFrame.TAB_ENEMY));
+				referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1), rootPlanner.plannerTabs.get(PlannerFrame.TAB_ENEMY));
 
 		try {
 			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), 
@@ -653,8 +669,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	}
 
 	public void openFile(File triggerFile) {
-		this.triggerFile = triggerFile;
-		openFile(triggerFile, true);
+		PlannerFrame pf = new PlannerFrame(triggerFile, this.menuState, (isRootPlanner ? this : this.rootPlanner));
+		pf.openFile(triggerFile, true);
 	}
 	
 	public void openFile(File triggerFile, boolean reportNoMap) {
@@ -704,10 +720,12 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			
 			this.changeAssociatedMapMenuItem.setEnabled(true);
 			
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TRIGGER), "trigger", containersByName, true);
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TEXT), "text", containersByName, true);
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CIN), "cinematic", containersByName, true);
-			plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CONDITIONS), "condition", containersByName, true);
+			if (!isRootPlanner) {
+				plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TRIGGER), "trigger", containersByName, true);
+				plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_TEXT), "text", containersByName, true);
+				plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CIN), "cinematic", containersByName, true);
+				plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CONDITIONS), "condition", containersByName, true);
+			}
 			
 			PlannerReference.establishReferences(getTabsWithMapReferences(), referenceListByReferenceType);
 			updateErrorList(PlannerReference.getBadReferences(getDataInputTabs()));
@@ -807,18 +825,18 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	public void setSelectedTabIndex(int index)
 	{
-		if (index < 8)
+		if (index < 4)
 			jtp.setSelectedIndex(index);
 		else
-			majorJTP.setSelectedIndex(index - 8);
+			majorJTP.setSelectedIndex(index - 4);
 	}
 	
 	public void setTabEnabled(int index, boolean enabled)
 	{
-		if (index < 8)
+		if (index < 4)
 			jtp.setEnabledAt(index, enabled);
 		else
-			majorJTP.setEnabledAt(index - 8, enabled);
+			majorJTP.setEnabledAt(index - 4, enabled);
 	}
 	
 	public void setSelectedTab(PlannerTab pt) { 
