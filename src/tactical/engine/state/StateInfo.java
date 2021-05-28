@@ -115,9 +115,6 @@ public class StateInfo
 		this.initialized = false;
 		this.showAttackCinematic = false;
 		this.showingMapEvent = false;
-		
-		persistentStateInfo.getClientProfile().initialize();
-
 		initializeSystems();
 		
 		/*

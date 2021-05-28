@@ -28,6 +28,7 @@ import tactical.game.constants.Direction;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel.PanelType;
 import tactical.game.input.UserInput;
+import tactical.game.manager.SoundManager;
 import tactical.game.menu.MultiHeroJoinMenu;
 import tactical.game.menu.Portrait;
 import tactical.game.resource.HeroResource;
@@ -939,7 +940,10 @@ public class Cinematic {
 				ce.getType() == CinematicEventType.SHOW_MAIN_MENU || 
 				ce.getType() == CinematicEventType.SHOW_CREDITS ||
 				ce.getType() == CinematicEventType.SHOW_INTRO)) */
+		float musicVol = SoundManager.GLOBAL_VOLUME;
+		SoundManager.GLOBAL_VOLUME = 0;
 		for (CinematicEvent ce : cinematicEvents) 
 			handleEvent(ce, stateInfo);
+		SoundManager.GLOBAL_VOLUME = musicVol;
 	}
 }
