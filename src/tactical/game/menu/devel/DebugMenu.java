@@ -46,13 +46,14 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 	private Button killButton = new Button(270, 65, 140, 20, "Kill Combatant");
 	private Button levelButton = new Button(270, 95, 140, 20, "Level Up Hero");
 	private Button healButton = new Button(270, 125, 140, 20, "Heal");
-	private Button setToOneButton = new Button(270, 155, 140, 20, "Set to 1 HP");	
+	private Button setToOneButton = new Button(270, 155, 140, 20, "Set to 1 HP");
 	
 	private Button setDisplayAttributes = new Button(15, 600, 140, 20, "Display Options");
 	
 	private Button healHeroesOnTurn = new Button(270, 115, 180, 20, (TurnManager.healOnTurn ? "Disable" : "Enable") + " Heal Heroes on Turn");
 	private Button debugAI = new Button(270, 85, 140, 20, (TurnManager.enableAIDebug ? "Disable" : "Enable") + " AI Debug");
 	private Button chooseSprite = new Button(270, 55, 140, 20, "Choose Sprite");
+	private Button killAll = new Button(270, 145, 180, 20, "Kill All But One");	
 	private Button showQuests = new Button(270, 25, 200, 20, "Show Completed Quests");
 	
 	private int inputTimer = 0;
@@ -194,6 +195,11 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 				timerReset();
 			}
 			
+			if (setToOneButton.handleUserInput(x, y, leftClick)) {
+				selectedSprite.setCurrentHP(1);
+				timerReset();
+			}
+			
 			effectList.update(stateInfo.getPaddedGameContainer(), (int) delta);
 		} 
 		if (state == DebugMenuState.CHOOSE_TRIGGER) {
@@ -214,6 +220,20 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 			if (stateInfo.isCombat() && chooseSprite.handleUserInput(x, y, leftClick)) {
 				state = DebugMenuState.CHOOSE_SPRITE;
 				triggerStatus = null;
+				timerReset();
+			}
+			if (stateInfo.isCombat() && killAll.handleUserInput(x, y, leftClick)) {
+				boolean first = true;
+				for (CombatSprite cs : this.stateInfo.getCombatSprites()) {
+					if (!cs.isHero()) {
+						if (first) {
+							cs.setCurrentHP(1);
+							first = false;
+						} else {
+							cs.setCurrentHP(0);
+						}
+					}
+				}
 				timerReset();
 			}
 			if (stateInfo.isCombat() && debugAI.handleUserInput(x, y, leftClick)) {
@@ -287,6 +307,7 @@ public class DebugMenu extends Menu implements ResourceSelectorListener
 		if (state == DebugMenuState.CHOOSE_TRIGGER) {
 			if (stateInfo.isCombat()) {
 				chooseSprite.render(graphics);
+				killAll.render(graphics);
 				debugAI.render(graphics);
 				healHeroesOnTurn.render(graphics);
 			}

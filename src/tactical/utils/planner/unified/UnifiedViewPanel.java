@@ -60,6 +60,7 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 		JPanel topPanel = new JPanel();
 		topPanel.add(new JLabel("Select Driving Action: "));
 		drivers = new JComboBox<>();
+		drivers.setMaximumRowCount(30);
 		AutoCompletion.enable(drivers);
 		drivers.addItemListener(this);
 		topPanel.add(drivers);
