@@ -5,7 +5,9 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tactical.engine.state.StateInfo;
 import tactical.game.Camera;
@@ -17,6 +19,7 @@ import tactical.utils.AnimSprite;
 import tactical.utils.Animation;
 import tactical.utils.SpriteAnims;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AnimatedSprite extends Sprite
 {
 	private static final long serialVersionUID = 1L;

@@ -24,11 +24,18 @@ public abstract class CasterAI extends AI
 	protected KnownSpell bestKnownSpell;
 	protected int spellLevel;
 	protected ArrayList<CombatSprite> targets;
-	protected float maxKillConfidenceAmt;
-
-	public CasterAI(int approachType, boolean canHeal, float maxKillConfidenceAmt, int vision) {
+	
+	public static int NEARBY_ENEMY_PENALTY = 5;
+	public static int NEARBY_ALLY_BONUS = 5;	
+	public static int LAND_EFFECT_DIVISOR = 6;
+	public static int WILL_KILL_BONUS = 50;
+	public static int PERCENT_DAMAGE_WEIGHT = 30;
+	public static int MINIMUM_DAMAGE_THRESHOLD = 1;
+	public static float MP_COST_MULTIPLIER_PENALTY = 1.0f;
+	public static float DISTANCE_FROM_TARGET_MULTIPLER_BONUS = 1.0f;	
+	
+	public CasterAI(int approachType, boolean canHeal, int vision) {
 		super(approachType, canHeal, vision);
-		this.maxKillConfidenceAmt = maxKillConfidenceAmt;
 	}
 
 	public void initialize(CombatSprite puppet)
@@ -66,15 +73,15 @@ public abstract class CasterAI extends AI
 		{
 			couldAttackTarget = true;
 			int damage = Math.max(1, currentSprite.getCurrentAttack() - targetSprite.getCurrentDefense());
-			int damageInfluence = Math.min(30, (int)(30.0 * damage / targetSprite.getMaxHP()));			
+			int damageInfluence = Math.min(PERCENT_DAMAGE_WEIGHT, PERCENT_DAMAGE_WEIGHT * damage / targetSprite.getMaxHP());			
 
 			// If this attack would kill the target then add 50 confidence
 			if (targetSprite.getCurrentHP() <= damage)
 			{
-				currentConfidence += 50;
+				currentConfidence += WILL_KILL_BONUS;
 				willKill = true;
 			// If we'll only do 1 damage and not kill anything then don't attack
-			} else if (damage == 1) {
+			} else if (damage == MINIMUM_DAMAGE_THRESHOLD) {
 				damageInfluence = 0;
 			}
 				
@@ -207,7 +214,7 @@ public abstract class CasterAI extends AI
 					// TODO WHY ARE WE USING THEIR MAX HEALTH HERE? PERCENTAGE OF CURRENT HEALTH IS SUFFICIENT WITH
 					// A MAX PERCENT OF -1. OTHERWISE WE WILL ALMOST ALWAYS USE HIGHER LEVEL SPELLS
 					// ALSO, WHY DO WE HAVE CURRENT CONFIDENCE BE MAXED TO -50? IT SHOULD BE MINNED TO 0
-					currentConfidence += Math.min(maxKillConfidenceAmt, (int)(-maxKillConfidenceAmt * spell.getEffectiveDamage(currentSprite, ts, spellLevel - 1) / ts.getMaxHP()));
+					currentConfidence += Math.min(getPercentDamageWeight(), (int)(-getPercentDamageWeight() * spell.getEffectiveDamage(currentSprite, ts, spellLevel - 1) / ts.getMaxHP()));
 				}
 			}
 
@@ -221,18 +228,19 @@ public abstract class CasterAI extends AI
 			}
 
 			// Add a confidence equal to the amount killed + 50
-			currentConfidence += killed * maxKillConfidenceAmt;
+			currentConfidence += killed * getWillKillBonus();
 		}
 		// Only a single target
 		else
 		{
 			if (targetSprite.getCurrentHP() + spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1) <= 0)
 			{
-				currentConfidence += maxKillConfidenceAmt;
+				currentConfidence += getWillKillBonus();
 				willKill = true;
 			}
 			else
-				currentConfidence += Math.min(maxKillConfidenceAmt, (int)(-maxKillConfidenceAmt * spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1) / targetSprite.getMaxHP()));
+				currentConfidence += Math.min(getPercentDamageWeight(), 
+						(int)(-getPercentDamageWeight() * spell.getEffectiveDamage(currentSprite, targetSprite, spellLevel - 1) / targetSprite.getMaxHP()));
 			targetsInArea = null;
 			aiSpellConf.targetAmtDivisor = 1;
 		}
@@ -242,12 +250,12 @@ public abstract class CasterAI extends AI
 		currentConfidence += baseConfidence;
 		
 		// Maximize distance from target
-		currentConfidence += distance - 1;
-		aiSpellConf.distanceFromTarget = distance - 1;
+		currentConfidence += (int) ((distance - 1) * DISTANCE_FROM_TARGET_MULTIPLER_BONUS);
+		aiSpellConf.distanceFromTarget = (int) ((distance - 1) * DISTANCE_FROM_TARGET_MULTIPLER_BONUS);
 
 		// Subtract the mp cost of the spell
-		currentConfidence -= cost;
-		aiSpellConf.mpCost = -cost;
+		currentConfidence -= (int) (cost * MP_COST_MULTIPLIER_PENALTY);
+		aiSpellConf.mpCost = (int) -(cost * MP_COST_MULTIPLIER_PENALTY);
 
 		Log.debug("Caster Spell confidence " + currentConfidence + " name " + targetSprite.getName() + " spell " + spell.getName() + " level " + spellLevel);
 
@@ -339,8 +347,9 @@ public abstract class CasterAI extends AI
 
 	@Override
 	protected int getLandEffectWeight(int landEffect) {
-		return landEffect / 6;
+		return landEffect / LAND_EFFECT_DIVISOR;
 	}
 
-
+	public abstract int getPercentDamageWeight();
+	public abstract int getWillKillBonus();
 }
