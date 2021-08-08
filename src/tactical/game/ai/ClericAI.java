@@ -13,8 +13,17 @@ import tactical.game.sprite.CombatSprite;
 
 public class ClericAI extends CasterAI
 {
+	public static int PERCENT_DAMAGE_WEIGHT = 30;
+	public static int PERCENT_HEALING_WEIGHT = 50;
+	public static int INCIDENTAL_HEALED_BONUS = 2;
+	public static int SELF_HEAL_BONUS = 20;
+	public static float HEALING_REQUEST_THRESHOLD = .50f;
+	public static float HEALING_EFFICACY_THRESHOLD = .75f;
+	public static float SELF_HEALING_REQUEST_THRESHOLD = .65f;
+	public static float HEALING_MP_COST_MULTIPLIER_PENALTY = 1.0f;
+	
 	public ClericAI(int approachType, int vision) {
-		super(approachType, true, 30f, vision);
+		super(approachType, true, vision);
 	}
 
 	@Override
@@ -30,7 +39,7 @@ public class ClericAI extends CasterAI
 			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, AISpellConfidence aiSpellConf)
 	{
 		boolean healSelf = false;
-		if (1.0 * currentSprite.getCurrentHP() / currentSprite.getMaxHP() < .65)
+		if (1.0 * currentSprite.getCurrentHP() / currentSprite.getMaxHP() < SELF_HEALING_REQUEST_THRESHOLD)
 			healSelf = true;
 
 
@@ -89,15 +98,15 @@ public class ClericAI extends CasterAI
 				int effectiveDamage = spell.getEffectiveDamage(currentSprite, ts, spellLevel - 1);
 				int maxDamage = spell.getDamage()[spellLevel - 1];
 				// Check to see if the character is at less then 50% health or if the spell would use at least 75% of it's healing power
-				if (effectiveDamage != 0 && (ts.getCurrentHP() * 1.0 / ts.getMaxHP() < .5
-						|| (ts.getMaxHP() - ts.getCurrentHP()) / (1.0 * maxDamage) > .75))
+				if (effectiveDamage != 0 && (ts.getCurrentHP() * 1.0 / ts.getMaxHP() < HEALING_REQUEST_THRESHOLD
+						|| (ts.getMaxHP() - ts.getCurrentHP()) / (1.0 * maxDamage) > HEALING_EFFICACY_THRESHOLD))
 				{
 					// Get the percent of the max health that the spell can heal for and the percent of damage that
 					// the target is hurt for and the take the smaller of the two numbers. This prevents spells that
 					// can technically heal for a higher percent of max health getting a higher value (causing low
 					// level heal spells never to be used)
 					float healing = Math.min(ts.getMaxHP() - ts.getCurrentHP(), effectiveDamage) * 1.0f;
-					int healingConf = Math.min(50, (int)(50.0 *					
+					int healingConf = Math.min(PERCENT_HEALING_WEIGHT, (int)(PERCENT_HEALING_WEIGHT *					
 							healing / targetSprite.getMaxHP()));					
 					currentConfidence += healingConf;
 				}
@@ -113,14 +122,14 @@ public class ClericAI extends CasterAI
 			// Only add the base confidence if we have found someone to heal
 			if (currentConfidence > 0)
 			{
-				currentConfidence += incidentalHealed * 2;
+				currentConfidence += incidentalHealed * INCIDENTAL_HEALED_BONUS;
 				// TODO Should this be divided by the area?
 				// currentConfidence /= area;
 				// If this action will end up healing the cleric as well,
 				// then add an additional 20 points
 				if (healedSelf && healSelf) {
-					currentConfidence += 20;
-					aiSpellConf.selfHealBonus = 20;
+					currentConfidence += SELF_HEAL_BONUS;
+					aiSpellConf.selfHealBonus = SELF_HEAL_BONUS;
 				}
 				currentConfidence += baseConfidence;
 			}
@@ -142,14 +151,14 @@ public class ClericAI extends CasterAI
 				// can technically heal for a higher percent of max health getting a higher value (causing low
 				// level heal spells never to be used)
 				float healing = Math.min(targetSprite.getMaxHP() - targetSprite.getCurrentHP(), effectiveDamage) * 1.0f;
-				int healingConf = Math.min(50, (int)(50.0 *					
+				int healingConf = Math.min(PERCENT_HEALING_WEIGHT, (int)(PERCENT_HEALING_WEIGHT *					
 						healing / targetSprite.getMaxHP()));
 				aiSpellConf.damageInfluence = healingConf;
 				currentConfidence += healingConf;
 
 				if (targetSprite == currentSprite && healSelf) {
-					currentConfidence += 20;
-					aiSpellConf.selfHealBonus = 20;
+					currentConfidence += SELF_HEAL_BONUS;
+					aiSpellConf.selfHealBonus = SELF_HEAL_BONUS;
 				}
 
 				// Only add the base confidence if we have found someone to heal
@@ -161,9 +170,9 @@ public class ClericAI extends CasterAI
 		}
 
 		// Subtract the mp cost of the spell
-		currentConfidence -= cost;
+		currentConfidence -= (int)(cost * HEALING_MP_COST_MULTIPLIER_PENALTY);
 		
-		aiSpellConf.mpCost = cost;
+		aiSpellConf.mpCost = (int)(cost * HEALING_MP_COST_MULTIPLIER_PENALTY);
 
 		Log.debug(" Cleric Spell confidence " + currentConfidence + " name " +
 		targetSprite.getName() + " " + targetSprite.getUniqueEnemyId() + " spell " + spell.getName() + " level " + spellLevel);
@@ -184,14 +193,25 @@ public class ClericAI extends CasterAI
 			*/
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
-		int currentConfidence = 5;
-		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
-		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
+		int currentConfidence = NEARBY_ENEMY_PENALTY;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
 		currentConfidence += nearbyAlly - nearbyEnemy;
 		aiConf.allyInfluence = nearbyAlly;
 		aiConf.enemyInfluence = nearbyEnemy;
 		// Adding the attackers damage to this person causes us to flee way to much
  		// -Math.min(20, (int)(20.0 * damage / currentSprite.getMaxHP()));
 		return currentConfidence;
+	}
+
+	@Override
+	public int getPercentDamageWeight() {
+		return PERCENT_DAMAGE_WEIGHT;
+	}
+
+	@Override
+	public int getWillKillBonus() {
+		// TODO Auto-generated method stub
+		return WILL_KILL_BONUS;
 	}
 }

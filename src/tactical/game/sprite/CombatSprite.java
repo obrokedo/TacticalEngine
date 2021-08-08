@@ -9,6 +9,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.util.Log;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import tactical.engine.TacticalGame;
@@ -34,8 +37,10 @@ import tactical.utils.AnimSprite;
 import tactical.utils.Animation;
 import tactical.utils.SpriteAnims;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderMethodName = "")
 public class CombatSprite extends AnimatedSprite
-{
+{	
 	private static final long serialVersionUID = 1L;
 	public static final int MAXIMUM_ITEM_AMOUNT = 4;
 
@@ -82,13 +87,14 @@ public class CombatSprite extends AnimatedSprite
 	protected int attackEffectLevel;
 	@Getter protected boolean drawShadow = true;
 	@Getter @Setter protected transient String customMusic = null;
-
-
+	
 	/**
 	 * A boolean indicating whether the combat sprite dodges or blocks attacks, dodges if true, blocks if false
 	 */
 	@Getter private boolean dodges;
 
+	
+	
 	/**
 	 * Constructor to create an enemy CombatSprite
 	 */
@@ -133,7 +139,7 @@ public class CombatSprite extends AnimatedSprite
 	{
 		super(0, 0, imageName, id);
 
-		setInitialStatistics(isLeader, name, imageName, heroProgression, level, promoted, id);
+		setInitialStatistics(isLeader, name, imageName, heroProgression, level, promoted);
 
 		if (TacticalGame.TEST_MODE_ENABLED)
 		{
@@ -150,7 +156,7 @@ public class CombatSprite extends AnimatedSprite
 
 
 	public void setInitialStatistics(boolean isLeader, String name, String imageName, HeroProgression heroProgression,
-			int level, boolean promoted, int id) {
+			int level, boolean promoted) {
 		this.isPromoted = promoted;
 		// If a CombatSprite is created as promoted then it must not be on a special promotion path
 		if (isPromoted)
@@ -192,7 +198,6 @@ public class CombatSprite extends AnimatedSprite
 		this.battleEffects = new ArrayList<>();
 		
 		this.spriteType = Sprite.TYPE_COMBAT;
-		this.id = id;
 		this.attackEffectId = null;
 	}
 
@@ -613,7 +618,7 @@ public class CombatSprite extends AnimatedSprite
 		this.setInitialStatistics(cs.isLeader, name, imageName, 
 				cs.heroProgression, cs.level, 
 				// Is this a reasonable way to test for someone being promoted?
-				cs.getHeroProgression().getUnpromotedProgression() == null, id);
+				cs.getHeroProgression().getUnpromotedProgression() == null);
 		
 		// Stats in the progression are set up as [0] = stat progression, [1] = stat start, [2] = stat end
 		currentHP = maxHP = cs.getMaxHP();
@@ -759,5 +764,58 @@ public class CombatSprite extends AnimatedSprite
 	public String toString() {
 		return "CombatSprite [name=" + name+ " level=" + level + ", isHero=" + isHero + ", isLeader=" + isLeader + ", isPromoted="
 				+ isPromoted + ", uniqueEnemyId=" + uniqueEnemyId + ", id=" + id + ", tileX=" + this.getTileX() + ", tileY=" + this.getTileY() + "]";
-	}	
+	}
+	
+	private CombatSprite(int locX, int locY, String imageName, int id, Color fadeColor, int currentHP, int maxHP,
+			int currentMP, int maxMP, int currentInit, int currentSpeed, int maxSpeed, int currentMove, int maxMove,
+			int currentAttack, int maxAttack, int currentDefense, int maxDefense, int level, int exp, AI ai,
+			boolean isHero, boolean isLeader, boolean isPromoted, int uniqueEnemyId, int clientId,
+			ArrayList<KnownSpell> spells, ArrayList<Item> items, ArrayList<Boolean> equipped, int[] usuableWeapons,
+			int[] usuableArmor, HeroProgression heroProgression, int promotionPath, String movementType, int kills,
+			int defeat, ArrayList<BattleEffect> battleEffects, Image currentWeaponImage, SpriteAnims currentWeaponAnim,
+			String attackEffectId, int attackEffectChance, int attackEffectLevel, boolean drawShadow,
+			String customMusic, boolean dodges) {
+		super(locX, locY, imageName, id);
+		this.fadeColor = fadeColor;
+		this.currentHP = currentHP;
+		this.maxHP = maxHP;
+		this.currentMP = currentMP;
+		this.maxMP = maxMP;
+		this.currentInit = currentInit;
+		this.currentSpeed = currentSpeed;
+		this.maxSpeed = maxSpeed;
+		this.currentMove = currentMove;
+		this.maxMove = maxMove;
+		this.currentAttack = currentAttack;
+		this.maxAttack = maxAttack;
+		this.currentDefense = currentDefense;
+		this.maxDefense = maxDefense;
+		this.level = level;
+		this.exp = exp;
+		this.ai = ai;
+		this.isHero = isHero;
+		this.isLeader = isLeader;
+		this.isPromoted = isPromoted;
+		this.uniqueEnemyId = uniqueEnemyId;
+		this.clientId = clientId;
+		this.spells = spells;
+		this.items = items;
+		this.equipped = equipped;
+		this.usuableWeapons = usuableWeapons;
+		this.usuableArmor = usuableArmor;
+		this.heroProgression = heroProgression;
+		this.promotionPath = promotionPath;
+		this.movementType = movementType;
+		this.kills = kills;
+		this.defeat = defeat;
+		this.battleEffects = battleEffects;
+		this.currentWeaponImage = currentWeaponImage;
+		this.currentWeaponAnim = currentWeaponAnim;
+		this.attackEffectId = attackEffectId;
+		this.attackEffectChance = attackEffectChance;
+		this.attackEffectLevel = attackEffectLevel;
+		this.drawShadow = drawShadow;
+		this.customMusic = customMusic;
+		this.dodges = dodges;
+	}
 }

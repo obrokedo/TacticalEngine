@@ -4,12 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import tactical.cinematic.event.CinematicEvent;
-import tactical.cinematic.event.CinematicEvent.CinematicEventType;
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
 import tactical.game.constants.AttributeStrength;
 import tactical.utils.DirectoryLister;
+import tactical.utils.planner.layout.PlannerConditionLayout;
 import tactical.utils.planner.layout.PlannerEnemyStatLayout;
 import tactical.utils.planner.layout.PlannerEquippableItemLayout;
 import tactical.utils.planner.layout.PlannerHeroStatLayout;
@@ -1589,19 +1588,39 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 				PlannerValueDef.TYPE_LONG_STRING, "extradescription", false,
 				"Extra Description", "Use this area to describe what this quest is supposed to control and who is responsible for toggling it. This is not used in the engine."));
+		/*
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "count", false,
+				"Counting Quest Success", "If set to a number greater then 0 then this quest numeric value must meet or exceed this number to be completed."));
+				*/
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_MULTI_STRING, "count", false,
+				"Sub Quests", "A list of sub quests that are associated with this quest. "
+						+ "These can be referenced individually, or all must be completed for the 'parent' quest to be considered complete."));
 		// definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
 		// PlannerValueDef.TYPE_INT, "triggerid", false,
 		// "Unique Trigger Id",
 		// "Unique id that can be used to identify a given trigger"));
 		PlannerLineDef definingLine = new PlannerLineDef("quest", "Quest", "",
 				definingValues);
-
+		
 		// Setup available types
 		ArrayList<PlannerLineDef> allowableLines = new ArrayList<PlannerLineDef>();
+		
+		// Complete Quest
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				PlannerValueDef.TYPE_MULTI_STRING, "subquestnames", false, "Subquest Name",
+				"A list of the names of subquests of this quest"));
+		allowableLines.add(new PlannerLineDef("completequest",
+				"Subquests", "Defines subquests for the parent quest",
+				definingValues));
 
 		textContainer = new PlannerContainerDef(definingLine,
 				allowableLines, listOfLists,
 				PlannerValueDef.REFERS_QUEST - 1);
+		
+		
 		containersByName.put("quest", textContainer);
 	}
 
@@ -2895,7 +2914,7 @@ public class PlannerDefinitions {
 				+ " are specified then ALL of the conditions must be met simultaneously for these triggers to be executed."));
 
 		PlannerLineDef definingLine = new PlannerLineDef("condition", "Condition",
-				"", definingValues);
+				"", definingValues, new PlannerConditionLayout());
 
 		// Setup available types
 		ArrayList<PlannerLineDef> allowableLines = new ArrayList<PlannerLineDef>();

@@ -1,6 +1,7 @@
 package tactical.game.menu.devel;
 
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -15,6 +16,8 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 
+import tactical.engine.message.MessageType;
+import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.TurnActionsMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.ai.AI;
@@ -28,7 +31,9 @@ import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.utils.StringUtils;
 
-public class BattleAIDebug {
+public class BattleAIDebug {	
+	private List<byte[]> layouts = new ArrayList<>();
+	 
 	private List<AIConfidence> debugConfidences;
 	private TurnManager turnManager;
 	private StateInfo stateInfo;
@@ -139,63 +144,71 @@ public class BattleAIDebug {
 		return false;
 	}
 	
-	public void handleDebugInput(Input input) {
-		if (debugConfidences != null && input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-			int mx = (int)(input.getMouseX() / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationX()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
-			int my = (int)(input.getMouseY()  / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationY()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
-			JPanel panel = null;
-			for (AIConfidence aic : debugConfidences) {
-				if (aic.attackPoint != null && aic.attackPoint.x == mx && aic.attackPoint.y == my) {
-					if (panel == null) {
-						panel = new JPanel();
-						panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-						
-						String approach = null;
-						/*
-						 *  public final static int APPROACH_REACTIVE = 0;
-							public final static int APPROACH_KAMIKAZEE = 1;
-							public final static int APPROACH_HESITANT = 2;
-							public final static int APPROACH_FOLLOW = 3;
-							public final static int APPROACH_MOVE_TO_POINT = 4;
-							public final static int APPROACH_TARGET = 5;
-						 */
-						switch (turnManager.getCurrentSprite().getAi().getApproachType()) {
-							case 0:
-								approach = "Reactive";
-								break;
-							case 1:
-								approach = "Kamikazee";
-								break;
-							case 2:
-								approach = "Hesitant";
-								break;
-							case 3:
-								approach = "Follow";
-								break;
-							case 4:
-								approach = "Move to point";
-								break;
-							case 5:
-								approach = "Approach target";
-								break;
+	public boolean handleDebugInput(Input input, boolean debugIsShown) {
+		if (debugIsShown) {
+			if (debugConfidences != null && input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+				int mx = (int)(input.getMouseX() / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationX()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
+				int my = (int)(input.getMouseY()  / PaddedGameContainer.GAME_SCREEN_SCALE + stateInfo.getCamera().getLocationY()) / stateInfo.getCurrentMap().getTileEffectiveWidth();
+				JPanel panel = null;
+				for (AIConfidence aic : debugConfidences) {
+					if (aic.attackPoint != null && aic.attackPoint.x == mx && aic.attackPoint.y == my) {
+						if (panel == null) {
+							panel = new JPanel();
+							panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+							
+							String approach = null;
+							/*
+							 *  public final static int APPROACH_REACTIVE = 0;
+								public final static int APPROACH_KAMIKAZEE = 1;
+								public final static int APPROACH_HESITANT = 2;
+								public final static int APPROACH_FOLLOW = 3;
+								public final static int APPROACH_MOVE_TO_POINT = 4;
+								public final static int APPROACH_TARGET = 5;
+							 */
+							switch (turnManager.getCurrentSprite().getAi().getApproachType()) {
+								case 0:
+									approach = "Reactive";
+									break;
+								case 1:
+									approach = "Kamikazee";
+									break;
+								case 2:
+									approach = "Hesitant";
+									break;
+								case 3:
+									approach = "Follow";
+									break;
+								case 4:
+									approach = "Move to point";
+									break;
+								case 5:
+									approach = "Approach target";
+									break;
+							}
+							panel.add(new JLabel("Approach: " + approach));
 						}
-						panel.add(new JLabel("Approach: " + approach));
+						JLabel label = new JLabel("<html><body style='width: 600px'>" + aic.toString().replaceAll(" ", "<br>") + "</body></html>");
+						panel.add(label);					
 					}
-					JLabel label = new JLabel("<html><body style='width: 600px'>" + aic.toString().replaceAll(" ", "<br>") + "</body></html>");
-					panel.add(label);					
+				}
+				
+				if (panel != null) {
+					JFrame debugFrame = new JFrame("AI Debug");
+					debugFrame.setContentPane(panel);
+					debugFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					debugFrame.setMinimumSize(new Dimension(600, 400));
+					debugFrame.pack();
+					debugFrame.setVisible(true);
+					debugFrame.toFront();
 				}
 			}
-			
-			if (panel != null) {
-				JFrame debugFrame = new JFrame("AI Debug");
-				debugFrame.setContentPane(panel);
-				debugFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				debugFrame.setMinimumSize(new Dimension(600, 400));
-				debugFrame.pack();
-				debugFrame.setVisible(true);
-				debugFrame.toFront();
-			}
 		}
+		
+		if (input.isKeyPressed(Input.KEY_COMMA)) {
+			this.rewind();
+			return true;
+		}
+		return false;
 	}
 	
 	public void determineConfidences() {
@@ -210,5 +223,41 @@ public class BattleAIDebug {
 	
 	public boolean acceptingInput() {
 		return debugConfidences != null;
+	}
+	
+	public void turnStart() {
+		try {
+			BattleLayout layout = new BattleLayout(new ArrayList<CombatSprite>(stateInfo.getCombatSprites()),
+					stateInfo.getCurrentSprite());
+			layouts.add(0, layout.serialize(layout));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		while (layouts.size() > 5)
+			layouts.remove(5);
+	}
+	
+	public void rewind() {
+		if (layouts.size() > 1) {
+			// First one is the one we just added
+			layouts.remove(0);
+			byte[] bytes = layouts.remove(0);
+			BattleLayout layout;
+			try {
+				layout = BattleLayout.deserializeBattleLayout(bytes);
+				stateInfo.getSprites().removeAll(stateInfo.getCombatSprites());
+				stateInfo.getCombatSprites().clear();
+				layout.combatSprites.forEach(cs -> cs.initializeSprite(stateInfo.getResourceManager()));
+				stateInfo.addAllCombatSprites(layout.combatSprites);
+				stateInfo.sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, layout.combatSprites.get(layout.currentTurn)), true);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }

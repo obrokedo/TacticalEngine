@@ -6,12 +6,15 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tactical.engine.state.StateInfo;
 import tactical.game.Camera;
 import tactical.loading.ResourceManager;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sprite implements Serializable
 {
 	private static final long serialVersionUID = 1L;
@@ -31,6 +34,7 @@ public class Sprite implements Serializable
 	public Sprite(int locX, int locY, int id)
 	{
 		spriteBounds = new Rectangle(locX, locY, 24, 24);
+		this.id = id;
 	}
 
 	public void initializeSprite(ResourceManager fcrm)

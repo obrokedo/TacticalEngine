@@ -12,6 +12,12 @@ import tactical.game.turnaction.AttackSpriteAction;
 
 public class WarriorAI extends AI
 {
+	public static int NEARBY_ENEMY_PENALTY = 5;
+	public static int NEARBY_ALLY_BONUS = 5;
+	public static int WILL_KILL_BONUS = 50;
+	public static int LAND_EFFECT_DIVISOR = 3;
+	public static int PERCENT_DAMAGE_WEIGHT = 50;
+	
 	public WarriorAI(int approachType, int vision) {
 		super(approachType, false, vision);
 	}
@@ -31,12 +37,13 @@ public class WarriorAI extends AI
 			return new AIConfidence(Integer.MIN_VALUE);
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
-		int currentConfidence = 5;
-		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
-		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
+		int currentConfidence = NEARBY_ENEMY_PENALTY;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
 		
 		// Get the percent of damage that will be done to the hero
-		int damageDone = Math.min(50, (int)(50.0 * damage / targetSprite.getMaxHP()));
+		int damageDone = Math.min(PERCENT_DAMAGE_WEIGHT, 
+				(PERCENT_DAMAGE_WEIGHT * damage / targetSprite.getMaxHP()));
 		currentConfidence += nearbyAlly - nearbyEnemy + damageDone;
 		
 		boolean willKill = false;
@@ -44,7 +51,7 @@ public class WarriorAI extends AI
 		// If this attack would kill the target then add 50 confidence
 		if (targetSprite.getCurrentHP() <= damage)
 		{
-			currentConfidence += 50;
+			currentConfidence += WILL_KILL_BONUS;
 			willKill = true;
 		}
 
@@ -77,7 +84,7 @@ public class WarriorAI extends AI
 
 	@Override
 	protected int getLandEffectWeight(int landEffect) {
-		return landEffect / 3;
+		return landEffect / LAND_EFFECT_DIVISOR;
 	}
 
 }

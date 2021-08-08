@@ -27,12 +27,11 @@ public class NPCSprite extends AnimatedSprite
 			int speechId, int id, String name, boolean throughWall,
 			boolean animate, boolean turnOnTalk)
 	{
-		super(0, 0, imageName, Integer.MAX_VALUE);
+		super(0, 0, imageName, id);
 		this.name = name;
 		this.speechId = speechId;
 		this.spriteType = Sprite.TYPE_NPC;
 		this.uniqueNPCId = 0;
-		this.id = id;
 		this.throughWall = throughWall;
 		this.animate = animate;
 		this.turnOnTalk = turnOnTalk;

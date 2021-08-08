@@ -34,7 +34,6 @@ import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
 import tactical.game.item.Item;
 import tactical.game.listener.KeyboardListener;
-import tactical.game.menu.DefaultHeroStatMenu;
 import tactical.game.menu.ItemMenu;
 import tactical.game.menu.ItemOption;
 import tactical.game.menu.LandEffectPanel;
@@ -169,8 +168,9 @@ public class TurnManager extends Manager implements KeyboardListener
 			}
 		}
 		
-		if (enableAIDebug)
-			battleAIDebug.handleDebugInput(game.getContainer().getInput());
+		if (TacticalGame.DEV_MODE_ENABLED)
+			enableAIDebug = battleAIDebug.handleDebugInput(game.getContainer().getInput(), enableAIDebug) || enableAIDebug;
+		
 	}
 
 	public void render(Graphics graphics)
@@ -230,10 +230,13 @@ public class TurnManager extends Manager implements KeyboardListener
 
 	private void initializeCombatantTurn(CombatSprite sprite)
 	{
+		turnActions.clear();
 		stateInfo.removeKeyboardListeners();
 		currentSprite = sprite;
 		stateInfo.setCurrentSprite(currentSprite);
 		battleAIDebug.clearDebugConfidences();
+		if (TacticalGame.DEV_MODE_ENABLED)
+		battleAIDebug.turnStart();
 
 		as = null;
 		this.battleResults = null;

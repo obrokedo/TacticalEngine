@@ -13,8 +13,10 @@ import tactical.game.sprite.CombatSprite;
 
 public class WizardAI extends CasterAI
 {
+	public static int PERCENT_DAMAGE_WEIGHT = 50;
+	
 	public WizardAI(int approachType, int vision) {
-		super(approachType, false, 50f, vision);
+		super(approachType, false, vision);
 	}
 
 	@Override
@@ -33,14 +35,24 @@ public class WizardAI extends CasterAI
 		// int damage = Math.max(1, targetSprite.getCurrentAttack() - currentSprite.getCurrentDefense());
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
-		int currentConfidence = 5;
-		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
-		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * 5;
+		int currentConfidence = NEARBY_ENEMY_PENALTY;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
 		currentConfidence += nearbyAlly - nearbyEnemy;
 		aiConf.allyInfluence = nearbyAlly;
 		aiConf.enemyInfluence = nearbyEnemy;
 		// Adding the attackers damage to this person causes us to flee way to much
 		// - Math.min(20, (int)(20.0 * damage / currentSprite.getMaxHP()));
 		return currentConfidence;
+	}
+
+	@Override
+	public int getPercentDamageWeight() {
+		return PERCENT_DAMAGE_WEIGHT;
+	}
+
+	@Override
+	public int getWillKillBonus() {
+		return WILL_KILL_BONUS;
 	}
 }
