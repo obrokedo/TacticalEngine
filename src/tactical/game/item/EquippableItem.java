@@ -219,6 +219,7 @@ public class EquippableItem extends Item
 		if (effectName != null)
 		{
 			eff = TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().createEffect(effectName, effectLevel);
+			eff.setEffectChance(effectChance);
 		}
 		return eff;
 	}
