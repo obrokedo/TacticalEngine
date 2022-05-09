@@ -56,7 +56,7 @@ public class LoadingState extends BasicGameState
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException
 	{
-		// LoadingList.setDeferredLoading(true);
+		
 	}
 
 	@Override

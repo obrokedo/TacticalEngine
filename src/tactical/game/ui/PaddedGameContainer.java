@@ -111,8 +111,6 @@ public class PaddedGameContainer extends AppGameContainer
 			Log.debug("Unable to enter full screen");
 		}
 		
-		for (DisplayMode dm : Display.getAvailableDisplayModes())
-			Log.debug("Supported display modes " + dm);
 		setDisplayPaddingX(0);
 		
 		try

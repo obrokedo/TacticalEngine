@@ -249,8 +249,8 @@ public class Line implements UnifiedRenderable {
 				SingleEditPanel sep = new SingleEditPanel(pc);												
 				uvp.showScrollableOptionPane(sep, false);
 				for (PlannerLine pl : pc.getLines())
-					pl.commitChanges();
-				pc.getDefLine().commitChanges();
+					pl.commitChanges(pc.getPcdef().getReferenceStore());
+				pc.getDefLine().commitChanges(pc.getPcdef().getReferenceStore());
 				uvp.panelSelected();
 				uvp.setupPanel((String) uvp.getDrivers().getSelectedItem());
 			}
@@ -259,11 +259,11 @@ public class Line implements UnifiedRenderable {
 
 	private void editPL(PlannerLine pl) {
 		PlannerContainerDef pcdef = pc.getPcdef();			
-		pl.setupUI(null, 1, pcdef.getListOfLists(), false, null);
+		pl.setupUI(null, 1, pcdef.getReferenceStore(), false, null);
 
 		uvp.showScrollableOptionPane(pl.getUiAspect(), false);
 		
-		pl.commitChanges();
+		pl.commitChanges(pc.getPcdef().getReferenceStore());
 		
 		uvp.panelSelected();
 		uvp.setupPanel((String) uvp.getDrivers().getSelectedItem());

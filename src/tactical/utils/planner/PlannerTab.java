@@ -162,10 +162,10 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 		if (rc != JOptionPane.OK_OPTION)
 			return;
 		plannerTree.removeItem(index);
-		PlannerReference.removeReferences(refersTo, index);
-		if (refersTo == PlannerValueDef.REFERS_TRIGGER)
+		PlannerReference.removeReferences(plannerFrame.getReferenceStore(), refersTo, index);
+		if (refersTo == ReferenceStore.REFERS_TRIGGER)
 			plannerFrame.getPlannerMap().removeReferences(true, index);
-		else if (refersTo == PlannerValueDef.REFERS_TEXT)
+		else if (refersTo == ReferenceStore.REFERS_TEXT)
 			plannerFrame.getPlannerMap().removeReferences(false, index);		
 		uiAspect.repaint();
 		currentPC = null;
@@ -226,8 +226,8 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 			// JOptionPane.showMessageDialog(this.getUiAspect(), jsp, "Edit", JOptionPane.PLAIN_MESSAGE);
 			
 			for (PlannerLine pl : currentPC.getLines())
-				pl.commitChanges();
-			currentPC.getDefLine().commitChanges();
+				pl.commitChanges(plannerFrame.getReferenceStore());
+			currentPC.getDefLine().commitChanges(plannerFrame.getReferenceStore());
 		}
 	}
 
@@ -368,6 +368,10 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 					return pc;
 		}
 		return null;
+	}
+	
+	public ReferenceStore getReferenceStore() {
+		return plannerFrame.getReferenceStore();
 	}
 
 	@Override

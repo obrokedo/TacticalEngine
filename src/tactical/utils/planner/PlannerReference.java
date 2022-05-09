@@ -26,8 +26,8 @@ public class PlannerReference {
 	 * @param referenceIndex for int and multi-int fields the index of the item that was removed
 	 */
 	
-	public static void removeReferences(int referenceType, int referenceIndex) {
-		PlannerReference remove = PlannerFrame.referenceListByReferenceType.get(referenceType - 1).remove(referenceIndex);
+	public static void removeReferences(ReferenceStore referenceStore, int referenceType, int referenceIndex) {
+		PlannerReference remove = referenceStore.removeReference(referenceType - 1, referenceIndex);
 		remove.setName("");
 	}
 	
@@ -51,7 +51,7 @@ public class PlannerReference {
 		for (int j = 0; j < pl.getPlDef().getPlannerValues().size() && j < pl.getValues().size(); j++) {
 			PlannerValueDef pvd = pl.getPlDef().getPlannerValues().get(j);
 			
-			if (pvd.getRefersTo() != PlannerValueDef.REFERS_NONE && !pvd.isOptional()) {
+			if (pvd.getRefersTo() != ReferenceStore.REFERS_NONE && !pvd.isOptional()) {
 				if (pvd.getValueType() == PlannerValueDef.TYPE_MULTI_INT || pvd.getValueType() == PlannerValueDef.TYPE_MULTI_STRING) {
 					ArrayList<PlannerReference> refs = (ArrayList<PlannerReference>) pl.getValues().get(j);
 					for (PlannerReference ref : refs) {
@@ -69,14 +69,14 @@ public class PlannerReference {
 		}
 	}
 	
-	public static List<String> establishReferences(List<PlannerTab> tabsWithReferences, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType) {
+	public static List<String> establishReferences(List<PlannerTab> tabsWithReferences, ReferenceStore referenceStore) {
 		List<String> badReferences = new ArrayList<>();
 		
 		for (PlannerTab plannerTab : tabsWithReferences) {
 			for (PlannerContainer plannerContainer : plannerTab.getListPC()) {
-				establishLineReference(referenceListByReferenceType, badReferences, plannerContainer, plannerContainer.getDefLine());
+				establishLineReference(referenceStore, badReferences, plannerContainer, plannerContainer.getDefLine());
 				for (PlannerLine pl : plannerContainer.getLines()) {
-					establishLineReference(referenceListByReferenceType, badReferences, plannerContainer, pl);
+					establishLineReference(referenceStore, badReferences, plannerContainer, pl);
 				}
 			}
 		}
@@ -102,15 +102,15 @@ public class PlannerReference {
 		}
 	}
 
-	public static void establishLineReference(ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType,
+	public static void establishLineReference(ReferenceStore referenceStore,
 			List<String> badReferences, PlannerContainer plannerContainer, PlannerLine pl) {
 		for (int j = 0; j < pl.getPlDef().getPlannerValues().size() && j < pl.getValues().size(); j++) {
 			PlannerValueDef pvd = pl.getPlDef().getPlannerValues().get(j);
 			
-			if (pvd.getRefersTo() != PlannerValueDef.REFERS_NONE && 
+			if (pvd.getRefersTo() != ReferenceStore.REFERS_NONE && 
 					!(pl.getValues().get(j) instanceof PlannerReference) &&
 					!(pl.getValues().get(j) instanceof ArrayList<?>)) {
-				ArrayList<PlannerReference> references = referenceListByReferenceType.get(pvd.getRefersTo() - 1);
+				List<PlannerReference> references = referenceStore.getReferencesForType(pvd.getRefersTo() - 1);
 				if (pvd.getValueType() == PlannerValueDef.TYPE_INT) {
 					// Unfortunately it's difficult to find errors here since we don't know whether the index they 
 					// point to is reasonable or not, settle for indicating out of range errors
@@ -154,7 +154,7 @@ public class PlannerReference {
 	}
 
 	private static void establishMultiIntReference(List<String> badReferences, PlannerContainer plannerContainer, PlannerLine pl,
-			int j, PlannerValueDef pvd, ArrayList<PlannerReference> references) {
+			int j, PlannerValueDef pvd, List<PlannerReference> references) {
 		String[] vals = ((String) pl.getValues().get(j)).split(",");
 		List<PlannerReference> multiIntList = new ArrayList<PlannerReference>();
 		for (String val : vals) {
@@ -165,7 +165,7 @@ public class PlannerReference {
 	}
 
 	private static PlannerReference establishStringReference(String val, List<String> badReferences, PlannerContainer plannerContainer,
-			PlannerLine pl, int j, PlannerValueDef pvd, ArrayList<PlannerReference> references) {
+			PlannerLine pl, int j, PlannerValueDef pvd, List<PlannerReference> references) {
 		PlannerReference refToAdd;
 		int referenceIndex = references.indexOf(new PlannerReference(val));
 		if (referenceIndex != -1) {
@@ -186,7 +186,7 @@ public class PlannerReference {
 	}
 
 	private static PlannerReference establishIntReference(int index, List<String> badReferences, PlannerContainer plannerContainer, PlannerLine pl, int j,
-			ArrayList<PlannerReference> references, PlannerValueDef pvd) {
+			List<PlannerReference> references, PlannerValueDef pvd) {
 		if (index < 0 || index >= references.size()) {
 			if (!pvd.isOptional()) {
 				if (plannerContainer != null) {

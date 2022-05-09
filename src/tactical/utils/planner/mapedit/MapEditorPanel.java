@@ -34,6 +34,7 @@ import tactical.utils.planner.PlannerLineDef;
 import tactical.utils.planner.PlannerReference;
 import tactical.utils.planner.PlannerTab;
 import tactical.utils.planner.PlannerValueDef;
+import tactical.utils.planner.ReferenceStore;
 
 
 public class MapEditorPanel implements ActionListener, ItemListener {
@@ -58,7 +59,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 	
 	// private Hashtable<String, ArrayList<String>> entrancesByMap = new Hashtable<>();
 
-	public MapEditorPanel(PlannerFrame plannerFrame, ArrayList<ArrayList<PlannerReference>> listOfLists)
+	public MapEditorPanel(PlannerFrame plannerFrame, ReferenceStore referenceStore)
 	{
 		mapPanel = new MapEditorRenderPanel(this);
 		backPanel = new JPanel(new BorderLayout());
@@ -207,12 +208,12 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 			for (PlannerValueDef val : plannerLineDef.getPlannerValues())
 			{
 				String valueSet = null;
-				if (val.getValueType() == PlannerValueDef.TYPE_INT && val.getRefersTo() != PlannerValueDef.REFERS_NONE)
+				if (val.getValueType() == PlannerValueDef.TYPE_INT && val.getRefersTo() != ReferenceStore.REFERS_NONE)
 				{
 					int index = 0;
 					if (mo.getParam(val.getTag()) != null)
 						index = Integer.parseInt(mo.getParam(val.getTag()));
-					if (index < 0 || index >= listOfLists.get(val.getRefersTo() - 1).size())
+					if (index < 0 || index >= listOfLists.get(val.getRefersTo() - 1 ).size())
 						valueSet = "NO VALUE SELECTED";
 					else
 						valueSet = listOfLists.get(val.getRefersTo() - 1).get(index).getName();
@@ -397,7 +398,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 
 		for (PlannerValueDef val : pl.getPlDef().getPlannerValues())
 		{
-			if (val.getValueType() == PlannerValueDef.TYPE_INT && val.getRefersTo() != PlannerValueDef.REFERS_NONE)
+			if (val.getValueType() == PlannerValueDef.TYPE_INT && val.getRefersTo() != ReferenceStore.REFERS_NONE)
 			{
 				try {
 					pl.getValues().add(Integer.parseInt(mo.getParam(val.getTag())) + 1);
@@ -420,7 +421,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 
 		try
 		{
-			pl.setupUI(this, 1, pcdef.getListOfLists(), false, null);
+			pl.setupUI(this, 1, pcdef.getReferenceStore(), false, null);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -440,7 +441,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 			{
 				PlannerValueDef pvd = pld.getPlannerValues().get(i);
 				if (pvd.getValueType() == PlannerValueDef.TYPE_STRING) {
-					if (pvd.getRefersTo() != PlannerValueDef.REFERS_NONE)
+					if (pvd.getRefersTo() != ReferenceStore.REFERS_NONE)
 						mo.getParams().put(pvd.getTag(), ((PlannerReference) pl.getValues().get(i)).getName());
 					else 
 						mo.getParams().put(pvd.getTag(), (String) pl.getValues().get(i));
@@ -449,7 +450,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 					mo.getParams().put(pvd.getTag(), ((boolean) pl.getValues().get(i)) + "");
 				else
 				{
-					if (pvd.getRefersTo() != PlannerValueDef.REFERS_NONE)
+					if (pvd.getRefersTo() != ReferenceStore.REFERS_NONE)
 						mo.getParams().put(pvd.getTag(),  listOfLists.get(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i)) + "");
 					else
 						mo.getParams().put(pvd.getTag(), ((int) pl.getValues().get(i)) + "");

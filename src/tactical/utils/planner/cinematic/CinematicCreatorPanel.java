@@ -239,7 +239,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		PlannerLine pl = pt.getCurrentPC().getLines().get(selectedCinIndex);
 
 		// Check to see if there is a move action selected, if so
-		// then open up the edit window with the new values entered. If
+		// then asdasdasdopen up the edit window with the new values entered. If
 		// the edit is cancelled then reset the original values
 		if (pl.getPlDef().getName().equalsIgnoreCase("Move"))
 		{
@@ -416,12 +416,12 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 		PlannerLine pl = pt.getCurrentPC().getLines().get(selectedCinIndex);
 		PlannerContainerDef pcdef = pt.getPlannerContainerDef();
-		pl.setupUI(this, 1, pcdef.getListOfLists(), false, null);
+		pl.setupUI(this, 1, pcdef.getReferenceStore(), false, null);
 		int rc = JOptionPane.showConfirmDialog(uiAspect, pl.getUiAspect(), "Edit cinematic action", JOptionPane.OK_OPTION);
 		if (rc == JOptionPane.NO_OPTION)
 			return false;
 
-		pl.commitChanges();
+		pl.commitChanges(plannerFrame.getReferenceStore());
 
 		try {
 			long maxTime = mdp.loadCinematicItem(cinematicIds.getSelectedIndex());
@@ -453,7 +453,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 			pl.getValues().add(xLoc);
 			pl.getValues().add(yLoc);
 		}
-		pl.setupUI(this, 1, pcdef.getListOfLists(), false, null);
+		pl.setupUI(this, 1, pcdef.getReferenceStore(), false, null);
 		// pl.getUiAspect().setPreferredSize(new Dimension(480, pl.getUiAspect().getPreferredSize().height + 50));
 		//JScrollPane jsp = new JScrollPane(pl.getUiAspect());
 		//jsp.setPreferredSize(new Dimension(600, jsp.getPreferredSize().height));
@@ -465,7 +465,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 
 			try
 			{
-				pl.commitChanges();
+				pl.commitChanges(plannerFrame.getReferenceStore());
 			}
 			catch (IllegalArgumentException ex)
 			{

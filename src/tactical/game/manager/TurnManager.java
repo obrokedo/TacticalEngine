@@ -599,7 +599,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				{
 					for (int j = 0; j < range[0].length; j++)
 					{
-						if (range[i][j] == 1)
+						if (range[i][j] > 0)
 						{
 							StaticSprite targetable = (StaticSprite) stateInfo.getSearchableAtTile(currentSprite.getTileX() - rangeOffset + i,
 									currentSprite.getTileY() - rangeOffset + j);

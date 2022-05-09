@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -13,9 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -46,6 +43,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 	private boolean isDefining;
 	private JPanel uiAspect;
 	private LineCommitListener listener;
+	private ReferenceStore referenceStore;
 
 	public PlannerLine(PlannerLineDef plDef, boolean isDefining)
 	{
@@ -70,26 +68,28 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 	}
 
 	public void setupUI(ActionListener aListener,
-			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, PlannerTab parentTab)
+			int index, ReferenceStore referenceStore, PlannerTab parentTab)
 	{
 		setupUI(aListener,
-				index, referenceListByReferenceType, false, parentTab, true);
+				index, referenceStore, false, parentTab, true);
 	}
 	
 	public void setupUI(ActionListener aListener,
-			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
+			int index, ReferenceStore referenceStore, 
 			boolean displayButtons, PlannerTab parentTab)
 	{
-		setupUI(aListener, index, referenceListByReferenceType, displayButtons, parentTab, true);
+		setupUI(aListener, index, referenceStore, displayButtons, parentTab, true);
 	}
 	
 
 	public void setupUI(ActionListener aListener,
-			int index, ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType, 
+			int index, ReferenceStore referenceStore, 
 			boolean displayButtons, PlannerTab parentTab, boolean showHeader)
 	{
+		this.referenceStore = referenceStore;
 		ArrayList<String> badReferences = new ArrayList<>();
-		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
+		PlannerReference.establishLineReference(
+				referenceStore, badReferences, null, this);
 		// this.commitChanges();
 		components.clear();
 		uiAspect.removeAll();
@@ -161,7 +161,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 			{
 				case PlannerValueDef.TYPE_UNBOUNDED_INT:
 				case PlannerValueDef.TYPE_INT:
-					if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE)
+					if (pv.getRefersTo() == ReferenceStore.REFERS_NONE)
 					{
 						SpinnerNumberModel snm = null;
 
@@ -183,7 +183,8 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					{
 						Vector<String> items = new Vector<String>();
 						items.add("No value selected");
-						items.addAll(getReferenceStringList(referenceListByReferenceType, pv));
+						
+						items.addAll(referenceStore.getReferencesAsStrings(pv.getRefersTo() - 1));
 						c = new JComboBox<String>(items);						
 						if (values.size() > i)
 							((JComboBox<?>) c).setSelectedItem(((PlannerReference) values.get(i)).getName());
@@ -194,7 +195,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					}
 					break;
 				case PlannerValueDef.TYPE_MULTI_STRING:
-					if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE) {
+					if (pv.getRefersTo() == ReferenceStore.REFERS_NONE) {
 						if (values.size() > i && values.get(i) != null)
 							c = new MultiStringPanel(((String) values.get(i)).split("<split>"), this, false);
 						else
@@ -204,9 +205,9 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 				case PlannerValueDef.TYPE_MULTI_INT:
 					Vector<String> mitems = new Vector<String>();
 					mitems.add("No value selected");
-					mitems.addAll(getReferenceStringList(referenceListByReferenceType, pv));
+					mitems.addAll(referenceStore.getReferencesAsStrings(pv.getRefersTo() - 1));
 
-					c = new MultiIntPanel(getReferenceStringList(referenceListByReferenceType, pv), this);
+					c = new MultiIntPanel(referenceStore.getReferencesAsStrings(pv.getRefersTo() - 1), this);
 					JButton ab = new JButton("Add Item");
 					ab.addActionListener((MultiIntPanel) c);
 					ab.setActionCommand("ADD");
@@ -262,7 +263,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					}
 					break;
 				case PlannerValueDef.TYPE_STRING:
-					if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE)
+					if (pv.getRefersTo() == ReferenceStore.REFERS_NONE)
 					{
 						c = new JTextField(30);
 						c.addFocusListener(this);
@@ -273,7 +274,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					}
 					else
 					{
-						Vector<String> items = new Vector<String>(getReferenceStringList(referenceListByReferenceType, pv));
+						Vector<String> items = new Vector<String>(referenceStore.getReferencesAsStrings(pv.getRefersTo() - 1));
 						// if (pv.isOptional())
 						// We're going to leave the "" in so bad references don't default to something
 						items.add(0, "");
@@ -282,7 +283,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 						if (values.size() > i)
 							selected = ((PlannerReference) values.get(i)).getName();
 						
-						if (pv.getRefersTo() != PlannerValueDef.REFERS_MAPDATA) {
+						if (pv.getRefersTo() != ReferenceStore.REFERS_MAPDATA) {
 							c = new JComboBox<String>(items);											
 							((JComboBox<?>) c).setMaximumRowCount(20);
 							
@@ -347,11 +348,6 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 		uiAspect.add(valuePanel);
 	}
 	
-	private List<String> getReferenceStringList(ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType,
-			PlannerValueDef pv) {
-		return referenceListByReferenceType.get(pv.getRefersTo() - 1).stream().map(referTo -> referTo.getName()).collect(Collectors.toList());
-	}
-	
 	private String convertToConstantWidth(String str)
 	{
 		String[] splitDesc = str.split(" ");
@@ -373,8 +369,12 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 		newDesc = newDesc + "</html>";
 		return newDesc;
 	}
+	
+	public void commitChanges() {
+		commitChanges(referenceStore);
+	}
 
-	public void commitChanges()
+	public void commitChanges(ReferenceStore referenceStore)
 	{
 		//System.out.println("----------------- COMMIT");
 		//for (Component c : components)
@@ -396,7 +396,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 							values.set(i, ((JCheckBox) components.get(i)).isSelected());
 						break;
 					case PlannerValueDef.TYPE_STRING:
-						if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE)
+						if (pv.getRefersTo() == ReferenceStore.REFERS_NONE)
 						{
 							if (((JTextField) components.get(i)).getText().trim().length() < 0 && !pv.isOptional())
 							{
@@ -411,7 +411,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 						else
 						{
 							Object val = null; 
-							if (pv.getRefersTo() != PlannerValueDef.REFERS_MAPDATA) 
+							if (pv.getRefersTo() != ReferenceStore.REFERS_MAPDATA) 
 								val = ((JComboBox<?>) components.get(i)).getSelectedItem();
 							else
 								val = ((MapReferencePanel) components.get(i)).getSelectedItem();
@@ -443,7 +443,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 						break;
 					case PlannerValueDef.TYPE_UNBOUNDED_INT:
 					case PlannerValueDef.TYPE_INT:
-						if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE)
+						if (pv.getRefersTo() == ReferenceStore.REFERS_NONE)
 						{
 							if (i >= values.size())
 								values.add((int) ((JSpinner) components.get(i)).getValue());
@@ -459,7 +459,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 						}
 						break;
 					case PlannerValueDef.TYPE_MULTI_STRING:
-						if (pv.getRefersTo() == PlannerValueDef.REFERS_NONE) {
+						if (pv.getRefersTo() == ReferenceStore.REFERS_NONE) {
 							String multi = "";
 							for (String text : ((MultiStringPanel) components.get(i)).getTextStrings()) {
 								multi = multi + "<split>" + text;
@@ -524,7 +524,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 		// Clear out my components so I don't 're-commit'
 		// this.components.clear();
 		ArrayList<String> badReferences = new ArrayList<>();
-		PlannerReference.establishLineReference(PlannerFrame.referenceListByReferenceType, badReferences, null, this);
+		PlannerReference.establishLineReference(referenceStore, badReferences, null, this);
 		if (listener != null)
 			listener.lineCommitted();
 	}
@@ -559,12 +559,12 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 
 	@Override
 	public void focusLost(FocusEvent e) {
-		commitChanges();
+		commitChanges(referenceStore);
 	}
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		commitChanges();
+		commitChanges(referenceStore);
 	}
 
 	public void setListener(LineCommitListener listener) {
@@ -573,6 +573,6 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		commitChanges();
+		commitChanges(referenceStore);
 	}
 }

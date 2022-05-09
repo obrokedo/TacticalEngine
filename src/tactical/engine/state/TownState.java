@@ -22,6 +22,7 @@ import tactical.game.manager.TownMoveManager;
 import tactical.game.menu.AbstractHeroStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.PauseMenu;
+import tactical.game.menu.SplitPartyMenu;
 import tactical.game.menu.devel.DebugMenu;
 import tactical.game.menu.devel.HeroContextDebugMenu;
 import tactical.game.menu.devel.HeroesContextDebugMenu;
@@ -157,6 +158,7 @@ public class TownState extends LoadableGameState
 
 		if (stateInfo.isInitialized())
 		{
+			
 			menuManager.update(delta);
 			cinematicManager.update(delta);
 			if (!cinematicManager.isBlocking()) {

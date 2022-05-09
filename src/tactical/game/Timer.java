@@ -11,6 +11,7 @@ import java.util.function.BooleanSupplier;
  */
 public class Timer
 {
+	
 	private long timerUpdate;
 	private long timerDelta;
 	private BooleanSupplier performMethod;
@@ -34,7 +35,7 @@ public class Timer
 	{
 		if (timerDelta >= timerUpdate)
 		{
-			timerDelta -= timerUpdate;
+			timerDelta = 0;
 			return true;
 		}
 

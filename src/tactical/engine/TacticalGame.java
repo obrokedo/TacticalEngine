@@ -121,6 +121,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 		VERSION = version;
 	
 		TacticalGame.ENGINE_CONFIGURATIOR = getEngineConfigurator();
+		// Log.setVerbose(false);
 		
 		if (gameArgs.length > 0) {
 			if (gameArgs[0].equalsIgnoreCase("injar")) {

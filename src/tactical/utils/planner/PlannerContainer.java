@@ -30,7 +30,7 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 			this.commitChanges();
 		}
 		
-		this.defLine.commitChanges();
+		this.defLine.commitChanges(pcdef.getReferenceStore());
 		this.defLine.setListener(this);
 	}
 
@@ -58,14 +58,14 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		uiAspect.removeAll();
 		uiAspect.validate();
 
-		defLine.setupUI(this, 0, pcdef.getListOfLists(), parentTab);
+		defLine.setupUI(this, 0, pcdef.getReferenceStore(), parentTab);
 		uiAspect.add(defLine.getUiAspect());
 
 		JPanel listPanel = new JPanel();
 		listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.PAGE_AXIS));
 		if (index != -1 && index < lines.size())
 		{
-			lines.get(index).setupUI(this, index + 1, pcdef.getListOfLists(), parentTab);
+			lines.get(index).setupUI(this, index + 1, pcdef.getReferenceStore(), parentTab);
 			lines.get(index).setListener(this);
 			listPanel.add(lines.get(index).getUiAspect());
 		}
@@ -182,7 +182,7 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		else if (action.startsWith("save")) {
 			int index = Integer.parseInt(action.split(" ")[1]) - 1;
 			PlannerLine pl = lines.get(index);
-			pl.commitChanges();
+			pl.commitChanges(pcdef.getReferenceStore());
 			parentTab.refreshItem(this);
 			uiAspect.revalidate();
 			uiAspect.repaint();
@@ -192,7 +192,7 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 	public void commitChanges()
 	{
 		for (PlannerLine pl : lines)
-			pl.commitChanges();
+			pl.commitChanges(pcdef.getReferenceStore());
 	}
 
 	public PlannerContainerDef getPcdef() {

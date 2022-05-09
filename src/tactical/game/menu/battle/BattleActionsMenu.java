@@ -61,7 +61,7 @@ public class BattleActionsMenu extends QuadMenu
 		{
 			for (int j = 0; j < range[0].length; j++)
 			{
-				if (range[i][j] == 1)
+				if (range[i][j] > 0)
 				{
 					CombatSprite targetable = stateInfo.getCombatSpriteAtTile(currentSprite.getTileX() - rangeOffset + i,
 							currentSprite.getTileY() - rangeOffset + j, false);

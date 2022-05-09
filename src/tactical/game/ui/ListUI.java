@@ -149,7 +149,6 @@ public class ListUI implements ComponentListener {
 		
 		boolean clicked = container.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && 
 				clickCooldown.perform() && !ignoreClicksInUpdate;
-		
 		handleInput(x, y, clicked);
 		
 		String fil = textField.getText();
@@ -163,7 +162,7 @@ public class ListUI implements ComponentListener {
 		for (Button button : resourceFileButtons)
 		{
 			if (button.handleUserInput(x, y, clicked))
-			{
+			{				
 				if (listener != null)
 				{
 					if (!listener.resourceSelected(button.getText(), this))
@@ -171,11 +170,14 @@ public class ListUI implements ComponentListener {
 					else
 						this.selectedItem = button;
 				}
-				else
-					this.selectedItem = button;
+				else {
+					if (selectedItem == button)
+						this.selectedItem = null;
+					else
+						this.selectedItem = button;
+				}
+								
 				
-				
-					
 				break;
 			}
 			

@@ -66,7 +66,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	private static final Logger LOGGER = LoggingUtils.createLogger(PlannerFrame.class);
 
 	private Hashtable<String, PlannerContainerDef> containersByName;
-	public static ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType;
+	private ReferenceStore referenceStore;
 	private JTabbedPane jtp;
 	private JTabbedPane majorJTP;
 	private File triggerFile;
@@ -189,17 +189,17 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 		containersByName = new Hashtable<String, PlannerContainerDef>();
 
-		referenceListByReferenceType = new ArrayList<ArrayList<PlannerReference>>();
+		referenceStore = new ReferenceStore();
 
 		/********************/
 		/* Set up referrers */
 		/********************/
-		PlannerDefinitions.setupRefererList(referenceListByReferenceType);
+		PlannerDefinitions.setupRefererList(referenceStore);
 
 		/*******************/
 		/* Set up triggers */
 		/*******************/
-		PlannerDefinitions.setupDefintions(referenceListByReferenceType, containersByName);			
+		PlannerDefinitions.setupDefintions(referenceStore, containersByName);			
 		
 		resourceSearcher = new ResourceSearcher(containersByName);
 		
@@ -221,7 +221,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				tabsWithReferences.add(plannerTabs.get(i));
 			}
 			
-			updateErrorList(PlannerReference.establishReferences(tabsWithReferences, referenceListByReferenceType));
+			updateErrorList(PlannerReference.establishReferences(tabsWithReferences, referenceStore));
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "An error occurred parsing the saved data, undo any changes made manually and try again:"
@@ -299,21 +299,21 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		
 			// Add triggers
 			PlannerTab tempPlannerTab = new PlannerTab("Triggers", containersByName,
-					new String[] { "trigger" }, PlannerValueDef.REFERS_TRIGGER, this, TAB_TRIGGER);
+					new String[] { "trigger" }, ReferenceStore.REFERS_TRIGGER, this, TAB_TRIGGER);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/triggericon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)),
 					tempPlannerTab.getUiAspect());
 	
 			// Add conditions
 			tempPlannerTab = new PlannerTab("Conditions", containersByName,
-					new String[] { "condition" }, PlannerValueDef.REFERS_CONDITIONS, this, TAB_CONDITIONS);
+					new String[] { "condition" }, ReferenceStore.REFERS_CONDITIONS, this, TAB_CONDITIONS);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/conditionicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
 					tempPlannerTab.getUiAspect());
 			
 			// Add cinematics
 			tempPlannerTab = new PlannerTab("Cinematics", containersByName,
-					new String[] { "cinematic" }, PlannerValueDef.REFERS_CINEMATIC,
+					new String[] { "cinematic" }, ReferenceStore.REFERS_CINEMATIC,
 					this, TAB_CIN);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/cinematicicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), 
@@ -321,31 +321,31 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	
 			// Add speech
 			tempPlannerTab = new PlannerTab("Speeches", containersByName,
-					new String[] { "text" }, PlannerValueDef.REFERS_TEXT, this, TAB_TEXT);
+					new String[] { "text" }, ReferenceStore.REFERS_TEXT, this, TAB_TEXT);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/speechicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 		} else {
 			// Add heroes
 			PlannerTab tempPlannerTab = new PlannerTab("Heroes", containersByName,
-					new String[] { "hero" }, PlannerValueDef.REFERS_HERO, this, TAB_HERO);
+					new String[] { "hero" }, ReferenceStore.REFERS_HERO, this, TAB_HERO);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/heroicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 	
 			// Add enemies
 			tempPlannerTab = new PlannerTab("Enemies", containersByName,
-					new String[] { "enemy" }, PlannerValueDef.REFERS_ENEMY, this, TAB_ENEMY);
+					new String[] { "enemy" }, ReferenceStore.REFERS_ENEMY, this, TAB_ENEMY);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/enemyicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 	
 			// Add items
 			tempPlannerTab = new PlannerTab("Items", containersByName,
-					new String[] { "item" }, PlannerValueDef.REFERS_ITEM, this, TAB_ITEM);
+					new String[] { "item" }, ReferenceStore.REFERS_ITEM, this, TAB_ITEM);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/itemsicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 	
 			// Add quests
 			tempPlannerTab = new PlannerTab("Quests", containersByName,
-					new String[] { "quest" }, PlannerValueDef.REFERS_QUEST, this, TAB_QUEST);
+					new String[] { "quest" }, ReferenceStore.REFERS_QUEST, this, TAB_QUEST);
 			plannerTabs.add(tempPlannerTab);
 			jtp.addTab(null, new ImageIcon(ImageUtility.loadBufferedImage("image/planner/questicon.png").getScaledInstance(32, 32, Image.SCALE_DEFAULT)), tempPlannerTab.getUiAspect());
 			jtp.addChangeListener(this);
@@ -390,7 +390,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		majorJTP = new JTabbedPane();
 		cinematicMapPanel = new CinematicCreatorPanel(this);
 		majorJTP.addTab("Cinematic Creator", cinematicMapPanel.getUiAspect());
-		mapEditorPanel = new MapEditorPanel(this, referenceListByReferenceType);
+		mapEditorPanel = new MapEditorPanel(this, referenceStore);
 		majorJTP.addTab("Map Editor", mapEditorPanel.getUIAspect());
 		unifiedViewPanel = new UnifiedViewPanel(mapEditorPanel);
 		majorJTP.addTab("Unified View" , unifiedViewPanel);
@@ -438,10 +438,9 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				if (triggerFile != null) {
-					referenceListByReferenceType.get(PlannerValueDef.REFERS_TRIGGER - 1).clear();
-					referenceListByReferenceType.get(PlannerValueDef.REFERS_TEXT - 1).clear();
-					referenceListByReferenceType.get(PlannerValueDef.REFERS_CINEMATIC - 1)
-							.clear();
+					referenceStore.clearReferenceList(ReferenceStore.REFERS_TRIGGER - 1);
+					referenceStore.clearReferenceList(ReferenceStore.REFERS_TEXT - 1);
+					referenceStore.clearReferenceList(ReferenceStore.REFERS_CINEMATIC - 1);
 
 					plannerTabs.get(TAB_TRIGGER).clearValues();
 					plannerTabs.get(TAB_CIN).clearValues();
@@ -496,18 +495,22 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			if (isRootPlanner) {
 				boolean success = true;
 				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ENEMY).getListPC(),
+						referenceStore,
 						PlannerIO.PATH_ENEMIES, false, "enemies"))
 					success = false;
 
 				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_HERO).getListPC(),
+						referenceStore,
 						PlannerIO.PATH_HEROES, false, "heroes"))
 					success = false;
 
 				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_ITEM).getListPC(),
+						referenceStore,
 						PlannerIO.PATH_ITEMS, false, "items"))
 					success = false;
 
 				if (!plannerIO.exportDataToFile(plannerTabs.get(TAB_QUEST).getListPC(),
+						referenceStore,
 						PlannerIO.PATH_QUESTS, false, "quests"))
 					success = false;
 				JOptionPane.showMessageDialog(this, "Base resources have been saved.");
@@ -620,7 +623,8 @@ public class PlannerFrame extends JFrame implements ActionListener,
 
 	private boolean loadPlannerMap(String fileName, List<TagArea> mapAreas) {
 		plannerMap = new PlannerMap(fileName, 
-				referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1), rootPlanner.plannerTabs.get(PlannerFrame.TAB_ENEMY));
+				referenceStore.getReferencesForType(ReferenceStore.REFERS_LOCATIONS - 1), 
+				rootPlanner.plannerTabs.get(PlannerFrame.TAB_ENEMY));
 
 		try {
 			MapParser.parseMap(new File(triggerFile.getParentFile().getParentFile() + "/map/" + fileName).getAbsolutePath(), 
@@ -646,7 +650,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 						+ "Add a 'Walkable' layer to prevent errors");
 			}
 			
-			Collections.sort(referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1), new Comparator<PlannerReference>() {
+			Collections.sort(referenceStore.getReferencesForType(ReferenceStore.REFERS_LOCATIONS - 1), new Comparator<PlannerReference>() {
 				@Override
 				public int compare(PlannerReference o1, PlannerReference o2) { return o1.getName().compareTo(o2.getName()); }});
 		} catch (Throwable e) {
@@ -688,7 +692,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					mapAreas.add(ta);
 				}
 			
-			referenceListByReferenceType.get(PlannerValueDef.REFERS_LOCATIONS - 1).clear();
+			referenceStore.clearReferenceList(ReferenceStore.REFERS_LOCATIONS - 1);
 			plannerMap = null;
 			
 			if (mapFile == null) {
@@ -702,9 +706,9 @@ public class PlannerFrame extends JFrame implements ActionListener,
 					return;
 			}
 			
-			referenceListByReferenceType.get(PlannerValueDef.REFERS_TRIGGER - 1).clear();
-			referenceListByReferenceType.get(PlannerValueDef.REFERS_TEXT - 1).clear();
-			referenceListByReferenceType.get(PlannerValueDef.REFERS_CINEMATIC - 1).clear();
+			referenceStore.clearReferenceList(ReferenceStore.REFERS_TRIGGER - 1);
+			referenceStore.clearReferenceList(ReferenceStore.REFERS_TEXT - 1);
+			referenceStore.clearReferenceList(ReferenceStore.REFERS_CINEMATIC - 1);
 
 			plannerTabs.get(TAB_TRIGGER).clearValues();
 			plannerTabs.get(TAB_CIN).clearValues();
@@ -727,7 +731,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 				plannerIO.parseContainer(tagAreas, plannerTabs.get(TAB_CONDITIONS), "condition", containersByName, true);
 			}
 			
-			PlannerReference.establishReferences(getTabsWithMapReferences(), referenceListByReferenceType);
+			PlannerReference.establishReferences(getTabsWithMapReferences(), referenceStore);
 			updateErrorList(PlannerReference.getBadReferences(getDataInputTabs()));
 			
 			unifiedViewPanel.resetPanel();
@@ -764,13 +768,13 @@ public class PlannerFrame extends JFrame implements ActionListener,
 			
 			
 			try {
-				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TRIGGER).getListPC(), null));
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TRIGGER).getListPC(), referenceStore, null));
 	
-				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TEXT).getListPC(), null));
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_TEXT).getListPC(), referenceStore,  null));
 	
-				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CIN).getListPC(), null));
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CIN).getListPC(), referenceStore,  null));
 				
-				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CONDITIONS).getListPC(), null));
+				buffer.addAll(PlannerIO.export(plannerTabs.get(TAB_CONDITIONS).getListPC(), referenceStore,  null));
 				
 				buffer.add(plannerMap.outputNewMap());
 			} catch (Exception e) {
@@ -890,6 +894,9 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	public UnifiedViewPanel getUnifiedViewPanel() {
 		return unifiedViewPanel;
 	}
-	
-	
+
+
+	public ReferenceStore getReferenceStore() {
+		return referenceStore;
+	}
 }

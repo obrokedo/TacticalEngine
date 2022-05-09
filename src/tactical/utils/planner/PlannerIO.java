@@ -7,9 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -32,10 +30,11 @@ public class PlannerIO {
 	/* Export data methods 						*/
 	/********************************************/
 	public boolean exportDataToFile(ArrayList<PlannerContainer> containers,
+			ReferenceStore referenceStore,
 			String pathToFile, boolean append, String rootXMLTag) {
 		ArrayList<String> myBuffer = null;
 		try {
-			myBuffer = PlannerIO.export(containers, rootXMLTag);
+			myBuffer = PlannerIO.export(containers, referenceStore, rootXMLTag);
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "An error occurred while trying to format the data for " + rootXMLTag + ":"
@@ -59,7 +58,9 @@ public class PlannerIO {
 		return true;
 	}
 
-	public static ArrayList<String> export(ArrayList<PlannerContainer> containers, String rootXMLTag)
+	public static ArrayList<String> export(ArrayList<PlannerContainer> containers, 
+			ReferenceStore referenceStore,
+			String rootXMLTag)
 	{		
 		/*
 		Map<String, Object> configs = new HashMap<>();
@@ -87,11 +88,11 @@ public class PlannerIO {
 			buffer.add("<" + rootXMLTag + ">");
 		for (int i = 0; i < containers.size(); i++) {
 			PlannerContainer pc = containers.get(i);
-			buffer.add(exportLine(pc.getPcdef().getDefiningLine(),
+			buffer.add(exportLine(referenceStore, pc.getPcdef().getDefiningLine(),
 					pc.getDefLine(), i));
 
 			for (PlannerLine pl : pc.getLines())
-				buffer.add(exportLine(pl.getPlDef(), pl, -1));
+				buffer.add(exportLine(referenceStore, pl.getPlDef(), pl, -1));
 
 			buffer.add("</" + pc.getPcdef().getDefiningLine().getTag() + ">");
 		}
@@ -121,21 +122,21 @@ public class PlannerIO {
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_STRING ||
 					pvd.getValueType() == PlannerValueDef.TYPE_LONG_STRING ||
 					pvd.getValueType() == PlannerValueDef.TYPE_MULTI_LONG_STRING) {
-				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE)
+				if (pvd.getRefersTo() == ReferenceStore.REFERS_NONE)
 					stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 				else
 					stringBuffer += "\"" + ((PlannerReference) pl.getValues().get(i)).getName() + "\"";
 			}
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_INT
 					|| pvd.getValueType() == PlannerValueDef.TYPE_UNBOUNDED_INT) {
-				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE)
+				if (pvd.getRefersTo() == ReferenceStore.REFERS_NONE)
 					stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 				else
 					stringBuffer += "\"" + PlannerFrame.referenceListByReferenceType.get(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i)) + "\"";
 					// stringBuffer += (int) pl.getValues().get(i) - 1;
 			} else if (pvd.getValueType() == PlannerValueDef.TYPE_MULTI_INT) {
 				String newVals = "";
-				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE) {
+				if (pvd.getRefersTo() == ReferenceStore.REFERS_NONE) {
 					String[] oldVals = ((String) pl.getValues().get(i)).split(",");
 	
 					for (int j = 0; j < oldVals.length; j++) {
@@ -175,7 +176,8 @@ public class PlannerIO {
 	
 	*/
 
-	private static String exportLine(PlannerLineDef pldef, PlannerLine pl, int id) {
+	private static String exportLine(ReferenceStore referenceStore,
+			PlannerLineDef pldef, PlannerLine pl, int id) {
 		String stringBuffer = "";
 		if (pl.isDefining())
 			stringBuffer += "<" + pldef.getTag();
@@ -193,21 +195,21 @@ public class PlannerIO {
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_STRING ||
 					pvd.getValueType() == PlannerValueDef.TYPE_LONG_STRING ||
 					pvd.getValueType() == PlannerValueDef.TYPE_MULTI_LONG_STRING) {
-				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE)
+				if (pvd.getRefersTo() == ReferenceStore.REFERS_NONE)
 					stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 				else
 					stringBuffer += "\"" + ((PlannerReference) pl.getValues().get(i)).getName() + "\"";
 			}
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_INT
 					|| pvd.getValueType() == PlannerValueDef.TYPE_UNBOUNDED_INT) {
-				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE)
+				if (pvd.getRefersTo() == ReferenceStore.REFERS_NONE)
 					stringBuffer += "\"" + pl.getValues().get(i) + "\"";
 				else
-					stringBuffer += "\"" + PlannerFrame.referenceListByReferenceType.get(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i)) + "\"";
+					stringBuffer += "\"" + referenceStore.getReferencesForType(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i)) + "\"";
 					// stringBuffer += (int) pl.getValues().get(i) - 1;
 			} else if (pvd.getValueType() == PlannerValueDef.TYPE_MULTI_INT) {
 				String newVals = "";
-				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE) {
+				if (pvd.getRefersTo() == ReferenceStore.REFERS_NONE) {
 					String[] oldVals = ((String) pl.getValues().get(i)).split(",");
 	
 					for (int j = 0; j < oldVals.length; j++) {
@@ -219,7 +221,7 @@ public class PlannerIO {
 					@SuppressWarnings("unchecked")
 					ArrayList<PlannerReference> refs = (ArrayList<PlannerReference>) pl.getValues().get(i);
 					for (int j = 0; j < refs.size(); j++) {
-						newVals = newVals + PlannerFrame.referenceListByReferenceType.get(pvd.getRefersTo() - 1).indexOf(refs.get(j));
+						newVals = newVals + referenceStore.getReferencesForType(pvd.getRefersTo() - 1).indexOf(refs.get(j));
 						if (j + 1 <= refs.size())
 							newVals += ",";
 					}
@@ -314,7 +316,7 @@ public class PlannerIO {
 			// Handle integer values
 			else if (pvd.getValueType() == PlannerValueDef.TYPE_INT
 					|| pvd.getValueType() == PlannerValueDef.TYPE_UNBOUNDED_INT) {
-				if (pvd.getRefersTo() == PlannerValueDef.REFERS_NONE) {
+				if (pvd.getRefersTo() == ReferenceStore.REFERS_NONE) {
 					LOGGER.finest("TAG: " + pvd.getTag() + " "
 							+ ta.getAttribute(pvd.getTag()));
 					int value = 0;

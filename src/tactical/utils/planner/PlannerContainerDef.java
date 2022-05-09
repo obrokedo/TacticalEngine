@@ -2,29 +2,30 @@ package tactical.utils.planner;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class PlannerContainerDef
 {
 	private PlannerLineDef definingLine;
 	private ArrayList<PlannerLineDef> allowableLines;
-	private ArrayList<ArrayList<PlannerReference>> listOfLists;
+	private ReferenceStore referenceStore;
 	private int writeToIndex;
 	private Hashtable<String, ArrayList<String>> groupingsForAllowableLine;
 
 	public PlannerContainerDef(PlannerLineDef definingLine,
-			ArrayList<PlannerLineDef> allowableLines, ArrayList<ArrayList<PlannerReference>> listOfLists,
+			ArrayList<PlannerLineDef> allowableLines, ReferenceStore referenceStore,
 			int writeToIndex)
 	{
-		this(definingLine, allowableLines, listOfLists, writeToIndex, null);
+		this(definingLine, allowableLines, referenceStore, writeToIndex, null);
 	}
 
 	public PlannerContainerDef(PlannerLineDef definingLine,
-			ArrayList<PlannerLineDef> allowableLines, ArrayList<ArrayList<PlannerReference>> listOfLists,
+			ArrayList<PlannerLineDef> allowableLines, ReferenceStore referenceStore,
 			int writeToIndex, Hashtable<String, ArrayList<String>> groupingsForAllowableLine)
 	{
 		this.definingLine = definingLine;
 		this.allowableLines = allowableLines;
-		this.listOfLists = listOfLists;
+		this.referenceStore = referenceStore;
 		this.writeToIndex = writeToIndex;
 		this.groupingsForAllowableLine = groupingsForAllowableLine;
 	}
@@ -44,13 +45,13 @@ public class PlannerContainerDef
 	 * @return the "list of lists" that contain the name of every item definied so that they
 	 * may be refered to by REFER tags.
 	 */
-	public ArrayList<PlannerReference> getDataLines()
+	public List<PlannerReference> getDataLines()
 	{
-		return listOfLists.get(writeToIndex);
+		return referenceStore.getReferencesForType(writeToIndex);
 	}
 
-	public ArrayList<ArrayList<PlannerReference>> getListOfLists() {
-		return listOfLists;
+	public ReferenceStore getReferenceStore() {
+		return referenceStore;
 	}
 
 	public Hashtable<String, ArrayList<String>> getGroupingsForAllowableLine() {

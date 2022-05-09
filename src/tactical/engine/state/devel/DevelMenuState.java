@@ -465,10 +465,10 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 
 	@Override
 	public void mousePressed(int button, int x, int y) {
-		if (updateDelta <= 0) {
+		if (this.updateDelta <= 0) {
 			if (button == Input.MOUSE_LEFT_BUTTON)
 			{
-				this.updateDelta = 200;
+				this.updateDelta = 1000;
 				
 				if (loadTownButton.handleUserInput(x, y, true)) {
 					// This whole line of logic is somewhat terrifying... We set the resource manager

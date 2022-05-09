@@ -22,135 +22,134 @@ public class PlannerDefinitions {
 	private static String PATH_MUSIC = "music";
 	private static String PATH_SOUND = "sound";
 
-	public static void setupDefintions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupDefintions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName)
 	{
-		setupTriggerDefinition(listOfLists, containersByName);
-		setupTextDefinitions(listOfLists, containersByName);
-		setupHeroDefinitions(listOfLists, containersByName);
-		setupConditionDefinition(listOfLists, containersByName);
-		setupEnemyDefinitions(listOfLists, containersByName);
-		setupItemDefinitions(listOfLists, containersByName);
-		setupQuestDefinitions(listOfLists, containersByName);
-		setupCinematicDefinitions(listOfLists, containersByName);
-		// setupMapDefinitions(listOfLists, containersByName);
-		setupMapEditorDefinitions(listOfLists, containersByName);
+		setupTriggerDefinition(referenceStore, containersByName);
+		setupTextDefinitions(referenceStore, containersByName);
+		setupHeroDefinitions(referenceStore, containersByName);
+		setupConditionDefinition(referenceStore, containersByName);
+		setupEnemyDefinitions(referenceStore, containersByName);
+		setupItemDefinitions(referenceStore, containersByName);
+		setupQuestDefinitions(referenceStore, containersByName);
+		setupCinematicDefinitions(referenceStore, containersByName);
+		// setupMapDefinitions(referenceStore, containersByName);
+		setupMapEditorDefinitions(referenceStore, containersByName);
 	}
 
-	public static void setupRefererList(ArrayList<ArrayList<PlannerReference>> listOfLists)
+	public static void setupRefererList(ReferenceStore referenceStore)
 	{
 		// TacticalGame.ENGINE_CONFIGURATIOR.initialize();
-		
-		for (int i = 0; i < 50; i++)
-			listOfLists.add(new ArrayList<PlannerReference>());
-
+	
 		// Setup AI Types
-		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("wait"));
-		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("fast"));
-		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("slow"));
-		listOfLists.get(PlannerValueDef.REFERS_AI_APPROACH - 1).add(new PlannerReference("wander"));
+		referenceStore.addReference(ReferenceStore.REFERS_AI_APPROACH - 1, new PlannerReference("wait"),
+				new PlannerReference("fast"), new PlannerReference("slow"), new PlannerReference("wander"));
 
-		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("wizard"));
-		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("cleric"));
-		listOfLists.get(PlannerValueDef.REFERS_AI - 1).add(new PlannerReference("fighter"));
-
+		referenceStore.addReference(ReferenceStore.REFERS_AI - 1, new PlannerReference("wizard"),
+				new PlannerReference("cleric"), new PlannerReference("fighter"));
+		
 		// Setup progression type
-		for (String progressionName : TacticalGame.ENGINE_CONFIGURATIOR.getLevelProgression().getStandardStatProgressionTypeList())
-			listOfLists.get(PlannerValueDef.REFERS_STAT_GAINS - 1).add(new PlannerReference(progressionName));
+		referenceStore.addReference(ReferenceStore.REFERS_STAT_GAINS - 1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getLevelProgression().getStandardStatProgressionTypeList());
 
 		// Setup usuable itemstyles
-		for (String weaponName : TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getWeaponTypes())
-			listOfLists.get(PlannerValueDef.REFERS_ITEM_STYLE - 1).add(new PlannerReference(weaponName));
+		referenceStore.addReference(ReferenceStore.REFERS_ITEM_STYLE - 1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getWeaponTypes());
 
 		// Setup usuable item types
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_TYPE - 1).add(new PlannerReference("Weapon"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_TYPE - 1).add(new PlannerReference("Ring"));
+		referenceStore.addReference(ReferenceStore.REFERS_ITEM_TYPE - 1, "Weapon", "Ring");
 
+		
 		// Setup usuable item ranges
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_RANGE - 1).add(new PlannerReference("Self only"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_RANGE - 1).add(new PlannerReference("All within 1"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_RANGE - 1).add(new PlannerReference("All within 2"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_RANGE - 1).add(new PlannerReference("All within 3"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_RANGE - 1).add(new PlannerReference("Only at range 2"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_RANGE - 1).add(new PlannerReference("Only at range 2 and 3"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_RANGE - 1).add(new PlannerReference("Only at range 3"));
+		referenceStore.addReference(ReferenceStore.REFERS_ITEM_RANGE - 1, 
+			"Self only",
+			"All within 1",
+			"All within 2",
+			"All within 3",
+			"Only at range 2",
+			"Only at range 2 and 3",
+			"Only at range 3");
 
 		// Setup usuable item areas
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_AREA - 1).add(new PlannerReference("None"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_AREA - 1).add(new PlannerReference("One square"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_AREA - 1).add(new PlannerReference("Five squares"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_AREA - 1).add(new PlannerReference("Thirteen squares"));
-		listOfLists.get(PlannerValueDef.REFERS_ITEM_AREA - 1).add(new PlannerReference("Everyone"));
+		referenceStore.addReference(ReferenceStore.REFERS_ITEM_AREA - 1, 
+			"None",
+			"One square",
+			"Five squares",
+			"Thirteen squares",
+			"Everyone");
 
 		// Setup movement types
-		for (String movementName : TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getMovementTypes())
-			listOfLists.get(PlannerValueDef.REFERS_MOVE_TYPE - 1).add(new PlannerReference(movementName));
+		referenceStore.addReference(ReferenceStore.REFERS_MOVE_TYPE - 1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getMovementTypes());
 
 		// Setup spells
-		for (String spellName : TacticalGame.ENGINE_CONFIGURATIOR.getSpellFactory().getSpellList())
-			listOfLists.get(PlannerValueDef.REFERS_SPELL - 1).add(new PlannerReference(spellName));
+		referenceStore.addReference(ReferenceStore.REFERS_SPELL - 1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getSpellFactory().getSpellList());
 
 		// Setup Direction
-		listOfLists.get(PlannerValueDef.REFERS_DIRECTION - 1).add(new PlannerReference("Up"));
-		listOfLists.get(PlannerValueDef.REFERS_DIRECTION - 1).add(new PlannerReference("Down"));
-		listOfLists.get(PlannerValueDef.REFERS_DIRECTION - 1).add(new PlannerReference("Left"));
-		listOfLists.get(PlannerValueDef.REFERS_DIRECTION - 1).add(new PlannerReference("Right"));
+		referenceStore.addReference(ReferenceStore.REFERS_DIRECTION - 1, 
+			"Up",
+			"Down",
+			"Left",
+			"Right");
 
 		// Animation files
-		setupRefererListFromDir(PATH_ANIMATIONS, PlannerValueDef.REFERS_ANIMATIONS, listOfLists, ".anim");
+		setupRefererListFromDir(PATH_ANIMATIONS, ReferenceStore.REFERS_ANIMATIONS, referenceStore, ".anim");
 		
-		setupRefererListFromDir(PATH_WEAPON_ANIMATIONS, PlannerValueDef.REFERS_WEAPON_ANIMATIONS, listOfLists, ".anim");
+		setupRefererListFromDir(PATH_WEAPON_ANIMATIONS, ReferenceStore.REFERS_WEAPON_ANIMATIONS, referenceStore, ".anim");
 
 		// Sprite image files
-		setupRefererListFromDir(PATH_SPRITE_IMAGE, PlannerValueDef.REFERS_SPRITE_IMAGE, listOfLists, ".png");
+		setupRefererListFromDir(PATH_SPRITE_IMAGE, ReferenceStore.REFERS_SPRITE_IMAGE, referenceStore, ".png");
 
 		// Setup Battle Effects
-		for (String effectName : TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().getBattleEffectList())
-			listOfLists.get(PlannerValueDef.REFERS_EFFECT - 1).add(new PlannerReference(effectName));
+		referenceStore.addReference(ReferenceStore.REFERS_EFFECT - 1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().getBattleEffectList());
 
 		// Setup Attribute Strength
-		listOfLists.get(PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH - 1).add(new PlannerReference(AttributeStrength.WEAK.name()));
-		listOfLists.get(PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH - 1).add(new PlannerReference(AttributeStrength.MEDIUM.name()));
-		listOfLists.get(PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH - 1).add(new PlannerReference(AttributeStrength.STRONG.name()));
+		referenceStore.addReference(ReferenceStore.REFERS_ATTRIBUTE_STRENGTH - 1, 
+			new PlannerReference(AttributeStrength.WEAK.name()),
+			new PlannerReference(AttributeStrength.MEDIUM.name()),
+			new PlannerReference(AttributeStrength.STRONG.name()));
 
 		// Setup Body/Mind progression
-		for (String progressionName : TacticalGame.ENGINE_CONFIGURATIOR.getLevelProgression().getBodyMindProgressionTypeList())
-			listOfLists.get(PlannerValueDef.REFERS_BODYMIND_GAIN - 1).add(new PlannerReference(progressionName));
-
+		referenceStore.addReference(ReferenceStore.REFERS_BODYMIND_GAIN - 1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getLevelProgression().getBodyMindProgressionTypeList());
 		// Setup Terrain
 		EngineConfigurationValues jConfigValues = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues();
-		for (String terrainType : jConfigValues.getTerrainTypes())
-			listOfLists.get(PlannerValueDef.REFERS_TERRAIN - 1).add(new PlannerReference(terrainType));
+		referenceStore.addReference(ReferenceStore.REFERS_TERRAIN - 1, 
+				jConfigValues.getTerrainTypes());
 
 		// Palette files
-		setupRefererListFromDir(PATH_PALETTE, PlannerValueDef.REFERS_PALETTE, listOfLists);
+		setupRefererListFromDir(PATH_PALETTE, ReferenceStore.REFERS_PALETTE, referenceStore);
 
 		// Setup affinities
-		for (String affinity : TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getAffinities())
-			listOfLists.get(PlannerValueDef.REFERS_AFFINITIES - 1).add(new PlannerReference(affinity));
+		referenceStore.addReference(ReferenceStore.REFERS_AFFINITIES - 1, 
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getAffinities());
 
 		// Setup weapon damage types
-		listOfLists.get(PlannerValueDef.REFERS_WEAPON_DAMAGE_TYPE - 1).add(new PlannerReference("NORMAL"));
-		listOfLists.get(PlannerValueDef.REFERS_WEAPON_DAMAGE_TYPE - 1).addAll(listOfLists.get(PlannerValueDef.REFERS_AFFINITIES - 1));
+		referenceStore.addReference(ReferenceStore.REFERS_WEAPON_DAMAGE_TYPE - 1, "NORMAL");
+		
+		referenceStore.addReference(ReferenceStore.REFERS_WEAPON_DAMAGE_TYPE - 1,
+				referenceStore.getReferencesForType(ReferenceStore.REFERS_AFFINITIES - 1));
 		
 		// Operator list
-		listOfLists.get(PlannerValueDef.REFERS_OPERATOR - 1).add(new PlannerReference("Greater Than"));
-		listOfLists.get(PlannerValueDef.REFERS_OPERATOR - 1).add(new PlannerReference("Less Than"));
-		listOfLists.get(PlannerValueDef.REFERS_OPERATOR - 1).add(new PlannerReference("Equals"));
+		referenceStore.addReference(ReferenceStore.REFERS_OPERATOR - 1, 
+			"Greater Than",
+			"Less Than",
+			"Equals");
 		
 		// Sprite image files
-		File mapDataFiles = new File(PATH_MAPDATA);
 		for (File f : DirectoryLister.listFilesInDir(PATH_MAPDATA))
 			if (f.isFile() && !f.isHidden())
-				listOfLists.get(PlannerValueDef.REFERS_MAPDATA - 1).add(new PlannerReference(f.getName()));
+				referenceStore.addReference(ReferenceStore.REFERS_MAPDATA - 1, new PlannerReference(f.getName()));
 		
 		// Music files
-		setupRefererListFromDir(PATH_MUSIC, PlannerValueDef.REFERS_MUSIC, listOfLists, ".ogg", ".wav");
+		setupRefererListFromDir(PATH_MUSIC, ReferenceStore.REFERS_MUSIC, referenceStore, ".ogg", ".wav");
 		// Sound files
-		setupRefererListFromDir(PATH_SOUND, PlannerValueDef.REFERS_SOUND, listOfLists, ".ogg", ".wav");
+		setupRefererListFromDir(PATH_SOUND, ReferenceStore.REFERS_SOUND, referenceStore, ".ogg", ".wav");
 	}
 	
-	private static void setupRefererListFromDir(String path, int referIndex, ArrayList<ArrayList<PlannerReference>> listOfLists,
+	private static void setupRefererListFromDir(String path, int referIndex, ReferenceStore referenceStore,
 			String... exten) {
 		for (File f : DirectoryLister.listFilesInDir(path)) {
 			boolean match = exten.length == 0;
@@ -163,12 +162,12 @@ public class PlannerDefinitions {
 				}
 			}
 			if (match) {
-				listOfLists.get(referIndex - 1).add(new PlannerReference(name));
+				referenceStore.addReference(referIndex - 1, new PlannerReference(name));
 			}
 		}
 	}
 
-	public static void setupCinematicDefinitions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupCinematicDefinitions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef cinematicContainer;
 
@@ -198,22 +197,22 @@ public class PlannerDefinitions {
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "description", false,
 						"Description",
 						"A description of the object that will be presented to the players"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "camerax", false,
 				"Camera Start X",
 				"The initial X location of the camera (in pixels)"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "cameray", false,
 				"Camera Start Y",
 				"The initial Y location of the camera (in pixels)"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "skippable", false, "Is Skippable",
 				"Whether this cinematic is skippable with the enter key"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "showroofs", false, "Show Roofs ",
 				"If true then roofs will be visible in the cinematic"));
 		PlannerLineDef definingLine = new PlannerLineDef("cinematic",
@@ -226,7 +225,7 @@ public class PlannerDefinitions {
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"time",
 						false,
@@ -243,34 +242,34 @@ public class PlannerDefinitions {
 
 		// Add actor
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "x", false, "Start Location X",
 				"The x coordinate (in pixels) to start the actor in"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "y", false, "Start Location Y",
 				"The y coordinate (in pixels) to start the actor in"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING,
 						"name",
 						false,
 						"Actor Name",
 						"The name of the actor to be created. This will be used to reference the actor in the cinematic"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
 				"anim", false, "Animation file",
 				"The name of the animation file to be used for this actor"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "startanim", false,
 				"Starting Animation",
 				"The name of the animation that this actor should start in"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "visible", false,
 				"Starts Visible", "Whether this actor should start visible"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_BOOLEAN,
 						"init",
 						false,
@@ -279,7 +278,7 @@ public class PlannerDefinitions {
 
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_HERO,
+				ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING,
 				"associatedhero",
 				true,
@@ -297,20 +296,20 @@ public class PlannerDefinitions {
 
 		// Associate Actor With Sprite
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_STRING,
 				"name", false, "Actor Name",
 				"The name that will be used to reference the actor in the cinematic"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING, "hero", true, "Associate Hero",
 				"If true then the specified hero will be established as a cinematic actor. When in 'town' this only can be used to associate the main character. "
 				+ "In 'battle' you must be sure the specified hero is actually in the battle. In 'cinematic' this doesn't really have a use"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "enemyid", true, "Enemy ID",
 				"The ID of the Enemy that should become a cinematic actor. This should only be used in 'battle'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "npcid", true, "NPC Name",
 				"The Name of the NPC that should become a cinematic actor"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "staticid", true, "Static Sprite Name",
 				"The Name of the static sprite that should become a cinematic actor"));
 		allowableLines.add(new PlannerLineDef("assactor", "Establish Sprite as Actor",
@@ -321,7 +320,7 @@ public class PlannerDefinitions {
 		// Remove Actor
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should be removed from the cinematic"));
@@ -336,17 +335,17 @@ public class PlannerDefinitions {
 
 		// Add Static Sprite
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "x", false, "Start Location X",
 				"The x coordinate (in pixels) to place the sprite at"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "y", false, "Start Location Y",
 				"The y coordinate (in pixels) to place the sprite at"));
 
 
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING,
 				"spriteid",
 				false,
@@ -355,7 +354,7 @@ public class PlannerDefinitions {
 
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_SPRITE_IMAGE,
+						ReferenceStore.REFERS_SPRITE_IMAGE,
 						PlannerValueDef.TYPE_STRING,
 						"spriteim",
 						false,
@@ -374,7 +373,7 @@ public class PlannerDefinitions {
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING,
 						"spriteid",
 						false,
@@ -391,18 +390,18 @@ public class PlannerDefinitions {
 
 		// Move
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should perform the action"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "x", false, "X Coordinate",
 				"The x coordinate (in pixels) that the actor should move to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "y", false, "Y Coordinate",
 				"The y coordinate (in pixels) that the actor should move to"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING,
 						"speed",
 						false,
@@ -411,7 +410,7 @@ public class PlannerDefinitions {
 
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"movehor",
 				false,
@@ -421,7 +420,7 @@ public class PlannerDefinitions {
 		// Diagonal movement
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"movediag",
 				false,
@@ -432,7 +431,7 @@ public class PlannerDefinitions {
 		// Halting
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"halting",
 				false,
@@ -442,7 +441,7 @@ public class PlannerDefinitions {
 		// Pathfinding
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"pathfinding",
 				false,
@@ -451,11 +450,11 @@ public class PlannerDefinitions {
 				+ "respects 'unmovable' spaces. This is the prefered way to first move an 'associated' actor during battle or town "
 				+ "where the original location is not known."));
 		
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION,
 				PlannerValueDef.TYPE_INT, "facing", true, "Facing",
 				"If a value is selected then this actor will keep facing the same direction for the duration of the move."));
 		
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "freezeanim", true, "Freeze Animations",
 				"If this value is selected then the current animation will be used for the duration of the movement. This overrides fixed facing."));
 		
@@ -469,18 +468,18 @@ public class PlannerDefinitions {
 
 		// Loop Move
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should perform the looping move"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "x", false, "X Coordinate",
 				"The x coordinate (in pixels) that the actor should move to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "y", false, "Y Coordinate",
 				"The y coordinate (in pixels) that the actor should move to"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING,
 						"speed",
 						false,
@@ -497,7 +496,7 @@ public class PlannerDefinitions {
 
 		// Stop Loop Move
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should stop their looping move"));
 
@@ -511,12 +510,12 @@ public class PlannerDefinitions {
 	
 		// Jump
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should perform the action"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"jumpx",
 						false,
@@ -524,7 +523,7 @@ public class PlannerDefinitions {
 						"The x location in pixels that the actor will end the jump at"));
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT,
 				"height",
 				false,
@@ -532,7 +531,7 @@ public class PlannerDefinitions {
 				"The y location  in pixels that the actor will end the jump at"));
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT,
 				"duration",
 				false,
@@ -541,7 +540,7 @@ public class PlannerDefinitions {
 		
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"landing",
 				false,
@@ -558,18 +557,18 @@ public class PlannerDefinitions {
 		
 		// Halting Anim
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should perform the action"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"time",
 						false,
 						"Time",
 						"The amount of time in milliseconds that this animation should be performed over. All frames will be shown for an equal time. General stand speed is 1000ms"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "anim", false,
 				"Animation to Show",
 				"The name of the animation that the actor should take. If the actor is 'hero backed' then an unpromoted/promoted prefix do not need to be included. If the actor is NOT 'hero backed' then the Unpromoted/Promoted prefix must be included."));
@@ -584,23 +583,23 @@ public class PlannerDefinitions {
 
 		// Anim
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should perform the action"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"time",
 						false,
 						"Time",
 						"The amount of time in milliseconds that this animation should be performed over. All frames will be shown for an equal time. General stand speed is 1000ms"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "anim", false,
 				"Animation to Show",
 				"The name of the animation that the actor should take. If the actor is 'hero backed' then an unpromoted/promoted prefix do not need to be included. If the actor is NOT 'hero backed' then the Unpromoted/Promoted prefix must be included."));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_BOOLEAN, "loops", false,
 						"Loop Animation",
 						"Whether this animation should loop after it has finished playing."));
@@ -615,7 +614,7 @@ public class PlannerDefinitions {
 
 		// Stop Anim
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should perform the action"));
 
@@ -626,12 +625,12 @@ public class PlannerDefinitions {
 
 		// Spin
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should spin"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"speed",
 						false,
@@ -639,7 +638,7 @@ public class PlannerDefinitions {
 						"The amount of time in ms that should pass in between changing facing direction"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"time",
 						false,
@@ -656,7 +655,7 @@ public class PlannerDefinitions {
 
 		// Stop Spin
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should stop spinning"));
 
@@ -670,11 +669,11 @@ public class PlannerDefinitions {
 
 		// Facing
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should change their facing"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_DIRECTION, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_DIRECTION, PlannerValueDef.TYPE_INT,
 				"dir", false, "Facing Direction",
 				"The direction that the actor should face"));
 
@@ -686,11 +685,11 @@ public class PlannerDefinitions {
 		// Shrink
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the shrink special effect"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false, "Shrink Time",
 				"The amount of time that this actor should shrink over"));
 
@@ -705,11 +704,11 @@ public class PlannerDefinitions {
 		// Grow
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the grow special effect"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false, "Grow Time",
 				"The amount of time that this actor should grow over"));
 
@@ -724,7 +723,7 @@ public class PlannerDefinitions {
 		// Quiver
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the tremble special effect"));
@@ -740,7 +739,7 @@ public class PlannerDefinitions {
 		// Agitate
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the agitate special effect"));
@@ -756,12 +755,12 @@ public class PlannerDefinitions {
 		// Fall on Face
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the fall-on-face special effect"));
 		definingValues
-		.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+		.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION,
 				PlannerValueDef.TYPE_INT, "dir", false,
 				"Head Direction",
 				"The direction the sprites head should be facing"));
@@ -777,12 +776,12 @@ public class PlannerDefinitions {
 		// Lay on Side
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the lay-on-side special effect"));
 		definingValues
-		.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+		.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION,
 				PlannerValueDef.TYPE_INT, "dir", false,
 				"Head Direction",
 				"The direction the sprites head should be facing"));
@@ -807,12 +806,12 @@ public class PlannerDefinitions {
 		// Lay on Back
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the lay-on-back special effect"));
 		definingValues
-		.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+		.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION,
 				PlannerValueDef.TYPE_INT, "dir", false,
 				"Head Direction",
 				"The direction the sprites head should be facing"));
@@ -828,14 +827,14 @@ public class PlannerDefinitions {
 		// Flash
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the flash special effect"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false, "Flash Duration",
 				"The amount of time in ms that this actor should flash for"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "speed", false, "Flash Speed",
 				"The amount of time that a single flash should take"));
 
@@ -850,7 +849,7 @@ public class PlannerDefinitions {
 
 		// Nod
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should perform the nod effect"));
 
@@ -866,12 +865,12 @@ public class PlannerDefinitions {
 		// Shake head
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should perform the shake head effect"));
 		definingValues
-		.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false,
 				"Shake Duration", "The amount of time in ms that this head shake should take to perform"));
 
@@ -887,7 +886,7 @@ public class PlannerDefinitions {
 		// Stop Special Effect
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "name", false,
 						"Actor Name",
 						"The name of the actor that should stop performing special effects"));
@@ -902,12 +901,12 @@ public class PlannerDefinitions {
 
 		// Visible
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor whose visibility should be changed"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_BOOLEAN,
 						"isvis",
 						false,
@@ -920,7 +919,7 @@ public class PlannerDefinitions {
 
 		// Move char to forefront
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should be displayed on top of all terrain layers"));
 
@@ -930,7 +929,7 @@ public class PlannerDefinitions {
 		
 		// Remove char from forefront
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Actor Name",
 				"The name of the actor that should stop their looping move"));
 
@@ -941,12 +940,12 @@ public class PlannerDefinitions {
 
 		// Play Music
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MUSIC,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MUSIC,
 				PlannerValueDef.TYPE_STRING, "music", false, "Music Title",
 				"The name of the music that should be played"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"volume",
 						false,
@@ -976,7 +975,7 @@ public class PlannerDefinitions {
 		// Fade Music
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT, "duration", false,
 						"Fade Duration",
 						"The amount of time in ms that the music should fade out over"));
@@ -990,12 +989,12 @@ public class PlannerDefinitions {
 
 		// Play Sound
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SOUND,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SOUND,
 				PlannerValueDef.TYPE_STRING, "sound", false, "Sound Title",
 				"The name of the sound that should be played"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"volume",
 						false,
@@ -1008,13 +1007,13 @@ public class PlannerDefinitions {
 		
 		// Fade From Black
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false, "Fade Time",
 				"The amount of time that the screen should be faded over"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "halting", false, "Wait to Finish",
 				"If true, this will be a halting action"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "init", false, "Intialize before cinematic",
 				"If true, this action will be intialized before the cinematic starts. If you intend to fade in to the scene then you should check this"));
 
@@ -1024,10 +1023,10 @@ public class PlannerDefinitions {
 
 		// Fade To Black
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false, "Fade Time",
 				"The amount of time that the screen should be faded over"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "halting", false, "Wait to Finish",
 				"If true, this will be a halting action"));
 
@@ -1037,7 +1036,7 @@ public class PlannerDefinitions {
 
 		// Flash Screen
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false, "Flash Time",
 				"The amount of time that the screen should flash over"));
 
@@ -1049,7 +1048,7 @@ public class PlannerDefinitions {
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING,
 						"name",
 						false,
@@ -1066,14 +1065,14 @@ public class PlannerDefinitions {
 
 		// Camera Move
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "x", false, "X Coordinate",
 				"The x coordinate (in pixels) that the camera should move to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "y", false, "Y Coordinate",
 				"The y coordinate (in pixels) that the camera should move to"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT, "time", false, "Moving Time",
 						"The amount of time in ms that the camera should be moved over"));
 
@@ -1087,11 +1086,11 @@ public class PlannerDefinitions {
 		
 		// Camera Move To Actor
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "actor", false, "Actor Name",
 				"The name of the actor that the camera should move to."));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT, "time", false, "Moving Time",
 						"The amount of time in ms that the camera should be moved over"));
 
@@ -1105,11 +1104,11 @@ public class PlannerDefinitions {
 
 		// Camera Shake
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "time", false, "Shake Time",
 				"The amount of time that the camera should shake for"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT, "severity", false,
 						"Severity",
 						"The amount of pixels that the camera can be offset to during the shake"));
@@ -1124,7 +1123,7 @@ public class PlannerDefinitions {
 
 		// Text Box
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_LONG_STRING, "text", false, "Text",
 				"The text that should be displayed. Using the &lt;pause&gt; tag will cause a short pause, the &lt;softstop&gt; "
 						+ "tag will do a soft stop (auto continue without user input after a time), the &lt;hardstop&gt; tag will "
@@ -1132,15 +1131,15 @@ public class PlannerDefinitions {
 						+ "will do a line break (as opposed to letting them happen naturally) and a &lt;nextcin&gt; tag "
 						+ "will drive the next cinematic action if this message is being shown in a cinematic."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_HERO, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_HERO, PlannerValueDef.TYPE_STRING,
 				"heroportrait", true, "Hero Portrait",
 				"The hero whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
 				"enemyportrait", true, "Enemy Portrait",
 				"The enemy whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
 				"animportrait", true, "Portrait From Animation",
 				"The animation that contains the portrait should be shown for this text."));
 
@@ -1154,13 +1153,13 @@ public class PlannerDefinitions {
 		
 		// Load map
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapdata", false,
 				"Map Data",
 				"The name of the file containing the mapdata that should be loaded for this map"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING,
 						"enter",
 						false,
@@ -1177,13 +1176,13 @@ public class PlannerDefinitions {
 		
 		// Load Chapter
 		definingValues = new ArrayList<PlannerValueDef>();		
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING, "header", false,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_STRING, "header", false,
 				"Chapter Header Text",
 				"The text that should appear at the top of the chapter page"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_LONG_STRING, "description", false,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_LONG_STRING, "description", false,
 				"Chapter Description Text",
 				"The text that should appear at the bottom of the chapter page. This should NOT contain any special characters or stops."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER, PlannerValueDef.TYPE_INT, "exittrigger", false,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER, PlannerValueDef.TYPE_INT, "exittrigger", false,
 				"Exit Trigger",
 				"The trigger that should be executed once the chapter screen has been shown. This should ALWAYS load a new map or the credits"));
 		allowableLines.add(new PlannerLineDef("loadchapter", "Show Chapter",
@@ -1192,16 +1191,16 @@ public class PlannerDefinitions {
 
 		// Load Battle
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapdata", false,
 				"Battle Map Data",
 				"The name of the battle mapddata that should be loaded for this battle"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "entrance", false,
 						"Entrance location",
 						"The name of the map location that the force will be placed at when the battle loads"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "battbg", false,
 				"Battle Background Index",
 				"The index of the battle background that should be used for the battle"));
@@ -1212,12 +1211,12 @@ public class PlannerDefinitions {
 
 		// Load Cinematic
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapdata", false,
 				"Trigger File",
 				"The name of the mapdata file that should be loaded for this cinematic"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"cinid", false, "Cinematic ID",
 				"The ID of the cinematic that should be shown"));
 		allowableLines.add(new PlannerLineDef("loadcin", "Load Cinematic",
@@ -1250,12 +1249,12 @@ public class PlannerDefinitions {
 
 		// Add hero
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING, "heroid", false, "Hero ID",
 				"The ID of the hero that should be added to the force"));
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"init",
 				false,
@@ -1267,7 +1266,7 @@ public class PlannerDefinitions {
 
 		// Multi hero add selection
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_MULTI_STRING, "heroids", false, "Hero IDs",
 				"The ID of the hero that should be added to the force"));
 		allowableLines.add(new PlannerLineDef("addmultihero", "Add Hero from Selection",
@@ -1277,7 +1276,7 @@ public class PlannerDefinitions {
 		/*
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"init",
 				false,
@@ -1286,39 +1285,39 @@ public class PlannerDefinitions {
 				*/
 
 		cinematicContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_CINEMATIC - 1, menuLayout);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_CINEMATIC - 1, menuLayout);
 		containersByName.put("cinematic", cinematicContainer);
 	}
 
-	public static void setupItemDefinitions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupItemDefinitions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef itemContainer;
 
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Name",
 				"The name of the item"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_LONG_STRING, "description", false,
 						"Description",
 						"A description of the object that will be presented to the players during item evaluation"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "cost", false, "Cost",
 				"The amount this item costs to purchase"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "isdeal", false, "Is Deal",
 				"Indicates whether this item is a 'deal', if so it can always be purchased from a shop when sold"
 				+ " or if an enemy drops it in battle"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "imageindexx", false, "X Index",
 				"The x index of the items image"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "imageindexy", false, "Y Index",
 				"The y index of the items image"));		
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "droppable", false, "Is Quest Item",
 				"Whether this item can be dropped or sold (used for 'quest' items)"));
 		PlannerLineDef definingLine = new PlannerLineDef("item", "Item", "",
@@ -1329,151 +1328,151 @@ public class PlannerDefinitions {
 
 		// Equippable
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "attack", false, "Attack Modifier",
 				"The amount equipping this item will modify attack"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "defense", false, "Defense Modifier",
 				"The amount equipping this item will modify defense"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "speed", false, "Speed Modifier",
 				"The amount equipping this item will modify speed"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ITEM_TYPE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_ITEM_TYPE, PlannerValueDef.TYPE_INT,
 				"type", false, "Item Type",
 				"Whether this item is a weapon or ring"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ITEM_STYLE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_ITEM_STYLE, PlannerValueDef.TYPE_INT,
 				"style", false, "Item Style",
 				"What type of weapon this, use any value for rings"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_ITEM_RANGE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM_RANGE,
 						PlannerValueDef.TYPE_INT, "range", false, "Item Range",
 						"The range this weapon can attack from, use any value for rings"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "weaponimage", false, "Weapon Attack Image",
 					"The name of the weapon image that should be used for this weapon (should exist in the images/weapons folder). Use any value for rings. If an animation is specified then this value will be ignored."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_WEAPON_ANIMATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_WEAPON_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "weaponanim", true, "Weapon Animation",
 				"The animation file that should be used for animating the weapon. Selecting this value will override any weapon attack image."));
 		
 		//////////////////////////////// NEW STUFF
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "incmindam", false, "Minimum Damage Modifier",
 				"The percent amount equipping this item will modify the minimum damage percent"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "inccrit", false, "Critical Chance Modifier",
 				"The percent amount equipping this item will modify the critical chance percent"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "inccounter", false, "Counter Chance Modifier",
 				"The percent amount equipping this item will modify the counter chance percent"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "incdouble", false, "Double Chance Modifier",
 				"The percent amount equipping this item will modify the double chance percent"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "incevade", false, "Evade Chance Modifier",
 				"The percent amount equipping this item will modify the evade chance percent"));
 		// HP Regen
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "maxhpreg", false, "Max HP Regen",
 				"The maximum amount of HP regen this item can grant per round. If you do not"
 				+ " want a random range then this should equal the minimum amount"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "minhpreg", false, "Max HP Regen",
 				"The minimum amount of HP regen this item can grant per round. If you do not"
 				+ " want a random range then this should equal the maximum amount"));
 		// MP Regen
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "maxmpreg", false, "Max MP Regen",
 				"The maximum amount of MP regen this item can grant per round. If you do not"
 				+ " want a random range then this should equal the minimum amount"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "minmpreg", false, "Min MP Regen",
 				"The minimum amount of HP regen this item can grant per round. If you do not"
 				+ " want a random range then this should equal the maximum amount"));
 
 		// Battle Effect
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_EFFECT,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_EFFECT,
 				PlannerValueDef.TYPE_STRING, "effect", true, "Attack Effect",
 				"The effect type that can be applied on a successful hit with this weapon. "));
 
 		// Battle Effect Level
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "efflvl", true, "Attack Effect Level",
 				"The level of the battle effect that should be applied when it occurs"));
 
 		// Battle Effect Chance
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "effchc", false, "Attack Effect Chance",
 				"The chance that the associated battle effect will be applied on attack."));
 
 		// Damage Affinity
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_WEAPON_DAMAGE_TYPE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_WEAPON_DAMAGE_TYPE,
 				PlannerValueDef.TYPE_STRING, "dmgaff", false, "Damage Affinity",
 				"The affinity that will be used to determine damage for this weapon. A value other"
 				+ " then normal will cause the associated affinity to be applied to the damage"));
 
 		// Fire Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"fireAffin", false, "Fire Affinitiy",
 				"The amount to modify the equippers fire affinity."));
 
 		// Elec Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"elecAffin", false, "Electricity Affinitiy",
 				"The amount to modify the equippers elec affinity."));
 
 		// Cold Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"coldAffin", false, "Cold Affinitiy",
 				"The amount to modify the equippers cold affinity."));
 
 		// Dark Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"darkAffin", false, "Dark Affinitiy",
 				"The amount to modify the equippers dark affinity."));
 
 		// Water Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"waterAffin", false, "Water Affinitiy",
 				"The amount to modify the equippers water affinity."));
 
 		// Earth Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"earthAffin", false, "Earth Affinitiy",
 				"The amount to modify the equippers earth affinity."));
 
 		// Wind Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"windAffin", false, "Wind Affinitiy",
 				"The amount to modify the equippers wind affinity."));
 
 		// Light Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"lightAffin", false, "Light Affinitiy",
 				"The amount to modify the equippers light affinity."));
 
 		// OHKO chance
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"ohko", false, "OHKO Chance",
 				"The percent chance of a OHKO occurring on an attack."));
 
 		// OHKO on crit chance
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"ohkooc", false, "OHKO Chance on Critical",
 				"The percent chance of a OHKO occurring on a critical attack."));
 		// Usable only by promoted
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "promoteonly", false,
 				"Promotable Only",
 				"If true, this item will only be equippable by promoted heroes"));
@@ -1486,53 +1485,53 @@ public class PlannerDefinitions {
 		// Use Custom
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_BOOLEAN, "targetsenemy", false,
 						"Targets Enemy",
 						"Whether this item can be used on enemies, otherwise it is used on allies"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT, "damage", false,
 						"Damage Dealt",
 						"The amount of damage this item will deal on use (positive values will heal)"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"mpdamage",
 						false,
 						"MP Damage Dealt",
 						"The amount of damage this item will deal to the targets MP on use (positive values will heal)"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_ITEM_RANGE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM_RANGE,
 						PlannerValueDef.TYPE_INT, "range", false, "Item Range",
 						"The range this can be used from"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ITEM_AREA, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_ITEM_AREA, PlannerValueDef.TYPE_INT,
 				"area", false, "Item Area of Effect",
 				"The area that this item can effect"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING,
 						"text",
 						false,
 						"Item Use Text",
 						"The text that will be appended after the targets name in the attack cinematic. An example value would be 'is healed for <value>'. "
 								+ "This would cause the battle text to become 'Noah is healed for #'. A value of '<value>' will be replaced with the actual damage healed/done."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "singleuse", false,
 				"Single Use Item",
 				"If true, the item will be removed after it has been used. "));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "damageitem", false,
 				"Damages Item",
 				"If true, the item has a chance of being damaged on use"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "damageitem", false,
 				"Damages Item",
 				"If true, the item has a chance of being damaged on use"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "useoutsidebattle", false,
 				"Usable Outside of Battle",
 				"If true, this item is usable outside of battle. It should have a single target area"));
@@ -1544,24 +1543,24 @@ public class PlannerDefinitions {
 		// Use Spell
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_SPELL,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_SPELL,
 						PlannerValueDef.TYPE_STRING, "spellid", false,
 						"Spell Cast",
 						"The spell that will be cast when this item is used"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT, "level", false,
 						"Spell Level",
 						"The level of the spell that will be cast upon use"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "singleuse", false,
 				"Single Use Item",
 				"If true, the item will be removed after it has been used. "));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "damageitem", false,
 				"Damages Item",
 				"If true, the item has a chance of being damaged on use"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "useoutsidebattle", false,
 				"Usable Outside of Battle",
 				"If true, this item is usable outside of battle. It should have a single target area"));
@@ -1571,33 +1570,33 @@ public class PlannerDefinitions {
 				definingValues));
 
 		itemContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_ITEM - 1);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_ITEM - 1);
 		containersByName.put("item", itemContainer);
 	}
 
-	public static void setupQuestDefinitions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupQuestDefinitions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef textContainer;
 
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "description", false,
 				"Description", "Description"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_LONG_STRING, "extradescription", false,
 				"Extra Description", "Use this area to describe what this quest is supposed to control and who is responsible for toggling it. This is not used in the engine."));
 		/*
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "count", false,
 				"Counting Quest Success", "If set to a number greater then 0 then this quest numeric value must meet or exceed this number to be completed."));
 				*/
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_MULTI_STRING, "count", false,
 				"Sub Quests", "A list of sub quests that are associated with this quest. "
 						+ "These can be referenced individually, or all must be completed for the 'parent' quest to be considered complete."));
-		// definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		// definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 		// PlannerValueDef.TYPE_INT, "triggerid", false,
 		// "Unique Trigger Id",
 		// "Unique id that can be used to identify a given trigger"));
@@ -1609,7 +1608,7 @@ public class PlannerDefinitions {
 		
 		// Complete Quest
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_MULTI_STRING, "subquestnames", false, "Subquest Name",
 				"A list of the names of subquests of this quest"));
 		allowableLines.add(new PlannerLineDef("completequest",
@@ -1617,23 +1616,23 @@ public class PlannerDefinitions {
 				definingValues));
 
 		textContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_QUEST - 1);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_QUEST - 1);
 		
 		
 		containersByName.put("quest", textContainer);
 	}
 
-	public static void setupTextDefinitions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupTextDefinitions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef textContainer;
 
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "description", false,
 				"Description", "Description"));
-		// definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		// definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 		// PlannerValueDef.TYPE_INT, "triggerid", false,
 		// "Unique Trigger Id",
 		// "Unique id that can be used to identify a given trigger"));
@@ -1647,38 +1646,38 @@ public class PlannerDefinitions {
 		definingValues = new ArrayList<PlannerValueDef>();
 		
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "require", true,
 						"Required Quest",
 						"The ID of the quest that must be complete for this to be shown"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "exclude", true,
 						"Exclude Quest",
 						"The ID of the quest that CAN NOT be complete for this to be shown"));
 		//FIX THIS
 		
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 						PlannerValueDef.TYPE_MULTI_INT, "trigger", true,
 						"Trigger ID",
 						"The IDs of the triggers that should be run after this message is complete."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_HERO, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_HERO, PlannerValueDef.TYPE_STRING,
 				"heroportrait", true, "Hero Portrait",
 				"The hero whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
 				"enemyportrait", true, "Enemy Portrait",
 				"The enemy whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
 				"animportrait", true, "Portrait From Animation",
 				"The animation that contains the portrait should be shown for this text."));
 		
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_LONG_STRING,
 				"message",
 				false,
@@ -1695,41 +1694,41 @@ public class PlannerDefinitions {
 		definingValues = new ArrayList<PlannerValueDef>();
 		
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "require", true,
 						"Required Quest",
 						"The ID of the quest that must be complete for this to be shown"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "exclude", true,
 						"Exclude Quest",
 						"The ID of the quest that CAN NOT be complete for this to be shown"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 						PlannerValueDef.TYPE_MULTI_INT, "triggeryes", true,
 						"Yes Trigger ID",
 						"The ID of the trigger that should be run if a 'yes' is selected."));
 		definingValues
-		.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+		.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 				PlannerValueDef.TYPE_MULTI_INT, "triggerno", true,
 				"No Trigger ID",
 				"The ID of the trigger that should be run if a 'no' is selected."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_HERO, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_HERO, PlannerValueDef.TYPE_STRING,
 				"heroportrait", true, "Hero Portrait",
 				"The hero whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
 				"enemyportrait", true, "Enemy Portrait",
 				"The enemy whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
 				"animportrait", true, "Portrait From Animation",
 				"The animation that contains the portrait should be shown for this text."));
 		
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_LONG_STRING,
 				"message",
 				false,
@@ -1746,48 +1745,48 @@ public class PlannerDefinitions {
 		definingValues = new ArrayList<PlannerValueDef>();
 		
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "require", true,
 						"Required Quest",
 						"The ID of the quest that must be complete for this to be shown"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "exclude", true,
 						"Exclude Quest",
 						"The ID of the quest that CAN NOT be complete for this to be shown"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 						PlannerValueDef.TYPE_MULTI_INT, "trigger", true,
 						"Trigger ID",
 						"The ID of the trigger that should be run after this message is complete."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_HERO, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_HERO, PlannerValueDef.TYPE_STRING,
 				"heroportrait1", true, "Hero Portrait",
 				"First Speaker: The hero whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
 				"enemyportrait1", true, "Enemy Portrait",
 				"First Speaker: The enemy whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
 				"animportrait1", true, "Portrait From Animation",
 				"First Speaker: The animation that contains the portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_HERO, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_HERO, PlannerValueDef.TYPE_STRING,
 				"heroportrait2", true, "Hero Portrait",
 				"Second Speaker: The hero whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ENEMY, PlannerValueDef.TYPE_STRING,
 				"enemyportrait2", true, "Enemy Portrait",
 				"Second Speaker: The enemy whose portrait should be shown for this text."));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ANIMATIONS, PlannerValueDef.TYPE_STRING,
 				"animportrait2", true, "Portrait From Animation",
 				"Second Speaker: The animation that contains the portrait should be shown for this text."));
 		
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_MULTI_LONG_STRING,
 				"message",
 				false,
@@ -1803,146 +1802,146 @@ public class PlannerDefinitions {
 				"A message that should be displayed", definingValues));
 
 		textContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_TEXT - 1);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_TEXT - 1);
 		containersByName.put("text", textContainer);
 	}
 
-	public static void setupEnemyDefinitions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupEnemyDefinitions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef enemyContainer;
 
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Name",
 				"The name of the enemy"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "hp", false, "HP",
 				"Starting HP for the enemy"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "mp", false, "MP",
 				"Starting MP for the enemy"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "attack", false, "Attack",
 				"Starting Attack for the enemy"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "defense", false, "Defense",
 				"Starting Defense for the enemy"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "speed", false, "Speed",
 				"Starting Speed for the enemy"));
 		// Fire Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"fireAffin", false, "Fire Affinitiy",
 				"The enemies base fire affinity. Items can modify this value."));
 
 		// Elec Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"elecAffin", false, "Electricity Affinitiy",
 				"The enemies base electricity affinity. Items can modify this value."));
 
 		// Cold Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"coldAffin", false, "Cold Affinitiy",
 				"The enemies base cold affinity. Items can modify this value."));
 
 		// Dark Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"darkAffin", false, "Dark Affinitiy",
 				"The enemies base dark affinity. Items can modify this value."));
 
 		// Water Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"waterAffin", false, "Water Affinitiy",
 				"The enemies base water affinity. Items can modify this value."));
 
 		// Earth Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"earthAffin", false, "Earth Affinitiy",
 				"The enemies base earth affinity. Items can modify this value."));
 
 		// Wind Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"windAffin", false, "Wind Affinitiy",
 				"The enemies base wind affinity. Items can modify this value."));
 
 		// Light Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"lightAffin", false, "Light Affinitiy",
 				"The enemies base light affinity. Items can modify this value."));
 
 		// Body Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"bodyStrength", false, "Body Strength",
 				"Determines the base body value for the enemy."));
 
 		// Mind Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"mindStrength", false, "Mind Strength",
 				"Determines the base mind value for the enemy."));
 
 		// Counter Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"counterStrength", false, "Counter Chance Strength",
 				"Determines the base counter value for the enemy."));
 
 		// Evade Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"evadeStrength", false, "Evade Chance Strength",
 				"Determines the base evade value for the enemy."));
 
 		// Double Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"doubleStrength", false, "Double Chance Strength",
 				"Determines the base body value for the enemy."));
 
 		// Crit Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"critStrength", false, "Critical Strength",
 				"Determines the base critical value for the enemy."));
 
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "level", false, "Level",
 				"Starting Level for the enemy"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "move", false, "Move",
 				"Starting Move for the enemy"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_MOVE_TYPE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_MOVE_TYPE,
 						PlannerValueDef.TYPE_STRING, "movementtype", false,
 						"Movement Type",
 						"The enemies movement type as it relates to land effect and barriers"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_ANIMATIONS,
 						PlannerValueDef.TYPE_STRING, "animations", false,
 						"Animation File",
 						"The name of the animation file that should be used for this enemy"));
 		
 		definingValues
-		.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "gold", false,
 				"Gold Dropped",
 				"The amount of gold that is dropped on death."));
 		// Palette Swap
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_PALETTE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_PALETTE,
 				PlannerValueDef.TYPE_STRING, "palette", true, "Palette",
 				"(CURRENTLY UNUSED) The palette that should be used to modify the selected animation colors"));
-		// definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		// definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 		// PlannerValueDef.TYPE_INT, "triggerid", false,
 		// "Unique Trigger Id",
 		// "Unique id that can be used to identify a given trigger"));
@@ -1954,10 +1953,10 @@ public class PlannerDefinitions {
 
 		// Spell Progression
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SPELL,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SPELL,
 				PlannerValueDef.TYPE_STRING, "spellid", false, "Spell ID",
 				"The ID of the spell that this enemy knows"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "level", false, "Max Level",
 				"The max level known of the specified spell"));
 		allowableLines.add(new PlannerLineDef("spell", "Spell",
@@ -1965,10 +1964,10 @@ public class PlannerDefinitions {
 
 		// Items Equipped
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ITEM,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM,
 				PlannerValueDef.TYPE_STRING, "itemid", false, "Item ID",
 				"The ID of the item that this enemy should start with"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "equipped", false,
 				"Item Equipped", "If true, the item will start as equipped."));
 		allowableLines.add(new PlannerLineDef("item", "Starting Item",
@@ -1976,50 +1975,50 @@ public class PlannerDefinitions {
 
 		// Attack Special Effect
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_EFFECT,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_EFFECT,
 				PlannerValueDef.TYPE_STRING, "effectid", false, "Effect ID",
 				"The ID of the effect that the enemies attack may cause. A value of CUSTOM"
 				+ " means that this weapons effect will be passed to the BattleFunctions script to be performed."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "effectchance", false,
 				"Effect Chance", "The percent chance that the effect will occur"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "effectlevel", false,
 				"Effect Level", "The level of the effect that should be applied (1-4)"));
 		allowableLines.add(new PlannerLineDef("attackeffect", "Attack Effect",
 				"An effect that may occur on the enemy attack", definingValues));
 
 		enemyContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_ENEMY - 1);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_ENEMY - 1);
 		containersByName.put("enemy", enemyContainer);
 	}
 
-	public static void setupHeroDefinitions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupHeroDefinitions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef heroContainer;
 
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Name",
 				"The name of the hero"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "promoted", false, "Promoted",
 				"If true, this hero is promoted when they initially join the party"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "level", false, "Level",
 				"Starting Level for the hero"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_ANIMATIONS,
 						PlannerValueDef.TYPE_STRING, "animations", false,
 						"Animation File",
 						"The name of the animation file that should be used for this hero"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "leader", true, "Is Leader",
 				"Whether this hero is the leader of the force"));
 
-		// definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		// definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 		// PlannerValueDef.TYPE_INT, "portrait", false,
 		// "Portrait Index",
 		// "Unique id that can be used to identify a given trigger"));
@@ -2034,7 +2033,7 @@ public class PlannerDefinitions {
 		
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_LONG_STRING,
 				"evaluation",
 				false,
@@ -2043,7 +2042,7 @@ public class PlannerDefinitions {
 		
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_BOOLEAN,
 						"promoted",
 						false,
@@ -2051,7 +2050,7 @@ public class PlannerDefinitions {
 						"Whether this progression represents this heroes promoted or unpromoted progression"));
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE,
+				ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN,
 				"specialpromoted",
 				false,
@@ -2061,7 +2060,7 @@ public class PlannerDefinitions {
 		// Special promotion required item
 		definingValues
 		.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ITEM,
+				ReferenceStore.REFERS_ITEM,
 				PlannerValueDef.TYPE_STRING,
 				"specialpromoteitem",
 				true,
@@ -2070,186 +2069,186 @@ public class PlannerDefinitions {
 				+ "is not owned then this progression path will be unavailable. If special promotion is checked and this value is not specified then this"
 				+ " promotion path will be impossible to take."));
 		
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "move", false, "Starting Move",
 				"The heroes base move while in this progression"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_MOVE_TYPE, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_MOVE_TYPE, PlannerValueDef.TYPE_STRING,
 				"movementtype", false, "Movement Type",
 				"The movement type of this hero"));
 
 		// ATTACK
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
 				"attack", false, "Attack Gain",
 				"The amount of attack the hero should gain per level"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"attackstart", false, "Attack Start",
 				"The amount of attack the hero should start with"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"attackend", false, "Attack End",
 				"The minimum amount of attack the hero should end with"));
 
 		// DEFENSE
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
 				"defense", false, "Defense Gain",
 				"The amount of defense the hero should gain per level"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"defensestart", false, "Defense Start",
 				"The amount of defense the hero should start with"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"defenseend", false, "Defense End",
 				"The minimum amount of defense the hero should end with"));
 
 		// SPEED
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
 				"speed", false, "Speed Gain",
 				"The amount of speed the hero should gain per level"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"speedstart", false, "Speed Start",
 				"The amount of speed the hero should start with"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"speedend", false, "Speed End",
 				"The minimum amount of speed the hero should end with"));
 
 		// HP
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
 				"hp", false, "HP Gain",
 				"The amount of HP the hero should gain per level"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"hpstart", false, "HP Start",
 				"The amount of HP the hero should start with"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"hpend", false, "HP End",
 				"The minimum amount of HP the hero should end with"));
 
 		// MP
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_STAT_GAINS, PlannerValueDef.TYPE_STRING,
 				"mp", false, "MP Gain",
 				"The amount of MP the hero should gain per level"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"mpstart", false, "MP Start",
 				"The amount of MP the hero should start with"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"mpend", false, "MP End",
 				"The minimum amount of MP the hero should end with"));
 
 		// Fire Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"fireAffin", false, "Fire Affinitiy",
 				"The heroes base fire affinity. Items can modify this value."));
 
 		// Elec Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"elecAffin", false, "Electricity Affinitiy",
 				"The heroes base electricity affinity. Items can modify this value."));
 
 		// Cold Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"coldAffin", false, "Cold Affinitiy",
 				"The heroes base cold affinity. Items can modify this value."));
 
 		// Dark Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"darkAffin", false, "Dark Affinitiy",
 				"The heroes base dark affinity. Items can modify this value."));
 
 		// Water Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"waterAffin", false, "Water Affinitiy",
 				"The heroes base water affinity. Items can modify this value."));
 
 		// Earth Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"earthAffin", false, "Earth Affinitiy",
 				"The heroes base earth affinity. Items can modify this value."));
 
 		// Wind Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"windAffin", false, "Wind Affinitiy",
 				"The heroes base wind affinity. Items can modify this value."));
 
 		// Light Affin
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_UNBOUNDED_INT,
 				"lightAffin", false, "Light Affinitiy",
 				"The heroes base light affinity. Items can modify this value."));
 
 		// Body Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
 				"bodyStrength", false, "Body Strength",
 				"Determines the base body value for the hero."));
 
 		// Body Progression
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_BODYMIND_GAIN, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_BODYMIND_GAIN, PlannerValueDef.TYPE_STRING,
 				"bodyProgress", false, "Body Progression Type",
 				"The name of the progression type that dicates how this heroes body stat will increase."));
 
 		// Mind Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
 				"mindStrength", false, "Mind Strength",
 				"Determines the base mind value for the hero."));
 
 		// Mind Progression
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_BODYMIND_GAIN, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_BODYMIND_GAIN, PlannerValueDef.TYPE_STRING,
 				"mindProgress", false, "Mind Progression Type",
 				"The name of the progression type that dicates how this heroes mind stat will increase."));
 
 		// Counter Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
 				"counterStrength", false, "Counter Chance Strength",
 				"Determines the base counter chance value for the hero."));
 
 		// Evade Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
 				"evadeStrength", false, "Evade Chance Strength",
 				"Determines the base evade chance value for the hero."));
 
 		// Double Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
 				"doubleStrength", false, "Double Chance Strength",
 				"Determines the base double attack chance value for the hero."));
 
 		// Crit Strength
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
+				ReferenceStore.REFERS_ATTRIBUTE_STRENGTH, PlannerValueDef.TYPE_STRING,
 				"critStrength", false, "Critical Strength",
 				"Determines the base critical attack chance value for the hero."));
 
 		// Usuable Items
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_ITEM_STYLE,
+				ReferenceStore.REFERS_ITEM_STYLE,
 				PlannerValueDef.TYPE_MULTI_INT, "usuableitems", false,
 				"Usuable Items", "The type of weapons that this hero can use"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "class", false, "Class Name",
 				"The name of this characters class."));
 		allowableLines.add(new PlannerLineDef("progression",
@@ -2258,17 +2257,17 @@ public class PlannerDefinitions {
 
 		// Spell Progression
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SPELL,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SPELL,
 				PlannerValueDef.TYPE_STRING, "spellid", false, "Spell ID",
 				"The ID of the spell that this hero knows"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "promotedprog", false,
 				"Promoted Progression", "If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the DEFAULT progression path."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "specialpromoted", false,
 				"Special Promotion Progression", "If true, these spells will be gained at the indicated levels ONLY for promoted heroes using the SPECIAL progression path. Selecting this supercedes the 'Promoted Progression' option"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "gained", false,
 						"Levels Gained",
 						"A comma seperated list of the levels that the spell levels will be gained at."));
@@ -2278,22 +2277,22 @@ public class PlannerDefinitions {
 
 		// Items Equipped
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ITEM,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM,
 				PlannerValueDef.TYPE_STRING, "itemid", false, "Item ID",
 				"The ID of the item that this hero should start with"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "equipped", false,
 				"Item Equipped", "If true, the item will start as equipped."));
 		allowableLines.add(new PlannerLineDef("item", "Starting Item",
 				"An item that this hero should start with", definingValues));
 
 		heroContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_HERO - 1);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_HERO - 1);
 		containersByName.put("hero", heroContainer);
 	}
 
-	public static void setupTriggerDefinition(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupTriggerDefinition(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef triggerContainer;
 
@@ -2317,37 +2316,37 @@ public class PlannerDefinitions {
 		
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "description", false,
 				"Description", "Description"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "require", true,
 						"Required Quest",
 						"The ID of the quest that must be complete for this to be shown"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 						PlannerValueDef.TYPE_MULTI_STRING, "exclude", true,
 						"Exclude Quest",
 						"The ID of the quest that CAN NOT be complete for this to be shown"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_BOOLEAN, "nonretrig", false,
 						"Non Retriggerable",
 						"If true, indicates that this trigger can only be executed once per game"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_BOOLEAN,
 						"retrigonenter",
 						false,
 						"Retrigger Each Enter",
 						"If true, indicates that each time the map has been entered that this trigger should be reactivated"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "triggeronce", false,
 				"Trigger Once Per Map",
 				"If true, indicates that this trigger can only be executed once per map"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "triggerimmediately", false,
 				"Trigger Immediately",
 				"If true, indicates that this trigger should be executed as soon as a unit begins moving onto this space. "
@@ -2361,7 +2360,7 @@ public class PlannerDefinitions {
 		
 		// Complete Quest
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 				PlannerValueDef.TYPE_STRING, "questid", false, "Quest ID",
 				"The ID of the equest that should be marked as complete"));
 		allowableLines.add(new PlannerLineDef("completequest",
@@ -2371,7 +2370,7 @@ public class PlannerDefinitions {
 		
 		// Uncomplete Quest
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 				PlannerValueDef.TYPE_STRING, "questid", false, "Quest ID",
 				"The ID of the equest that should be marked as NOT complete"));
 		allowableLines.add(new PlannerLineDef("uncompletequest",
@@ -2382,16 +2381,16 @@ public class PlannerDefinitions {
 		// Start Battle
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 						PlannerValueDef.TYPE_STRING, "battletriggers", false,
 						"Battle Trigger File",
 						"The name of the mapdata file that should be loaded for this battle"));
 		definingValues
-				.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+				.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_STRING, "entrance", false,
 						"Entrance location",
 						"The name of the map location that the force will be placed at when the map loads"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT, "battbg", false,
 						"Battle Background Index",
 						"The index of the battle background that should be used for the battle"));
@@ -2402,14 +2401,14 @@ public class PlannerDefinitions {
 
 		// Load map
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapdata", false,
 				"Trigger File",
 				"The name of the mapdata file that should be loaded for this map"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING, "enter", false,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_STRING, "enter", false,
 				"Entrance location",
 				"The name of the map location that the hero will be placed at when the map loads"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION, PlannerValueDef.TYPE_STRING, "transdir", true,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION, PlannerValueDef.TYPE_STRING, "transdir", true,
 				"Map Transition Direction",
 				"If specified: the map will be transitioned out via a 'slide' effect in the direction indicated. This value should be set to the direction that the NEW map is relative to the current map."));
 		allowableLines.add(new PlannerLineDef("loadmap", "Load Map",
@@ -2418,13 +2417,13 @@ public class PlannerDefinitions {
 		
 		// Load Chapter
 		definingValues = new ArrayList<PlannerValueDef>();		
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING, "header", false,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_STRING, "header", false,
 				"Chapter Header Text",
 				"The text that should appear at the top of the chapter page"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_LONG_STRING, "description", false,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_LONG_STRING, "description", false,
 				"Chapter Description Text",
 				"The text that should appear at the bottom of the chapter page. This should NOT contain any special characters or stops."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER, PlannerValueDef.TYPE_INT, "exittrigger", false,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER, PlannerValueDef.TYPE_INT, "exittrigger", false,
 				"Exit Trigger",
 				"The trigger that should be executed once the chapter screen has been shown. This should ALWAYS load a new map or the credits"));
 		allowableLines.add(new PlannerLineDef("loadchapter", "Show Chapter",
@@ -2439,12 +2438,12 @@ public class PlannerDefinitions {
 
 		// Show Cinematic
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapdata", false,
 				"Trigger File",
 				"The name of the mapdata file that should be loaded for this map"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_INT,
 				"cinid", false, "Cinematic ID",
 				"The ID of the cinematic that should be shown"));
 		allowableLines.add(new PlannerLineDef("loadcin", "Load Cinematic",
@@ -2453,7 +2452,7 @@ public class PlannerDefinitions {
 
 		// Show priest
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "portrait", false, "Portrait Animation File",
 				"The animation file containing the priest portrait"));
 		allowableLines.add(new PlannerLineDef("showpriest", "Show Priest",
@@ -2468,10 +2467,10 @@ public class PlannerDefinitions {
 
 		// Play Music
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MUSIC,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MUSIC,
 				PlannerValueDef.TYPE_STRING, "music", false, "Music File",
 				"The name of the music that should be played"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "volume", false, "Volume",
 				"A number between 0-100 indicating the volume that the music will be played at"));
 		allowableLines.add(new PlannerLineDef("playmusic", "Play Music",
@@ -2492,12 +2491,12 @@ public class PlannerDefinitions {
 
 		// Play Sound
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SOUND,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SOUND,
 				PlannerValueDef.TYPE_STRING, "sound", false, "Sound File",
 				"The name of the sound that should be played"));
 		definingValues
 				.add(new PlannerValueDef(
-						PlannerValueDef.REFERS_NONE,
+						ReferenceStore.REFERS_NONE,
 						PlannerValueDef.TYPE_INT,
 						"volume",
 						false,
@@ -2509,10 +2508,10 @@ public class PlannerDefinitions {
 		
 		// Change AI - Vision
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "id", false, "Unit",
 				"The unit whose AI vision should be changed"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "vision", false, "AI Vision",
 				"The maximum range that the specified combatant will look for targets. "
 				+ "This value can never be lower then the attack range of the combatant. A value of 0 = unlimited"));
@@ -2522,13 +2521,13 @@ public class PlannerDefinitions {
 		
 		// Change AI - Approach Type
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "id", false, "Unit",
 				"The unit whose AI should be changed"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_AI_APPROACH,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_AI_APPROACH,
 				PlannerValueDef.TYPE_INT, "aitype", false, "AI Type",
 				"The type of AI that the specified enemy should employ"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "priority", false, "AI Priority",
 				"The priority that this AI change will have, if this change is "
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
@@ -2538,13 +2537,13 @@ public class PlannerDefinitions {
 		
 		// Change AI - Target Hero
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "id", false, "Unit",
 				"The unit whose AI should be changed"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_INT, "heroid", true, "Hero",
 				"The index of the hero that should be targeted"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "priority", false, "AI Priority",
 				"The priority that this AI change will have, if this change is "
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
@@ -2554,13 +2553,13 @@ public class PlannerDefinitions {
 		
 		// Change AI - Follow Enemy
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "id", false, "Unit",
 				"The unit whose AI should be changed"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "targetid", true, "Target Unit",
 				"The target unit (enemy) that this enemy should follow"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "priority", false, "AI Priority",
 				"The priority that this AI change will have, if this change is "
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
@@ -2571,16 +2570,16 @@ public class PlannerDefinitions {
 
 		// Change AI - Move to location
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "id", false, "Unit",
 				"The unit whose AI should be changed"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "x", true, "X Location",
 				"The x coordinate in tiles that this enemy should move to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "y", true, "Y Location",
 				"The y coordinate in tiles that this enemy should move to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "priority", false, "AI Priority",
 				"The priority that this AI change will have, if this change is "
 				+ "lower then the current priority of the AI, then the AI will not be changed."));
@@ -2590,7 +2589,7 @@ public class PlannerDefinitions {
 
 		// Show Text
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TEXT,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TEXT,
 				PlannerValueDef.TYPE_INT, "textid", false, "Text ID",
 				"The ID of the text that should be displayed"));
 		allowableLines.add(new PlannerLineDef("showtext", "Show Text",
@@ -2600,11 +2599,11 @@ public class PlannerDefinitions {
 		// Show Cinematic
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_CINEMATIC, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_CINEMATIC, PlannerValueDef.TYPE_INT,
 				"cinid", false, "Cinematic ID",
 				"The ID of the cinematic that should be shown"));
 		definingValues.add(new PlannerValueDef(
-				PlannerValueDef.REFERS_TRIGGER, PlannerValueDef.TYPE_INT,
+				ReferenceStore.REFERS_TRIGGER, PlannerValueDef.TYPE_INT,
 				"exittrigid", true, "Exit Trigger ID",
 				"The ID of the trigger that should be run once this cinematic completes"));
 		allowableLines.add(new PlannerLineDef("showcin", "Show Map Event",
@@ -2613,16 +2612,16 @@ public class PlannerDefinitions {
 
 		// Show Shop
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "buypercent", false, "Buy Percent",
 				"The percent of the item price that items will cost when purchased from this shop. Should be in the form #.# (0.8, 1.2)"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "sellpercent", false, "Buy Percent",
 				"The percent of the item price that items will be sold for when sold to this shop. Should be in the form #.# (0.8, 1.2)"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ITEM,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM,
 				PlannerValueDef.TYPE_MULTI_STRING, "itemssold", false, "Items For Sale",
 				"The items that are sold in this shop"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "portrait", false, "Portrait Animation File",
 				"The animation file containing the shopkeepers portrait"));
 		allowableLines
@@ -2633,7 +2632,7 @@ public class PlannerDefinitions {
 
 		// Add hero
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING, "heroid", false, "Hero ID",
 				"The ID of the hero that should be added to the force"));
 		allowableLines.add(new PlannerLineDef("addhero", "Add Hero",
@@ -2642,7 +2641,7 @@ public class PlannerDefinitions {
 		
 		// Add multiple hero selection
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_MULTI_STRING, "heroids", false, "Hero IDs",
 				"The ID of the hero that should be added to the force"));
 		allowableLines.add(new PlannerLineDef("addmultihero", "Add Hero from Selection",
@@ -2651,7 +2650,7 @@ public class PlannerDefinitions {
 		
 		// Remove hero
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING, "heroid", false, "Hero ID",
 				"The ID of the hero that should be removed from the force"));
 		allowableLines.add(new PlannerLineDef("removehero", "Remove Hero",
@@ -2661,7 +2660,7 @@ public class PlannerDefinitions {
 		// Hide Roof
 		/*
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "roofid", false, "Roof ID",
 				"The ID of the roof that should no longer be visible"));
 		allowableLines
@@ -2673,7 +2672,7 @@ public class PlannerDefinitions {
 
 		// Show Roof
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "roofid", false, "Roof ID",
 				"The ID of the roof that should be visible"));
 		allowableLines.add(new PlannerLineDef("showroof", "Show Roof",
@@ -2682,21 +2681,21 @@ public class PlannerDefinitions {
 
 		// Add NPC
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TEXT,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TEXT,
 				PlannerValueDef.TYPE_INT, "textid", false, "Text Id",
 				"The id of the text that should be displayed when this npc is talked to'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING, 
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_STRING, 
 				"name", true, "Name", "The unique name of this npc that should be used to identify it for use in triggers"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "animation", false, "Animation",
 				"The animation that should be used to display this NPC. The portrait for the speech will be selected during text creation'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "wander", false, "Wander Distance",
 				"The amount of tiles this NPC can wander from his start position. A value of 0 means he will stand still'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION,
 				PlannerValueDef.TYPE_INT, "facing", false, "Initial Facing",
 				"The direction that this npc will initially face, if wander is greater then 0 then this is likely to change'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_LOCATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_LOCATIONS,
 				PlannerValueDef.TYPE_STRING, "location", false, "Start Location",
 				"The name of the map location to place this npc on"));
 		allowableLines.add(new PlannerLineDef("addnpc", "Add NPC",
@@ -2706,13 +2705,13 @@ public class PlannerDefinitions {
 		
 		// Change NPC animation
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Npc Name",
 				"The name of the npc to be changed"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "animation", false,
 				"New Animations", "The new animations for this npc"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION,
 				PlannerValueDef.TYPE_INT, "facing", false, "Initial Facing",
 				"The direction that this npc will initially face."));
 		allowableLines.add(new PlannerLineDef("changenpc",
@@ -2723,16 +2722,16 @@ public class PlannerDefinitions {
 
 		// Add Sprite
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SPRITE_IMAGE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SPRITE_IMAGE,
 				PlannerValueDef.TYPE_STRING, "image", false, "Image Name",
 				"The name of the image that should be displayed for this sprite"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Name",
 				"The unique name of this sprite that should be used to identify it for use in triggers"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 				PlannerValueDef.TYPE_INT, "searchtrigger", true, "Search Trigger",
 				"The trigger (not battle trigger) that should be executed when this sprite is 'investigated'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_LOCATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_LOCATIONS,
 				PlannerValueDef.TYPE_STRING, "location", false, "Start Location",
 				"The name of the map location to place this sprite on"));
 		allowableLines.add(new PlannerLineDef("addsprite", "Add Sprite",
@@ -2742,7 +2741,7 @@ public class PlannerDefinitions {
 
 		// Remove Sprite
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Sprite Name",
 				"The name of the sprite to be removed"));
 		allowableLines.add(new PlannerLineDef("removesprite", "Remove Sprite",
@@ -2752,10 +2751,10 @@ public class PlannerDefinitions {
 
 		// Change Sprite Image
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Sprite Name",
 				"The name of the sprite to be changed"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SPRITE_IMAGE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SPRITE_IMAGE,
 				PlannerValueDef.TYPE_STRING, "image", false,
 				"New Sprite Image", "The new image for this sprite"));
 		allowableLines.add(new PlannerLineDef("changesprite",
@@ -2766,10 +2765,10 @@ public class PlannerDefinitions {
 
 		// Add Item
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ITEM,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM,
 				PlannerValueDef.TYPE_STRING, "itemid", false, "Item ID",
 				"The item that should be given to the group"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TEXT,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TEXT,
 				PlannerValueDef.TYPE_INT, "failuretext", false, "No Room Text ID",
 				"The text that should be displayed if the party has no room for the item."));
 		allowableLines
@@ -2782,7 +2781,7 @@ public class PlannerDefinitions {
 		
 		// Revive Heroes
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING, "hero", true, "Hero to Revive",
 				"If specified only this hero will be revived."));
 		allowableLines
@@ -2796,7 +2795,7 @@ public class PlannerDefinitions {
 		
 		// Kill Enemy
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "unitid", false, "Unit ID",
 				"The unit id of the enemies should be killed"));
 		allowableLines
@@ -2809,7 +2808,7 @@ public class PlannerDefinitions {
 		
 		// Run Triggers
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 				PlannerValueDef.TYPE_MULTI_INT, "triggers", true,
 				"Triggers To Run",
 				"The ID of the triggers to run"));
@@ -2823,7 +2822,7 @@ public class PlannerDefinitions {
 		
 		// Show NPC Speech
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "npcname", true,
 				"Npc Name",
 				"The name of the npc to drive speech with"));
@@ -2837,15 +2836,15 @@ public class PlannerDefinitions {
 		
 		// Set egress point
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapname", false,
 				"Map name",
 				"The name of map (map data) that the hero should egress to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "locx", false,
 				"Map Tile X Coordinate",
 				"The X coordinate of the tile that the hero should egress to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "locy", false,
 				"Map Tile Y Coordinate",
 				"The Y coordinate of the tile that the hero should egress to"));
@@ -2858,11 +2857,11 @@ public class PlannerDefinitions {
 		
 		// Set egress location
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MAPDATA,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MAPDATA,
 				PlannerValueDef.TYPE_STRING, "mapname", false,
 				"Map name",
 				"The name of map (map data) that the hero should egress to"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "location", false,
 				"Egress Location",
 				"The name of the map location that the hero should egress to"));
@@ -2894,34 +2893,34 @@ public class PlannerDefinitions {
 		progressControl.add("Save Game");
 		
 		triggerContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_TRIGGER - 1, menuLayout);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_TRIGGER - 1, menuLayout);
 		containersByName.put("trigger", triggerContainer);
 	}
 	
-	public static void setupConditionDefinition(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupConditionDefinition(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef conditionContainer;
 
 		// Setup defining line
 		ArrayList<PlannerValueDef> definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "description", false,
 				"Description", "Description"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 				PlannerValueDef.TYPE_MULTI_INT, "triggerid", false, "Trigger ID",
 				"The IDs of thes trigger that should be activated upon condition completion. If multiple conditions"
 				+ " are specified then ALL of the conditions must be met simultaneously for these triggers to be executed."));
 
 		PlannerLineDef definingLine = new PlannerLineDef("condition", "Condition",
-				"", definingValues, new PlannerConditionLayout());
+				"", definingValues);
 
 		// Setup available types
 		ArrayList<PlannerLineDef> allowableLines = new ArrayList<PlannerLineDef>();
 
 		// Set Battle Condition - Enemy Death
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "unitid", false,
 				"Enemy Unit Id",
 				"The unit id (as specified on the map) of the enemy whose death will trigger this condition"));
@@ -2931,7 +2930,7 @@ public class PlannerDefinitions {
 		
 		// Set Battle Condition - Hero Death
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING, "unitid", false,
 				"Hero Id",
 				"The id of the hero whose death will trigger this condition"));
@@ -2941,11 +2940,11 @@ public class PlannerDefinitions {
 		
 		// Enter location
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_LOCATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_LOCATIONS,
 				PlannerValueDef.TYPE_STRING, "location", false,
 				"Location Name",
 				"The name of the location that needs to be entered"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "immediate", false,
 				"Immediately Moved",
 				"If true then this condition will be met the moment a hero first starts moving in to a location. If this is false "
@@ -2959,22 +2958,22 @@ public class PlannerDefinitions {
 		
 		// Location contains
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_LOCATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_LOCATIONS,
 				PlannerValueDef.TYPE_STRING, "location", false,
 				"Location Name",
 				"The name of the location that heroes/enemies will be checked for presence in"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "enemy", false,
 				"Check Enemy Amount",
 				"If true then this condition will be met when the amount of enemies in the given location "
 				+ "meets the given numeric constraints. If false then this condition will be met when the "
 				+ "amount of heroes in the given location meets the given numeric constraints"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_OPERATOR,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_OPERATOR,
 				PlannerValueDef.TYPE_STRING, "operator", false,
 				"Numeric Operator",
 				"The operator that should be used to determine if the given amount of heroes/enemies in the "
 				+ "specified location satisfies the numeric condition."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "amount", false,
 				"Amount",
 				"The amount of heroes/enemies that should be compared against the actual amount of heroes/enemies "
@@ -2987,11 +2986,11 @@ public class PlannerDefinitions {
 		
 		// Enemies Remaining
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_OPERATOR,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_OPERATOR,
 				PlannerValueDef.TYPE_STRING, "operator", false,
 				"Numeric Operator",
 				"The operator that should be used to determine if the given amount of enemies satisfies the numeric condition."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "amount", false,
 				"Amount",
 				"The amount of enemies that should be compared against the actual amount of enemies "
@@ -3008,7 +3007,7 @@ public class PlannerDefinitions {
 		
 		// Quest Completed
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_QUEST,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_QUEST,
 				PlannerValueDef.TYPE_STRING, "quest", false,
 				"Quest ID",
 				"The id of the quest that must be completed."));
@@ -3018,7 +3017,7 @@ public class PlannerDefinitions {
 		
 		// Hero in battle
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_HERO,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
 				PlannerValueDef.TYPE_STRING, "id", false,
 				"Hero Id",
 				"The id of the hero that is checked for participation and being alived in the current battle."));
@@ -3030,7 +3029,7 @@ public class PlannerDefinitions {
 		
 		// Enemy in battle
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "id", false,
 				"Enemy Unit Id",
 				"The unit id (as specified on the map) of the enemy that is checked for participation and being alived in the current battle."));
@@ -3044,7 +3043,7 @@ public class PlannerDefinitions {
 		// DISABLED BECAUSE WE ALREADY HAVE A SEARCH AREA 
 		/*
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_LOCATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_LOCATIONS,
 				PlannerValueDef.TYPE_STRING, "location", false,
 				"Location Name",
 				"The name of the location that needs to be entered"));
@@ -3054,12 +3053,12 @@ public class PlannerDefinitions {
 				*/
 
 		conditionContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
-				PlannerValueDef.REFERS_CONDITIONS - 1);
+				allowableLines, referenceStore,
+				ReferenceStore.REFERS_CONDITIONS - 1);
 		containersByName.put("condition", conditionContainer);
 	}
 
-	public static void setupMapEditorDefinitions(ArrayList<ArrayList<PlannerReference>> listOfLists,
+	public static void setupMapEditorDefinitions(ReferenceStore referenceStore,
 			Hashtable<String, PlannerContainerDef> containersByName) {
 		PlannerContainerDef plannerContainer;
 
@@ -3079,7 +3078,7 @@ public class PlannerDefinitions {
 
 		// start
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "exit", false, "Start Name",
 				"The name that this start location should be referenced by for triggers that must specify an 'Entrance Location'"));
 		allowableLines.add(new PlannerLineDef("start", "start",
@@ -3088,27 +3087,27 @@ public class PlannerDefinitions {
 
 		// npc
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TEXT,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TEXT,
 				PlannerValueDef.TYPE_INT, "textid", false, "Text Id",
 				"The id of the text that should be displayed when this npc is talked to'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE, PlannerValueDef.TYPE_STRING, 
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE, PlannerValueDef.TYPE_STRING, 
 				"name", true, "Name", "The unique name of this npc that should be used to identify it for use in triggers"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ANIMATIONS,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ANIMATIONS,
 				PlannerValueDef.TYPE_STRING, "animation", false, "Animation",
 				"The animation that should be used to display this NPC. The portrait for the speech will be selected during text creation'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "wander", false, "Wander Distance",
 				"The amount of tiles this NPC can wander from his start position. A value of 0 means he will stand still'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_DIRECTION,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_DIRECTION,
 				PlannerValueDef.TYPE_INT, "facing", false, "Initial Facing",
 				"The direction that this npc will initially face, if wander is greater then 0 then this is likely to change'"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "throughwall", false, "Can talk through wall",
 				"If set to true then this NPC can be spoken to at a range of two tiles (twice normal) this should be used for shop keepers or places beghind bars/altars."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "noanimate", false, "Prevent NPC Animation",
 				"If set to true, this NPC will only display the first frame of the direction they are facing and will not animate."));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_BOOLEAN, "noturn", false, "Do not talk when spoken to",
 				"If set to true this NPC will not turn when they are spoken to (searched)."));
 		allowableLines.add(new PlannerLineDef("npc", "npc",
@@ -3117,22 +3116,22 @@ public class PlannerDefinitions {
 
 		// enemy
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ENEMY,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ENEMY,
 				PlannerValueDef.TYPE_STRING, "enemyid", false, "Enemy ID",
 				"The type of enemy that should be at this location"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_AI,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_AI,
 				PlannerValueDef.TYPE_STRING, "ai", false, "Enemy AI",
 				"The type of AI this enemy should use once it is close to the heroes"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_AI_APPROACH,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_AI_APPROACH,
 				PlannerValueDef.TYPE_STRING, "aiapproach", false, "Enemy Approach Speed",
 				"The type of AI this enemy should use to approach the heroes. Do not use follow or move to location here set it via a trigger"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "unit", false, "Unit ID",
 				"Use this ID to specifiy which enemy should be the target of triggers (Change AI)"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "vision", false, "Vision",
 				"Max range that this enemy will look to find targets to engage with. This value can not be less then the enemies attack range. A value of 0 = infinite"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_MUSIC,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_MUSIC,
 				PlannerValueDef.TYPE_STRING, "music", true, "Custom Music",
 				"The music that should be played when this enemy attacks, this overrides script values."));
 		allowableLines.add(new PlannerLineDef("enemy", "enemy",
@@ -3141,7 +3140,7 @@ public class PlannerDefinitions {
 
 		// terrain
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TERRAIN,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TERRAIN,
 				PlannerValueDef.TYPE_STRING, "type", false, "Land Type",
 				"Terrain type for combatants that end there turn on this location"));
 		allowableLines.add(new PlannerLineDef("terrain", "terrain",
@@ -3156,7 +3155,7 @@ public class PlannerDefinitions {
 		
 		// door
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SPRITE_IMAGE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SPRITE_IMAGE,
 				PlannerValueDef.TYPE_STRING, "image", false, "Door Image",
 				"The image that should be used for this door"));
 		allowableLines.add(new PlannerLineDef("door", "door",
@@ -3171,13 +3170,13 @@ public class PlannerDefinitions {
 
 		// sprite
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "image", false, "Image Name",
 				"The name of the image that should be displayed for this sprite"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_NONE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "name", false, "Name",
 				"The unique name of this sprite that should be used to identify it for use in triggers"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 				PlannerValueDef.TYPE_INT, "searchtrigger", true, "Search Trigger",
 				"The trigger (not battle trigger) that should be executed when this sprite is 'investigated'"));
 		allowableLines.add(new PlannerLineDef("sprite", "sprite",
@@ -3185,7 +3184,7 @@ public class PlannerDefinitions {
 
 		// search area
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_TRIGGER,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_TRIGGER,
 				PlannerValueDef.TYPE_INT, "searchtrigger", false, "Search Trigger",
 				"The trigger (not battle trigger) that should be executed when this area is 'investigated'"));
 		allowableLines.add(new PlannerLineDef("searcharea", "searcharea",
@@ -3193,10 +3192,10 @@ public class PlannerDefinitions {
 
 		// chest
 		definingValues = new ArrayList<PlannerValueDef>();
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_SPRITE_IMAGE,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SPRITE_IMAGE,
 				PlannerValueDef.TYPE_STRING, "spriteimage", false, "Sprite Image",
 				"The image of the chest lid"));
-		definingValues.add(new PlannerValueDef(PlannerValueDef.REFERS_ITEM,
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM,
 				PlannerValueDef.TYPE_INT, "itemid", true, "Item",
 				"The item that will be found by 'searching' this chest."));
 		allowableLines.add(new PlannerLineDef("chest", "chest",
@@ -3209,7 +3208,7 @@ public class PlannerDefinitions {
 
 		
 		plannerContainer = new PlannerContainerDef(definingLine,
-				allowableLines, listOfLists,
+				allowableLines, referenceStore,
 				-1);
 		containersByName.put("mapedit", plannerContainer);
 	}

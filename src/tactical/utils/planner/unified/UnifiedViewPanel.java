@@ -557,9 +557,9 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 			}
 						
 			for (PlannerLine pl : newPC.getLines()) {
-				pl.commitChanges();
+				pl.commitChanges(newPC.getPcdef().getReferenceStore());
 			}
-			newPC.getDefLine().commitChanges();
+			newPC.getDefLine().commitChanges(newPC.getPcdef().getReferenceStore());
 			
 			setupPanel((String)  getDrivers().getSelectedItem());
 		}

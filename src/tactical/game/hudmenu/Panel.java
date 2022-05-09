@@ -59,7 +59,8 @@ public abstract class Panel
 		PANEL_MINI_MAP,
 		PANEL_PAUSE,
 		PANEL_CONTEXT_DEBUG,
-		PANEL_SELECT_HERO
+		PANEL_SELECT_HERO,
+		PANEL_SPLIT_PARTY
 	}
 
 	protected PanelType panelType;

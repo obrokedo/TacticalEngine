@@ -21,12 +21,12 @@ public class ResourceSearcher {
 	
 	public ResourceSearcher(String pathPrefix) {
 		containersByName = new Hashtable<>();
-		ArrayList<ArrayList<PlannerReference>> referenceListByReferenceType = new ArrayList<ArrayList<PlannerReference>>();
+		ReferenceStore referenceStore = new ReferenceStore();
 
 		/*******************/
 		/* Set up triggers */
 		/*******************/
-		PlannerDefinitions.setupDefintions(referenceListByReferenceType, containersByName);		
+		PlannerDefinitions.setupDefintions(referenceStore, containersByName);		
 		this.pathPrefix = pathPrefix;
 	}
 	
@@ -53,19 +53,19 @@ public class ResourceSearcher {
 			List<PlannerTab> tempTabs = new ArrayList<>();
 			// Add triggers
 			tempTabs.add(new PlannerTab("Triggers", containersByName, new String[] { "trigger" },
-					PlannerValueDef.REFERS_TRIGGER, null, PlannerFrame.TAB_TRIGGER));
+					ReferenceStore.REFERS_TRIGGER, null, PlannerFrame.TAB_TRIGGER));
 
 			// Add conditions
 			tempTabs.add(new PlannerTab("Conditions", containersByName, new String[] { "condition" },
-					PlannerValueDef.REFERS_CONDITIONS, null, PlannerFrame.TAB_CONDITIONS));
+					ReferenceStore.REFERS_CONDITIONS, null, PlannerFrame.TAB_CONDITIONS));
 
 			// Add cinematics
 			tempTabs.add(new PlannerTab("Cinematics", containersByName, new String[] { "cinematic" },
-					PlannerValueDef.REFERS_CINEMATIC, null, PlannerFrame.TAB_CIN));
+					ReferenceStore.REFERS_CINEMATIC, null, PlannerFrame.TAB_CIN));
 
 			// Add speech
 			tempTabs.add(new PlannerTab("Speeches", containersByName, new String[] { "text" },
-					PlannerValueDef.REFERS_TEXT, null, PlannerFrame.TAB_TEXT));
+					ReferenceStore.REFERS_TEXT, null, PlannerFrame.TAB_TEXT));
 
 			plannerIO.parseContainer(tagAreas, tempTabs.get(0), "trigger", containersByName, false);
 			plannerIO.parseContainer(tagAreas, tempTabs.get(3), "text", containersByName, false);

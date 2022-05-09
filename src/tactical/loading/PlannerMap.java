@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -47,11 +48,11 @@ public class PlannerMap extends Map {
 	private TagArea rootTagArea;
 	private String mapName;
 	private ArrayList<PlannerTab> tabsWithMapReferences;
-	private ArrayList<PlannerReference> locationReferences;
+	private List<PlannerReference> locationReferences;
 	private Hashtable<String, BufferedImage> imagesByName = new Hashtable<>();
 	private PlannerTab enemyTab;
 
-	public PlannerMap(String mapName, ArrayList<PlannerReference> locationReferences, PlannerTab enemyTab) {
+	public PlannerMap(String mapName, List<PlannerReference> locationReferences, PlannerTab enemyTab) {
 		super();
 		this.mapName = mapName;
 		this.locationReferences = locationReferences;

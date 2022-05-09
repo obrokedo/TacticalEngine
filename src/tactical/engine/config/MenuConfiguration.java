@@ -74,6 +74,8 @@ public interface MenuConfiguration {
 	public String getPartyMemberRemoved(String hero);
 	public String getPartyMemberAdded(String hero);
 	
+	public String getSplitPartyText(int amt);
+	
 	public int getIntroScrollSpeed();
 	public int getIntroExitTime();
 	public int getIntroTextEnterDelayTime();
