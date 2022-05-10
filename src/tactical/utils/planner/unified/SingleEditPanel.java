@@ -65,7 +65,7 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 		PlannerContainerDef pcdef = pc.getPcdef();		
 		if (lineIndex < 0) {	
 			PlannerLine plDef = pc.getDefLine();
-			plDef.setupUI(this, 0, pcdef.getReferenceStore(), true, null);
+			plDef.setupUI(this, 0, pcdef.getReferenceStore(), true, pc.getParentTab());
 			boxPanel.add(plDef.getUiAspect());
 		}
 		
@@ -73,7 +73,7 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 		int cnt = 1;
 		for (PlannerLine pl : pc.getLines()) {
 			if (lineIndex == -1 || lineIndex == (cnt - 1)) {				
-				pl.setupUI(this, cnt++, pcdef.getReferenceStore(), true, null, lineIndex == -1);
+				pl.setupUI(this, cnt++, pcdef.getReferenceStore(), true, pc.getParentTab(), lineIndex == -1);
 				boxPanel.add(pl.getUiAspect());
 			} else {
 				cnt++;
@@ -117,5 +117,6 @@ public class SingleEditPanel extends JPanel implements ActionListener {
 		
 		this.removeAll();
 		setupUI();
+		this.invalidate();
 	}
 }

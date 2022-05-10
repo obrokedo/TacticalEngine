@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -81,7 +82,6 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 		setupUI(aListener, index, referenceStore, displayButtons, parentTab, true);
 	}
 	
-
 	public void setupUI(ActionListener aListener,
 			int index, ReferenceStore referenceStore, 
 			boolean displayButtons, PlannerTab parentTab, boolean showHeader)
@@ -330,6 +330,8 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 			c.setToolTipText(pv.getDisplayDescription());
 			c.addFocusListener(this);
 			
+			
+			
 			//JLabel descriptionLabel = new JLabel(convertToConstantWidth(pv.getDisplayDescription()));
 			//descriptionLabel.setOpaque(true);
 			//descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.BOLD));
@@ -338,7 +340,30 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 			components.add(c);
 			
 			if (plDef.getPanelLayout() == null) {
-				panel.add(c);				
+				panel.add(c);
+				if (pv.getRefersTo() == ReferenceStore.REFERS_TRIGGER) {
+					JButton createTrigger = new JButton("Create a new trigger");
+					panel.add(createTrigger, BorderLayout.PAGE_END);
+					createTrigger.addActionListener(new ActionListener() {						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							if (parentTab.getPlannerFrame().getPlannerTabAtIndex(
+									PlannerFrame.TAB_TRIGGER).addNewContainer() != null)
+								setupUI(aListener, index, referenceStore, displayButtons, parentTab, showHeader);
+						}
+					});
+				} else if (pv.getRefersTo() == ReferenceStore.REFERS_TEXT) {
+					JButton createSpeech = new JButton("Create new text");
+					panel.add(createSpeech, BorderLayout.PAGE_END);
+					createSpeech.addActionListener(new ActionListener() {						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							if (parentTab.getPlannerFrame().getPlannerTabAtIndex(
+									PlannerFrame.TAB_TEXT).addNewContainer() != null)
+								setupUI(aListener, index, referenceStore, displayButtons, parentTab, showHeader);
+						}
+					});
+				}
 				valuePanel.add(panel);
 				valuePanel.add(Box.createRigidArea(new Dimension(5, 10)));
 			}

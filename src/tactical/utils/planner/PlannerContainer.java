@@ -216,6 +216,10 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		return plannerGraph;
 	}
 
+	public PlannerTab getParentTab() {
+		return parentTab;
+	}
+
 	public JPanel getUiAspect() {
 		return uiAspect;
 	}

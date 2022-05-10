@@ -36,6 +36,8 @@ public class MovingSprite
 		this.stairs = stairs;
 		this.moveIndex = 0;
 		this.direction = dir;
+		startX = animatedSprite.getLocX();
+		startY = animatedSprite.getLocY();
 		switch (direction)
 		{
 			case LEFT:

@@ -85,19 +85,12 @@ public class ReferenceStore {
 	}
 	
 	public List<PlannerReference> getReferencesForType(int refersType) {
-		List<PlannerReference> refs = null;
-		if (referenceListByReferenceType.containsKey(refersType)) {
-			refs =  referenceListByReferenceType.get(refersType);
-		} else {
-			refs = new ArrayList<>();
-			referenceListByReferenceType.put(refersType, refs);
-		}
-		
-		return refs;
+		return getOrCreateList(refersType);
 	}
 	
 	public List<String> getReferencesAsStrings(int refersType) {
-		return referenceListByReferenceType.get(refersType).stream().map(referTo -> referTo.getName()).collect(Collectors.toList());		
+		
+		return getOrCreateList(refersType).stream().map(referTo -> referTo.getName()).collect(Collectors.toList());		
 	}
 	
 	public PlannerReference removeReference(int refersType, int referenceIndex) {

@@ -453,4 +453,8 @@ public class PlannerTab implements ActionListener, KeyListener, FocusListener, M
 		// TODO Auto-generated method stub
 		
 	}
+
+	public PlannerFrame getPlannerFrame() {
+		return plannerFrame;
+	}
 }

@@ -831,6 +831,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	{
 		if (index < 4)
 			jtp.setSelectedIndex(index);
+		
 		else
 			majorJTP.setSelectedIndex(index - 4);
 	}
