@@ -58,25 +58,17 @@ public class PlannerContainer implements ActionListener, LineCommitListener
 		uiAspect.removeAll();
 		uiAspect.validate();
 
-		defLine.setupUI(this, 0, pcdef.getReferenceStore(), parentTab);
+		defLine.setupUI(this, 0, pcdef.getReferenceStore(), parentTab.getPlannerFrame());
 		uiAspect.add(defLine.getUiAspect());
 
 		JPanel listPanel = new JPanel();
 		listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.PAGE_AXIS));
 		if (index != -1 && index < lines.size())
 		{
-			lines.get(index).setupUI(this, index + 1, pcdef.getReferenceStore(), parentTab);
+			lines.get(index).setupUI(this, index + 1, pcdef.getReferenceStore(), parentTab.getPlannerFrame());
 			lines.get(index).setListener(this);
 			listPanel.add(lines.get(index).getUiAspect());
 		}
-
-		/*
-		for (PlannerLine line : lines)
-		{
-			line.setupUI(pcdef.getAllowableLines(), this, i, pcdef.getListOfLists());
-			listPanel.add(line);
-			i++;
-		} */
 
 		uiAspect.add(listPanel);
 		uiAspect.validate();

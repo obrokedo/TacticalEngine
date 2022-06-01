@@ -193,15 +193,6 @@ public class UnifiedViewPanel extends JPanel implements ActionListener, ItemList
 				else {				
 					PlannerContainer pc = plannerMap.getPCReferencingMapObject(mo);
 					
-					/*
-					PlannerLine pl = pc.getDefLine();
-					PlannerContainerDef pcdef = pc.getPcdef();
-					pl.setupUI(pcdef.getAllowableLines(), null, 1, pcdef.getListOfLists(), false, null);
-					int rc = JOptionPane.showConfirmDialog(this, pl.getUiAspect(), "Edit cinematic action", JOptionPane.OK_OPTION);
-					if (rc == JOptionPane.NO_OPTION)
-						return;
-					*/
-					
 					if (pc != null)
 						valueToSelect = (String) pc.getDefLine().getValues().get(0) + " - Conditions are met";
 				}

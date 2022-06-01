@@ -96,7 +96,7 @@ public class ReferenceStore {
 	public PlannerReference removeReference(int refersType, int referenceIndex) {
 		PlannerReference ref = null;
 		
-		ref = referenceListByReferenceType.get(refersType).get(referenceIndex);
+		ref = referenceListByReferenceType.get(refersType).remove(referenceIndex);
 		
 		return ref;
 	}

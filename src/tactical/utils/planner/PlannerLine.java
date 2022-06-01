@@ -69,7 +69,7 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 	}
 
 	public void setupUI(ActionListener aListener,
-			int index, ReferenceStore referenceStore, PlannerTab parentTab)
+			int index, ReferenceStore referenceStore, PlannerFrame parentTab)
 	{
 		setupUI(aListener,
 				index, referenceStore, false, parentTab, true);
@@ -77,14 +77,14 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 	
 	public void setupUI(ActionListener aListener,
 			int index, ReferenceStore referenceStore, 
-			boolean displayButtons, PlannerTab parentTab)
+			boolean displayButtons, PlannerFrame parentTab)
 	{
 		setupUI(aListener, index, referenceStore, displayButtons, parentTab, true);
 	}
 	
 	public void setupUI(ActionListener aListener,
 			int index, ReferenceStore referenceStore, 
-			boolean displayButtons, PlannerTab parentTab, boolean showHeader)
+			boolean displayButtons, PlannerFrame plannerFrame, boolean showHeader)
 	{
 		this.referenceStore = referenceStore;
 		ArrayList<String> badReferences = new ArrayList<>();
@@ -347,9 +347,9 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					createTrigger.addActionListener(new ActionListener() {						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if (parentTab.getPlannerFrame().getPlannerTabAtIndex(
+							if (plannerFrame.getPlannerTabAtIndex(
 									PlannerFrame.TAB_TRIGGER).addNewContainer() != null)
-								setupUI(aListener, index, referenceStore, displayButtons, parentTab, showHeader);
+								setupUI(aListener, index, referenceStore, displayButtons, plannerFrame, showHeader);
 						}
 					});
 				} else if (pv.getRefersTo() == ReferenceStore.REFERS_TEXT) {
@@ -358,9 +358,9 @@ public class PlannerLine implements FocusListener, ChangeListener, ItemListener
 					createSpeech.addActionListener(new ActionListener() {						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if (parentTab.getPlannerFrame().getPlannerTabAtIndex(
+							if (plannerFrame.getPlannerTabAtIndex(
 									PlannerFrame.TAB_TEXT).addNewContainer() != null)
-								setupUI(aListener, index, referenceStore, displayButtons, parentTab, showHeader);
+								setupUI(aListener, index, referenceStore, displayButtons, plannerFrame, showHeader);
 						}
 					});
 				}

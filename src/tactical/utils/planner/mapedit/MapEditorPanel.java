@@ -51,7 +51,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 	private JScrollPane mapScrollPane;
 	private JPanel sidePanel;
 	private JComboBox<String> moCombo;
-	private ArrayList<ArrayList<PlannerReference>> listOfLists;
+	private ReferenceStore referenceStore;
 	private boolean displayEnemy = true, displayTerrain = true,
 		displayOther = true, displayUnused = true, displayInteractable = true;
 	private boolean disableMapObjectTypeListener = false;
@@ -113,7 +113,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 
 		backPanel.add(locationVisiblePanel, BorderLayout.PAGE_START);
 		this.plannerFrame = plannerFrame;
-		this.listOfLists = listOfLists;		
+		this.referenceStore = plannerFrame.getReferenceStore();
 	}
 
 	private JCheckBox createCheckBox(String text, String actionCommand)
@@ -213,10 +213,10 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 					int index = 0;
 					if (mo.getParam(val.getTag()) != null)
 						index = Integer.parseInt(mo.getParam(val.getTag()));
-					if (index < 0 || index >= listOfLists.get(val.getRefersTo() - 1 ).size())
+					if (index < 0 || index >= referenceStore.getReferencesForType(val.getRefersTo() - 1).size())
 						valueSet = "NO VALUE SELECTED";
 					else
-						valueSet = listOfLists.get(val.getRefersTo() - 1).get(index).getName();
+						valueSet = referenceStore.getReferencesForType(val.getRefersTo() - 1).get(index).getName();
 				}
 				else
 					valueSet = mo.getParam(val.getTag());
@@ -421,7 +421,8 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 
 		try
 		{
-			pl.setupUI(this, 1, pcdef.getReferenceStore(), false, null);
+			
+			pl.setupUI(this, 1, pcdef.getReferenceStore(), false, plannerFrame);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -451,7 +452,7 @@ public class MapEditorPanel implements ActionListener, ItemListener {
 				else
 				{
 					if (pvd.getRefersTo() != ReferenceStore.REFERS_NONE)
-						mo.getParams().put(pvd.getTag(),  listOfLists.get(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i)) + "");
+						mo.getParams().put(pvd.getTag(),  referenceStore.getReferencesForType(pvd.getRefersTo() - 1).indexOf(pl.getValues().get(i)) + "");
 					else
 						mo.getParams().put(pvd.getTag(), ((int) pl.getValues().get(i)) + "");
 				}

@@ -27,7 +27,8 @@ public class MultiIntPanel extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("ADD"))
-		{
+		{			
+			System.out.println("ADD");
 			Vector<String> vs = new Vector<String>();
 			vs.add("No value selected");
 			vs.addAll(mitems);

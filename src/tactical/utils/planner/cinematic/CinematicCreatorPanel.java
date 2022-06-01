@@ -393,18 +393,6 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 			timeSlider.repaint();
 		}
 
-		/*
-		PlannerTab pt = (PlannerTab) parentTabbedPane.getComponentAt(PlannerFrame.TAB_CIN);
-		PlannerContainerDef pcdef = pt.getPlannerContainerDef();
-		PlannerLine pl = new PlannerLine(pcdef.getAllowableLines().get(0), false);
-		pl.setupUI(pcdef.getAllowableLines(), this, 1, pcdef.getListOfLists());
-		int ret = JOptionPane.showConfirmDialog(this, pl, "Add cinematic action", JOptionPane.OK_CANCEL_OPTION);
-
-		if (ret == JOptionPane.YES_OPTION)
-		{
-			pt.getCurrentPC().addLine(pl);
-		}
-		*/
 	}
 
 	private boolean editCinematicLine()

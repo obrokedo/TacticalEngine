@@ -1592,10 +1592,13 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_INT, "count", false,
 				"Counting Quest Success", "If set to a number greater then 0 then this quest numeric value must meet or exceed this number to be completed."));
 				*/
+		/*
 		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_MULTI_STRING, "count", false,
 				"Sub Quests", "A list of sub quests that are associated with this quest. "
 						+ "These can be referenced individually, or all must be completed for the 'parent' quest to be considered complete."));
+		*/
+		
 		// definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 		// PlannerValueDef.TYPE_INT, "triggerid", false,
 		// "Unique Trigger Id",
@@ -1607,6 +1610,7 @@ public class PlannerDefinitions {
 		ArrayList<PlannerLineDef> allowableLines = new ArrayList<PlannerLineDef>();
 		
 		// Complete Quest
+		/*
 		definingValues = new ArrayList<PlannerValueDef>();
 		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_MULTI_STRING, "subquestnames", false, "Subquest Name",
@@ -1614,6 +1618,7 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("completequest",
 				"Subquests", "Defines subquests for the parent quest",
 				definingValues));
+		*/
 
 		textContainer = new PlannerContainerDef(definingLine,
 				allowableLines, referenceStore,
