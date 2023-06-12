@@ -46,7 +46,7 @@ public class AnimatedSprite extends Sprite
 
 	public Image getCurrentImage()
 	{
-		return spriteAnims.getImageAtIndex(currentAnim.frames.get(imageIndex).sprites.get(0).imageIndex);
+		return currentAnim.getImageAtIndex(currentAnim.frames.get(imageIndex).sprites.get(0).imageIndex);
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public class AnimatedSprite extends Sprite
 		
 		for (AnimSprite as : currentAnim.frames.get(imageIndex).sprites)
 		{
-			AnimatedSprite.drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, true, tileHeight);
+			AnimatedSprite.drawShadow(currentAnim.getImageAtIndex(as.imageIndex), xPos, yPos, camera, true, tileHeight);
 
 			if (as.flipH)
-				graphics.drawImage(spriteAnims.getImageAtIndex(as.imageIndex).getFlippedCopy(true, false), xPos, yPos);
+				graphics.drawImage(currentAnim.getImageAtIndex(as.imageIndex).getFlippedCopy(true, false), xPos, yPos);
 			else
-				graphics.drawImage(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos);
+				graphics.drawImage(currentAnim.getImageAtIndex(as.imageIndex), xPos, yPos);
 		}
 	}
 

@@ -195,12 +195,12 @@ public class AttackableSpace implements KeyboardListener, MouseListener
 		if (targetSelectX != -1)
 		{
 			graphics.setColor(Color.white);
-
 			for (int i = 0; i < area.length; i++)
 			{
 				for (int j = 0; j < area[0].length; j++)
 				{
-					if (area[i][j] == 1)
+					
+					if (area[i][j] >= 1)
 						cursorImage.draw(selectX + (tileWidth * (i - areaOffset)) - camera.getLocationX(),
 								selectY + (tileHeight * (j - areaOffset)) - camera.getLocationY());
 				}
@@ -293,7 +293,7 @@ public class AttackableSpace implements KeyboardListener, MouseListener
 				{
 					for (int j = 0; j < area[0].length; j++)
 					{
-						if (area[i][j] == 1)
+						if (area[i][j] >= 1)
 						{
 							CombatSprite cs = stateInfo.getCombatSpriteAtTile(targetsInRange.get(selectedTarget).getTileX() + i - areaOffset,
 									targetsInRange.get(selectedTarget).getTileY() + j - areaOffset, targetsHero);

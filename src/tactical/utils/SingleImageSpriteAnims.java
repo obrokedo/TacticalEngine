@@ -11,9 +11,9 @@ public class SingleImageSpriteAnims extends SpriteAnims {
 	protected Image image;
 	
 	public SingleImageSpriteAnims(Image image) {
-		super(null, null);
+		super();
 		this.image = image;
-		Animation anim = new Animation("anim");
+		Animation anim = new Animation("anim", null, null);
 		AnimFrame af = new AnimFrame(10000);
 		af.sprites.add(new AnimSprite(0, 0, 0, 0, false, false));
 		anim.frames.add(af);
@@ -23,10 +23,6 @@ public class SingleImageSpriteAnims extends SpriteAnims {
 	@Override
 	public void addAnimation(String name, Animation anim) {
 
-	}
-
-	@Override
-	public void initialize(Image image) {
 	}
 
 	@Override
@@ -59,12 +55,7 @@ public class SingleImageSpriteAnims extends SpriteAnims {
 	public Animation getAnimation(String name) {
 		return animations.get("single");
 	}
-
-	@Override
-	public Image getImageAtIndex(int idx) {
-		return image;
-	}
-
+	
 	@Override
 	public void printAnimations() {
 	}

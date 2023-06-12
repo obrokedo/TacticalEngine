@@ -325,7 +325,7 @@ public class CombatSprite extends AnimatedSprite
 	public void renderDirect(float xPos, float yPos, Camera camera, Graphics graphics, GameContainer cont, int tileHeight) {		
 		for (AnimSprite as : currentAnim.frames.get(imageIndex).sprites)
 		{
-			Image im = spriteAnims.getImageAtIndex(as.imageIndex);
+			Image im = currentAnim.getImageAtIndex(as.imageIndex);
 			if (as.flipH) {
 				im = im.getFlippedCopy(true, false);
 			}
@@ -581,7 +581,7 @@ public class CombatSprite extends AnimatedSprite
 
 	public Image getAnimationImageAtIndex(int index)
 	{
-		return spriteAnims.getImageAtIndex(index);
+		return currentAnim.getImageAtIndex(index);
 	}
 
 	/************************/

@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurator;
 import tactical.game.exception.BadResourceException;
 import tactical.loading.ResourceManager;
+import tactical.utils.Animation;
 import tactical.utils.DirectoryLister;
 
 public class BulkLoader {
@@ -61,16 +63,8 @@ public class BulkLoader {
 				allLines.remove(i); i--;
 				for (File file : DirectoryLister.listFilesInDir(split[1]))
 				{
-					if (file.getName().endsWith(".png"))
-					{
-						allLines.add("image," + file.getName().replace(".png", "") + "," + file.getPath().replaceAll("\\\\", "/"));
-					}
-				}
-				
-				for (File file : DirectoryLister.listFilesInDir(split[1]))
-				{
-					if (file.getName().endsWith(".anim")) {
-						allLines.add("anim," + file.getName().replace(".anim", "") + "," + "/" + file.getPath().replaceAll("\\\\", "/"));
+					if (file.isDirectory()) {
+						allLines.add("anim," + file.getPath());
 					}
 				}
 			}
@@ -84,6 +78,16 @@ public class BulkLoader {
 					if (file.getName().endsWith(".gif"))
 						allLines.add("image," + file.getName().replace(".gif", "") + "," + file.getPath().replaceAll("\\\\", "/"));
 				}
+			}
+		}
+	}
+	
+	private void recursivelyAddAnims(String dir) {
+		for (File file : DirectoryLister.listFilesInDir(dir)) {
+			if (file.isDirectory()) {
+				recursivelyAddAnims(file.getPath());
+			} else if (file.getName().endsWith(".anim") && !file.getName().endsWith("-weapon.anim")){				
+				allLines.add("anim," + file.getName().replace(".anim", "") + "," + "/" + file.getPath().replaceAll("\\\\", "/"));				
 			}
 		}
 	}

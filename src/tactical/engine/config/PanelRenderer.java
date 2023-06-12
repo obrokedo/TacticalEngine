@@ -26,7 +26,8 @@ public interface PanelRenderer
 	 * @param graphics
 	 * @param color
 	 */
-	public void render(int x, int y, int width, int height, Graphics graphics, Color color);
+	public void render(int x, int y, int width, int height, Graphics graphics, 
+			Color overrideBackgroundColor);
 	
 	/**
 	 * Initialize graphic resources required to render the panel
