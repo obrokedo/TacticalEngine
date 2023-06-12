@@ -1,6 +1,8 @@
 package tactical.game.manager;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.message.Message;
@@ -10,6 +12,7 @@ import tactical.game.sprite.CombatSprite;
 
 public class InitiativeManager extends Manager
 {
+	private List<CombatSprite> turnOrder = new ArrayList<>();
 	/*
 	private class InitiativeMenu extends Panel implements MouseListener
 	{
@@ -67,7 +70,7 @@ public class InitiativeManager extends Manager
 	{
 		@Override
 		public int compare(CombatSprite c1, CombatSprite c2) {
-			return c2.getCurrentInit() - c1.getCurrentInit() ;
+			return Math.round(c2.getCurrentInit() - c1.getCurrentInit());
 		}
 	}
 
@@ -88,10 +91,37 @@ public class InitiativeManager extends Manager
 	{
 		getNextTurn();
 	}
-
+	
+	
 	private void getNextTurn()
 	{
 		CombatSprite nextTurn = null;
+		
+		// Either turn order has not yet been initialized or all of the turns have already happened
+		// So create the next "rounds" turn order
+		if (turnOrder.size() == 0) {
+			for (CombatSprite cs : stateInfo.getCombatSprites()) {			
+				// +7/8, 1 times or 9/8 of agility, then a random modifier of -1, 0 or +1
+				cs.setCurrentInit(cs.getCurrentSpeed() * (TacticalGame.RANDOM.nextFloat() / 4 + .875f) +
+						TacticalGame.RANDOM.nextInt(3) - 1);
+				turnOrder.add(cs);
+			}
+		} 
+		
+		turnOrder.sort(new InitComparator());
+		
+		if (stateInfo.getCombatSprites() != null) {
+			while (nextTurn == null) {
+				nextTurn = turnOrder.remove(0);
+				if (nextTurn.getCurrentHP() <= 0) {
+					nextTurn = null;
+				} else {
+					if (stateInfo.getCurrentSprite() == null) {								
+						stateInfo.getCamera().centerOnSprite(nextTurn, stateInfo.getCurrentMap());
+					}
+				}
+			}
+		}
 
 		while (nextTurn == null)
 		{
@@ -114,7 +144,7 @@ public class InitiativeManager extends Manager
 			}
 		}
 
-		nextTurn.setCurrentInit(0);
+				
 		stateInfo.sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, nextTurn), true);
 	}
 
