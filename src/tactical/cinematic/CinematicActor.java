@@ -169,7 +169,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 		{
 			for (AnimSprite as : currentAnim.frames.get(imageIndex).sprites)
 			{
-				Image im = spriteAnims.getImageAtIndex(as.imageIndex);
+				Image im = currentAnim.getImageAtIndex(as.imageIndex);
 				if (as.flipH) {
 					im = im.getFlippedCopy(true, false);
 				}
@@ -197,14 +197,14 @@ public class CinematicActor implements Comparable<CinematicActor>
 						break;
 					case SE_QUIVER:
 
-						drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos + (specialEffectCounter % 2 == 0 ? 0 : (-2 + specialEffectCounter)),
+						drawShadow(im, xPos + (specialEffectCounter % 2 == 0 ? 0 : (-2 + specialEffectCounter)),
 								yPos, camera, false, stateInfo.getTileHeight());
 
 						graphics.drawImage(im, xPos  + (specialEffectCounter % 2 == 0 ? 0 : (-2 + specialEffectCounter)),
 								yPos);
 						break;
 					case SE_FLASH:
-						drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+						drawShadow(im, xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 						Image whiteIm = im;
 
@@ -241,7 +241,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 						// Only draw the nod if we are on SE counter 1
 						if (specialEffectCounter == 1)
 						{
-							drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+							drawShadow(im, xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 							// This is the lower portion of the sprite
 							im.getSubImage(0, 10, im.getWidth(), 14).draw(xPos,
@@ -252,14 +252,14 @@ public class CinematicActor implements Comparable<CinematicActor>
 						}
 						else
 						{
-							drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+							drawShadow(im, xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 							graphics.drawImage(im, xPos ,
 									yPos);
 						}
 						break;
 					case SE_HEAD_SHAKE:
-						drawShadow(spriteAnims.getImageAtIndex(as.imageIndex), xPos, yPos, camera, false, stateInfo.getTileHeight());
+						drawShadow(im, xPos, yPos, camera, false, stateInfo.getTileHeight());
 
 						im.getSubImage(0, 10,
 								im.getWidth(), 14).draw(xPos,
@@ -287,13 +287,12 @@ public class CinematicActor implements Comparable<CinematicActor>
 						int trembleVal = 4 - (int) Math.abs(specialEffectCounter - 4);
 						if (trembleVal > 0)
 						{
-							im = spriteAnims.getImageAtIndex(as.imageIndex).getScaledCopy(
-									spriteAnims.getImageAtIndex(as.imageIndex).getWidth() - trembleVal,
-									spriteAnims.getImageAtIndex(as.imageIndex).getHeight() - trembleVal);
+							im = im.getScaledCopy(
+									im.getWidth() - trembleVal,
+									im.getHeight() - trembleVal);
 						}
 						else
 						{
-							im = spriteAnims.getImageAtIndex(as.imageIndex);
 							trembleVal = 0;
 						}
 
@@ -323,7 +322,7 @@ public class CinematicActor implements Comparable<CinematicActor>
 			
 		for (AnimSprite as : anim.frames.get(0).sprites)
 		{
-			Image im = spriteAnims.getImageAtIndex(as.imageIndex).copy();
+			Image im = anim.getImageAtIndex(as.imageIndex).copy();
 			if (as.flipH) {
 				im = im.getFlippedCopy(true, false);
 			}

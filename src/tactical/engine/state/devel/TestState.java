@@ -43,7 +43,7 @@ public class TestState extends LoadableGameState
 			{
 				backgroundImage.draw(bgXPos, bgYPos, .5f);
 				for (AnimSprite as : targetAnim.frames.get(0).sprites)
-					sas.getImageAtIndex(as.imageIndex).draw(xLoc + (as.x) * .5f, yLoc + (as.y) * 1.5f, .5f);
+					targetAnim.getImageAtIndex(as.imageIndex).draw(xLoc + (as.x) * .5f, yLoc + (as.y) * 1.5f, .5f);
 				for (int i = Math.max(0, rangedAttackCounter - 11); i < rangedAttackCounter; i++)
 				{
 					if (i < 11)
@@ -56,7 +56,7 @@ public class TestState extends LoadableGameState
 				{
 
 					for (AnimSprite as : targetAnim.frames.get(0).sprites)
-						sas.getImageAtIndex(as.imageIndex).draw(
+						targetAnim.getImageAtIndex(as.imageIndex).draw(
 								xLoc + (as.x)  * Math.min(.5f + .05f * i, 1),
 								yLoc + (as.y) * Math.max(1.5f - .05f * i, 1),
 								Math.min(.5f + .05f * i, 1), trans);
@@ -66,13 +66,13 @@ public class TestState extends LoadableGameState
 			{
 				backgroundImage.draw(bgXPos, bgYPos);
 				for (AnimSprite as : targetAnim.frames.get(0).sprites)
-					sas.getImageAtIndex(as.imageIndex).draw(xLoc + (as.x), yLoc + (as.y));
+					targetAnim.getImageAtIndex(as.imageIndex).draw(xLoc + (as.x), yLoc + (as.y));
 			}
 			else if (rangedAttackCounter < 200)
 			{
 				backgroundImage.draw(bgXPos, bgYPos, .5f);
 				for (AnimSprite as : targetAnim.frames.get(0).sprites)
-					sas.getImageAtIndex(as.imageIndex).draw(xLoc + (as.x) * .5f, yLoc + (as.y) * 1.5f, .5f);
+					targetAnim.getImageAtIndex(as.imageIndex).draw(xLoc + (as.x) * .5f, yLoc + (as.y) * 1.5f, .5f);
 			}
 		}
 	}

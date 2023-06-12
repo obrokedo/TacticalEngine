@@ -21,7 +21,7 @@ public class BattleOptionMenu extends QuadMenu {
 			icons[i] = stateInfo.getResourceManager().getSpriteSheet("battleoptions").getSprite(i % 4, i / 4);
 		}
 
-		text = new String[] {"Member", "Map", "TxtSpd", "Quit"};
+		text = new String[] {"Heroes", "Map", "TxtSpd", "Quit"};
 		enabled = new boolean[] {true, true, true, true};
 	}
 

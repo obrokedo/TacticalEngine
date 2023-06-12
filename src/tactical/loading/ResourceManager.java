@@ -144,24 +144,6 @@ public class ResourceManager {
 					(int) (Integer.parseInt(split[3]) * scale), (int) (Integer.parseInt(split[4])  * scale),
 					(int) ((split.length >= 6 ? Integer.parseInt(split[5]) : 0)  * scale)));
 		}
-		else if (split[0].equalsIgnoreCase("anim"))
-		{
-			SpriteAnims sa = configurator.getAnimationParser().parseAnimations(split[2]);
-			if (!images.containsKey(sa.getSpriteSheet()))
-				throw new BadResourceException("Error while attempting to load animation file: " + split[2] + ".\n The"
-					+ " animation file has refers to an image '" + sa.getSpriteSheet() + "' which does not exist\n."
-							+ "Either change the name of the desired image in the 'sprite' folder to the correct name\n"
-							+ "or update the animation file to refer to the correct image. Keep in mind that image names\n"
-							+ "ARE case sensitive");
-			sa.initialize(images.get(sa.getSpriteSheet()));
-			spriteAnimations.put(split[1], sa);
-		}
-		else if (split[0].equalsIgnoreCase("animsheet"))
-		{
-			Image nImage = new Image(split[2], TRANSPARENT);
-			nImage.setFilter(Image.FILTER_NEAREST);
-			images.put(split[1], nImage);
-		}
 		else if (split[0].equalsIgnoreCase("text"))
 		{
 			List<TagArea> mapAreas = new ArrayList<>();
@@ -169,6 +151,16 @@ public class ResourceManager {
 			Log.debug("Load map: " + mapName);
 			map.setName(mapName);
 			MapParser.parseMap("/map/" + mapName, map, new TilesetParser(), mapAreas, this);
+		}
+		else if (split[0].equalsIgnoreCase("anim"))
+		{
+			configurator.getAnimationParser().parseAnimationsDirectory(spriteAnimations, split[1]);		
+		}
+		else if (split[0].equalsIgnoreCase("animsheet"))
+		{
+			Image nImage = new Image(split[2], TRANSPARENT);
+			nImage.setFilter(Image.FILTER_NEAREST);
+			images.put(split[1], nImage);
 		}
 		else if (split[0].equalsIgnoreCase("herodefs"))
 		{
@@ -242,75 +234,6 @@ public class ResourceManager {
 				JOptionPane.showMessageDialog(null, "Unable to load the font " + split[2] + ": " + e.getMessage(), "Error loading resource", JOptionPane.ERROR_MESSAGE);
 			}
 
-		}/*
-		else if (split[0].equalsIgnoreCase("herodir") || 
-				split[0].equalsIgnoreCase("enemydir") || 
-				split[0].equalsIgnoreCase("npcdir"))
-		{
-			File dir = new File(split[1]);
-			for (File file : dir.listFiles())
-			{
-				if (file.getName().endsWith(".png"))
-				{
-					Image im = new Image(file.getPath(), transparent);
-					im.setFilter(Image.FILTER_NEAREST);
-					spriteSheets.put(file.getName().replace(".png", ""), new SpriteSheet(im,
-						Integer.parseInt(split[3]), Integer.parseInt(split[3])));
-				}
-			}
-		}
-		
-		else if (split[0].equalsIgnoreCase("musicdir"))
-		{
-			File dir = new File(split[1]);
-			for (File file : dir.listFiles())
-			{
-				if (file.getName().endsWith(".ogg"))
-					musicByTitle.put(file.getName().replace(".ogg", ""), new Music(file.getPath()));
-				else if (file.getName().endsWith(".wav"))
-					musicByTitle.put(file.getName().replace(".wav", ""), new Music(file.getPath()));
-			}
-		}
-		else if (split[0].equalsIgnoreCase("sounddir"))
-		{
-			File dir = new File(split[1]);
-			for (File file : dir.listFiles())
-			{
-				if (file.getName().endsWith(".ogg"))
-					soundByTitle.put(file.getName().replace(".ogg", ""), new Sound(file.getPath()));
-				else if (file.getName().endsWith(".wav"))
-					soundByTitle.put(file.getName().replace(".wav", ""), new Sound(file.getPath()));
-			}
-		}
-		*/
-		else if (split[0].equalsIgnoreCase("animsheetdir"))
-		{
-			for (File file : DirectoryLister.listFilesInDir(split[1]))
-			{
-				if (file.getName().endsWith(".png"))
-				{
-					Log.debug("Anim sheet " + file.getName());
-					images.put(file.getName().replace(".png", ""), new Image(file.getPath(), TRANSPARENT));
-				}
-			}
-			
-			for (File file : DirectoryLister.listFilesInDir(split[1]))
-			{
-				if (file.getName().endsWith(".anim")) {
-					Log.debug(file.getName());
-					SpriteAnims sa = configurator.getAnimationParser().parseAnimations(file.getPath());
-					if (!images.containsKey(sa.getSpriteSheet()))
-					{
-						throw new BadResourceException("Error while attempting to load animation file: " + file.getName() + ".\n The"
-								+ " animation file has refers to an image '" + sa.getSpriteSheet() + "' which does not exist.\n"
-										+ "Either change the name of the desired image in the 'sprite' folder to the correct name\n"
-										+ "or update the animation file to refer to the correct image. Keep in mind that image names\n"
-										+ "ARE case sensitive");
-					}
-					sa.initialize(images.get(sa.getSpriteSheet()));
-					spriteAnimations.put(file.getName().replace(".anim", ""), sa);
-				}
-			}
 		}
 		else if (split[0].equalsIgnoreCase("spritedir"))
 		{
@@ -337,7 +260,7 @@ public class ResourceManager {
 			}
 		} 
 		else {
-			throw new BadResourceException("Unknown resource type to load: " + split[0]);
+			throw new BadResourceException("Unknown resource type to load: " + split[0] + " " + split[1]);
 		}
 	}
 

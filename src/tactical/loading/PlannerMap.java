@@ -95,16 +95,18 @@ public class PlannerMap extends Map {
 					Log.debug(file.getName());
 					SpriteAnims sa = TacticalGame.ENGINE_CONFIGURATIOR.getAnimationParser().
 							parseAnimations(file.getPath());
-					BufferedImage spriteSheet = ImageUtility.loadBufferedImage("animations/animationsheets/" + sa.getSpriteSheet() + ".png");
 					Animation anim = null;
 					try {
 						anim = sa.getDirectionAnimation(Direction.DOWN);
 					} catch (BadAnimationException ex) {
 						anim = sa.getAnimation("Down");
 					}
+					BufferedImage spriteSheet = ImageUtility.loadBufferedImage("animations/animationsheets/" + anim.getSpriteSheet() + ".png");
+					
+					
 									
 					if (anim != null) {
-						Rectangle bounds = sa.imageLocs.get(anim.frames.get(0).sprites.get(0).imageIndex);
+						Rectangle bounds = anim.imageLocs.get(anim.frames.get(0).sprites.get(0).imageIndex);
 						imagesByName.put(file.getName().replaceFirst(".anim", ""), spriteSheet.getSubimage(
 								(int) bounds.getX(), (int) bounds.getY(), 
 								(int) bounds.getWidth(), (int) bounds.getHeight()));

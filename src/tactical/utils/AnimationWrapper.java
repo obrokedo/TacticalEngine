@@ -147,7 +147,7 @@ public class AnimationWrapper
 			{
 				if (as.imageIndex != -1)
 				{
-					g.drawImage(getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, null), x, y);
+					g.drawImage(getRotatedImageIfNeeded(animation.getImageAtIndex(as.imageIndex), as, null), x, y);
 				}
 				else					
 					drawWeapon(as, x - ignoredX, y - ignoredY, null, 1f, g);
@@ -173,10 +173,10 @@ public class AnimationWrapper
 			{
 				if (as.imageIndex != -1)
 				{
-					if (first)
-						g.drawImage(getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, null), x, y + ySecond);
+					if (!first)
+						g.drawImage(getRotatedImageIfNeeded(animation.getImageAtIndex(as.imageIndex), as, null), x, y + ySecond);
 					else
-						g.drawImage(getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, null), x, y);
+						g.drawImage(getRotatedImageIfNeeded(animation.getImageAtIndex(as.imageIndex), as, null), x, y);
 				}
 
 				first = false;
@@ -217,10 +217,10 @@ public class AnimationWrapper
 				if (as.imageIndex != -1)
 				{
 					if (filter == null)
-						g.drawImage(getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, scale),
+						g.drawImage(getRotatedImageIfNeeded(animation.getImageAtIndex(as.imageIndex), as, scale),
 								x + as.x * (scale == null ? 1 : scale), y + as.y * (scale == null ? 1 : scale));
 					else
-						g.drawImage(getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, scale),
+						g.drawImage(getRotatedImageIfNeeded(animation.getImageAtIndex(as.imageIndex), as, scale),
 								x + as.x * (scale == null ? 1 : scale), y + as.y * (scale == null ? 1 : scale), filter);
 				}
 				else
@@ -238,10 +238,10 @@ public class AnimationWrapper
 				if (as.imageIndex != -1)
 				{
 					if (!flip)
-						getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, scale).draw(
+						getRotatedImageIfNeeded(animation.getImageAtIndex(as.imageIndex), as, scale).draw(
 								x + as.x * (scale == null || ! scaleCoords? 1 : scale), y + as.y * (scale == null || ! scaleCoords ? 1 : scale));
 					else
-						getRotatedImageIfNeeded(spriteAnims.getImageAtIndex(as.imageIndex), as, scale).getFlippedCopy(true, false).draw(
+						getRotatedImageIfNeeded(animation.getImageAtIndex(as.imageIndex), as, scale).getFlippedCopy(true, false).draw(
 								x + as.x * (scale == null || ! scaleCoords ? 1 : scale), y + as.y * (scale == null || ! scaleCoords ? 1 : scale));
 				}
 			}
@@ -256,7 +256,7 @@ public class AnimationWrapper
 	protected void drawWeapon(AnimSprite as, int x, int y, Color filter, Float scale, Graphics g)
 	{
 		if (weaponAnim != null) {
-			weapon = weaponAnim.spriteAnims.getImageAtIndex(weaponAnim.getCurrentAnimation().frames.get(weaponAnim.animationIndex).sprites.get(0).imageIndex);
+			weapon = weaponAnim.getCurrentAnimation().getImageAtIndex(weaponAnim.getCurrentAnimation().frames.get(weaponAnim.animationIndex).sprites.get(0).imageIndex);
 		}
 		
 		if (weapon != null)

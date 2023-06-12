@@ -96,7 +96,7 @@ public class Portrait
 
 			AnimFrame af = p.blinkAnim.getCurrentAnimation().frames.get(0);
 			if (af.sprites.size() > 0)
-				p.topHeight = spriteAnim.images.get(af.sprites.get(0).imageIndex).getHeight();
+				p.topHeight = p.blinkAnim.getCurrentAnimation().images.get(af.sprites.get(0).imageIndex).getHeight();
 			else
 				p.topHeight = 0;
 			return p;
@@ -109,7 +109,7 @@ public class Portrait
 
 			AnimFrame af = p.blinkAnim.getCurrentAnimation().frames.get(0);
 			if (af.sprites.size() > 0)
-				p.topHeight = spriteAnim.images.get(af.sprites.get(0).imageIndex).getHeight();
+				p.topHeight = p.blinkAnim.getCurrentAnimation().images.get(af.sprites.get(0).imageIndex).getHeight();
 			else
 				p.topHeight = 0;
 
@@ -133,6 +133,7 @@ public class Portrait
 			return;
 		}
 
+		idleAnim.resetCurrentAnimation();
 		idleAnim.drawAnimationPortrait(x + 7,
 				y + 7, topHeight, graphics);
 

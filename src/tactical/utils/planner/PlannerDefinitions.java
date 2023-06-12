@@ -94,7 +94,7 @@ public class PlannerDefinitions {
 			"Right");
 
 		// Animation files
-		setupRefererListFromDir(PATH_ANIMATIONS, ReferenceStore.REFERS_ANIMATIONS, referenceStore, ".anim");
+		setupRefererListFromDir(PATH_ANIMATIONS, ReferenceStore.REFERS_ANIMATIONS, referenceStore, "");
 		
 		setupRefererListFromDir(PATH_WEAPON_ANIMATIONS, ReferenceStore.REFERS_WEAPON_ANIMATIONS, referenceStore, ".anim");
 
