@@ -47,13 +47,14 @@ public class CombatSprite extends AnimatedSprite
 	protected transient Color fadeColor = new Color(255, 255, 255, 255);
 
 	@Getter @Setter protected int currentHP, maxHP,
-				currentMP, maxMP,
-				currentInit,
+				currentMP, maxMP,				
 				currentSpeed, maxSpeed,
 				currentMove, maxMove,
 				currentAttack, maxAttack,
 				currentDefense, maxDefense,
 				level, exp;	
+	
+	@Getter @Setter protected float currentInit;
 
 	@Getter @Setter protected AI ai;
 
