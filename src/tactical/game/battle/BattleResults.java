@@ -455,7 +455,7 @@ public class BattleResults implements Serializable
 				{
 					br.text.add(text);
 					text = addAttack(attacker, target, br, fcrm, jBattleFunctions, false, true, sumDamage);
-					damage = br.hpDamage.get(br.hpDamage.size() - 1) / 2;
+					damage = br.hpDamage.get(br.hpDamage.size() - 1);
 					sumDamage += damage;
 
 					if (attacker.isHero() && damage == 0)

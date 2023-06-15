@@ -76,7 +76,7 @@ public class InitiativeManager extends Manager
 
 	@Override
 	public void initialize() {
-
+		turnOrder = new ArrayList<>();
 	}
 
 	private void initializeAfterSprites()
@@ -96,23 +96,23 @@ public class InitiativeManager extends Manager
 	private void getNextTurn()
 	{
 		CombatSprite nextTurn = null;
-		
-		// Either turn order has not yet been initialized or all of the turns have already happened
-		// So create the next "rounds" turn order
-		if (turnOrder.size() == 0) {
-			for (CombatSprite cs : stateInfo.getCombatSprites()) {			
-				// +7/8, 1 times or 9/8 of agility, then a random modifier of -1, 0 or +1
-				cs.setCurrentInit(cs.getCurrentSpeed() * (TacticalGame.RANDOM.nextFloat() / 4 + .875f) +
-						TacticalGame.RANDOM.nextInt(3) - 1);
-				turnOrder.add(cs);
-			}
-		} 
-		
-		turnOrder.sort(new InitComparator());
-		
+				
 		if (stateInfo.getCombatSprites() != null) {
+			// Either turn order has not yet been initialized or all of the turns have already happened
+			// So create the next "rounds" turn order
+			if (turnOrder.size() == 0) {
+				for (CombatSprite cs : stateInfo.getCombatSprites()) {			
+					// +7/8, 1 times or 9/8 of agility, then a random modifier of -1, 0 or +1
+					cs.setCurrentInit(cs.getCurrentSpeed() * (TacticalGame.RANDOM.nextFloat() / 4 + .875f) +
+							TacticalGame.RANDOM.nextInt(3) - 1);
+					turnOrder.add(cs);
+				}
+				
+				turnOrder.sort(new InitComparator());
+			} 		
+			
 			while (nextTurn == null) {
-				nextTurn = turnOrder.remove(0);
+				nextTurn = turnOrder.remove(0);				
 				if (nextTurn.getCurrentHP() <= 0) {
 					nextTurn = null;
 				} else {
@@ -120,32 +120,17 @@ public class InitiativeManager extends Manager
 						stateInfo.getCamera().centerOnSprite(nextTurn, stateInfo.getCurrentMap());
 					}
 				}
-			}
-		}
-
-		while (nextTurn == null)
-		{
-			for (CombatSprite cs : stateInfo.getCombatSprites())
-			{
-				// Increase the sprites initiaitive by 7 and potentially an addtional 1 based on speed
-				cs.setCurrentInit(cs.getCurrentInit() + 7 + (TacticalGame.RANDOM.nextInt(100) < cs.getCurrentSpeed() ? 1 : 0));
-				if (cs.getCurrentInit() >= 100 && cs.getCurrentHP() > 0)
-				{
-					if (nextTurn == null || cs.getCurrentInit() > nextTurn.getCurrentInit() ||
-						(cs.getCurrentInit() == nextTurn.getCurrentInit() &&
-							cs.getCurrentSpeed() > nextTurn.getCurrentInit()))
-					{
-							nextTurn = cs;
-							if (stateInfo.getCurrentSprite() == null) {								
-								stateInfo.getCamera().centerOnSprite(cs, stateInfo.getCurrentMap());
-							}
-					}
+				
+				// If the last combatant in the turn order has died then there will be no one to
+				// take the next turn, in this case just start over by calling getNextTurn again
+				if (turnOrder.size() == 0 && nextTurn == null) {
+					getNextTurn();
+					return;
 				}
 			}
-		}
-
-				
-		stateInfo.sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, nextTurn), true);
+			
+			stateInfo.sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, nextTurn), true);
+		}			
 	}
 
 	public void initializeInitOrder()
