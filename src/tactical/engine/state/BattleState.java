@@ -1,13 +1,24 @@
 package tactical.engine.state;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.message.BooleanMessage;
 import tactical.engine.message.MessageType;
+import tactical.engine.state.devel.SaveState;
 import tactical.game.manager.CinematicManager;
 import tactical.game.manager.InitiativeManager;
 import tactical.game.manager.KeyboardManager;
@@ -25,6 +36,7 @@ import tactical.renderer.MenuRenderer;
 import tactical.renderer.PanelRendererManager;
 import tactical.renderer.SpriteRenderer;
 import tactical.renderer.TileMapRenderer;
+import tactical.utils.StringUtils;
 
 /**
  * State that drives and renders battle movement and menus. This does not
@@ -49,6 +61,8 @@ public class BattleState extends LoadableGameState
 	private TurnManager turnManager;
 
 	private StateInfo stateInfo;
+	
+	private SaveState manualSaveState = null;
 
 	/*
 	private float musicVolume = 0;
@@ -89,6 +103,7 @@ public class BattleState extends LoadableGameState
 	@Override
 	public void initAfterLoad() {
 		stateInfo.initState();
+		manualSaveState = null;
 	}
 
 	@Override
@@ -122,6 +137,7 @@ public class BattleState extends LoadableGameState
 		stateInfo.getResourceManager().reinitialize();
 		stateInfo.setInitialized(false);
 		stateInfo.getInput().clear();
+		stateInfo.clearSaveStates();
 	}
 
 	@Override
@@ -151,6 +167,10 @@ public class BattleState extends LoadableGameState
 			cinematicManager.renderPostEffects(g);
 			panelRenderer.render(g);
 			menuRenderer.render(g);
+			
+			if (manualSaveState != null) {
+				StringUtils.drawString("Manual Save State", 0, -10, g);
+			}
 		}
 	}
 
@@ -158,32 +178,92 @@ public class BattleState extends LoadableGameState
 	public void doUpdate(PaddedGameContainer container, StateBasedGame game, int delta)
 			throws SlickException
 	{
-		if (TacticalGame.TEST_MODE_ENABLED)
-			delta *= TacticalGame.getTestMultiplier();
-
-		// delta /= 2;
-
-		if (stateInfo.getTopMenu() == null || !(stateInfo.getTopMenu() instanceof DebugMenu)) {
-			stateInfo.processMessages();
-		}
-		
-		if (stateInfo.isInitialized())
-		{
-			
-			menuManager.update(delta);
-			cinematicManager.update(delta);
-			
-			if (!menuManager.isBlocking() && !cinematicManager.isBlocking())
-			{
-				//hudMenuManager.update();
-				keyboardManager.update();
-				turnManager.update(game, delta);
+		try {
+			if (TacticalGame.TEST_MODE_ENABLED)
+				delta *= TacticalGame.getTestMultiplier();
+	
+			if (stateInfo.getTopMenu() == null || !(stateInfo.getTopMenu() instanceof DebugMenu)) {
+				stateInfo.processMessages();
 			}
-
-			stateInfo.getCurrentMap().update(delta);
-			spriteManager.update(delta);
-			soundManager.update(delta);
-			stateInfo.getInput().update(delta, container.getInput());
+			
+			if (stateInfo.isInitialized())
+			{
+				
+				menuManager.update(delta);
+				cinematicManager.update(delta);
+				
+				if (!menuManager.isBlocking() && !cinematicManager.isBlocking())
+				{
+					//hudMenuManager.update();
+					keyboardManager.update();
+					turnManager.update(game, delta);
+				}
+				
+				if (TacticalGame.DEV_MODE_ENABLED) {					
+					if (container.getInput().isKeyDown(Input.KEY_F5) && inputTimer <= 0) {
+						manualSaveState = stateInfo.saveBattleForDebug();
+						stateInfo.dumpSaveStatesToFile();
+						inputTimer = 200;
+					}
+					else if (container.getInput().isKeyDown(Input.KEY_F6) && manualSaveState != null && inputTimer <= 0) {						
+						stateInfo.loadBattleFromState(manualSaveState);
+						inputTimer = 200;
+					}
+				}
+	
+				stateInfo.getCurrentMap().update(delta);
+				spriteManager.update(delta);
+				soundManager.update(delta);
+				stateInfo.getInput().update(delta, container.getInput());
+			}
+		} catch (Exception e) {
+			if (TacticalGame.DEV_MODE_ENABLED) {
+				try {
+					stateInfo.dumpSaveStatesToFile();
+				// Nothing bad ever happens
+				} catch (Exception e2) {e2.printStackTrace();}
+				
+				JFrame jf = new JFrame();
+				jf.setAlwaysOnTop(true);
+				JButton back1 = new JButton("Undo 1 turn");
+				back1.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						stateInfo.loadBattleFromPreviousState();					
+					}				
+				});
+				JButton back5 = new JButton("Undo 5 turns");
+				back5.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						stateInfo.loadBattleFromPreviousState(5);					
+					}				
+				});
+				JButton back10 = new JButton("Undo 10 turns");
+				back10.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						stateInfo.loadBattleFromPreviousState(10);					
+					}				
+				});
+				Log.error(e);
+				
+				// RELOAD GRAPHIC ASSETS
+				JButton returnToMenu = new JButton("Return to Menu");
+				returnToMenu.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						((TacticalGame) game).enterState(TacticalGame.STATE_GAME_MENU_DEVEL);		
+					}				
+				});
+				
+				JPanel bPanel = new JPanel();
+				bPanel.add(back1);			
+				bPanel.add(back5);
+				bPanel.add(back10);
+				bPanel.add(returnToMenu);			
+				JOptionPane.showMessageDialog(jf, bPanel);
+			}
 		}
 	}
 
@@ -214,5 +294,5 @@ public class BattleState extends LoadableGameState
 	@Override
 	public void exceptionInState() {
 		cleanupState();
-	}
+	}	
 }

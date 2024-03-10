@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,7 +48,9 @@ import tactical.utils.SpriteAnims;
 import tactical.utils.XMLParser;
 import tactical.utils.XMLParser.TagArea;
 
-public class ResourceManager {
+public class ResourceManager implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	public static final String ANIMATIONS_FOLDER = "animations/animationsheets";
 	public static final String ANIMATIONS_EXTENSION = ".anim";
 	public static final String ANIMATIONS_FOLDER_IDENTIFIER = "animsheetdir";
@@ -121,7 +124,7 @@ public class ResourceManager {
 		String[] split = resource.split(",");
 		if (split[0].equalsIgnoreCase("image"))
 		{
-			Log.debug("Load image " + split[2]);
+			// Log.debug("Load image " + split[2]);
 			Image nImage = new Image(split[2], TRANSPARENT);
 			nImage.setFilter(Image.FILTER_NEAREST);
 			images.put(split[1], nImage.getScaledCopy(split.length == 4 ?
@@ -425,7 +428,7 @@ public class ResourceManager {
 
 	public static ArrayList<String> readAllLines(String file) throws IOException
 	{
-		Log.debug("Read all lines " + file);
+		// Log.debug("Read all lines " + file);
 		BufferedReader br = null;
 		if (LoadingState.inJar)
 		{

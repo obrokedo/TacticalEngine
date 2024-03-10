@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
@@ -72,7 +73,9 @@ public class FileLogger extends DefaultLogSystem
 		jta.setEditable(false);
 		jta.setWrapStyleWord(true);
 		jta.setLineWrap(true);
-		JOptionPane.showMessageDialog(null, jta, "An error has occurred", JOptionPane.ERROR_MESSAGE);	
+		JFrame jf = new JFrame();
+		jf.setAlwaysOnTop(true);		
+		JOptionPane.showMessageDialog(jf, jta, "An error has occurred", JOptionPane.ERROR_MESSAGE);	
 	}
 
 	@Override

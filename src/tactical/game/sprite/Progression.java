@@ -3,6 +3,7 @@ package tactical.game.sprite;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.constants.AttributeStrength;
 
 public class Progression implements Serializable

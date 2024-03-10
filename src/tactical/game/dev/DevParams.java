@@ -52,6 +52,8 @@ public class DevParams {
 						hero.removeItem(hero.getItem(0));
 					}
 					
+					hero.setExp(t.getIntAttribute("exp"));
+					
 					String[] items = t.getAttribute("item").split(",");
 					String[] eqp = t.getAttribute("eqp").split(",");
 					for (int i = 0; i < items.length; i++) {

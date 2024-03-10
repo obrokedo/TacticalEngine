@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
@@ -85,7 +86,7 @@ public class TurnManager extends Manager implements KeyboardListener
 	private int cursorTargetX, cursorTargetY;
 	private int updateDelta = 0;
 	private int activeCharFlashDelta = 0;
-	private AIController aiController;
+	private AIController aiController;	
 
 	private boolean ownsSprite;
 	private boolean resetSpriteLoc = false;
@@ -131,7 +132,7 @@ public class TurnManager extends Manager implements KeyboardListener
 		cursorImage = stateInfo.getResourceManager().getImage("battlecursor");
 		cursor = new Rectangle(0, 0, stateInfo.getTileWidth(), stateInfo.getTileHeight());
 		cursorTargetX = cursorTargetY = updateDelta = activeCharFlashDelta = 0;
-		battleAIDebug = new BattleAIDebug(this, stateInfo);
+		battleAIDebug = new BattleAIDebug(this, stateInfo);		
 	}
 
 	public void update(StateBasedGame game, int delta)
@@ -235,8 +236,13 @@ public class TurnManager extends Manager implements KeyboardListener
 		currentSprite = sprite;
 		stateInfo.setCurrentSprite(currentSprite);
 		battleAIDebug.clearDebugConfidences();
+		
+		if (TacticalGame.DEV_MODE_ENABLED) {
+			stateInfo.saveBattleForDebug();
+		}
+		
 		if (TacticalGame.DEV_MODE_ENABLED)
-		battleAIDebug.turnStart();
+			battleAIDebug.turnStart();
 
 		as = null;
 		this.battleResults = null;
@@ -297,7 +303,7 @@ public class TurnManager extends Manager implements KeyboardListener
 			}
 			// If we own this sprite then we add keyboard input listener
 			else if (ownsSprite)
-				stateInfo.addKeyboardListener(this);
+				stateInfo.addKeyboardListener(this);			
 		} else {
 			stateInfo.addMenu(new SpeechMenu(sprite.getName() + " was unable to act due to the " + effectName, stateInfo));
 			turnActions.add(new EndTurnAction());
@@ -589,13 +595,14 @@ public class TurnManager extends Manager implements KeyboardListener
 				displayAttackable = true;
 				break;
 			case INITIALIZE_BATTLE:
+			case INITIALIZE_BATTLE_FROM_LOAD:
 				aiController.initialize(stateInfo.getCombatSprites());
 				break;
 			case SEARCH_IN_BATTLE:
 				range = AttackableSpace.getAttackableArea(Range.ONE_ONLY);
 				int rangeOffset = (range.length - 1) / 2;
 				
-				OUTER: for (int i = 0; i < range.length; i++)
+				for (int i = 0; i < range.length; i++)
 				{
 					for (int j = 0; j < range[0].length; j++)
 					{
@@ -675,7 +682,20 @@ public class TurnManager extends Manager implements KeyboardListener
 					stateInfo.sendMessage(MessageType.SHOW_BATTLE_OPTIONS);
 					return true;
 				}
+			} else if (input.isKeyDown(Input.KEY_1)) {
+				if (TacticalGame.DEV_MODE_ENABLED) {
+					stateInfo.loadBattleFromPreviousState();
+				}
+			} else if (input.isKeyDown(Input.KEY_5)) {
+				if (TacticalGame.DEV_MODE_ENABLED) {
+					stateInfo.loadBattleFromPreviousState(5);
+				}
+			} else if (input.isKeyDown(Input.KEY_9)) {
+				if (TacticalGame.DEV_MODE_ENABLED) {
+					stateInfo.loadBattleFromPreviousState(9);
+				}
 			}
+			
 
 			cursorTargetX = (int) cursor.getX();
 			cursorTargetY = (int) cursor.getY();

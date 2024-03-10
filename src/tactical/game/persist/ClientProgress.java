@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,9 @@ import lombok.Getter;
 import lombok.Setter;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.LoadMapMessage;
+import tactical.engine.state.devel.SaveState;
+import tactical.game.battle.BattleEffect;
+import tactical.game.battle.SerializedBattleEffect;
 import tactical.game.item.Item;
 import tactical.game.sprite.CombatSprite;
 
@@ -43,9 +47,12 @@ public class ClientProgress implements Serializable
 	private static final String BATTLE_PREFIX = "!!";
 	private transient long lastSaveTime;
 	private ArrayList<Integer> storedItems;
-	@Getter private SaveLocation lastSaveLocation;
+	@Getter @Setter private SaveLocation lastSaveLocation;
 	@Getter private EgressLocation lastEgressLocation;
 	private boolean isBattle = false;
+	
+	@Getter @Setter
+	private transient LinkedList<SaveState> saveStates = null;
 	
 	// This value is used to load from AND is the current map that the player is on
 	@Getter @Setter private transient String mapData;
@@ -93,26 +100,36 @@ public class ClientProgress implements Serializable
 		serializeToFile();
 	}
 	
-	public void saveViaBattle(List<CombatSprite> battleSprites, CombatSprite currentTurn) {
-							
-		this.lastSaveLocation = new SaveLocation();
-		this.isBattle = true;
+	public SaveLocation createBattleSaveLocation(List<CombatSprite> battleSprites, CombatSprite currentTurn) {
+		SaveLocation saveLocation = new SaveLocation();		
 		if (currentTurn != null)
-			this.lastSaveLocation.setCurrentTurn(currentTurn.getId());
-		this.lastSaveLocation.setLastSaveMapData(mapData);
+			saveLocation.setCurrentTurn(currentTurn.getId());
+		saveLocation.setLastSaveMapData(mapData);
 		
 		if (battleSprites != null)
 		{
-			this.lastSaveLocation.setBattleHeroSpriteIds(new ArrayList<>());
-			this.lastSaveLocation.setBattleEnemySprites(new ArrayList<>());
+			saveLocation.setBattleHeroSpriteIds(new ArrayList<>());
+			saveLocation.setBattleEnemySprites(new ArrayList<>());
 			for (CombatSprite cs : battleSprites)
 			{
 				if (cs.isHero())
-					this.lastSaveLocation.getBattleHeroSpriteIds().add(cs.getId());
-				else
-					this.lastSaveLocation.getBattleEnemySprites().add(cs);
+					saveLocation.getBattleHeroSpriteIds().add(cs.getId());
+				else {
+					// Convert each battle effect in to a serialized battle effect so we're not persisting a jython object
+					for (BattleEffect effect : cs.getBattleEffects()) {
+						cs.getPersistedBattleEffects().add(new SerializedBattleEffect(effect));
+					}
+					saveLocation.getBattleEnemySprites().add(cs);
+				}
 			}
 		}
+		return saveLocation;
+	}
+	
+	public void saveViaBattle(List<CombatSprite> battleSprites, CombatSprite currentTurn) {
+							
+		this.lastSaveLocation = createBattleSaveLocation(battleSprites, currentTurn);
+		this.isBattle = true;
 		serializeToFile();
 	}
 	
@@ -133,15 +150,19 @@ public class ClientProgress implements Serializable
 		this.lastEgressLocation.setInTownLocation(location);
 		this.lastEgressLocation.setLastSaveMapData(map);
 	}
+	
+	public void serializeToFile() {
+		serializeToFile(name + ".progress", false);
+	}
 
-	public void serializeToFile()
-	{
+	public void serializeToFile(String fileName, boolean debugSave)
+	{		
 		this.timePlayed += (System.currentTimeMillis() - lastSaveTime);
-		if (!TacticalGame.SAVE_ENABLED)
+		if (!TacticalGame.SAVE_ENABLED && !debugSave)
 			return;
 		try
 		{
-			OutputStream file = new FileOutputStream(name + ".progress");
+			OutputStream file = new FileOutputStream(fileName);
 			OutputStream buffer = new BufferedOutputStream(file);
 			ObjectOutput output = new ObjectOutputStream(buffer);
 			output.writeObject(this);
@@ -150,6 +171,14 @@ public class ClientProgress implements Serializable
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	/*
+	 * We stash some values in the save location, set them in the progress object now
+	 */
+	public void setPostDeserializationValues() {
+		lastSaveTime = System.currentTimeMillis();
+	    mapData = lastSaveLocation.getLastSaveMapData();
 	}
 
 	public static ClientProgress deserializeFromFile(String profile)
@@ -161,8 +190,7 @@ public class ClientProgress implements Serializable
 	      ObjectInput input = new ObjectInputStream (buffer);
 
 	      ClientProgress cp = (ClientProgress) input.readObject();
-	      cp.lastSaveTime = System.currentTimeMillis();
-	      cp.mapData = cp.lastSaveLocation.getLastSaveMapData();
+	      
 	      file.close();
 	      return cp;
 	    }

@@ -360,6 +360,4 @@ public class MenuState extends LoadableGameState
 		
 		
 	}
-
-	
 }

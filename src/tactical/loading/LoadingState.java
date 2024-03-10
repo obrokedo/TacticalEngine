@@ -1,5 +1,9 @@
 package tactical.loading;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -85,9 +89,20 @@ public class LoadingState extends BasicGameState
 			return;
 
 		// Check to see if this is the first time through the update loop, if so then
-		// intialize the list of resources that need to be loaded
+		// Initialize the list of resources that need to be loaded
 		if (loadIndex == -1)
 		{
+			/*
+			try {
+				FileInputStream fout = new FileInputStream("Somefile");
+				ObjectInputStream oos = new ObjectInputStream(fout);
+				resourceManager = (ResourceManager) oos.readObject();
+				fout.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			*/
+			
 			if (intermediateImage == null)
 				loadingRenderer.initialize();
 			try
@@ -102,7 +117,7 @@ public class LoadingState extends BasicGameState
 							bulkLoader.start("/loader/Default");
 						}
 					}
-
+										
 					// Regardless of whether we are loading other resources, add the text file
 					// that was specified to be loaded
 					bulkLoader.addLine("text,/mapdata/" + textName);
@@ -193,7 +208,7 @@ public class LoadingState extends BasicGameState
 					game.enterState(nextState.getID(), new EmptyTransition(), new FadeInTransition(Color.black, 500));
 				else
 					game.enterState(nextState.getID(), new EmptyTransition(), enterNextStateTransition);
-			}
+			}			
 		}
 		else {
 			loadIndex++;
@@ -210,7 +225,7 @@ public class LoadingState extends BasicGameState
 			ResourceManager resourceManager, LoadableGameState nextState,
 				LoadingScreenRenderer loadingRenderer, Image intermediateImage, Transition transition)
 	{
-		LOGGER.fine("Configuring loading state... Load resources: " + loadResources);
+		LOGGER.fine("Configuring loading state... Load resources: " + loadResources + " text: " + textName + " Load map: " + loadMap);
 		this.errorMessage = null;
 		this.textName = textName;
 		this.loadingMap = loadMap;

@@ -20,6 +20,8 @@ import java.util.Iterator;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
+import tactical.game.battle.BattleEffect;
+import tactical.game.battle.SerializedBattleEffect;
 import tactical.game.exception.BadResourceException;
 import tactical.game.resource.HeroResource;
 import tactical.game.sprite.CombatSprite;
@@ -148,13 +150,29 @@ public class ClientProfile implements Serializable
 		this.gold += gold;
 	}
 
-	public void serializeToFile()
+	public void serializeToFile() {
+		serializeToFile(name + ".profile", false);
+	}
+	
+	public void convertJythonToSerialized() {
+		
+		for (CombatSprite cs : this.heroes) {
+			for (BattleEffect effect : cs.getBattleEffects()) {
+				cs.getPersistedBattleEffects().add(new SerializedBattleEffect(effect));
+			}
+		}
+	}
+	
+	public void serializeToFile(String fileName, boolean debugSave)
 	{
-		if (!TacticalGame.SAVE_ENABLED)
+		if (!TacticalGame.SAVE_ENABLED && !debugSave)
 			return;
+		
+		convertJythonToSerialized();
+		
 		try
 		{
-			OutputStream file = new FileOutputStream(name + ".profile");
+			OutputStream file = new FileOutputStream(fileName);
 			OutputStream buffer = new BufferedOutputStream(file);
 			ObjectOutput output = new ObjectOutputStream(buffer);
 			output.writeObject(this);

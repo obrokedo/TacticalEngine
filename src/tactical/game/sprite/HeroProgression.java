@@ -169,9 +169,6 @@ public class HeroProgression implements Serializable
 		cs.setMaxHP(cs.getMaxHP() + level.hitpointGain);
 
 		cs.setMaxMP(cs.getMaxMP() + level.magicpointGain);
-
-		// Level up non-displayed stats
-		cs.levelUpCustomStatistics();
 		
 		ArrayList<int[]> spellLevels = cs.getCurrentProgression().getSpellLevelLearned();
 		ArrayList<String> spellIds = cs.getCurrentProgression().getSpellIds();
@@ -181,7 +178,7 @@ public class HeroProgression implements Serializable
 			{
 				if (spellLevels.get(i)[j] == cs.getLevel())
 				{
-					SpellDefinition spell = SpellResource.getSpell(spellIds.get(i));
+					SpellDefinition spell = SpellResource.getSpell(spellIds.get(i));					
 
 					boolean found = false;
 					if (cs.getSpellsDescriptors() != null)
@@ -189,9 +186,10 @@ public class HeroProgression implements Serializable
 						for (KnownSpell sd : cs.getSpellsDescriptors())
 						{
 							if (sd.getSpellId().equalsIgnoreCase(spell.getId()))
-							{
+							{								
 								sd.setMaxLevel((byte) (j + 1));
-								addStatChangeLog(spell.getId() + " has been updated to level " + sd.getMaxLevel(), statChanges);
+								cs.newSpellLearned(sd);
+								addStatChangeLog(spell.getId() + " has been updated to level " + sd.getMaxLevel(), statChanges);								
 								found = true;
 								break;
 							}
@@ -210,6 +208,11 @@ public class HeroProgression implements Serializable
 				}
 			}
 		}
+		
+		addStatChangeLog(cs.dumpAffinitiesToString(), statChanges);
+		
+		// Level up non-displayed stats
+		cs.levelUpCustomStatistics();
 	}
 
 	public static void main(String args[])
@@ -335,5 +338,5 @@ public class HeroProgression implements Serializable
 
 	public int getHeroID() {
 		return heroID;
-	}
+	}	
 }

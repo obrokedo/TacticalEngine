@@ -23,6 +23,7 @@ import tactical.game.Range;
 import tactical.game.ai.AI;
 import tactical.game.battle.BattleEffect;
 import tactical.game.battle.LevelUpResult;
+import tactical.game.battle.SerializedBattleEffect;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.constants.Direction;
 import tactical.game.dev.DevHeroAI;
@@ -80,7 +81,8 @@ public class CombatSprite extends AnimatedSprite
 	@Getter @Setter protected String movementType;
 	@Getter protected int kills;
 	@Getter protected int defeat;
-	@Getter protected ArrayList<BattleEffect> battleEffects;
+	@Getter protected transient ArrayList<BattleEffect> battleEffects;
+	@Getter protected ArrayList<BattleEffect> persistedBattleEffects = new ArrayList<BattleEffect>();
 	@Getter protected transient Image currentWeaponImage = null;
 	@Getter protected transient SpriteAnims currentWeaponAnim = null;
 	protected String attackEffectId;
@@ -169,6 +171,7 @@ public class CombatSprite extends AnimatedSprite
 		dodges = true;
 
 		this.heroProgression = heroProgression;
+		this.name = name;
 		
 		// Stats in the progression are set up as [0] = stat progression, [1] = stat start, [2] = stat end
 		if (heroProgression != null)
@@ -184,8 +187,7 @@ public class CombatSprite extends AnimatedSprite
 		}		
 
 		this.isHero = true;
-		this.isLeader = isLeader;
-		this.name = name;
+		this.isLeader = isLeader;		
 		this.imageName = imageName;
 		this.items = new ArrayList<Item>();
 		this.equipped = new ArrayList<Boolean>();
@@ -244,16 +246,22 @@ public class CombatSprite extends AnimatedSprite
 		drawShadow = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().isAffectedByTerrain(this.movementType);
 
 		currentAnim = spriteAnims.getCharacterAnimation("Down", this.isPromoted);
-
+		
 		if (spells != null && spells.size() > 0)
 		{
 			for (KnownSpell sd : spells)
 				sd.initializeFromLoad(fcrm);
+		}		
+		
+		for (BattleEffect effect : persistedBattleEffects) {
+			battleEffects.add(((SerializedBattleEffect) effect).getJythonBattleEffect());
 		}
-
-		// TODO Does this work?!? We are persisting a jython object
-		for (BattleEffect effect : battleEffects)
+		
+		persistedBattleEffects.clear();
+		
+		for (BattleEffect effect : battleEffects) {					
 			effect.initializeAnimation(fcrm);
+		}
 
 		//TODO Remove (all?) battle effects if this isn't an init mid battle
 
@@ -322,7 +330,7 @@ public class CombatSprite extends AnimatedSprite
 		renderDirect(xPos, yPos, camera, graphics, cont, tileHeight);
 	}
 	
-	public void renderDirect(float xPos, float yPos, Camera camera, Graphics graphics, GameContainer cont, int tileHeight) {		
+	public void renderDirect(float xPos, float yPos, Camera camera, Graphics graphics, GameContainer cont, int tileHeight) {
 		for (AnimSprite as : currentAnim.frames.get(imageIndex).sprites)
 		{
 			Image im = currentAnim.getImageAtIndex(as.imageIndex);
@@ -515,6 +523,10 @@ public class CombatSprite extends AnimatedSprite
 	public String levelUpCustomStatistics()
 	{
 		return "";
+	}
+	
+	public void newSpellLearned(KnownSpell ks) {
+		
 	}
 	
 	public void setFadeAmount(int amt) {
@@ -818,5 +830,10 @@ public class CombatSprite extends AnimatedSprite
 		this.drawShadow = drawShadow;
 		this.customMusic = customMusic;
 		this.dodges = dodges;
+	}
+
+
+	public String dumpAffinitiesToString() {
+		return "";
 	}
 }

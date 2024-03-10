@@ -19,7 +19,7 @@ public class EndTurnAction extends TurnAction {
 	@Override
 	public boolean perform(int delta, TurnManager turnManager, StateInfo stateInfo, ArrayList<TurnAction> turnActions) {
 		stateInfo.removeKeyboardListeners();
-		// This moveable space is no longer needed to destroy it		
+		// This moveable space is no longer needed so destroy it		
 		if (turnManager.getCurrentSprite().getCurrentHP() > 0)
 		{
 			turnManager.getCurrentSprite().setFacing(Direction.DOWN);
@@ -48,11 +48,11 @@ public class EndTurnAction extends TurnAction {
 					{
 						Log.debug("The battle effect: " + be.getBattleEffectId() + " has ended on " + turnManager.getCurrentSprite());
 						turnManager.getCurrentSprite().getBattleEffects().remove(i--);
-						be.effectEnded(turnManager.getCurrentSprite());
+						String effectEndedText = be.effectEnded(turnManager.getCurrentSprite());
 						if (effectText == null)
-							effectText = be.effectEndedText(turnManager.getCurrentSprite());
+							effectText = effectEndedText;
 						else
-							effectText = effectText + "} " + be.effectEndedText(turnManager.getCurrentSprite());
+							effectText = effectText + "} " + effectEndedText;
 						turnManager.getCurrentSprite().removeBattleEffect(be);
 					}
 					

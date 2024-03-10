@@ -1,13 +1,19 @@
 package tactical.engine.state.devel;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -74,7 +80,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 	private Button loadTownButton = new Button(0, 550, 150, 25, "Load Town");
 	private Button loadCinButton = new Button(0, 580, 150, 25, "Load Cin");
 	private Button loadBattleButton = new Button(0, 610, 150, 25, "Load Battle");
-	private Button saveEnableButton = new Button(0, 480, 150, 25, "Save Disabled");
+	private Button saveEnableButton = new Button(0, 450, 150, 25, "Save Disabled");
 	private TextField cinematicIDField;
 	
 	protected int totalResources = 0;
@@ -229,7 +235,6 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		loadBattleButton.render(g);
 		loadCinButton.render(g);
 		saveEnableButton.render(g);
-		
 		g.setColor(Color.white);
 		g.drawString("Cinematic ID:", 170, 580);
 		cinematicIDField.render(container, g);
@@ -257,17 +262,17 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			}
 		}
 		
-		int amount = 8;
-		g.drawString("F1 - Toggle Main/Dev Menu", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F2 - Open Planner", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F3 - Open Quick Animator", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F4 - Open Animation Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F5 - Reload Mapdata", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F6 - Open Battle Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F8 - Load Saved Game", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F10 - Open Progression Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		g.drawString("F11 - Show Credits", container.getWidth() - 250, container.getHeight() - amount-- * 30);
-		
+		int amount = 10;
+		g.drawString("F1 - Toggle Main/Dev Menu", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F2 - Open Planner", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F3 - Open Quick Animator", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F4 - Open Animation Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F5 - Reload Mapdata", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F6 - Open Battle Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F8 - Load Saved Game", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F10 - Open Progression Viewer", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F11 - Show Credits", container.getWidth() - 250, container.getHeight() - amount-- * 25);
+		g.drawString("F12 - Load Debug Save", container.getWidth() - 250, container.getHeight() - amount-- * 25);
 
 		if (initialized && ps != null)
 		{
@@ -432,6 +437,37 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 			if (key == Input.KEY_F11)
 			{	
 				game.enterState(TacticalGame.STATE_GAME_CREDITS);
+			}
+			
+			
+			
+			
+			if (key == Input.KEY_F12) {
+				JFileChooser jfc = new JFileChooser(new File("./crash-states"));
+				jfc.setFileFilter(new FileNameExtensionFilter("Savestates", "savestate"));
+				JFrame jf = new JFrame();
+				jf.setAlwaysOnTop(true);
+				int rc = jfc.showOpenDialog(jf);
+				if (rc == JFileChooser.APPROVE_OPTION) {
+					try {
+						File selectedFile = jfc.getSelectedFile();
+						LinkedList<SaveState> saveStates = SaveState.loadSaveStates(selectedFile);
+						
+						SaveState ss = saveStates.pop();								
+						
+						LoadTypeEnum loadType = LoadTypeEnum.TOWN;
+						ss.getClientProgress().setSaveStates(saveStates);
+						persistentStateInfo.setClientProfile(ss.getClientProfile());
+						persistentStateInfo.setClientProgress(ss.getClientProgress());						
+						persistentStateInfo.getClientProgress().setPostDeserializationValues();
+						if (persistentStateInfo.getClientProgress().isBattle())
+							loadType = LoadTypeEnum.BATTLE;
+						load(loadType, persistentStateInfo.getClientProgress().getMapData(), null, 0);
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}

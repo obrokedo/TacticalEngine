@@ -10,6 +10,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.state.devel.DevelMenuState;
 import tactical.game.menu.Menu;
 import tactical.game.menu.UIDebugMenu;
 import tactical.game.ui.PaddedGameContainer;
@@ -37,7 +38,7 @@ public abstract class LoadableGameState extends BasicGameState
 	
 	public abstract void doRender(PaddedGameContainer container, StateBasedGame game, Graphics g);
 	
-	private int inputTimer = 0;
+	protected int inputTimer = 0;
 	
 	
 	

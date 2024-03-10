@@ -46,6 +46,8 @@ import tactical.utils.planner.PlannerFrame;
 public abstract class TacticalGame extends StateBasedGame   {
 	private static final Logger LOGGER = LoggingUtils.createLogger(TacticalGame.class);
 	
+	public static final String ENGINE_VERSION = "DEV 1.429 Mar 10, 2024";
+	
 	public static final int STATE_GAME_MENU_DEVEL = 1;
 
 	/**
@@ -96,7 +98,7 @@ public abstract class TacticalGame extends StateBasedGame   {
 
 	public static String GAME_TITLE;
 
-	public static boolean TEST_MODE_ENABLED = false; //true;
+	public static boolean TEST_MODE_ENABLED = false;
 
 	public static boolean DEV_MODE_ENABLED = false;
 	

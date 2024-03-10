@@ -9,6 +9,8 @@ import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 import org.newdawn.slick.state.transition.Transition;
 
+import lombok.Getter;
+import lombok.Setter;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.LoadMapMessage;
 import tactical.engine.transition.MoveMapTransition;
@@ -35,12 +37,17 @@ public class PersistentStateInfo
 	private Camera camera;
 	private StateBasedGame game;
 	private PaddedGameContainer gc;
+	
+	@Setter
 	private ClientProfile clientProfile;
+	
+	@Setter
 	private ClientProgress clientProgress;
 	private ResourceManager resourceManager;
 	private String entranceLocation = null;
 	private int cinematicID = 0;
 	private int clientId;
+	@Getter @Setter
 	private StateInfo currentStateInfo;
 	public transient boolean isFirstLoad = true;
 
@@ -233,9 +240,5 @@ public class PersistentStateInfo
 		for (CombatSprite cs : clientProfile.getHeroes())
 			cs.setClientId(clientId);
 		this.clientId = clientId;
-	}
-
-	public void setCurrentStateInfo(StateInfo currentStateInfo) {
-		this.currentStateInfo = currentStateInfo;
 	}
 }

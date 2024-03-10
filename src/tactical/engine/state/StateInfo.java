@@ -1,11 +1,20 @@
  package tactical.engine.state;
 
 import java.awt.Point;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -21,6 +30,7 @@ import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.StringMessage;
+import tactical.engine.state.devel.SaveState;
 import tactical.game.Camera;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel;
@@ -74,13 +84,66 @@ public class StateInfo
 	private List<MouseListener> mouseListeners;
 	private Stack<KeyboardListener> keyboardListeners;
 	@Getter private UserInput input;
-
 	@Getter @Setter private CombatSprite currentSprite;
-
 	@Getter @Setter private long inputDelay = 0;
-	
-
 	@Getter @Setter private boolean showAttackCinematic = false;
+	
+	@Setter
+	private LinkedList<SaveState> saveStates = new LinkedList<SaveState>();
+	
+	public void dumpSaveStatesToFile() throws Exception {		
+		String dfn = "yyyy-MM-dd-HH-mm-ss";
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(dfn);
+		String dateString = sdf.format(cal.getTime());
+		
+		File crashStates = new File("crash-states");
+		if (!crashStates.exists())
+			crashStates.mkdir();
+		
+		FileOutputStream fos = new FileOutputStream("crash-states/" + this.getClientProgress().getMapData() + "-" + dateString + ".savestate");
+		OutputStream buffer = new BufferedOutputStream(fos);
+		ObjectOutput output = new ObjectOutputStream(buffer);
+		output.writeObject(saveStates);
+		output.flush();
+		fos.close();
+	}
+	
+	public void clearSaveStates() {
+		saveStates.clear();
+	}
+	
+	public SaveState saveBattleForDebug() {
+		SaveState state = SaveState.createSaveState(this);		
+		if (state != null) {
+			state.getClientProgress().setBattle(true);
+			saveStates.push(state);
+			if (saveStates.size() > 100) {
+				saveStates.removeLast();
+			}
+			return state;
+		}
+		return null;
+	}
+	
+	public void loadBattleFromPreviousState() {
+		loadBattleFromPreviousState(1);
+	}
+	
+	public void loadBattleFromState(SaveState saveState) {
+		input.clear();		
+		saveState.loadToState(this);
+	}
+	
+	public void loadBattleFromPreviousState(int amount) {		
+		if (saveStates.size() > amount + 1) {
+			for (int i = 0; i < amount; i++) {
+				saveStates.pop();
+			}
+			SaveState state = saveStates.pop();
+			loadBattleFromState(state);
+		}
+	}	
 
 	/**************************************************/
 	/* These values are retrieved from the persistent */
@@ -109,9 +172,15 @@ public class StateInfo
 	public void initState()
 	{
 		Log.debug("Initialize State");
-
+		
 		persistentStateInfo.setCurrentStateInfo(this);
+		
+		if (getClientProgress().getSaveStates() != null) {
+			saveStates = getClientProgress().getSaveStates();
+			getClientProgress().setSaveStates(null);
+		}
 
+		this.currentSprite = null;
 		this.initialized = false;
 		this.showAttackCinematic = false;
 		this.showingMapEvent = false;
@@ -190,7 +259,8 @@ public class StateInfo
 			// If the battle initialized just restart the current turn
 			if (isBattleInitialized)
 			{
-				sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, currentSprite), true);
+				sendMessage(MessageType.INITIALIZE_BATTLE_FROM_LOAD);
+				sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, currentSprite), true);				
 				initialized = true;
 			}
 			else

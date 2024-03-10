@@ -66,9 +66,7 @@ public abstract class BattleEffect implements Serializable
 
 	public abstract String effectStartedText(CombatSprite attacker, CombatSprite target);
 
-	public abstract void effectEnded(CombatSprite target);
-	
-	public abstract String effectEndedText(CombatSprite target);
+	public abstract String effectEnded(CombatSprite target);
 
 	public abstract String getAnimationFile();
 

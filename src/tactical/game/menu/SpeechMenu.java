@@ -262,8 +262,14 @@ public class SpeechMenu extends Menu implements MenuListener
 				else
 					y = Math.max(y - 8, 0);
 			}
+			
+			int speedUp = 1;
+			if (CinematicState.cinematicSpeed > 1)
+				speedUp = (int) CinematicState.cinematicSpeed;
+			if (TacticalGame.TEST_MODE_ENABLED)
+				speedUp = 10;
 
-			for (int i = 0; i < (CinematicState.cinematicSpeed > 1 ? CinematicState.cinematicSpeed : 1); i++)
+			for (int i = 0; i < (speedUp > 1 ? speedUp : 1); i++)
 			{
 				if (textMoving)
 				{

@@ -20,8 +20,8 @@ public abstract class CasterAI extends AI
 	protected boolean willKill;
 	protected boolean willHeal;
 	protected int mostConfident = 0;
-	protected SpellDefinition bestSpell;
-	protected KnownSpell bestKnownSpell;
+	protected transient SpellDefinition bestSpell;
+	protected transient KnownSpell bestKnownSpell;
 	protected int spellLevel;
 	protected ArrayList<CombatSprite> targets;
 	

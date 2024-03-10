@@ -53,6 +53,10 @@ public class ProgressionFrame extends JFrame implements ActionListener {
 		if (e.getSource() == generate) {
 			String sel = (String) heroNameBox.getSelectedItem();
 			CombatSprite cs = HeroResource.getHero(sel);
+			try {
+				cs.initializeStats();
+			// This complains that no animations are loaded, we don't care though
+			} catch (Exception ex) {}
 			if (cs.getEquippedWeapon() != null)
 				cs.unequipItem(cs.getEquippedWeapon());
 			if (cs.getEquippedRing() != null)
@@ -64,7 +68,7 @@ public class ProgressionFrame extends JFrame implements ActionListener {
 						LevelUpResult lur = cs.getHeroProgression().getLevelUpResults(cs, output);
 						cs.getHeroProgression().levelUp(cs, lur, output);
 					}
-					cs.setPromoted(true, 0);
+					cs.getHeroProgression().promote(cs, cs.getHeroProgression().getPromotedProgression());					
 					output.add(System.lineSeparator() + "--------- PROMOTED ----------" + System.lineSeparator());
 				}
 				

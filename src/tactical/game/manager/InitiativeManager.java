@@ -2,6 +2,7 @@ package tactical.game.manager;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import tactical.engine.TacticalGame;
@@ -83,7 +84,7 @@ public class InitiativeManager extends Manager
 	{
 		// initMenu = new InitiativeMenu(stateInfo);
 		// The host will initialize the turn order, so check to see if you are the host
-		initializeInitOrder();
+		turnOrder.clear();
 		// stateInfo.addPanel(initMenu);
 	}
 
@@ -92,42 +93,57 @@ public class InitiativeManager extends Manager
 		getNextTurn();
 	}
 	
-	
 	private void getNextTurn()
 	{
 		CombatSprite nextTurn = null;
-		
-		// Either turn order has not yet been initialized or all of the turns have already happened
-		// So create the next "rounds" turn order
-		if (turnOrder.size() == 0) {
-			for (CombatSprite cs : stateInfo.getCombatSprites()) {			
-				// +7/8, 1 times or 9/8 of agility, then a random modifier of -1, 0 or +1
-				cs.setCurrentInit(cs.getCurrentSpeed() * (TacticalGame.RANDOM.nextFloat() / 4 + .875f) +
-						TacticalGame.RANDOM.nextInt(3) - 1);
-				turnOrder.add(cs);
-			}
-		} 
-		
-		turnOrder.sort(new InitComparator());
-		
+									
 		if (stateInfo.getCombatSprites() != null) {
+			// Remove all dead combatants from the turn order
+			Iterator<CombatSprite> csIt = turnOrder.iterator();
+			while (csIt.hasNext()) {
+				CombatSprite cs = csIt.next();
+				if (cs.getCurrentHP() <= 0) 
+					csIt.remove();
+			}
+			
 			while (nextTurn == null) {
-				nextTurn = turnOrder.remove(0);
-				if (nextTurn.getCurrentHP() <= 0) {
-					nextTurn = null;
-				} else {
+				// Either turn order has not yet been initialized or all of the turns have already happened
+				// So create the next "rounds" turn order
+				if (turnOrder.size() == 0) {
+					for (CombatSprite cs : stateInfo.getCombatSprites()) {			
+						// Avoid weird float problems with 0
+						if (cs.getCurrentHP() > 0) {
+							cs.setCurrentInit(0.1f);
+							turnOrder.add(cs);
+						}
+					}
+				}
+				
+				turnOrder.sort(new InitComparator());
+				
+				if (turnOrder.get(0).getCurrentInit() >= 100) {
+					nextTurn = turnOrder.remove(0);
 					if (stateInfo.getCurrentSprite() == null) {								
 						stateInfo.getCamera().centerOnSprite(nextTurn, stateInfo.getCurrentMap());
+					}
+					nextTurn.setCurrentInit(-1);
+				} else {
+					// +7/8, 1 times or 9/8 of agility, then a random modifier of -1, 0 or +1
+					for (CombatSprite cs : turnOrder) {
+						cs.setCurrentInit(cs.getCurrentInit() + (cs.getCurrentSpeed() * (TacticalGame.RANDOM.nextFloat() / 4 + .875f)) +
+								TacticalGame.RANDOM.nextInt(3) - 1);
 					}
 				}
 			}
 		}
 
+		
+		/*
 		while (nextTurn == null)
 		{
 			for (CombatSprite cs : stateInfo.getCombatSprites())
 			{
-				// Increase the sprites initiaitive by 7 and potentially an addtional 1 based on speed
+				// Increase the sprites initiative by 7 and potentially an additional 1 based on speed
 				cs.setCurrentInit(cs.getCurrentInit() + 7 + (TacticalGame.RANDOM.nextInt(100) < cs.getCurrentSpeed() ? 1 : 0));
 				if (cs.getCurrentInit() >= 100 && cs.getCurrentHP() > 0)
 				{
@@ -136,6 +152,7 @@ public class InitiativeManager extends Manager
 							cs.getCurrentSpeed() > nextTurn.getCurrentInit()))
 					{
 							nextTurn = cs;
+							nextTurn.setCurrentInit(-1);
 							if (stateInfo.getCurrentSprite() == null) {								
 								stateInfo.getCamera().centerOnSprite(cs, stateInfo.getCurrentMap());
 							}
@@ -143,17 +160,18 @@ public class InitiativeManager extends Manager
 				}
 			}
 		}
+		*/
 
 				
 		stateInfo.sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, nextTurn), true);
 	}
-
-	public void initializeInitOrder()
-	{
-		
-		for (CombatSprite s : stateInfo.getCombatSprites())
-		{
-			s.setCurrentInit(s.getMaxSpeed());
+	
+	public void initializeInitOrderFromLoad() {
+		turnOrder.clear();
+		for (CombatSprite cs : stateInfo.getCombatSprites()) {
+			if (cs.getCurrentHP() > 0 && cs.getCurrentInit() >= 0) {
+				turnOrder.add(cs);
+			}
 		}
 	}
 
@@ -167,6 +185,9 @@ public class InitiativeManager extends Manager
 			case INITIALIZE_BATTLE:
 				initializeAfterSprites();
 				stateInfo.sendMessage(MessageType.NEXT_TURN);
+				break;
+			case INITIALIZE_BATTLE_FROM_LOAD:
+				initializeInitOrderFromLoad();
 				break;
 			default:
 				break;

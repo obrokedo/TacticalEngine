@@ -52,7 +52,10 @@ import tactical.utils.StringUtils;
  *
  */
 public class Cinematic {
-
+	public static void main(String args[]) {
+		
+	}
+	
 	/**
 	 * List of CinematicEvents that will be run before the scene is actually started
 	 */

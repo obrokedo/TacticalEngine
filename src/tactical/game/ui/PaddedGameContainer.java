@@ -13,6 +13,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.state.devel.DevelMenuState;
 import tactical.loading.LoadableGameState;
 
 public class PaddedGameContainer extends AppGameContainer
@@ -54,9 +55,10 @@ public class PaddedGameContainer extends AppGameContainer
 			} catch (Throwable e) {
 				if (((TacticalGame) game).getCurrentState() instanceof LoadableGameState)
 					((LoadableGameState) ((TacticalGame) game).getCurrentState()).exceptionInState();
-				if (TacticalGame.DEV_MODE_ENABLED)
+				if (TacticalGame.DEV_MODE_ENABLED) {
 					((TacticalGame) game).enterState(TacticalGame.STATE_GAME_MENU_DEVEL);
-				JOptionPane.showMessageDialog(null, "An error occurred during execution " + e.getMessage());
+				}
+				
 				return;
 			}
 		}

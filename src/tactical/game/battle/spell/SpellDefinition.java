@@ -305,4 +305,6 @@ public abstract class SpellDefinition implements Serializable
 	protected void setSpellIconIndex(int spellIconIndex) {
 		this.spellIconIndex = spellIconIndex;
 	}
+	
+	public abstract String getAffinityType();
 }

@@ -150,9 +150,6 @@ public class DfAnimationParser implements AnimationParser {
 
 	private static String parseSprites(String spritesFile, ArrayList<String> imageNames, ArrayList<Rectangle> imageLocs) throws IOException
 	{
-		if (spritesFile.contains("Ranged")) {
-			System.out.println();
-		}
 		ArrayList<TagArea> rootTags = XMLParser.process(spritesFile, false);
 
 		// Parse Sprites
