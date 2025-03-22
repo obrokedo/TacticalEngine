@@ -25,6 +25,58 @@ import tactical.game.sprite.AnimatedSprite;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.ui.PaddedGameContainer;
 
+/**
+ * AttackableSpace represents a space that can be attacked by a CombatSprite in a game.
+ * It implements the KeyboardListener and MouseListener interfaces.
+ * 
+ * AttackableSpace has the following properties:
+ * - targetsHero: a boolean indicating whether the space targets a hero or not
+ * - currentSprite: the CombatSprite currently occupying the space
+ * - range: a 2D array representing the attack range of the space
+ * - area: a 2D array representing the attack area of the space
+ * - rangeOffset: an integer representing the offset of the attack range
+ * - areaOffset: an integer representing the offset of the attack area
+ * - targetSelectX: the x-coordinate of the selected target
+ * - targetSelectY: the y-coordinate of the selected target
+ * - selectX: the x-coordinate of the selected space
+ * - selectY: the y-coordinate of the selected space
+ * - selectedTarget: the index of the selected target in the targetsInRange list
+ * - spriteTileX: the x-coordinate of the sprite's tile
+ * - spriteTileY: the y-coordinate of the sprite's tile
+ * - tileWidth: the width of a tile
+ * - tileHeight: the height of a tile
+ * - targetsInRange: a list of CombatSprites that are within the attack range
+ * - cursorImage: the image used for the targeting cursor
+ * - ATTACKABLE_COLOR: the color used to render the attackable space
+ * - targetsAll: a boolean indicating whether the space targets all sprites or not
+ * - canTargetSelf: a boolean indicating whether the space can target itself or not
+ * - showHealthBar: a boolean indicating whether to show the health bar or not
+ * 
+ * AttackableSpace has the following constant fields:
+ * - AREA_0: a 2D array representing an empty area
+ * - AREA_1: a 2D array representing a 1-tile area
+ * - AREA_2: a 2D array representing a 2-tile area
+ * - AREA_2_NO_1: a 2D array representing a 2-tile area without the center tile
+ * - AREA_3: a 2D array representing a 3-tile area
+ * - AREA_3_NO_1: a 2D array representing a 3-tile area without the center tile
+ * - AREA_3_NO_1_2: a 2D array representing a 3-tile area without the center and adjacent tiles
+ * - AREA_ALL: a 2D array representing the entire area
+ * - AREA_ALL_INDICATOR: an integer representing the indicator for the entire area
+ * 
+ * AttackableSpace has the following constructors:
+ * - AttackableSpace(StateInfo stateInfo, CombatSprite currentSprite, int[][] range, int[][] area)
+ * - AttackableSpace(StateInfo stateInfo, CombatSprite currentSprite, boolean targetsHero, int[][] range, int[][] area, boolean canTargetSelf)
+ * 
+ * AttackableSpace has the following methods:
+ * - render(PaddedGameContainer gc, Camera camera, Graphics graphics): renders the attackable space
+ * - mouseUpdate(int frameMX, int frameMY, int mapMX, int mapMY, boolean leftClicked, boolean rightClicked, StateInfo stateInfo): handles mouse updates
+ * - setTargetSprite(CombatSprite targetSprite, StateInfo stateInfo): sets the target sprite and updates the health bar
+ * - getZOrder(): returns the z-order of the attackable space
+ * - update(StateInfo stateInfo): updates the attackable space
+ * - handleKeyboardInput(UserInput input, StateInfo stateInfo): handles keyboard input
+ * - getTargetAmount(): returns the number of targets in range
+ * - getAttackableArea(Range range): returns the attackable area based on the given range
+ */
 public class AttackableSpace implements KeyboardListener, MouseListener
 {
 	private boolean targetsHero = false;
@@ -105,6 +157,16 @@ public class AttackableSpace implements KeyboardListener, MouseListener
 		targetSelectY = -1;
 	}
 
+	/**
+	 * Represents a space that can be attacked by a combat sprite.
+	 * 
+	 * @param stateInfo The state information of the game.
+	 * @param currentSprite The combat sprite that owns this attackable space.
+	 * @param targetsHero Determines if the attackable space targets the hero.
+	 * @param range The range of the attackable space.
+	 * @param area The area of effect of the attackable space.
+	 * @param canTargetSelf Determines if the attackable space can target itself.
+	 */
 	public AttackableSpace(StateInfo stateInfo, CombatSprite currentSprite, boolean targetsHero,
 			int[][] range, int[][] area, boolean canTargetSelf)
 	{
@@ -116,6 +178,7 @@ public class AttackableSpace implements KeyboardListener, MouseListener
 		this.tileHeight = stateInfo.getTileHeight();
 		this.canTargetSelf = canTargetSelf;
 		this.showHealthBar = true;
+		this.targetSelectX = -1;
 		spriteTileX = currentSprite.getTileX();
 		spriteTileY = currentSprite.getTileY();
 		Log.debug("Finding attackables for " + currentSprite.getName());
@@ -215,6 +278,12 @@ public class AttackableSpace implements KeyboardListener, MouseListener
 		return false;
 	}
 
+	/**
+	 * Sets the target sprite and updates the health bar.
+	 * 
+	 * @param targetSprite The target sprite to set.
+	 * @param stateInfo The state information of the game.
+	 */
 	public void setTargetSprite(CombatSprite targetSprite, StateInfo stateInfo)
 	{
 		targetSelectX = targetSprite.getLocX();
@@ -351,11 +420,22 @@ public class AttackableSpace implements KeyboardListener, MouseListener
 		return false;
 	}
 
+	/**
+	 * Returns the number of targets in range.
+	 * 
+	 * @return The number of targets in range.
+	 */
 	public int getTargetAmount()
 	{
 		return targetsInRange.size();
 	}
 
+	/**
+	 * Returns the attackable area based on the given range.
+	 * 
+	 * @param range The range to get the attackable area for.
+	 * @return The attackable area based on the given range.
+	 */
 	public static int[][] getAttackableArea(Range range)
 	{
 		int area[][] = null;

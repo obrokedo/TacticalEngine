@@ -7,8 +7,8 @@ import tactical.engine.TacticalGame;
 import tactical.engine.config.SpellMenuRenderer;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.BattleSelectionMessage;
-import tactical.engine.message.LocationMessage;
 import tactical.engine.message.MessageType;
+import tactical.engine.message.SpellMessage;
 import tactical.engine.state.StateInfo;
 import tactical.game.constants.Direction;
 import tactical.game.hudmenu.Panel;
@@ -96,7 +96,8 @@ public class SpellMenu extends QuadMenu
 			choseSpell = true;
 			selectedLevel = 0;
 			spellMenuRenderer.spellLevelChanged(0);
-			stateInfo.sendMessage(new LocationMessage(MessageType.SHOW_SPELL_LEVEL, this.getSelectedInt(), selectedLevel));
+			stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, 
+					stateInfo.getCurrentSprite().getSpellsDescriptors().get(getSelectedInt()), selectedLevel));
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
 	}
@@ -138,7 +139,7 @@ public class SpellMenu extends QuadMenu
 		else
 			selectedLevel = stateInfo.getCurrentSprite().getSpellsDescriptors().get(getSelectedInt()).getMaxLevel() - 1;
 		
-		stateInfo.sendMessage(new LocationMessage(MessageType.SHOW_SPELL_LEVEL, this.getSelectedInt(), selectedLevel));
+		stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, stateInfo.getCurrentSprite().getSpellsDescriptors().get(getSelectedInt()), selectedLevel));
 		spellMenuRenderer.spellLevelChanged(selectedLevel);
 		return MenuUpdate.MENU_ACTION_LONG;
 	}
@@ -156,7 +157,7 @@ public class SpellMenu extends QuadMenu
 			selectedLevel = 0;
 		}
 		
-		stateInfo.sendMessage(new LocationMessage(MessageType.SHOW_SPELL_LEVEL, this.getSelectedInt(), selectedLevel));
+		stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, stateInfo.getCurrentSprite().getSpellsDescriptors().get(getSelectedInt()), selectedLevel));
 		spellMenuRenderer.spellLevelChanged(selectedLevel);
 		
 		return MenuUpdate.MENU_ACTION_LONG;

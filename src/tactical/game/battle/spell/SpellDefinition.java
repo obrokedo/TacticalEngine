@@ -239,7 +239,7 @@ public abstract class SpellDefinition implements Serializable
 		return true;
 	}
 	
-	public void performSkippedSpellAction (StateInfo stateInfo) {
+	public void performSkippedSpellAction(StateInfo stateInfo) {
 		
 	}
 	

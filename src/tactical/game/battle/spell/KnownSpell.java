@@ -29,6 +29,7 @@ public class KnownSpell implements Serializable
 	public static final int ID_APOLLO = 22;
 	public static final int ID_NEPTUNE = 23;
 	public static final int ID_ATLAS = 24;
+	
 
 	private String spellId;
 	private byte maxLevel;
@@ -49,9 +50,9 @@ public class KnownSpell implements Serializable
 		this.maxLevel = maxLevel;
 	}
 
-	public KnownSpell(String spellId, byte maxLevel, SpellDefinition spell) {
+	public KnownSpell(byte maxLevel, SpellDefinition spell) {
 		super();
-		this.spellId = spellId;
+		this.spellId = spell.id;
 		this.maxLevel = maxLevel;
 		this.spell = spell;
 	}

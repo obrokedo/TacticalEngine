@@ -197,13 +197,13 @@ public class HeroProgression implements Serializable
 
 						if (!found)
 						{
-							cs.getSpellsDescriptors().add(new KnownSpell(spell.getId(), (byte) j, SpellResource.getSpell(spell.getId())));
+							cs.getSpellsDescriptors().add(new KnownSpell((byte) j, SpellResource.getSpell(spell.getId())));
 						}
 					}
 					else
 					{
 						cs.setSpells(new ArrayList<KnownSpell>());
-						cs.getSpellsDescriptors().add(new KnownSpell(spell.getId(), (byte) j, SpellResource.getSpell(spell.getId())));
+						cs.getSpellsDescriptors().add(new KnownSpell((byte) j, SpellResource.getSpell(spell.getId())));
 					}
 				}
 			}

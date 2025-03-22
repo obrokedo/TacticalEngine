@@ -6,6 +6,7 @@ import org.newdawn.slick.Music;
 import tactical.engine.config.intr.AnimationParser;
 import tactical.engine.state.AttackCinematicState;
 import tactical.engine.state.StateInfo;
+import tactical.game.item.Item;
 import tactical.game.menu.AbstractHeroStatMenu;
 import tactical.game.sprite.CombatSprite;
 import tactical.loading.LoadingScreenRenderer;
@@ -20,6 +21,8 @@ public interface EngineConfigurator {
 	public HealthPanelRenderer getHealthPanelRenderer();
 	
 	public SpellMenuRenderer getSpellMenuRenderer();
+	
+	public SpellMenuRenderer getItemSpellUseMenuRenderer(Item item);
 	
 	public SpellFactory getSpellFactory();
 	

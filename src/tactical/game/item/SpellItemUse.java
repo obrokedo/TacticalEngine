@@ -6,6 +6,7 @@ import tactical.loading.ResourceManager;
 
 public class SpellItemUse {
 	private transient SpellDefinition spell;
+	private int charges = 0;
 	private String spellId;
 	private int level;
 	private boolean singleUse;
@@ -41,5 +42,13 @@ public class SpellItemUse {
 
 	public void initialize(ResourceManager fcrm) {
 		spell = SpellResource.getSpell(spellId);
+	}
+
+	public int getCharges() {
+		return charges;
+	}
+
+	public void setCharges(int charges) {
+		this.charges = charges;
 	}
 }

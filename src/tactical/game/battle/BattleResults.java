@@ -99,13 +99,25 @@ public class BattleResults implements Serializable
 			// and check for single use
 			if (br.itemUsed.getSpellUse() != null) {
 				spell = br.itemUsed.getSpellUse().getSpell();
-				spellLevel = br.itemUsed.getSpellUse().getLevel() - 1;
+				// Check to see if the item is single use, if so
+				// then remove the item from the attacker. In this case
+				// the spell level is already defined
+				if (br.itemUsed.getSpellUse().isSingleUse()) {
+					attacker.removeItem(br.itemUsed);
+					spellLevel = br.itemUsed.getSpellUse().getLevel() - 1;
+				// Otherwise get it from the command
+				} else {
+					spellLevel = battleCommand.getLevel();
+				}
+				
+				
 				battleCommand.setjSpell(spell);
 				battleCommand.setLevel(spellLevel + 1);
-				// Check to see if the item is single use, if so
-				// then remove the item from the attacker
-				if (br.itemUsed.getSpellUse().isSingleUse())
-					attacker.removeItem(br.itemUsed);
+				
+				// Decrement the item use charges by the spell level
+				br.itemUsed.getSpellUse().setCharges(br.itemUsed.getSpellUse().getCharges() - spellLevel - 1);
+				
+				
 			}
 			// We're just using the 'item use', retrieve that and see if
 			// this item was single use
@@ -147,7 +159,8 @@ public class BattleResults implements Serializable
 			// Check to see if the battle command indicates a spell is being used
 			else if (spell != null)
 			{
-				handleSpellAction(attacker, br, spell, spellLevel, index, target, commandResult);
+				handleSpellAction(attacker, br, spell, spellLevel, index, target, 
+						battleCommand.getCommand() == BattleCommand.COMMAND_ITEM, commandResult);
 			}
 			else if (itemUse != null)
 			{
@@ -314,7 +327,7 @@ public class BattleResults implements Serializable
 	}
 
 	private static void handleSpellAction(CombatSprite attacker, BattleResults br, SpellDefinition spell, int spellLevel,
-			int index, CombatSprite target, CommandResult commandResult) {
+			int index, CombatSprite target, boolean isItemUse, CommandResult commandResult) {
 		int damage = 0;
 		String text;
 		int expGained = 0;
@@ -359,7 +372,10 @@ public class BattleResults implements Serializable
 		br.targetEffects.add(appliedEffects);
 
 		br.attackerHPDamage.add(0);
-		if (index == 0)
+		
+		// This handles the spell cost, we only show it decrease on the first target. If this is from
+		// an item then we don't have an MP cost
+		if (index == 0 && !isItemUse)
 			br.attackerMPDamage.add(-1 * spell.getCosts()[spellLevel]);
 		else
 			br.attackerMPDamage.add(0);

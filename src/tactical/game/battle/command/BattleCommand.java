@@ -33,6 +33,13 @@ public class BattleCommand implements Serializable
 		this.command = command;
 		this.item = item;
 	}
+	
+	public BattleCommand(int command, Item item, int level) {
+		super();
+		this.command = command;
+		this.item = item;
+		this.level = level;
+	}
 
 	public BattleCommand(int command, SpellDefinition jSpell, KnownSpell spell, int level) {
 		super();

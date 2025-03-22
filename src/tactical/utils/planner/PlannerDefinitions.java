@@ -8,7 +8,6 @@ import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
 import tactical.game.constants.AttributeStrength;
 import tactical.utils.DirectoryLister;
-import tactical.utils.planner.layout.PlannerConditionLayout;
 import tactical.utils.planner.layout.PlannerEnemyStatLayout;
 import tactical.utils.planner.layout.PlannerEquippableItemLayout;
 import tactical.utils.planner.layout.PlannerHeroStatLayout;
@@ -1992,6 +1991,20 @@ public class PlannerDefinitions {
 				"Effect Level", "The level of the effect that should be applied (1-4)"));
 		allowableLines.add(new PlannerLineDef("attackeffect", "Attack Effect",
 				"An effect that may occur on the enemy attack", definingValues));
+
+		// Special Attack
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_SPELL,
+				PlannerValueDef.TYPE_STRING, "spellid", false, "Spell ID",
+				"The ID of the spell that this enemy will use for it's special attack."));
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "specialchance", false,
+				"Special Chance", "The percent chance that this special attack can be used"));
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
+				PlannerValueDef.TYPE_STRING, "animation", false, "Animation Name",
+				"The name of the animation that should be used for this special attack as defined in the animation file."));
+		allowableLines.add(new PlannerLineDef("", "Special Attack",
+				"A special attack ability", definingValues));
 
 		enemyContainer = new PlannerContainerDef(definingLine,
 				allowableLines, referenceStore,

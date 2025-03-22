@@ -230,7 +230,7 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 		} else {
 			String[] splitSpell = attackAction.split(" ");
 			SpellDefinition spell = TacticalGame.ENGINE_CONFIGURATIOR.getSpellFactory().createSpell(splitSpell[0]);
-			KnownSpell ks = new KnownSpell(spell.getId(), (byte) 4, spell);
+			KnownSpell ks = new KnownSpell((byte) 4, spell);
 			battleCommand = new BattleCommand(BattleCommand.COMMAND_SPELL, ks.getSpell(), ks, Integer.parseInt(splitSpell[1]));
 		}
 		

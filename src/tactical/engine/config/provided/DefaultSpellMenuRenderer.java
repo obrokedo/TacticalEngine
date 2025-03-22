@@ -60,4 +60,5 @@ public class DefaultSpellMenuRenderer implements SpellMenuRenderer {
 	
 	public void spellLevelChanged(int spellLevel) {}
 	public void update(long delta) {}
+
 }

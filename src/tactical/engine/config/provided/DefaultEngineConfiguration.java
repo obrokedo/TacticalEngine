@@ -22,6 +22,7 @@ import tactical.engine.config.intr.AnimationParser;
 import tactical.engine.state.AttackCinematicState;
 import tactical.engine.state.DefaultAttackCinematicState;
 import tactical.engine.state.StateInfo;
+import tactical.game.item.Item;
 import tactical.game.menu.AbstractHeroStatMenu;
 import tactical.game.menu.DefaultHeroStatMenu;
 import tactical.game.sprite.CombatSprite;
@@ -32,6 +33,7 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 	protected DfAnimationParser animationParser = new DfAnimationParser();
 	protected HealthPanelRenderer healthPanelRenderer = new DefaultHealthPanelRenderer();
 	protected SpellMenuRenderer spellMenuRenderer = new DefaultSpellMenuRenderer();
+	protected SpellMenuRenderer chargedSpellMenuRenderer = null;
 	protected YesNoMenuRenderer yesNoMenuRenderer = new DefaultYesNoRenderer();
 	protected CinematicActorConfiguration cinematicActorConfiguration = 
 			new DefaultCinematicActorConfiguration();
@@ -142,5 +144,10 @@ public class DefaultEngineConfiguration implements EngineConfigurator {
 	@Override
 	public AbstractHeroStatMenu getHeroStatMenu(GameContainer gc, CombatSprite selectedSprite, StateInfo stateInfo) {
 		return new DefaultHeroStatMenu(gc, selectedSprite, stateInfo);
+	}
+
+	@Override
+	public SpellMenuRenderer getItemSpellUseMenuRenderer(Item item) {
+		return chargedSpellMenuRenderer;
 	}
 }

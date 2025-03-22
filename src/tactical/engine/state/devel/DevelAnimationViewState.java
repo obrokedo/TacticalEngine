@@ -63,9 +63,8 @@ public class DevelAnimationViewState extends BasicGameState implements ResourceS
 		
 		frm = new ResourceManager();
 		try {
-			frm.addResource(ResourceManager.ANIMATIONS_FOLDER_IDENTIFIER + "," + ResourceManager.ANIMATIONS_FOLDER, TacticalGame.ENGINE_CONFIGURATIOR);
 			frm.addResource(ResourceManager.IMAGES_FOLDER_IDENTIFIER + "," + ResourceManager.WEAPONS_FOLDER, TacticalGame.ENGINE_CONFIGURATIOR);
-			frm.addResource(ResourceManager.ANIMATIONS_FOLDER_IDENTIFIER + "," + ResourceManager.WEAPONS_ANIMATIONS_FOLDER, TacticalGame.ENGINE_CONFIGURATIOR);
+			frm.reloadAnimations(TacticalGame.ENGINE_CONFIGURATIOR);			
 			frm.addResource("spritedir,sprite", TacticalGame.ENGINE_CONFIGURATIOR);
 		} catch (IOException e) {
 			e.printStackTrace();

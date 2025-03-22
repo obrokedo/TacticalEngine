@@ -263,6 +263,7 @@ public class ResourceManager implements Serializable {
 			}
 		} 
 		else {
+			System.out.println(new File(System.getProperty("user.dir") + "/animations/animationsheets").exists());
 			throw new BadResourceException("Unknown resource type to load: " + split[0] + " " + split[1]);
 		}
 	}
@@ -448,7 +449,18 @@ public class ResourceManager implements Serializable {
 	
 	public void reloadAnimations(EngineConfigurator configurator) {
 		try {
-			this.addResource("animsheetdir,animations/animationsheets", configurator);
+			for (File file : DirectoryLister.listFilesInDir(ResourceManager.ANIMATIONS_FOLDER))
+			{
+				if (file.isDirectory()) {
+					this.addResource("anim," + file.getPath(), configurator);
+				}
+			}
+			for (File file : DirectoryLister.listFilesInDir(ResourceManager.WEAPONS_ANIMATIONS_FOLDER))
+			{
+				if (file.isDirectory()) {
+					this.addResource("anim," + file.getPath(), configurator);
+				}
+			}
 		} catch (IOException | SlickException e) {
 			JOptionPane.showMessageDialog(null, "An error occurred reloading animations: " + e.getMessage());
 		}

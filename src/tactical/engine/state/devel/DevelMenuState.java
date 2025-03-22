@@ -401,7 +401,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 				LoadMapMessage lmm = null;
 				if ((lmm = persistentStateInfo.getClientProgress().getAndClearChapterSaveMessage()) != null) 
 				{
-					switch (lmm.getMessageType()) {
+					switch (lmm.getMessageType()) {		
 						case LOAD_CINEMATIC:
 							persistentStateInfo.loadCinematic(lmm);
 							break;

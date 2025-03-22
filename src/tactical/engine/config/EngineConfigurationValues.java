@@ -2,6 +2,10 @@ package tactical.engine.config;
 
 import java.io.Serializable;
 
+import tactical.game.battle.spell.SpellDefinition;
+import tactical.game.item.Item;
+import tactical.game.sprite.CombatSprite;
+
 public abstract class EngineConfigurationValues implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -28,4 +32,6 @@ public abstract class EngineConfigurationValues implements Serializable {
 	public abstract boolean isWorldMap(String mapName);
 	public abstract String getFirstChapterHeaderText();
 	public abstract String getFirstChapterDescriptionText();
+	public abstract int getItemCharges(CombatSprite caster, Item item, SpellDefinition spellDefintion);
+	public abstract int getItemMaxLevel(CombatSprite caster, Item item, SpellDefinition spellDefintion);
 }

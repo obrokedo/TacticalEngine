@@ -20,6 +20,7 @@ import tactical.engine.message.LocationMessage;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.SpeechMessage;
+import tactical.engine.message.SpellMessage;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.TurnActionsMessage;
 import tactical.engine.state.StateInfo;
@@ -362,6 +363,8 @@ public class TurnManager extends Manager implements KeyboardListener
 
 					if (!item.getSpellUse().getSpell().isTargetsEnemy())
 						targetsHero = currentSprite.isHero();
+					
+					displayAttackable = true;
 				}
 			}
 			else if (battleCommand.getCommand() == BattleCommand.COMMAND_GIVE_ITEM) {
@@ -375,12 +378,15 @@ public class TurnManager extends Manager implements KeyboardListener
 		}
 
 		as = new AttackableSpace(stateInfo, currentSprite, targetsHero, range, area, canTargetSelf);
+		
 		if (as.getTargetAmount() == 0)
 		{
 			// Because the speech message is immediate this message also needs to be
 			// otherwise the battle menu is shown after the speech menu
 			stateInfo.sendMessage(new Message(MessageType.SHOW_BATTLEMENU, true, false));
 			stateInfo.sendMessage(new SpeechMessage("No targets in range!<hardstop>"));
+			displayAttackable = false;
+			as = null;
 		}
 		else
 		{
@@ -407,6 +413,7 @@ public class TurnManager extends Manager implements KeyboardListener
 
 	@Override
 	public void recieveMessage(Message message) {
+		System.out.println(message.getMessageType());
 		switch (message.getMessageType())
 		{
 			case SHOW_BATTLEMENU:
@@ -441,17 +448,20 @@ public class TurnManager extends Manager implements KeyboardListener
 				// At this point we know who we intend to target, but we need to inject the BattleCommand.
 				// Only the owner will have a value for the battle command so they will have to be
 				// the one to send the BattleResults
-				if (!(battleCommand.getCommand() == BattleCommand.COMMAND_GIVE_ITEM)) {										
+				if (!(battleCommand.getCommand() == BattleCommand.COMMAND_GIVE_ITEM)) {						
 					displayAttackable = false;
 					displayMoveable = true;
 					// Once we've targeted a sprite there can not be anymore keyboard input
 					stateInfo.removeKeyboardListeners();
+					
+					// Check to see if this is a spell and that the animation should NOT be shown (think Egress)
 					if (battleCommand.getCommand() == BattleCommand.COMMAND_SPELL && 
 						!battleCommand.getSpell().showCombatAnimation())
 					{
 						battleCommand.getSpell().performSkippedSpellAction(stateInfo);						
 						turnActions.add(new EndTurnAction());
 					} 
+					// Check to see if this an item with a spell use and that the animation should NOT be shown (Angel Wing)
 					else if (battleCommand.getCommand() == BattleCommand.COMMAND_ITEM && 
 							battleCommand.getItem().getSpellUse() != null && 
 							!battleCommand.getItem().getSpellUse().getSpell().showCombatAnimation())
@@ -461,9 +471,11 @@ public class TurnManager extends Manager implements KeyboardListener
 						battleCommand.getItem().getSpellUse().getSpell().performSkippedSpellAction(stateInfo);						
 						turnActions.add(new EndTurnAction());
 					}
+					// An attack that has an animation
 					else
 						turnActions.add(new AttackSpriteAction(
 								((SpriteContextMessage) message).getSprites(stateInfo.getCombatSprites()), battleCommand));
+				// Give an item
 				} else {
 					Item item = battleCommand.getItem();
 					CombatSprite targetSprite = ((SpriteContextMessage) message).getSprites(stateInfo.getCombatSprites()).get(0);
@@ -495,8 +507,9 @@ public class TurnManager extends Manager implements KeyboardListener
 			case USE_ITEM:
 				BattleSelectionMessage ibsm = (BattleSelectionMessage) message;
 				battleCommand = new BattleCommand(BattleCommand.COMMAND_ITEM,
-						currentSprite.getItem(ibsm.getSelectionIndex()));
+						currentSprite.getItem(ibsm.getSelectionIndex()), ibsm.getLevel());
 				determineAttackableSpace(true);
+				// displayAttackable = true;
 				break;
 			case GIVE_ITEM:
 				ibsm = (BattleSelectionMessage) message;
@@ -533,6 +546,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				// Grab the final TurnAction, it should be a MoveToTurnAction. Process the first move
 				// handleSpriteMovement(0, turnActions.get(turnActions.size() - 1));
 				break;
+			/*
 			case HIDE_ATTACKABLE:
 				displayAttackable = false;
 				displayMoveable = true;
@@ -540,6 +554,7 @@ public class TurnManager extends Manager implements KeyboardListener
 				if (ownsSprite)
 					stateInfo.sendMessage(MessageType.SHOW_BATTLEMENU);
 				break;
+				*/
 			case BATTLE_RESULTS:
 				battleResults = ((BattleResultsMessage) message).getBattleResults();
 				battleResults.initialize(stateInfo.getResourceManager());
@@ -585,10 +600,10 @@ public class TurnManager extends Manager implements KeyboardListener
 				cinWasDisplayed = true;
 				break;
 			case SHOW_SPELL_LEVEL:
-				LocationMessage lm = (LocationMessage) message;
-				KnownSpell ks = currentSprite.getSpellsDescriptors().get(lm.locX);
-				int[][] range = ks.getSpell().getRange()[lm.locY].getAttackableSpace();
-				int areaSize = ks.getSpell().getArea()[lm.locY];
+				SpellMessage sm = (SpellMessage) message;
+				KnownSpell ks = sm.knownSpell;
+				int[][] range = ks.getSpell().getRange()[sm.level].getAttackableSpace();
+				int areaSize = ks.getSpell().getArea()[sm.level];
 				int[][] area = getAreaFromAreaSize(areaSize);
 				
 				as = new AttackableSpace(stateInfo, currentSprite, range, area);

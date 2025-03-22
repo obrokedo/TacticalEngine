@@ -4,23 +4,33 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.config.SpellMenuRenderer;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.BattleSelectionMessage;
 import tactical.engine.message.MessageType;
+import tactical.engine.message.SpellMessage;
 import tactical.engine.state.StateInfo;
+import tactical.game.battle.spell.KnownSpell;
+import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.constants.Direction;
+import tactical.game.hudmenu.Panel;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
 import tactical.game.item.Item.EquippableDifference;
 import tactical.game.item.Item.ItemDurability;
+import tactical.game.menu.Menu.MenuUpdate;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.utils.StringUtils;
 
 public class ItemMenu extends QuadMenu
 {
-	private Image emptySpot;
-	private ItemOption itemOption;
-	private String[] itemDiffs;
+	protected Image emptySpot;
+	protected ItemOption itemOption;
+	protected String[] itemDiffs;
+	protected boolean choseItem = false;
+	protected SpellMenuRenderer spellMenuRenderer;
+	protected KnownSpell itemSpellUse = null;
+	protected int selectedLevel = 0;
 	
 	public ItemMenu(StateInfo stateInfo) {
 		super(PanelType.PANEL_ITEM, null, false, stateInfo);
@@ -30,16 +40,19 @@ public class ItemMenu extends QuadMenu
 		this.enabled = new boolean[4];
 		this.icons = new Image[4];
 		this.text = new String[4];
-		this.paintSelectionCursor = true;
+		this.paintSelectionCursor = true;		
 	}
 	
 	public void initialize(ItemOption itemOption) {
 		this.itemOption = itemOption;
+		this.selectedLevel = 0;
 		this.initialize();
 	}
 
 	@Override
 	public void initialize() {
+		this.choseItem = false;
+		this.spellMenuRenderer = null;
 		for (int i = 0; i < 4; i++)
 		{
 			if (i < stateInfo.getCurrentSprite().getItemsSize())
@@ -77,66 +90,144 @@ public class ItemMenu extends QuadMenu
 		
 		for (int i = 0; i < enabled.length; i++) {
 			if (enabled[i]) {
-				setSelectedInt(i);
 				setItemDifferences();
 				break;
 			}
 		}
+		
+		if (itemOption == ItemOption.USE)
+			onDirection(Direction.UP);
 	}
 
 	@Override
 	protected void renderTextBox(PaddedGameContainer gc, Graphics graphics)
 	{
 		String[] split = getText(selected).split(" ", 2);
-
+		int locY = 195;
+		if (itemOption == ItemOption.USE)
+			locY = 160;
 		if (itemOption != ItemOption.EQUIP) {
 			TacticalGame.ENGINE_CONFIGURATIOR.getPanelRenderer().render(195,
-				195 - 7 * (split.length == 1 ? 0 : 1),
+				locY - 7 * (split.length == 1 ? 0 : 1),
 				getTextboxWidth(),
 				15 * (split.length == 1 ? 1 : 2) + 12, graphics, null);
 	
 			graphics.setColor(COLOR_FOREFRONT);
 	
 			StringUtils.drawString(split[0], 202,
-					193 - 7 * (split.length == 1 ? 0 : 1), graphics);
+					locY - 2 - 7 * (split.length == 1 ? 0 : 1), graphics);
 			if (split.length > 1)
 				StringUtils.drawString(split[1], 202,
-					201, graphics);
+					locY + 6, graphics);
 		} else {
 			TacticalGame.ENGINE_CONFIGURATIOR.getPanelRenderer().render(195,
-					165 - 7 * (split.length == 1 ? 0 : 1),
+					locY - 30 - 7 * (split.length == 1 ? 0 : 1),
 					100,
 					15 * (split.length == 1 ? 1 : 2) + 42, graphics, null);
 		
 			graphics.setColor(COLOR_FOREFRONT);
 			StringUtils.drawString(split[0], 202,
-					161 - 7 * (split.length == 1 ? 0 : 1), graphics);
+					locY - 34 - 7 * (split.length == 1 ? 0 : 1), graphics);
 			if (split.length > 1)
 				StringUtils.drawString(split[1], 202,
-					165, graphics);
+					locY - 30, graphics);
 			StringUtils.drawString(itemDiffs[0], 202,
-					175 + 7 * (split.length == 1 ? 0 : 1), graphics);
+					locY - 20 + 7 * (split.length == 1 ? 0 : 1), graphics);
 			StringUtils.drawString(itemDiffs[1], 202,
-					187 + 7 * (split.length == 1 ? 0 : 1), graphics);
+					locY - 8 + 7 * (split.length == 1 ? 0 : 1), graphics);
 			StringUtils.drawString(itemDiffs[2], 202,
-					199 + 7 * (split.length == 1 ? 0 : 1), graphics);
+					locY + 4 + 7 * (split.length == 1 ? 0 : 1), graphics);
+		}
+		
+		if (spellMenuRenderer != null) {
+			spellMenuRenderer.render("", stateInfo.getCurrentSprite(), stateInfo.getResourceManager(), 
+					choseItem, selectedLevel, 
+					itemSpellUse, 
+					stateInfo, graphics, Panel.COLOR_FOREFRONT);
 		}
 	}
 
 	@Override
+	public MenuUpdate update(long delta, StateInfo stateInfo) {
+		if (spellMenuRenderer != null) {
+			spellMenuRenderer.update(delta);
+		}
+		return super.update(delta, stateInfo);
+	}
+
+	@Override
 	public MenuUpdate onBack() {
-		stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
-		stateInfo.sendMessage(MessageType.SHOW_BATTLEMENU);
-		return MenuUpdate.MENU_CLOSE;
+		if (choseItem) {
+			choseItem = false;
+			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
+			spellMenuRenderer.spellLevelChanged(0);
+			stateInfo.sendMessage(MessageType.HIDE_ATTACK_AREA);
+			return MenuUpdate.MENU_ACTION_LONG;
+		} else {
+			stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuback", 1f, false));
+			stateInfo.sendMessage(MessageType.SHOW_BATTLEMENU);
+			return MenuUpdate.MENU_CLOSE;
+		}
 	}
 	
 	
 
 	@Override
 	protected MenuUpdate onDirection(Direction dir) {
-		MenuUpdate mu = super.onDirection(dir);
-		setItemDifferences();
-		return mu;
+		// If we haven't chosen an item yet then just move the cursor
+		if (!this.choseItem) {
+			MenuUpdate mu = super.onDirection(dir);
+			setItemDifferences();
+			setItemSpellRenderer();
+			return mu;
+		}
+		// If an item has been chosen then we are changing spell level
+		else {
+			if (dir == Direction.LEFT) {
+				if (selectedLevel > 0)
+				{
+					// It's kind of ugly but this menu will not play the sound effect
+					// for this menu move, instead it is played by AttackableSpace
+					selectedLevel--;			
+				}
+				else
+					selectedLevel = itemSpellUse.getMaxLevel() - 1;
+				
+				stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, itemSpellUse, selectedLevel));
+				spellMenuRenderer.spellLevelChanged(selectedLevel);
+			} else if (dir == Direction.RIGHT) {
+				if (selectedLevel + 1 < itemSpellUse.getMaxLevel())
+				{
+					// It's kind of ugly but this menu will not play the sound effect
+					// for this menu move, instead it is played by AttackableSpace
+					selectedLevel++;			
+				} else {
+					selectedLevel = 0;
+				}
+				
+				stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, itemSpellUse, selectedLevel));
+				spellMenuRenderer.spellLevelChanged(selectedLevel);							
+			}
+			return MenuUpdate.MENU_ACTION_LONG;
+		}
+	}
+	
+	protected void setItemSpellRenderer() {
+		if (itemOption == ItemOption.USE) {
+			Item item = stateInfo.getCurrentSprite().getItem(this.getSelectedInt());
+			if (item.getSpellUse() != null) {
+				selectedLevel = 0;
+				SpellDefinition sd = item.getSpellUse().getSpell();
+				// TODO This breaks generic use-cases
+				KnownSpell ks = new KnownSpell((byte) 4, sd);
+				this.itemSpellUse = ks;
+				this.spellMenuRenderer = TacticalGame.ENGINE_CONFIGURATIOR.getItemSpellUseMenuRenderer(item);
+				this.spellMenuRenderer.spellLevelChanged(0);
+			} else {
+				this.spellMenuRenderer = null;
+			}
+			
+		}
 	}
 
 	private void setItemDifferences() {
@@ -166,12 +257,30 @@ public class ItemMenu extends QuadMenu
 		stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
 		Item item = stateInfo.getCurrentSprite().getItem(this.getSelectedInt());
 		
-		stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
+		// stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
 		
 		switch (itemOption)
 		{
 			case USE:
-				stateInfo.sendMessage(new BattleSelectionMessage(MessageType.USE_ITEM, this.getSelectedInt()));
+				// If this is not a spell then just use it now
+				if (itemSpellUse == null)
+					stateInfo.sendMessage(new BattleSelectionMessage(MessageType.USE_ITEM, this.getSelectedInt()));
+				else {
+					if (choseItem) {
+						// Make sure we have enough charges to cast the spell
+						if (item.getSpellUse().getCharges() > selectedLevel)
+							stateInfo.sendMessage(new BattleSelectionMessage(MessageType.USE_ITEM, this.getSelectedInt(), selectedLevel));
+						else {
+							stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, MUSIC_SELECTOR.getInvalidActionSoundEffect(), 1f, false));
+							return MenuUpdate.MENU_ACTION_LONG;
+						}
+					} else {
+						choseItem = true;
+						selectedLevel = 0;
+						stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, itemSpellUse, selectedLevel));
+						return MenuUpdate.MENU_ACTION_LONG;
+					}
+				}
 				return MenuUpdate.MENU_CLOSE;
 			case GIVE:
 				stateInfo.sendMessage(new BattleSelectionMessage(MessageType.GIVE_ITEM, this.getSelectedInt()));

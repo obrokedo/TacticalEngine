@@ -31,6 +31,7 @@ import tactical.game.hudmenu.Panel.PanelType;
 import tactical.game.hudmenu.SpriteContextPanel;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
+import tactical.game.item.SpellItemUse;
 import tactical.game.resource.HeroResource;
 import tactical.game.resource.ItemResource;
 import tactical.loading.ResourceManager;
@@ -251,7 +252,7 @@ public class CombatSprite extends AnimatedSprite
 		{
 			for (KnownSpell sd : spells)
 				sd.initializeFromLoad(fcrm);
-		}		
+		}
 		
 		for (BattleEffect effect : persistedBattleEffects) {
 			battleEffects.add(((SerializedBattleEffect) effect).getJythonBattleEffect());
@@ -307,6 +308,15 @@ public class CombatSprite extends AnimatedSprite
 			super.setLocY(-1, 0);
 		}
 	
+		for (Item item : items)
+		{
+			SpellItemUse itemUse = item.getSpellUse(); 
+			if (itemUse != null) {
+				int charges = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getItemCharges(this, item, itemUse.getSpell());
+				itemUse.setCharges(charges);
+			}
+		}
+		
 		// this.addBattleEffect(TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().createEffect("Bleed", 1));
 	}
 
@@ -373,6 +383,17 @@ public class CombatSprite extends AnimatedSprite
 
 	public void addItem(Item item)
 	{
+		// Check to see if this item has spell use charges, if it does don't allow
+		// characters to get more charges then they would otherwise get
+		SpellItemUse itemUse = item.getSpellUse(); 
+		if (itemUse != null) {
+			int charges = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getItemCharges(this,
+					item, itemUse.getSpell());
+			// If the item has more charges then max, then set it to this characters max
+			if (itemUse.getCharges() > charges)
+				itemUse.setCharges(charges);
+		}
+		
 		items.add(item);
 		equipped.add(false);
 	}

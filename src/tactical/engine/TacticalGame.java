@@ -183,45 +183,52 @@ public abstract class TacticalGame extends StateBasedGame   {
 
 		File file = new File(".");
 
-		for (String s : file.list())
-		{
-			if (s.endsWith(ClientProfile.PROFILE_EXTENSION))
+		if (TacticalGame.SAVE_ENABLED) {
+			for (String s : file.list())
 			{
-				clientProfile = ClientProfile.deserializeFromFile(s);
+				if (s.endsWith(ClientProfile.PROFILE_EXTENSION))
+				{
+					clientProfile = ClientProfile.deserializeFromFile(s);
+				}
+				else if (s.endsWith(ClientProgress.PROGRESS_EXTENSION))
+				{
+					clientProgress =  ClientProgress.deserializeFromFile(s);
+				}
 			}
-			else if (s.endsWith(ClientProgress.PROGRESS_EXTENSION))
-			{
-				clientProgress =  ClientProgress.deserializeFromFile(s);
-			}
-		}
 
-		// Check to see if a client profile has been loaded.
-		if (clientProfile == null)
-		{
+			// Check to see if a client profile has been loaded.
+			if (clientProfile == null)
+			{
+				clientProfile = new ClientProfile("Default");
+				clientProfile.serializeToFile();
+	
+				// If Dev mode is enabled, check to see if Dev Params
+				// were specified, if so then apply them to the client profile.
+				// If this is "Test" mode then don't apply the dev params as
+				// it may screw up the heroes in the party
+				/* THIS IS NO LONGER NEEDED AS WE ONLY LOAD DURING BATTLE LOAD FROM DEVEL
+				if (TacticalGame.DEV_MODE_ENABLED && !TacticalGame.TEST_MODE_ENABLED)
+				{
+					DevParams devParams = DevParams.parseDevParams();
+					if (devParams != null)
+						clientProfile.setDevParams(devParams);
+				}
+				*/
+	
+				Log.debug("Profile was created");
+			}
+			
+			if (clientProgress == null)
+			{
+				Log.debug("Create Progress");
+				clientProgress = new ClientProgress("Test");
+				clientProgress.serializeToFile();
+			}
+			
+		// With Save Disabled we always just create client assets
+		} else {
 			clientProfile = new ClientProfile("Default");
-			clientProfile.serializeToFile();
-
-			// If Dev mode is enabled, check to see if Dev Params
-			// were specified, if so then apply them to the client profile.
-			// If this is "Test" mode then don't apply the dev params as
-			// it may screw up the heroes in the party
-			/* THIS IS NO LONGER NEEDED AS WE ONLY LOAD DURING BATTLE LOAD FROM DEVEL
-			if (TacticalGame.DEV_MODE_ENABLED && !TacticalGame.TEST_MODE_ENABLED)
-			{
-				DevParams devParams = DevParams.parseDevParams();
-				if (devParams != null)
-					clientProfile.setDevParams(devParams);
-			}
-			*/
-
-			Log.debug("Profile was created");
-		}
-		
-		if (clientProgress == null)
-		{
-			Log.debug("Create Progress");
 			clientProgress = new ClientProgress("Test");
-			clientProgress.serializeToFile();
 		}
 		
 		try {
