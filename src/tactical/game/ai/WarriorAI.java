@@ -24,22 +24,29 @@ public class WarriorAI extends AI
 
 	@Override
 	protected AIConfidence getConfidence(CombatSprite currentSprite, CombatSprite targetSprite,
-			int tileWidth , int tileHeight, Point attackPoint, int distance, StateInfo stateInfo) {
-		int damage = Math.max(1, currentSprite.getCurrentAttack() - targetSprite.getCurrentDefense());
-
-		if (targetSprite.isHero() == currentSprite.isHero())
-			return new AIConfidence(Integer.MIN_VALUE);
-
+			 Point attackPoint, int distance, StateInfo stateInfo) {		
 		// Check to make sure that if we're using a ranged weapon that has spots that it cannot target in the range that the enemy is not in one of those spaces
 		Range attackRange = currentSprite.getAttackRange();
 		Log.debug("Warrior attack range " + attackRange);
 		if (!attackRange.isInDistance(distance))
 			return new AIConfidence(Integer.MIN_VALUE);
+		
+		return getConfidenceNoRangeCheck(currentSprite, targetSprite, attackPoint, distance, stateInfo);
+	}
+	
+	public AIConfidence getConfidenceNoRangeCheck(CombatSprite currentSprite, CombatSprite targetSprite,
+			 Point attackPoint, int distance, StateInfo stateInfo) {
+		if (targetSprite.isHero() == currentSprite.isHero())
+			return new AIConfidence(Integer.MIN_VALUE);
+		
+		int damage = Math.max(1, currentSprite.getCurrentAttack() - targetSprite.getCurrentDefense());
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
 		int currentConfidence = NEARBY_ENEMY_PENALTY;
-		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
-		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), 
+				attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), 
+				attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
 		
 		// Get the percent of damage that will be done to the hero
 		int damageDone = Math.min(PERCENT_DAMAGE_WEIGHT, 

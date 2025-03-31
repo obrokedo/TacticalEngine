@@ -2000,10 +2000,11 @@ public class PlannerDefinitions {
 		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_INT, "specialchance", false,
 				"Special Chance", "The percent chance that this special attack can be used"));
-		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
+		/*definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
 				PlannerValueDef.TYPE_STRING, "animation", false, "Animation Name",
 				"The name of the animation that should be used for this special attack as defined in the animation file."));
-		allowableLines.add(new PlannerLineDef("", "Special Attack",
+				*/
+		allowableLines.add(new PlannerLineDef("specialattack", "Special Attack",
 				"A special attack ability", definingValues));
 
 		enemyContainer = new PlannerContainerDef(definingLine,

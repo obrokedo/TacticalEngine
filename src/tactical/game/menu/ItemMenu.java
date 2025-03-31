@@ -34,7 +34,8 @@ public class ItemMenu extends QuadMenu
 	
 	public ItemMenu(StateInfo stateInfo) {
 		super(PanelType.PANEL_ITEM, null, false, stateInfo);
-		emptySpot = stateInfo.getResourceManager().getSpriteSheet("items").getSprite(TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexX(), 
+		emptySpot = stateInfo.getResourceManager().getSpriteSheet("items").getSprite(
+				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexX(), 
 				TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getEmptyItemIndexY());
 
 		this.enabled = new boolean[4];
@@ -194,7 +195,8 @@ public class ItemMenu extends QuadMenu
 					selectedLevel = itemSpellUse.getMaxLevel() - 1;
 				
 				stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, itemSpellUse, selectedLevel));
-				spellMenuRenderer.spellLevelChanged(selectedLevel);
+				if (spellMenuRenderer != null)
+					spellMenuRenderer.spellLevelChanged(selectedLevel);
 			} else if (dir == Direction.RIGHT) {
 				if (selectedLevel + 1 < itemSpellUse.getMaxLevel())
 				{
@@ -206,7 +208,8 @@ public class ItemMenu extends QuadMenu
 				}
 				
 				stateInfo.sendMessage(new SpellMessage(MessageType.SHOW_SPELL_LEVEL, itemSpellUse, selectedLevel));
-				spellMenuRenderer.spellLevelChanged(selectedLevel);							
+				if (spellMenuRenderer != null)
+					spellMenuRenderer.spellLevelChanged(selectedLevel);							
 			}
 			return MenuUpdate.MENU_ACTION_LONG;
 		}
@@ -219,12 +222,15 @@ public class ItemMenu extends QuadMenu
 				selectedLevel = 0;
 				SpellDefinition sd = item.getSpellUse().getSpell();
 				// TODO This breaks generic use-cases
-				KnownSpell ks = new KnownSpell((byte) 4, sd);
+				KnownSpell ks = new KnownSpell(
+						(byte) TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues().getItemMaxLevel(stateInfo.getCurrentSprite(), 
+								item, sd), sd);
 				this.itemSpellUse = ks;
 				this.spellMenuRenderer = TacticalGame.ENGINE_CONFIGURATIOR.getItemSpellUseMenuRenderer(item);
 				this.spellMenuRenderer.spellLevelChanged(0);
 			} else {
 				this.spellMenuRenderer = null;
+				this.itemSpellUse = null;
 			}
 			
 		}
@@ -258,7 +264,7 @@ public class ItemMenu extends QuadMenu
 		Item item = stateInfo.getCurrentSprite().getItem(this.getSelectedInt());
 		
 		// stateInfo.sendMessage(new AudioMessage(MessageType.SOUND_EFFECT, "menuselect", 1f, false));
-		
+			
 		switch (itemOption)
 		{
 			case USE:

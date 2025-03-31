@@ -20,7 +20,7 @@ public class WizardAI extends CasterAI
 	}
 
 	@Override
-	protected void handleSpell(SpellDefinition spell,  KnownSpell knownSpell, int spellLevel, int tileWidth, int tileHeight, CombatSprite currentSprite,
+	protected void handleSpell(SpellDefinition spell,  KnownSpell knownSpell, int spellLevel, CombatSprite currentSprite,
 			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, int distance, AISpellConfidence aiSpellConf)
 	{
 		
@@ -28,7 +28,7 @@ public class WizardAI extends CasterAI
 
 	@Override
 	protected int determineBaseConfidence(CombatSprite currentSprite,
-			CombatSprite targetSprite, int tileWidth, int tileHeight,
+			CombatSprite targetSprite, 
 			Point attackPoint, StateInfo stateInfo, AIConfidence aiConf)
 	{
 		// Adding the targets counter attack causes us to flee to much
@@ -36,8 +36,8 @@ public class WizardAI extends CasterAI
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
 		int currentConfidence = NEARBY_ENEMY_PENALTY;
-		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
-		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
 		currentConfidence += nearbyAlly - nearbyEnemy;
 		aiConf.allyInfluence = nearbyAlly;
 		aiConf.enemyInfluence = nearbyEnemy;
