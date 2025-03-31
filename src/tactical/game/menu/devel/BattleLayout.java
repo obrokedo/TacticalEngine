@@ -22,7 +22,7 @@ public class BattleLayout implements Serializable {
 	
 	public BattleLayout(ArrayList<CombatSprite> combatSprites, CombatSprite currentTurn) {
 		this.combatSprites = combatSprites;
-		this.currentTurn = combatSprites.indexOf(currentTurn);			
+		this.currentTurn = combatSprites.indexOf(currentTurn);	
 	}
 	
 	public byte[] serialize(BattleLayout layout) throws IOException {

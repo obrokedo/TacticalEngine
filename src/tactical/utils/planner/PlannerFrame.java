@@ -162,6 +162,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		this.menuState = menuState;	
 		this.rootPlanner = rootPlanner;
 		initialize();
+		this.openFile(triggerFile, true);
 		this.setVisible(true);
 	}
 
@@ -673,8 +674,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 	}
 
 	public void openFile(File triggerFile) {
-		PlannerFrame pf = new PlannerFrame(triggerFile, this.menuState, (isRootPlanner ? this : this.rootPlanner));
-		pf.openFile(triggerFile, true);
+		new PlannerFrame(triggerFile, this.menuState, (isRootPlanner ? this : this.rootPlanner));
 	}
 	
 	public void openFile(File triggerFile, boolean reportNoMap) {

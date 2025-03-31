@@ -27,15 +27,15 @@ public class ClericAI extends CasterAI
 	}
 
 	@Override
-	protected void handleSpell(SpellDefinition spell, KnownSpell knownSpell, int i, int tileWidth, int tileHeight, CombatSprite currentSprite,
+	protected void handleSpell(SpellDefinition spell, KnownSpell knownSpell, int spellLevel, CombatSprite currentSprite,
 			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, int distance, AISpellConfidence aiSpellConf)
 	{
-		handleHealingSpell(spell, knownSpell, i, tileWidth, tileHeight, currentSprite, 
+		handleHealingSpell(spell, knownSpell, spellLevel, currentSprite, 
 				targetSprite, stateInfo, baseConfidence, cost, attackPoint, aiSpellConf);
 	}
 
 	// Somehow there is never a time when aura can get 2 people in it
-	private void handleHealingSpell(SpellDefinition spell, KnownSpell knownSpell, int spellLevel, int tileWidth, int tileHeight, CombatSprite currentSprite,
+	private void handleHealingSpell(SpellDefinition spell, KnownSpell knownSpell, int spellLevel, CombatSprite currentSprite,
 			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, AISpellConfidence aiSpellConf)
 	{
 		boolean healSelf = false;
@@ -55,7 +55,6 @@ public class ClericAI extends CasterAI
 			Point castPoint = new Point(targetSprite.getTileX(), targetSprite.getTileY());
 			if (area != AttackableSpace.AREA_ALL_INDICATOR) {
 				targetsInArea = getNearbySprites(stateInfo, (currentSprite.isHero() ? !spell.isTargetsEnemy() : spell.isTargetsEnemy()),
-						tileWidth, tileHeight,
 						castPoint, spell.getArea()[spellLevel - 1] - 1, currentSprite);
 			// If this is area all then just add all of the correct targets
 			} else {
@@ -183,7 +182,7 @@ public class ClericAI extends CasterAI
 
 	@Override
 	protected int determineBaseConfidence(CombatSprite currentSprite,
-			CombatSprite targetSprite, int tileWidth, int tileHeight,
+			CombatSprite targetSprite, 
 			Point attackPoint, StateInfo stateInfo, AIConfidence aiConf)
 	{
 		/*
@@ -194,8 +193,8 @@ public class ClericAI extends CasterAI
 
 		// Determine confidence, add 5 because the attacked sprite will probably always be in range
 		int currentConfidence = NEARBY_ENEMY_PENALTY;
-		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
-		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
+		int nearbyAlly = getNearbySpriteAmount(stateInfo, currentSprite.isHero(), attackPoint, 2, currentSprite) * NEARBY_ALLY_BONUS;
+		int nearbyEnemy = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), attackPoint, 2, currentSprite) * NEARBY_ENEMY_PENALTY;
 		currentConfidence += nearbyAlly - nearbyEnemy;
 		aiConf.allyInfluence = nearbyAlly;
 		aiConf.enemyInfluence = nearbyEnemy;

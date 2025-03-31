@@ -3,6 +3,7 @@ package tactical.game.menu.devel;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 
+import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
 import tactical.engine.message.SpriteContextMessage;
 import tactical.engine.message.TurnActionsMessage;
@@ -238,6 +240,14 @@ public class BattleAIDebug {
 			layouts.remove(5);
 	}
 	
+	private class InitComparator implements Comparator<CombatSprite>
+	{
+		@Override
+		public int compare(CombatSprite c1, CombatSprite c2) {
+			return Math.round(c2.getCurrentInit() - c1.getCurrentInit());
+		}
+	}
+	
 	public void rewind() {
 		if (layouts.size() > 1) {
 			// First one is the one we just added
@@ -247,9 +257,12 @@ public class BattleAIDebug {
 			try {
 				layout = BattleLayout.deserializeBattleLayout(bytes);
 				stateInfo.getSprites().removeAll(stateInfo.getCombatSprites());
+				
 				stateInfo.getCombatSprites().clear();
 				layout.combatSprites.forEach(cs -> cs.initializeSprite(stateInfo.getResourceManager()));
 				stateInfo.addAllCombatSprites(layout.combatSprites);
+				stateInfo.sendMessage(new Message(MessageType.INITIALIZE_BATTLE_FROM_LOAD));
+				// stateInfo.sendMessage(new Message(MessageType.NEXT_TURN));
 				stateInfo.sendMessage(new SpriteContextMessage(MessageType.COMBATANT_TURN, layout.combatSprites.get(layout.currentTurn)), true);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

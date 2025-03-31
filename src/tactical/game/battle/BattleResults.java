@@ -3,12 +3,14 @@ package tactical.game.battle;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.BattleFunctionConfiguration;
 import tactical.game.battle.command.BattleCommand;
+import tactical.game.battle.special.SpecialAbility;
 import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.constants.TextSpecialCharacters;
 import tactical.game.item.Item;
@@ -138,6 +140,9 @@ public class BattleResults implements Serializable
 		} else if (battleCommand.getCommand() == BattleCommand.COMMAND_SPELL) {
 			spell = battleCommand.getSpell();
 			spellLevel = battleCommand.getLevel() - 1;
+		} else if (battleCommand.getCommand() == BattleCommand.COMMAND_SPECIAL) {
+			spell = battleCommand.getOpSpecialAbility().get().getSpell();
+			spellLevel = 0;
 		}
 
 		int expGained = 0;
@@ -157,10 +162,10 @@ public class BattleResults implements Serializable
 				sumDamage = handleAttackAction(attacker, fcrm, jBattleFunctions, br, target, commandResult);
 			}
 			// Check to see if the battle command indicates a spell is being used
-			else if (spell != null)
+			else if (spell != null || battleCommand.getCommand() == BattleCommand.COMMAND_SPECIAL)
 			{
 				handleSpellAction(attacker, br, spell, spellLevel, index, target, 
-						battleCommand.getCommand() == BattleCommand.COMMAND_ITEM, commandResult);
+						battleCommand.getCommand() == BattleCommand.COMMAND_ITEM, commandResult, battleCommand.getOpSpecialAbility());
 			}
 			else if (itemUse != null)
 			{
@@ -327,7 +332,7 @@ public class BattleResults implements Serializable
 	}
 
 	private static void handleSpellAction(CombatSprite attacker, BattleResults br, SpellDefinition spell, int spellLevel,
-			int index, CombatSprite target, boolean isItemUse, CommandResult commandResult) {
+			int index, CombatSprite target, boolean isItemUse, CommandResult commandResult, Optional<SpecialAbility> opSpecialAbility) {
 		int damage = 0;
 		String text;
 		int expGained = 0;
@@ -374,8 +379,8 @@ public class BattleResults implements Serializable
 		br.attackerHPDamage.add(0);
 		
 		// This handles the spell cost, we only show it decrease on the first target. If this is from
-		// an item then we don't have an MP cost
-		if (index == 0 && !isItemUse)
+		// an item or a special ability then we don't have an MP cost
+		if (index == 0 && !isItemUse && !opSpecialAbility.isPresent())
 			br.attackerMPDamage.add(-1 * spell.getCosts()[spellLevel]);
 		else
 			br.attackerMPDamage.add(0);

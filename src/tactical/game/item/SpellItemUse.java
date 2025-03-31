@@ -1,10 +1,14 @@
 package tactical.game.item;
 
+import java.io.Serializable;
+
 import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.resource.SpellResource;
 import tactical.loading.ResourceManager;
 
-public class SpellItemUse {
+public class SpellItemUse implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private transient SpellDefinition spell;
 	private int charges = 0;
 	private String spellId;
@@ -50,5 +54,11 @@ public class SpellItemUse {
 
 	public void setCharges(int charges) {
 		this.charges = charges;
+	}
+	
+	public SpellItemUse copy() {
+		SpellItemUse siu = new SpellItemUse(spellId, level, singleUse, useOutsideBattle);
+		siu.charges = charges;
+		return siu;
 	}
 }

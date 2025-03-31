@@ -267,7 +267,8 @@ public class DevelBattleAnimViewState extends LoadableGameState implements Resou
 		// targets.add(target); targets.add(cs);
 		// targets.add(target); targets.add(target);
 		
-		BattleResults br = BattleResults.determineBattleResults(attacker, Collections.singletonList(target) , battleCommand, fcrm);
+		BattleResults br = BattleResults.determineBattleResults(
+				attacker, Collections.singletonList(target) , battleCommand, fcrm);
 		
 		if (attackAction.equalsIgnoreCase("Critical Attack")) {
 			br.critted.set(0, true);

@@ -169,10 +169,12 @@ public class InitiativeManager extends Manager
 	public void initializeInitOrderFromLoad() {
 		turnOrder.clear();
 		for (CombatSprite cs : stateInfo.getCombatSprites()) {
-			if (cs.getCurrentHP() > 0 && cs.getCurrentInit() >= 0) {
+			if (cs.getCurrentHP() > 0) {
 				turnOrder.add(cs);
 			}
 		}
+		
+		turnOrder.sort(new InitComparator());
 	}
 
 	@Override

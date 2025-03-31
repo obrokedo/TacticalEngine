@@ -2,6 +2,7 @@ package tactical.game.sprite;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -24,6 +25,7 @@ import tactical.game.ai.AI;
 import tactical.game.battle.BattleEffect;
 import tactical.game.battle.LevelUpResult;
 import tactical.game.battle.SerializedBattleEffect;
+import tactical.game.battle.special.SpecialAbility;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.constants.Direction;
 import tactical.game.dev.DevHeroAI;
@@ -91,6 +93,7 @@ public class CombatSprite extends AnimatedSprite
 	protected int attackEffectLevel;
 	@Getter protected boolean drawShadow = true;
 	@Getter @Setter protected transient String customMusic = null;
+	@Getter protected List<SpecialAbility> specialAbilities = new ArrayList<SpecialAbility>();
 	
 	/**
 	 * A boolean indicating whether the combat sprite dodges or blocks attacks, dodges if true, blocks if false
@@ -105,11 +108,12 @@ public class CombatSprite extends AnimatedSprite
 	public CombatSprite(boolean isLeader,
 			String name, String imageName, int hp, int mp, int attack, int defense, int speed, int move,
 				String movementType, int level,
-				int enemyId, ArrayList<KnownSpell> spells, int id,
+				int enemyId, ArrayList<KnownSpell> spells, ArrayList<SpecialAbility> specialAbilities, int id,
 				String attackEffectId, int attackEffectChance, int attackEffectLevel)
 	{
 		this(isLeader, name, imageName, null, level, 0, false, id);
 		this.spells = spells;
+		this.specialAbilities = specialAbilities;
 		this.uniqueEnemyId = enemyId;
 		this.isHero = false;
 		this.attackEffectChance = attackEffectChance;
@@ -254,6 +258,11 @@ public class CombatSprite extends AnimatedSprite
 				sd.initializeFromLoad(fcrm);
 		}
 		
+		for (SpecialAbility sa : specialAbilities) {
+			sa.initializeFromLoad(fcrm);
+		}
+		
+		this.battleEffects = new ArrayList<>();
 		for (BattleEffect effect : persistedBattleEffects) {
 			battleEffects.add(((SerializedBattleEffect) effect).getJythonBattleEffect());
 		}

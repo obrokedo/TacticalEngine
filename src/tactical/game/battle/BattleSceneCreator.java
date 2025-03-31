@@ -108,6 +108,11 @@ public class BattleSceneCreator {
 			// This is an attack
 			else if (battleResults.battleCommand.getCommand() == BattleCommand.COMMAND_ATTACK)
 				textToDisplay.add(attacker.getName() + " attacks!" + TextSpecialCharacters.CHAR_HARD_STOP);
+			// Specials are implemented as spells
+			else if (battleResults.battleCommand.getCommand() == BattleCommand.COMMAND_SPECIAL) {
+				textToDisplay.add(attacker.getName() + " attacks!" + TextSpecialCharacters.CHAR_HARD_STOP);
+				isSpell = true;
+			}
 
 			if (targetsAllies)
 			{
@@ -222,7 +227,14 @@ public class BattleSceneCreator {
 				}
 			}
 			
-			if (isSpell && attacker.hasAnimation("SpellWinddown")) {
+			if (battleResults.battleCommand.getCommand() == BattleCommand.COMMAND_SPECIAL) {
+				if (attacker.hasAnimation("SpecialWinddown")) {
+					AnimationWrapper aw = new HeroAnimationWrapper(attacker, "SpecialWinddown");
+					addCombatAnimationWithNoSpeechNoReaction(attacker.isHero(), new CombatAnimation(aw, attacker, 
+							aw.getAnimationLength(), platformBySprite.get(attacker)));
+				}
+			}
+			else if (isSpell && attacker.hasAnimation("SpellWinddown")) {
 				AnimationWrapper aw = new HeroAnimationWrapper(attacker, "SpellWinddown");
 				addCombatAnimationWithNoSpeechNoReaction(attacker.isHero(), new CombatAnimation(aw, attacker, aw.getAnimationLength(), platformBySprite.get(attacker)));
 			}

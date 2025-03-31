@@ -30,6 +30,7 @@ import tactical.game.battle.BattleEffect;
 import tactical.game.battle.BattleResults;
 import tactical.game.battle.command.BattleCommand;
 import tactical.game.battle.spell.KnownSpell;
+import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.constants.Direction;
 import tactical.game.hudmenu.Panel.PanelType;
 import tactical.game.input.KeyMapping;
@@ -344,6 +345,16 @@ public class TurnManager extends Manager implements KeyboardListener
 				if (!battleCommand.getSpell().isTargetsEnemy())
 					targetsHero = currentSprite.isHero();
 			}
+			else if (battleCommand.getCommand() == BattleCommand.COMMAND_SPECIAL)
+
+			{
+				SpellDefinition spell = battleCommand.getOpSpecialAbility().get().getSpell();
+				range = spell.getRange()[0].getAttackableSpace();
+				areaSize = spell.getArea()[0];
+
+				if (!spell.isTargetsEnemy())
+					targetsHero = currentSprite.isHero();
+			}
 			else if (battleCommand.getCommand() == BattleCommand.COMMAND_ITEM)
 			{
 				Item item = battleCommand.getItem();
@@ -362,9 +373,7 @@ public class TurnManager extends Manager implements KeyboardListener
 					areaSize = item.getSpellUse().getSpell().getArea()[item.getSpellUse().getLevel() - 1];
 
 					if (!item.getSpellUse().getSpell().isTargetsEnemy())
-						targetsHero = currentSprite.isHero();
-					
-					displayAttackable = true;
+						targetsHero = currentSprite.isHero();					
 				}
 			}
 			else if (battleCommand.getCommand() == BattleCommand.COMMAND_GIVE_ITEM) {
@@ -518,7 +527,10 @@ public class TurnManager extends Manager implements KeyboardListener
 				determineAttackableSpace(true);
 				break;
 			case COMBATANT_TURN:
-				initializeCombatantTurn(((SpriteContextMessage) message).getSprite(stateInfo.getSprites()));
+				CombatSprite nextCombatant = ((SpriteContextMessage) message).getSprite(stateInfo.getSprites());
+				if (nextCombatant == null)
+					System.out.println("Null");
+				initializeCombatantTurn(nextCombatant);
 				break;
 			case RESET_SPRITELOC:
 				if (((int) spriteStartPoint.getX()) == currentSprite.getTileX() &&

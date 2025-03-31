@@ -2,6 +2,7 @@ package tactical.game.definition;
 
 import java.util.ArrayList;
 
+import tactical.game.battle.special.SpecialAbility;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.item.EquippableItem;
 import tactical.game.item.Item;
@@ -35,6 +36,9 @@ public abstract class EnemyDefinition
 
 	protected ArrayList<Integer> items;
 	protected ArrayList<Boolean> itemsEquipped;
+	
+	protected ArrayList<String> specialAttackIds;
+	protected ArrayList<Integer> specialAttackChances;
 
 	public EnemyDefinition(TagArea tagArea) {
 		parseEnemyDefinition(tagArea);
@@ -66,6 +70,10 @@ public abstract class EnemyDefinition
 
 		spellsPerLevel = new ArrayList<Integer>();
 		spellIds = new ArrayList<String>();
+		
+		specialAttackIds = new ArrayList<String>();
+		specialAttackChances = new ArrayList<Integer>();
+		
 		items = new ArrayList<Integer>();
 		itemsEquipped = new ArrayList<Boolean>();
 		effectId = null;
@@ -77,6 +85,11 @@ public abstract class EnemyDefinition
 			{
 				spellIds.add(childTagArea.getAttribute("spellid"));
 				spellsPerLevel.add(Integer.parseInt(childTagArea.getAttribute("level")));
+			}
+			else if (childTagArea.getTagType().equalsIgnoreCase("specialattack"))
+			{
+				specialAttackIds.add(childTagArea.getAttribute("spellid"));
+				specialAttackChances.add(Integer.parseInt(childTagArea.getAttribute("specialchance")));
 			}
 			else if (childTagArea.getTagType().equalsIgnoreCase("item"))
 			{
@@ -92,6 +105,9 @@ public abstract class EnemyDefinition
 				effectChance = Integer.parseInt(childTagArea.getAttribute("effectchance"));
 				effectLevel = Integer.parseInt(childTagArea.getAttribute("effectlevel"));
 			}
+			else {
+				System.out.println("UNHANDLED");
+			}
 		}
 	}
 
@@ -105,9 +121,14 @@ public abstract class EnemyDefinition
 		{
 			knownSpells.add(new KnownSpell(spellIds.get(i), (byte) spellsPerLevel.get(i).intValue()));
 		}
+		
+		ArrayList<SpecialAbility> specialAbilities = new ArrayList<SpecialAbility>();
+		for (int i = 0; i < specialAttackIds.size(); i++) {
+			specialAbilities.add(new SpecialAbility(specialAttackIds.get(i), specialAttackChances.get(i)));
+		}
 
 		// Create a CombatSprite from default stats, hero progression and spells known
-		CombatSprite cs = createNewCombatSprite(myId, knownSpells);
+		CombatSprite cs = createNewCombatSprite(myId, knownSpells, specialAbilities);
 
 		// Add items to the combat sprite
 		for (int i = 0; i < items.size(); i++)
@@ -123,7 +144,8 @@ public abstract class EnemyDefinition
 
 	protected abstract void parseCustomEnemyDefinition(TagArea tagArea);
 	
-	protected abstract CombatSprite createNewCombatSprite(int myId, ArrayList<KnownSpell> knownSpells);
+	protected abstract CombatSprite createNewCombatSprite(int myId, ArrayList<KnownSpell> knownSpells, 
+			ArrayList<SpecialAbility> specialAbilitites);
 
 	public int getId() {
 		return id;

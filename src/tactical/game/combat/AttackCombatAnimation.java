@@ -52,6 +52,13 @@ public class AttackCombatAnimation extends CombatAnimation
 			else 
 				animationWrapper.setAnimation("Attack", false);
 		}
+		else if (battleResults.battleCommand.getCommand() == BattleCommand.COMMAND_SPECIAL)
+		{
+			if ( animationWrapper.hasAnimation("Special"))
+				this.animationWrapper.setAnimation("Special", false);
+			else 
+				animationWrapper.setAnimation("Attack", false);
+		}
 
 		this.blocks = blockingAnimation;
 

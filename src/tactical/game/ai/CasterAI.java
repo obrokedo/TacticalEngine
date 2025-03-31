@@ -51,7 +51,7 @@ public abstract class CasterAI extends AI
 
 	@Override
 	protected AIConfidence getConfidence(CombatSprite currentSprite,
-			CombatSprite targetSprite, int tileWidth, int tileHeight,
+			CombatSprite targetSprite, 
 			Point attackPoint, int distance, StateInfo stateInfo)
 	{
 		bestSpell = null;
@@ -61,7 +61,7 @@ public abstract class CasterAI extends AI
 		boolean couldAttackTarget = false;
 		AIConfidence aiC = new AIConfidence(mostConfident);
 		int baseConfidence = determineBaseConfidence(currentSprite, targetSprite, 
-				tileWidth, tileHeight, attackPoint, stateInfo, aiC);
+				attackPoint, stateInfo, aiC);
 		Log.debug("Base Caster confidence " + baseConfidence + " name " + targetSprite.getName());
 		int currentConfidence = baseConfidence;
 
@@ -95,7 +95,7 @@ public abstract class CasterAI extends AI
 		}
 
 
-		this.checkSpells(currentSprite, targetSprite, tileWidth, tileHeight, attackPoint, distance, stateInfo, baseConfidence, aiC);
+		this.checkSpells(currentSprite, targetSprite, attackPoint, distance, stateInfo, baseConfidence, aiC);
 		aiC.confidence = mostConfident;
 		aiC.willKill = willKill;
 		aiC.willHeal = willHeal;
@@ -120,7 +120,7 @@ public abstract class CasterAI extends AI
 	}
 
 	protected void checkSpells(CombatSprite currentSprite,
-			CombatSprite targetSprite, int tileWidth, int tileHeight,
+			CombatSprite targetSprite,
 			Point attackPoint, int distance, StateInfo stateInfo, int baseConfidence, AIConfidence aiConf)
 	{
 		/**********************************************************/
@@ -133,9 +133,9 @@ public abstract class CasterAI extends AI
 			{
 				SpellDefinition spell = sd.getSpell();
 
-				for (int i = 1; i <= sd.getMaxLevel(); i++)
+				for (int spellLev = 1; spellLev <= sd.getMaxLevel(); spellLev++)
 				{
-					int cost = spell.getCosts()[i - 1];
+					int cost = spell.getCosts()[spellLev - 1];
 
 					// If we don't have enough MP to cast the spell then don't consider this spell
 					if (cost > currentSprite.getCurrentMP())
@@ -146,18 +146,18 @@ public abstract class CasterAI extends AI
 						continue;
 
 					// Check to see if the target is in range of this spell
-					if (!spell.getRange()[i - 1].isInDistance(distance) &&
+					if (!spell.getRange()[spellLev - 1].isInDistance(distance) &&
 							(spell.isTargetsEnemy() || currentSprite != targetSprite))
 						continue;					
 
-					Log.debug(sd.getSpellId() + " level " + i + " can be cast, checking it now.");
-					AISpellConfidence aisc = new AISpellConfidence(spell.getName(), i);
+					Log.debug(sd.getSpellId() + " level " + spellLev + " can be cast, checking it now.");
+					AISpellConfidence aisc = new AISpellConfidence(spell.getName(), spellLev);
 					if (spell.getDamage() != null && spell.getDamage().length >= spellLevel && spell.getDamage()[0] < 0)
 					{
-						handleDamagingSpell(spell, sd, i, tileWidth, tileHeight, currentSprite,
+						handleDamagingSpell(spell, sd, spellLev, currentSprite,
 								targetSprite, stateInfo, baseConfidence, cost, attackPoint, distance, aisc);
 					} else {
-						handleSpell(spell, sd, i, tileWidth, tileHeight, currentSprite,
+						handleSpell(spell, sd, spellLev, currentSprite,
 							targetSprite, stateInfo, baseConfidence, cost, attackPoint, distance, aisc);
 					}
 					spellConfs.add(aisc);
@@ -168,7 +168,7 @@ public abstract class CasterAI extends AI
 	}
 	
 	protected void handleDamagingSpell(SpellDefinition spell,  KnownSpell knownSpell, int spellLevel, 
-			int tileWidth, int tileHeight, CombatSprite currentSprite,
+			CombatSprite currentSprite,
 			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, 
 			Point attackPoint, int distance, AISpellConfidence aiSpellConf)
 	{
@@ -180,27 +180,7 @@ public abstract class CasterAI extends AI
 		{
 			int killed = 0;
 
-			// If there are multiple targets then get the total percent damage done and then divide it by the area amount
-			// this will hopefully prevent wizards from casting higher level spells then they need to
-			if (area != AttackableSpace.AREA_ALL_INDICATOR) {
-			targetsInArea = getNearbySprites(stateInfo, (currentSprite.isHero() ? !spell.isTargetsEnemy() : spell.isTargetsEnemy()),
-					tileWidth, tileHeight,
-					new Point(targetSprite.getTileX(), targetSprite.getTileY()), spell.getArea()[spellLevel - 1] - 1,
-						currentSprite);
-			// If this is area all then just add all of the correct targets
-			} else {
-				targetsInArea = new ArrayList<>();
-				boolean targetHero = false;
-				if (spell.isTargetsEnemy())
-					targetHero = !currentSprite.isHero();
-				for (CombatSprite cs : stateInfo.getCombatSprites())
-				{
-					if (targetHero == cs.isHero())
-					{
-						targetsInArea.add(cs);
-					}
-				}
-			}
+			targetsInArea = getTargetsInArea(spell, spellLevel, currentSprite, targetSprite, stateInfo);
 
 			for (CombatSprite ts : targetsInArea)
 			{
@@ -296,13 +276,8 @@ public abstract class CasterAI extends AI
 
 	@Override
 	protected int getMaxRange(CombatSprite currentSprite) {
-		// Check for weapons that have a range, but areas in the range they cannot hit
 		int range = currentSprite.getAttackRange().getMaxRange();
-		if (range == EquippableItem.RANGE_BOW_2_NO_1)
-			range = 2;
-		else if (range == EquippableItem.RANGE_BOW_3_NO_1 || range == EquippableItem.RANGE_BOW_3_NO_1_OR_2)
-			range = 3;
-
+		
 		// Get the largest spell range
 		if (currentSprite.getSpellsDescriptors() != null)
 		{
@@ -338,11 +313,11 @@ public abstract class CasterAI extends AI
 		}
 	}
 
-	protected abstract void handleSpell(SpellDefinition spell,  KnownSpell knownSpell, int i, int tileWidth, int tileHeight, CombatSprite currentSprite,
+	protected abstract void handleSpell(SpellDefinition spell,  KnownSpell knownSpell, int spellLevel, CombatSprite currentSprite,
 			CombatSprite targetSprite, StateInfo stateInfo, int baseConfidence, int cost, Point attackPoint, int distance, AISpellConfidence aiSpellConf);
 
 	protected abstract int determineBaseConfidence(CombatSprite currentSprite,
-			CombatSprite targetSprite, int tileWidth, int tileHeight,
+			CombatSprite targetSprite, 
 			Point attackPoint, StateInfo stateInfo, AIConfidence aiConf);
 
 	@Override

@@ -1,7 +1,9 @@
 package tactical.game.battle.command;
 
 import java.io.Serializable;
+import java.util.Optional;
 
+import tactical.game.battle.special.SpecialAbility;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.item.Item;
@@ -16,12 +18,14 @@ public class BattleCommand implements Serializable
 	public static final int COMMAND_ITEM = 2;
 	public static final int COMMAND_TURN_PREVENTED = 3;
 	public static final int COMMAND_GIVE_ITEM = 4;
+	public static final int COMMAND_SPECIAL = 5;
 
 	private int command;
 	private KnownSpell spell;
 	private transient SpellDefinition jSpell;
 	private Item item;
 	private int level;
+	private Optional<SpecialAbility> opSpecialAbility = Optional.empty();
 
 	public BattleCommand(int command) {
 		super();
@@ -39,6 +43,12 @@ public class BattleCommand implements Serializable
 		this.command = command;
 		this.item = item;
 		this.level = level;
+	}
+	
+	public BattleCommand(int command, SpecialAbility ability) {
+		this.command = command;
+		this.opSpecialAbility = Optional.of(ability);
+		this.level = 1;
 	}
 
 	public BattleCommand(int command, SpellDefinition jSpell, KnownSpell spell, int level) {
@@ -67,6 +77,11 @@ public class BattleCommand implements Serializable
 			spell.initializeFromLoad(fcrm);
 			jSpell = spell.getSpell();
 		}
+		
+		if (opSpecialAbility.isPresent()) {
+			opSpecialAbility.get().initializeFromLoad(fcrm);
+			jSpell = opSpecialAbility.get().getSpell();
+		}
 	}
 
 	public Item getItem() {
@@ -79,6 +94,10 @@ public class BattleCommand implements Serializable
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public Optional<SpecialAbility> getOpSpecialAbility() {
+		return opSpecialAbility;
 	}
 
 	@Override

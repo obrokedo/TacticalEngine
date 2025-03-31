@@ -15,7 +15,7 @@ public class Item implements Serializable
 	protected transient boolean isEquippable;
 	protected transient Image image;
 	protected transient ItemUse itemUse;
-	protected transient SpellItemUse spellUse;
+	protected SpellItemUse spellUse;
 	protected int itemId;
 	protected ItemDurability durability = ItemDurability.PERFECT;
 	protected boolean isDeal = false;
@@ -29,7 +29,7 @@ public class Item implements Serializable
 		this.cost = cost;
 		this.description = description;
 		this.isUsuable = ((itemUse != null) || (spellUse != null));
-		this.spellUse = spellUse;
+		this.spellUse = (spellUse != null ? spellUse.copy() : null);
 		this.isEquippable = isEquippable;
 		this.useDamagesItem = useDamagesItem;
 		this.itemUse = itemUse;
@@ -150,13 +150,12 @@ public class Item implements Serializable
 		this.isEquippable = item.isEquippable;
 		this.isUsuable = item.isUsuable;
 		this.itemUse = item.itemUse;
-		this.spellUse = item.spellUse;
 		this.name = item.name;
 	}
 	
 	public Item copyItem() {
 		return new Item(name, cost, description, isUsuable, 
-				isEquippable, image, itemUse, spellUse, itemId, durability, isDeal, useDamagesItem);
+				isEquippable, image, itemUse,  (spellUse != null ? spellUse.copy() : null), itemId, durability, isDeal, useDamagesItem);
 	}
 
 	private Item(String name, int cost, String description, boolean isUsuable, boolean isEquippable, Image image,
@@ -170,7 +169,7 @@ public class Item implements Serializable
 		this.isEquippable = isEquippable;
 		this.image = image;
 		this.itemUse = itemUse;
-		this.spellUse = spellUse;
+		this.spellUse = (spellUse != null ? spellUse.copy() : null);
 		this.itemId = itemId;
 		this.durability = durability;
 		this.isDeal = isDeal;

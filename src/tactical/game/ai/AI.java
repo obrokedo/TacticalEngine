@@ -4,11 +4,16 @@ import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.newdawn.slick.util.Log;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.state.StateInfo;
+import tactical.game.battle.command.BattleCommand;
+import tactical.game.battle.special.SpecialAbility;
+import tactical.game.battle.spell.SpellDefinition;
+import tactical.game.move.AttackableSpace;
 import tactical.game.move.MoveableSpace;
 import tactical.game.sprite.CombatSprite;
 import tactical.game.sprite.Sprite;
@@ -73,9 +78,24 @@ public abstract class AI implements Serializable
 		return this.getActions(stateInfo, ms, currentSprite, conf);
 	}
 
-	public AIConfidence getBestConfidence(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite, List<AIConfidence> confidenceDebugList)
+	public AIConfidence getBestConfidence(StateInfo stateInfo, MoveableSpace ms, CombatSprite currentSprite, 
+			List<AIConfidence> confidenceDebugList)
 	{
-		ArrayList<AttackableEntity> attackableSprites = this.getAttackableSprites(stateInfo, currentSprite, ms, getMaxRange(currentSprite));
+		int maxRange = getMaxRange(currentSprite);
+		
+		// Check to see if the attacker has specials that should trigger		
+		Optional<SpecialAbility> specialToUse = currentSprite.getSpecialAbilities().stream().filter(
+				s -> TacticalGame.RANDOM.nextInt(100) <  s.getChance()).findFirst();
+		
+		WarriorAI aiForSpecial = null;
+		
+		// If there is a special that will be used, then we will just use that as the max range
+		if (specialToUse.isPresent()) {
+			maxRange = specialToUse.get().getSpell().getRange()[0].getMaxRange();
+			aiForSpecial = new WarriorAI(approachType, vision);
+		}
+		
+		ArrayList<AttackableEntity> attackableSprites = this.getAttackableSprites(stateInfo, currentSprite, ms, maxRange);
 		AIConfidence maxConfidence = new AIConfidence(0);
 		int tileWidth = ms.getTileWidth();
 		int tileHeight = ms.getTileHeight();
@@ -97,7 +117,7 @@ public abstract class AI implements Serializable
 		// and the most amount of damage. Want to balance this with the resources used
 		if (attackableSprites.size() > 0)
 		{
-			int distanceCost = getSpriteDistanceCost(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, 
+			int distanceCost = getSpriteDistanceCost(stateInfo, currentSprite.isHero(), 
 					new Point(currentSprite.getTileX(), currentSprite.getTileY()), currentSprite.getCurrentMove(), currentSprite);
 			for (AttackableEntity as : attackableSprites)
 			{
@@ -116,23 +136,38 @@ public abstract class AI implements Serializable
 					Point attackPoint = as.getAttackablePoints().get(i);
 					
 					int distance = as.getDistances().get(i);
-					AIConfidence currentConfidence = getConfidence(currentSprite, as.getCombatSprite(), tileWidth, tileHeight,
-							attackPoint, distance, stateInfo);					
+					AIConfidence currentConfidence = null;
+					
+					// If we are using the special ability, then we will determine confidence based
+					// one warrior AI, this may end up with some weird behavior
+					if (!specialToUse.isPresent()) 
+						currentConfidence = getConfidence(currentSprite, as.getCombatSprite(),
+							attackPoint, distance, stateInfo);
+					else
+						currentConfidence = aiForSpecial.getConfidenceNoRangeCheck(currentSprite, 
+								as.getCombatSprite(), attackPoint, distanceCost, stateInfo);
 					
 					// Don't let land effect make a bad decision better
 					if (currentConfidence.confidence > 0)
 					{
 						currentConfidence.landInfluence = this.getLandEffectConfidence(attackPoint, currentSprite, stateInfo);
 						currentConfidence.confidence += currentConfidence.landInfluence;
-						currentConfidence.distanceInfluence = distanceCost - getSpriteDistanceCost(stateInfo, currentSprite.isHero(), tileWidth, tileHeight, 
+						currentConfidence.distanceInfluence = distanceCost - getSpriteDistanceCost(stateInfo, currentSprite.isHero(), 
 								attackPoint, currentSprite.getCurrentMove(), currentSprite);
-						currentConfidence.confidence = Math.max(1, currentConfidence.confidence + currentConfidence.distanceInfluence);
-												
+						currentConfidence.confidence = Math.max(1, currentConfidence.confidence + currentConfidence.distanceInfluence);												
 					}
 					
 					currentConfidence.attackPoint = attackPoint;
 					currentConfidence.target = as.getCombatSprite();
-					currentConfidence.potentialAttackSpriteAction = getPerformedTurnAction(as.getCombatSprite());
+					if (!specialToUse.isPresent())
+						currentConfidence.potentialAttackSpriteAction = getPerformedTurnAction(as.getCombatSprite());
+					// If we are doing a special attack the battle command for our AI will have the wrong values,
+					// inject the SPECIAL attack and get the targets that may have been miscalculated
+					else {
+						currentConfidence.potentialAttackSpriteAction = new AttackSpriteAction(
+								getTargetsInArea(specialToUse.get().getSpell(), 1, currentSprite, as.getCombatSprite(), stateInfo),
+								new BattleCommand(BattleCommand.COMMAND_SPECIAL, specialToUse.get()));
+					}
 					currentConfidence.foundHero = true;
 					
 					if (confidenceDebugList != null) {
@@ -281,13 +316,13 @@ public abstract class AI implements Serializable
 
 	private void performKamikazeeApproach(StateInfo stateInfo, int tileWidth, int tileHeight, CombatSprite currentSprite, MoveableSpace ms, ArrayList<TurnAction> turnActions)
 	{
-		CombatSprite target = this.getMostIsolatedHero(stateInfo, tileWidth, tileHeight, currentSprite, ms);
+		CombatSprite target = this.getMostIsolatedHero(stateInfo, currentSprite, ms);
 		ms.addMoveActionsAlongPath((int) target.getLocX(), (int) target.getLocY(), currentSprite, turnActions);
 	}
 
 	private void performHesitantApproach(StateInfo stateInfo, int tileWidth, int tileHeight, CombatSprite currentSprite, MoveableSpace ms, ArrayList<TurnAction> turnActions)
 	{
-		CombatSprite target = this.getMostIsolatedHero(stateInfo, tileWidth, tileHeight, currentSprite, ms);
+		CombatSprite target = this.getMostIsolatedHero(stateInfo, currentSprite, ms);
 		int move = 3;
 		int rand = TacticalGame.RANDOM.nextInt(5);
 		if (rand == 0)
@@ -320,7 +355,7 @@ public abstract class AI implements Serializable
 		ms.addMoveActionsAlongPath(targetPoint.x, targetPoint.y, currentSprite, turnActions);
 	}
 
-	protected CombatSprite getMostIsolatedHero(StateInfo stateInfo, int tileWidth, int tileHeight, CombatSprite currentSprite, MoveableSpace ms)
+	protected CombatSprite getMostIsolatedHero(StateInfo stateInfo, CombatSprite currentSprite, MoveableSpace ms)
 	{
 		int leastAmt = Integer.MAX_VALUE;
 		CombatSprite mostIsolatedCS = currentSprite;
@@ -328,7 +363,7 @@ public abstract class AI implements Serializable
 		{
 			if (cs.isHero() == currentSprite.isHero())
 				continue;
-			int amt = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), tileWidth, tileHeight, new Point(cs.getTileX(), cs.getTileY()), 5, currentSprite);
+			int amt = getNearbySpriteAmount(stateInfo, !currentSprite.isHero(), new Point(cs.getTileX(), cs.getTileY()), 5, currentSprite);
 			if (amt < leastAmt && ms.doesPathExist(currentSprite.getTileX(), currentSprite.getTileY(), cs.getTileX(), cs.getTileY()))
 			{
 				leastAmt = amt;
@@ -450,15 +485,13 @@ public abstract class AI implements Serializable
 	 *
 	 * @param stateInfo
 	 * @param isHero
-	 * @param tileWidth
-	 * @param tileHeight
 	 * @param point
 	 * @param range
 	 * @param attacker
 	 * @return
 	 */
 	protected int getNearbySpriteAmount(StateInfo stateInfo, boolean isHero,
-			int tileWidth, int tileHeight, Point point, int range, CombatSprite attacker)
+			Point point, int range, CombatSprite attacker)
 	{
 		int count = 0;
 
@@ -481,7 +514,7 @@ public abstract class AI implements Serializable
 	}
 	
 	protected int getSpriteDistanceCost(StateInfo stateInfo, boolean isHero,
-			int tileWidth, int tileHeight, Point point, int range, CombatSprite attacker)
+			Point point, int range, CombatSprite attacker)
 	{
 		int cost = 0;
 
@@ -506,7 +539,7 @@ public abstract class AI implements Serializable
 	}
 
 	protected ArrayList<CombatSprite> getNearbySprites(StateInfo stateInfo, boolean isHero,
-			int tileWidth, int tileHeight, Point point, int range, CombatSprite attacker)
+			Point point, int range, CombatSprite attacker)
 	{
 		ArrayList<CombatSprite> css = new ArrayList<CombatSprite>();
 
@@ -610,6 +643,32 @@ public abstract class AI implements Serializable
 		return attackable;
 	}
 	
+	protected ArrayList<CombatSprite> getTargetsInArea(SpellDefinition spell, int spellLevel, CombatSprite currentSprite,
+			CombatSprite targetSprite, StateInfo stateInfo) {
+		ArrayList<CombatSprite> targetsInArea;
+		// If there are multiple targets then get the total percent damage done and then divide it by the area amount
+		// this will hopefully prevent wizards from casting higher level spells then they need to
+		if (spell.getArea()[spellLevel - 1] != AttackableSpace.AREA_ALL_INDICATOR) {
+			targetsInArea = getNearbySprites(stateInfo, (currentSprite.isHero() ? !spell.isTargetsEnemy() : spell.isTargetsEnemy()),
+				new Point(targetSprite.getTileX(), targetSprite.getTileY()), spell.getArea()[spellLevel - 1] - 1,
+					currentSprite);
+		// If this is area all then just add all of the correct targets
+		} else {
+			targetsInArea = new ArrayList<>();
+			boolean targetHero = false;
+			if (spell.isTargetsEnemy())
+				targetHero = !currentSprite.isHero();
+			for (CombatSprite cs : stateInfo.getCombatSprites())
+			{
+				if (targetHero == cs.isHero())
+				{
+					targetsInArea.add(cs);
+				}
+			}
+		}
+		return targetsInArea;
+	}
+	
 	private boolean isInVisionRange(CombatSprite attacker, Sprite target, int vision) {
 		return Math.abs(attacker.getTileX() - target.getTileX()) + Math.abs(attacker.getTileY() - target.getTileY()) <= vision;
 	}
@@ -658,13 +717,12 @@ public abstract class AI implements Serializable
 	protected abstract int getMaxRange(CombatSprite currentSprite);
 
 	protected abstract AIConfidence getConfidence(CombatSprite currentSprite, CombatSprite targetSprite,
-			int tileWidth , int tileHeight, Point attackPoint, int distance, StateInfo stateInfo);
+			Point attackPoint, int distance, StateInfo stateInfo);
 
 	public void initialize(CombatSprite puppet) {
 		this.vision = Math.max(vision, getMaxRange(puppet));
 	}
 	
-
 	protected int getLandEffectConfidence(Point actionPoint, CombatSprite currentSprite, StateInfo stateInfo)
 	{
 		return getLandEffectWeight(stateInfo.getCurrentMap().getLandEffectByTile(currentSprite.getMovementType(),
