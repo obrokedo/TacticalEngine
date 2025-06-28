@@ -273,6 +273,7 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		JMenu cinematicMenu = new JMenu("Cinematic");
 		playCinematicMenuItem = addMenuItem("Play Cinematic", "playcin", cinematicMenu);
 		playCinematicMenuItem.setEnabled(false);
+		addMenuItem("Initialize Cinimatic Tab DropDown", "initCinDropDown", cinematicMenu);
 		menuBar.add(cinematicMenu);
 	}
 	
@@ -530,6 +531,10 @@ public class PlannerFrame extends JFrame implements ActionListener,
 		else if (actionCommand.equalsIgnoreCase("exportmap"))
 		{
 			// exportMap();
+		}
+		else if (actionCommand.equalsIgnoreCase("initCinDropDown"))
+		{
+			cinematicMapPanel.initializeCinematicIdList();
 		}
 		else if (actionCommand.equalsIgnoreCase("playcin")) {
 			if (cinematicMapPanel.getSelectedCinematicId() != -1) {
