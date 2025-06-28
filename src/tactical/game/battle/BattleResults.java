@@ -221,6 +221,9 @@ public class BattleResults implements Serializable
 		if (StringUtils.isEmpty(br.attackOverText))
 			br.attackOverText = null;
 	
+		if(br.critted.size() == 0)
+			br.critted.add(false);
+		
 		return br;
 	}
 
