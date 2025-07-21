@@ -139,7 +139,7 @@ public abstract class AI implements Serializable
 					AIConfidence currentConfidence = null;
 					
 					// If we are using the special ability, then we will determine confidence based
-					// one warrior AI, this may end up with some weird behavior
+					// on warrior AI, this may end up with some weird behavior
 					if (!specialToUse.isPresent()) 
 						currentConfidence = getConfidence(currentSprite, as.getCombatSprite(),
 							attackPoint, distance, stateInfo);

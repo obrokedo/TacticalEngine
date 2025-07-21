@@ -11,11 +11,11 @@ public enum Direction
 		if (dir == 0)
 			return Direction.UP;
 		else if (dir == 1)
-			return Direction.DOWN;
-		else if (dir == 2)
 			return Direction.LEFT;
-		else if (dir == 3)
+		else if (dir == 2)
 			return Direction.RIGHT;
+		else if (dir == 3)
+			return Direction.DOWN;
 		return null;
 	}
 }

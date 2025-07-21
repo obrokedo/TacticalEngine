@@ -528,8 +528,6 @@ public class TurnManager extends Manager implements KeyboardListener
 				break;
 			case COMBATANT_TURN:
 				CombatSprite nextCombatant = ((SpriteContextMessage) message).getSprite(stateInfo.getSprites());
-				if (nextCombatant == null)
-					System.out.println("Null");
 				initializeCombatantTurn(nextCombatant);
 				break;
 			case RESET_SPRITELOC:

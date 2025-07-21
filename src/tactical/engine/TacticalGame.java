@@ -46,7 +46,7 @@ import tactical.utils.planner.PlannerFrame;
 public abstract class TacticalGame extends StateBasedGame   {
 	private static final Logger LOGGER = LoggingUtils.createLogger(TacticalGame.class);
 	
-	public static final String ENGINE_VERSION = "DEV 1.429 Mar 10, 2024";
+	public static final String ENGINE_VERSION = "DEV 1.430 Apr 5, 2024";
 	
 	public static final int STATE_GAME_MENU_DEVEL = 1;
 
@@ -232,10 +232,16 @@ public abstract class TacticalGame extends StateBasedGame   {
 		}
 		
 		try {
-			persistentStateInfo =
-				new PersistentStateInfo(clientProfile, clientProgress,
-						this,
-						new Camera(PaddedGameContainer.GAME_SCREEN_SIZE.width, PaddedGameContainer.GAME_SCREEN_SIZE.height), container);
+			if (persistentStateInfo == null) {
+				persistentStateInfo =
+					new PersistentStateInfo(clientProfile, clientProgress,
+							this,
+							new Camera(PaddedGameContainer.GAME_SCREEN_SIZE.width, PaddedGameContainer.GAME_SCREEN_SIZE.height), container);
+			}
+			else {
+				this.persistentStateInfo.setClientProfile(clientProfile);
+				this.persistentStateInfo.setClientProgress(clientProgress);
+			}
 		}
 		catch (Throwable t)
 		{

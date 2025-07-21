@@ -44,13 +44,24 @@ public class DevParams {
 						cp.addHero(hero);
 					}
 					
+					// Check to see if promoted was specified
+					Boolean promoted = t.getBoolAttribute("promoted");
+					if (promoted != null && promoted) {
+						Integer promotionPath = t.getIntAttribute("promotionPath");
+						int path = 0;
+						if (promotionPath != null) {
+							path = Math.max(0, promotionPath);
+						}
+						hero.setPromoted(true, path);
+					}
+					
 					hero.upgradeHeroToLevel(t.getIntAttribute("level"));
 					while (hero.getItemsSize() > 0) {
 						if (hero.getEquipped().get(0)) {
 							hero.unequipItem((EquippableItem) hero.getItem(0));
 						}
 						hero.removeItem(hero.getItem(0));
-					}
+					} 
 					
 					hero.setExp(t.getIntAttribute("exp"));
 					
@@ -59,7 +70,7 @@ public class DevParams {
 					for (int i = 0; i < items.length; i++) {
 						Item item = ItemResource.getUninitializedItem(Integer.parseInt(items[i]));
 						hero.addItem(item);
-						if (Boolean.parseBoolean(eqp[i])) 
+						if (Boolean.parseBoolean(eqp[i]))
 							hero.equipItem((EquippableItem) item);
 					}
 						

@@ -35,11 +35,18 @@ public class PerformAttackAction extends TurnAction
 		stateInfo.removePanel(PanelType.PANEL_ENEMY_HEALTH_BAR);
 		AttackCinematicState acs = TacticalGame.ENGINE_CONFIGURATIOR.getAttackCinematicState();
 		
-		if (TacticalGame.BATTLE_MODE_OPTIMIZE || acs == null)
+		if ( acs == null)
 		{
 			for (int i = 0; i < turnManager.getBattleResults().targets.size(); i++)
 			{
 				CombatSprite t = turnManager.getBattleResults().targets.get(i);
+				
+				// If the attacker loses their turn then there will be no attributes to read
+				// here, but we also don't have any other flag in the results to indicates that.
+				// So just break here as nothing will happen
+				if (turnManager.getBattleResults().hpDamage.size() == 0)
+					break;
+				
 				t.modifyCurrentHP(turnManager.getBattleResults().hpDamage.get(i));
 				t.modifyCurrentMP(turnManager.getBattleResults().mpDamage.get(i));
 				turnManager.getCurrentSprite().modifyCurrentHP(turnManager.getBattleResults().attackerHPDamage.get(i));

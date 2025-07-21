@@ -23,6 +23,7 @@ import org.newdawn.slick.util.Log;
 
 import lombok.Getter;
 import lombok.Setter;
+import tactical.engine.TacticalGame;
 import tactical.engine.message.BooleanMessage;
 import tactical.engine.message.LoadChapterMessage;
 import tactical.engine.message.LoadMapMessage;
@@ -69,6 +70,7 @@ public class StateInfo
 	private ArrayList<Manager> managers;
 	private ArrayList<Message> messagesToProcess;
 	private ArrayList<Message> newMessages;
+	private ArrayList<Message> oldMessages;
 	@Getter @Setter private boolean initialized = false;
 	@Getter private boolean isCombat = false;
 	private boolean isCinematic = false;
@@ -163,6 +165,7 @@ public class StateInfo
 		this.managers = new ArrayList<Manager>();
 		this.messagesToProcess = new ArrayList<Message>();
 		this.newMessages = new ArrayList<Message>();
+		this.oldMessages = new ArrayList<Message>();
 		this.input = new UserInput();
 	}
 
@@ -423,6 +426,11 @@ public class StateInfo
 	public void processMessages()
 	{
 		messagesToProcess.addAll(newMessages);
+		if (TacticalGame.DEV_MODE_ENABLED) {
+			oldMessages.addAll(newMessages);
+			while (oldMessages.size() > 100)
+				oldMessages.remove(0);
+		}
 		newMessages.clear();
 		for (int i = 0; i < messagesToProcess.size(); i = 0)
 		{
@@ -816,6 +824,7 @@ public class StateInfo
 	{
 		sprites.remove(cs);
 		combatSprites.remove(cs);
+		this.sendMessage(new SpriteContextMessage(MessageType.REMOVE_COMBATANT, cs));
 	}
 
 	public void addAllCombatSprites(Collection<CombatSprite> ss)

@@ -233,12 +233,13 @@ public class DfAnimationParser implements AnimationParser {
 				Animation anim = parseAnimation(file.getPath());
 				anim.initialize(new Image(file.getPath().replace(".anim", ".png"), ResourceManager.TRANSPARENT));
 				
+				String fileNameReplaced = file.getName().split("\\.")[0]; // .replaceAll("%20", " ");
 				if (file.getPath().indexOf("unpromoted") != -1) {
-					animations.put(AnimationConfiguration.getUnpromotedPrefix() + file.getName().split("\\.")[0], anim);
+					animations.put(AnimationConfiguration.getUnpromotedPrefix() + fileNameReplaced, anim);
 				} else if (file.getPath().indexOf("promoted") != -1) {
-					animations.put(AnimationConfiguration.getPromotedPrefix() + file.getName().split("\\.")[0], anim);
+					animations.put(AnimationConfiguration.getPromotedPrefix() + fileNameReplaced, anim);
 				} else 
-					animations.put(file.getName().split("\\.")[0], anim);
+					animations.put(fileNameReplaced, anim);
 				
 			}
 		}

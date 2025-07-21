@@ -34,10 +34,12 @@ import tactical.engine.load.BulkLoader;
 import tactical.engine.message.LoadMapMessage;
 import tactical.engine.state.MenuState;
 import tactical.engine.state.PersistentStateInfo;
+import tactical.game.Camera;
 import tactical.game.dev.DevParams;
 import tactical.game.exception.BadResourceException;
 import tactical.game.hudmenu.Panel;
 import tactical.game.menu.Menu.MenuUpdate;
+import tactical.game.persist.ClientProfile;
 import tactical.game.persist.ClientProgress;
 import tactical.game.resource.SpellResource;
 import tactical.game.text.Speech;
@@ -248,7 +250,7 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 		g.drawString("Current Save Data", startDrawX, startDrawY += 30);
 		if (cp.getLastSaveLocation() != null) {
 			
-			g.drawString("Map: "+ cp.getMapData(), startDrawX, startDrawY += 30);
+			g.drawString("Map: "+ cp.getLastSaveLocation().getLastSaveMapData(), startDrawX, startDrawY += 30);
 			boolean inBattle = (cp.getLastSaveLocation().getBattleHeroSpriteIds() != null);
 			g.drawString("In battle: " + inBattle, 
 					startDrawX, startDrawY += 30);
@@ -415,15 +417,22 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					return;
 					
 				}
-				else if (persistentStateInfo.getClientProgress().isBattle())
-					loadType = LoadTypeEnum.BATTLE;
-				load(loadType, persistentStateInfo.getClientProgress().getMapData(), null, 0);
+				else if (persistentStateInfo.getClientProgress().isBattle()) {
+					load(LoadTypeEnum.BATTLE, 
+							persistentStateInfo.getClientProgress().getLastSaveLocation().getLastSaveMapData(), 
+							null, 0);
+				}
+				else {
+					load(loadType, persistentStateInfo.getClientProgress().getLastSaveLocation().getLastSaveMapData(), null, 0);
+				}
+				
 			}
 			
 			if (key == Input.KEY_F9)
 			{
 				TacticalGame.TEST_MODE_ENABLED = true;
 				TacticalGame.BATTLE_MODE_OPTIMIZE = true;
+				applyDevParams();
 				if (textSelector.getSelectedResource() != null && 
 						entranceSelector.getSelectedResource() != null)
 					start(LoadTypeEnum.BATTLE, textSelector.getSelectedResource(), 
@@ -552,6 +561,9 @@ public class DevelMenuState extends MenuState implements ResourceSelectorListene
 					if (TacticalGame.SAVE_ENABLED) {
 						saveEnableButton.setText("Save Enabled");
 						saveEnableButton.setForegroundColor(Color.green);
+						((TacticalGame)persistentStateInfo.getGame()).createOrLoadPersistantState(
+								persistentStateInfo.getGc());
+						
 					} else {
 						saveEnableButton.setText("Save Disabled");
 						saveEnableButton.setForegroundColor(Color.red);

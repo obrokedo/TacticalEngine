@@ -102,7 +102,7 @@ public class InitiativeManager extends Manager
 			Iterator<CombatSprite> csIt = turnOrder.iterator();
 			while (csIt.hasNext()) {
 				CombatSprite cs = csIt.next();
-				if (cs.getCurrentHP() <= 0) 
+				if (cs.getCurrentHP() <= 0)
 					csIt.remove();
 			}
 			
@@ -190,6 +190,14 @@ public class InitiativeManager extends Manager
 				break;
 			case INITIALIZE_BATTLE_FROM_LOAD:
 				initializeInitOrderFromLoad();
+				break;
+			case REMOVE_COMBATANT:
+				for (CombatSprite cs : turnOrder) {
+					if (cs.getId() == ((SpriteContextMessage) message).getSpriteIds().get(0)) {
+						turnOrder.remove(cs);
+						break;
+					}
+				}
 				break;
 			default:
 				break;

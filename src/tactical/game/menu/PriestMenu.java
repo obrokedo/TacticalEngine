@@ -148,6 +148,7 @@ public class PriestMenu extends QuadMenu implements MenuListener
 	}
 
 	private void saveGame() {
+		stateInfo.getPersistentStateInfo().getClientProgress().setBattle(false);
 		stateInfo.sendMessage(new SpeechMessage(menuConfig.getPriestSaveText(), portrait));
 		stateInfo.sendMessage(MessageType.SAVE);
 	}

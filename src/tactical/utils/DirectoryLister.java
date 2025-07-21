@@ -7,6 +7,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,16 +27,16 @@ public class DirectoryLister {
 		Stream<Path> walk = null;
 		List<File> files = new ArrayList<>();
 		FileSystem fileSystem = null;
+		dir = dir.replace('\\', '/');
 		try {
 			
-			URI uri = DirectoryLister.class.getClassLoader().getResource(dir).toURI();
+			URI uri = DirectoryLister.class.getClassLoader().getResource(dir).toURI();						
             fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
             Path myPath = fileSystem.getPath(dir);
 		    walk = Files.walk(myPath, 1);
 		    
 		    for (Iterator<Path> it = walk.iterator(); it.hasNext();){
 		    	URI listedUri = it.next().toUri();
-		    	System.out.println(listedUri);
 		    	if (listedUri.toString() != null && !listedUri.toString().endsWith(dir)) {
 		    		String uriS = listedUri.toString();		    		
 		    		int index = uriS.indexOf("!");

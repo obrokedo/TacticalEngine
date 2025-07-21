@@ -434,6 +434,8 @@ public class ResourceManager implements Serializable {
 		if (LoadingState.inJar)
 		{
 			file = file.replaceAll("\\\\", "/");
+			if (!file.startsWith("/"))
+				file = "/" + file;
 			br = new BufferedReader(new InputStreamReader(LoadingState.MY_CLASS.getResourceAsStream(file)));
 		}
 		else

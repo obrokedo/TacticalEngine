@@ -218,6 +218,7 @@ public class BattleState extends LoadableGameState
 			}
 		} catch (Exception e) {
 			if (TacticalGame.DEV_MODE_ENABLED) {
+				e.printStackTrace();
 				try {
 					stateInfo.dumpSaveStatesToFile();
 				// Nothing bad ever happens
