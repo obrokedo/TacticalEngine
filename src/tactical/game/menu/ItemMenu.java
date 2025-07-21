@@ -89,6 +89,8 @@ public class ItemMenu extends QuadMenu
 			}
 		}
 		
+		findFirstCorrectItem();
+		
 		for (int i = 0; i < enabled.length; i++) {
 			if (enabled[i]) {
 				setItemDifferences();
@@ -96,8 +98,8 @@ public class ItemMenu extends QuadMenu
 			}
 		}
 		
-		if (itemOption == ItemOption.USE)
-			onDirection(Direction.UP);
+		//if (itemOption == ItemOption.USE)
+		//	onDirection(Direction.UP);
 	}
 
 	@Override
@@ -236,17 +238,61 @@ public class ItemMenu extends QuadMenu
 		}
 	}
 
+	private void findFirstCorrectItem()
+	{
+		//make sure the item selected is of type equippable to avoid errors when setting item differences
+		for (int i = 0; i < 4; i++)
+		{
+			if (i < stateInfo.getCurrentSprite().getItemsSize())
+			{
+				Item item = stateInfo.getCurrentSprite().getItem(i);
+				
+				if (itemOption == ItemOption.EQUIP) {
+					if(item.isEquippable())
+					{
+						onDirection(ConvertInventoryIndexToDirection(i));
+						break;
+					}
+				}
+				else if(itemOption == ItemOption.USE)
+				{
+					if(item.isUsuable())
+					{
+						onDirection(ConvertInventoryIndexToDirection(i));
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	private Direction ConvertInventoryIndexToDirection(int index)
+	{
+		switch(index)
+		{
+		case 0:
+			return Direction.UP;
+		case 1:
+			return Direction.LEFT;
+		case 2:
+			return Direction.RIGHT;
+		case 3:
+			return Direction.LEFT;
+		}
+		return Direction.UP;
+	}
+	
 	private void setItemDifferences() {
 		if (itemOption == ItemOption.EQUIP) {
 			Item item = stateInfo.getCurrentSprite().getItem(this.getSelectedInt());
 			Item equippedItem = null;
 			switch (((EquippableItem) item).getItemType()) {
-				case EquippableItem.TYPE_WEAPON:
-					equippedItem = stateInfo.getCurrentSprite().getEquippedWeapon();
-					break;
-				case EquippableItem.TYPE_RING:
-					equippedItem = stateInfo.getCurrentSprite().getEquippedRing();
-					break;
+			case EquippableItem.TYPE_WEAPON:
+				equippedItem = stateInfo.getCurrentSprite().getEquippedWeapon();
+				break;
+			case EquippableItem.TYPE_RING:
+				equippedItem = stateInfo.getCurrentSprite().getEquippedRing();
+				break;
 			}
 			
 			EquippableDifference ed = Item.getEquippableDifference((EquippableItem) equippedItem, (EquippableItem) item);

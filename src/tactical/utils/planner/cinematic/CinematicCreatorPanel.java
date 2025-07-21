@@ -175,7 +175,7 @@ public class CinematicCreatorPanel implements ActionListener, ChangeListener, It
 		uiAspect.add(rightPanel, BorderLayout.LINE_END);
 	}
 
-	private void initializeCinematicIdList() {
+	public void initializeCinematicIdList() {
 		DefaultComboBoxModel<String> ids = new DefaultComboBoxModel<String>(pt.getItemList());
 		ids.addElement("Create new cinematic...");
 		cinematicIds.setModel(ids);
