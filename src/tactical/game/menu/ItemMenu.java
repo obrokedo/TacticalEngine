@@ -277,7 +277,7 @@ public class ItemMenu extends QuadMenu
 		case 2:
 			return Direction.RIGHT;
 		case 3:
-			return Direction.LEFT;
+			return Direction.DOWN;
 		}
 		return Direction.UP;
 	}
@@ -386,3 +386,4 @@ public class ItemMenu extends QuadMenu
 		return 95;
 	}
 }
+
