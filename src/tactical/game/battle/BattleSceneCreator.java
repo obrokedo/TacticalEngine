@@ -25,7 +25,7 @@ import tactical.loading.ResourceManager;
 import tactical.utils.AnimationWrapper;
 import tactical.utils.HeroAnimationWrapper;
 import tactical.utils.SpriteAnims;
-import tactical.game.exception;
+import tactical.game.exception.BadAnimationException;
 
 public class BattleSceneCreator {
 	private static final int WAIT_TIME_FOR_DMG_AFTER_TRANS = 600;
