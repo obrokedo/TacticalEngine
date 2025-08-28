@@ -25,6 +25,7 @@ import tactical.loading.ResourceManager;
 import tactical.utils.AnimationWrapper;
 import tactical.utils.HeroAnimationWrapper;
 import tactical.utils.SpriteAnims;
+import tactical.game.exception.BadAnimationException;
 
 public class BattleSceneCreator {
 	private static final int WAIT_TIME_FOR_DMG_AFTER_TRANS = 600;
@@ -335,8 +336,14 @@ public class BattleSceneCreator {
 		AttackCombatAnimation aca = null;
 
 		if (!rangedAttack)
+		{
+			if(battleResults.critted.size() == 0 || battleResults.critted.size() <= index)
+			{
+				throw new BadAnimationException("battleResults.critted size: " + battleResults.critted.size() + ", requested index: " + index);
+			}
 			aca = new AttackCombatAnimation(attacker,
 				battleResults, false, battleResults.critted.get(index), platformBySprite.get(attacker));
+		}
 		else
 		{
 			if (attacker.isHero())
@@ -348,7 +355,11 @@ public class BattleSceneCreator {
 		}
 		aca.setDrawSpell(isSpell);
 		
-
+		if(battleResults.dodged.size() == 0 || battleResults.dodged.size() <= index)
+		{
+			throw new BadAnimationException("battleResults.dodged size: " + battleResults.dodged.size() + ", requested index: " + index);
+		}
+		
 		if (battleResults.dodged.get(index))
 		{
 			addDodgeAnimations(attacker, target, battleResults, index, aca, rangedAttack);
@@ -361,12 +372,30 @@ public class BattleSceneCreator {
 			addCombatAnimation(target.isHero(), targetStand);
 			textToDisplay.add(null);
 
+			if(battleResults.hpDamage.size() == 0 || battleResults.hpDamage.size() <= index)
+			{
+				throw new BadAnimationException("battleResults.hpDamage size: " + battleResults.hpDamage.size() + ", requested index: " + index);
+			}
+			if(battleResults.mpDamage.size() == 0 || battleResults.mpDamage.size() <= index)
+			{
+				throw new BadAnimationException("battleResults.mpDamage size: " + battleResults.mpDamage.size() + ", requested index: " + index);
+			}
+			if(battleResults.targetEffects.size() == 0 || battleResults.targetEffects.size() <= index)
+			{
+				throw new BadAnimationException("battleResults.targetEffects size: " + battleResults.targetEffects.size() + ", requested index: " + index);
+			}
+			
 			DamagedCombatAnimation dca = new DamagedCombatAnimation(targetStand, battleResults.hpDamage.get(index),
 					battleResults.mpDamage.get(index), battleResults.targetEffects.get(index), attacker, index);
 			addCombatAnimation(attacker.isHero(), null);
 			addCombatAnimation(target.isHero(), dca);
 			textToDisplay.add(null);
 
+			if(battleResults.remainingHP.size() == 0 || battleResults.remainingHP.size() <= index)
+			{
+				throw new BadAnimationException("battleResults.remainingHP size: " + battleResults.remainingHP.size() + ", requested index: " + index);
+			}
+			
 			if (battleResults.remainingHP.get(index) <= 0)
 			{
 				DeathCombatAnimation death = new DeathCombatAnimation(targetStand);
@@ -377,6 +406,11 @@ public class BattleSceneCreator {
 			{
 				addCombatAnimation(attacker.isHero(), null);
 				addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
+			}
+			
+			if(battleResults.text.size() == 0 || battleResults.text.size() <= index)
+			{
+				throw new BadAnimationException("battleResults.text size: " + battleResults.text.size() + ", requested index: " + index);
 			}
 			textToDisplay.add(battleResults.text.get(index));
 
