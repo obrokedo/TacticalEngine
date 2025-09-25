@@ -227,9 +227,9 @@ public class DfAnimationParser implements AnimationParser {
 	public void parseAnimationsDirectory(String animsFile, 
 			Hashtable<String, Animation> animations) throws IOException, SlickException {
 		for (File file : DirectoryLister.listFilesInDir(animsFile)) {
-			if (file.isDirectory()) {
+			if (!file.getName().endsWith(".anim") && !file.getName().endsWith(".sprites") && !file.getName().endsWith(".png")) {
 				parseAnimationsDirectory(file.getPath(), animations);
-			} else if (file.getName().endsWith(".anim") && !file.getName().endsWith("-weapon.anim")){				
+			} else if (file.getName().endsWith(".anim") && !file.getName().endsWith("-weapon.anim")){
 				Animation anim = parseAnimation(file.getPath());
 				anim.initialize(new Image(file.getPath().replace(".anim", ".png"), ResourceManager.TRANSPARENT));
 				

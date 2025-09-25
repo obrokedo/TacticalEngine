@@ -299,7 +299,7 @@ public class BattleResults implements Serializable
 			br.mpDamage.add(itemUse.getMpDamage());
 		else
 			br.mpDamage.add(0);
-
+		System.out.println("a");
 		ArrayList<BattleEffect> appliedEffects = new ArrayList<>();
 
 		BattleEffect eff = null;

@@ -2,6 +2,8 @@ package tactical.game.definition;
 
 import org.newdawn.slick.util.Log;
 
+import tactical.engine.config.BattleEffectFactory;
+import tactical.game.battle.BattleEffect;
 import tactical.game.exception.BadResourceException;
 import tactical.game.exception.MissingCodeException;
 import tactical.game.item.EquippableItem;
@@ -87,13 +89,14 @@ public class ItemDefinition
 						weaponAnim = null;
 				}
 				else if (childTagArea.getTagType().equalsIgnoreCase("use"))
-				{
+				{					
 					itemUse = new ItemUse(
 							Boolean.parseBoolean(
 							childTagArea.getAttribute("targetsenemy")),
 							Integer.parseInt(childTagArea.getAttribute("damage")),
 							Integer.parseInt(childTagArea.getAttribute("mpdamage")),
-							null,
+							childTagArea.getAttribute("effectid"),
+							Integer.parseInt(childTagArea.getAttribute("effectlevel")),
 							Integer.parseInt(childTagArea.getAttribute("range")),
 							Integer.parseInt(childTagArea.getAttribute("area")),
 							childTagArea.getAttribute("text"),
@@ -162,6 +165,7 @@ public class ItemDefinition
 	public void initializeItem(Item i, ResourceManager fcrm)
 	{
 		i.setImage(fcrm.getSpriteSheet("items").getSprite(imageX, imageY));
+		// 
 	}
 
 	public int getId() {

@@ -1,30 +1,35 @@
 package tactical.game.item;
 
+import tactical.engine.TacticalGame;
 import tactical.game.Range;
 import tactical.game.battle.BattleEffect;
+import tactical.game.sprite.CombatSprite;
+import tactical.utils.StringUtils;
 
 public class ItemUse
 {
 	public static final int DEFAULT_EXP = -1;
 
 	private boolean targetsEnemy;
+	private String effectId;
+	private int effectLevel;
 	private int damage;
 	private int mpDamage;
-	private BattleEffect effects;
+	private transient BattleEffect effects = null;
 	private Range range;
 	private int area;
 	private String battleText;
 	private boolean singleUse;
 	private boolean useOutsideBattle;
 
-	// TODO EFFECTS ARE NOT SUPPORTED FOR ITEM USE YET
 	public ItemUse(boolean targetsEnemy, int damage, int mpDamage,
-			BattleEffect effects, int range, int area, String battleText, boolean singleUse, boolean useOutsideBattle) {
+			String effectId, int effectLevel, int range, int area, String battleText, boolean singleUse, boolean useOutsideBattle) {
 		super();
 		this.targetsEnemy = targetsEnemy;
 		this.damage = damage;
 		this.mpDamage = mpDamage;
-		this.effects = effects;
+		this.effectId = effectId;
+		this.effectLevel = effectLevel;
 		this.range = Range.convertIntToRange(range);
 		this.area = area;
 		this.battleText = battleText;
@@ -45,6 +50,14 @@ public class ItemUse
 	}
 
 	public BattleEffect getEffects() {
+		// If there is an effectid specified then make sure the effect is loaded before returning
+		if (StringUtils.isNotEmpty(effectId)) {
+			// Effects are lazy loaded
+			if (effects == null) {
+				effects = TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().createEffect(effectId, effectLevel);
+			}
+		}
+		
 		return effects;
 	}
 

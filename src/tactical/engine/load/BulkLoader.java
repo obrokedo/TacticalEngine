@@ -63,7 +63,8 @@ public class BulkLoader {
 				allLines.remove(i); i--;
 				for (File file : DirectoryLister.listFilesInDir(split[1]))
 				{
-					if (file.isDirectory()) {
+					// The get directory call does not work in a jar, we need some hacky way to determine that here
+					if (!file.getName().endsWith(".anim") && !file.getName().endsWith(".sprites") && !file.getName().endsWith(".png")) {
 						allLines.add("anim," + file.getPath());
 					}
 				}
@@ -82,6 +83,7 @@ public class BulkLoader {
 		}
 	}
 	
+	/*
 	private void recursivelyAddAnims(String dir) {
 		for (File file : DirectoryLister.listFilesInDir(dir)) {
 			if (file.isDirectory()) {
@@ -91,6 +93,7 @@ public class BulkLoader {
 			}
 		}
 	}
+	*/
 
 	private void loadSoundOrMusic(String[] split, String type) {
 		for (File file : DirectoryLister.listFilesInDir(split[1]))

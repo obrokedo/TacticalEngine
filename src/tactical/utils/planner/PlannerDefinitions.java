@@ -1505,6 +1505,16 @@ public class PlannerDefinitions {
 				.add(new PlannerValueDef(ReferenceStore.REFERS_ITEM_RANGE,
 						PlannerValueDef.TYPE_INT, "range", false, "Item Range",
 						"The range this can be used from"));
+		
+		definingValues
+				.add(new PlannerValueDef(ReferenceStore.REFERS_EFFECT,
+						PlannerValueDef.TYPE_STRING, "effectid", true, "Battle Effect",
+						"The ID of the effect that this item will cause."));
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_NONE,
+				PlannerValueDef.TYPE_INT, "effectlevel", false,
+				"Effect Level", "The level of the effect that should be applied (1-4)"));
+		
+		
 		definingValues.add(new PlannerValueDef(
 				ReferenceStore.REFERS_ITEM_AREA, PlannerValueDef.TYPE_INT,
 				"area", false, "Item Area of Effect",

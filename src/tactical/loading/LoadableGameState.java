@@ -108,12 +108,12 @@ public abstract class LoadableGameState extends BasicGameState
 		
 		if (!paused) {
 			if (inputTimer <= 0) {				
-				if (TacticalGame.DEV_MODE_ENABLED && container.getInput().isKeyDown(Input.KEY_F11))
+				if (container.getInput().isKeyDown(Input.KEY_F11))
 				{
 					updateSpeed /= 2;
 					inputTimer = 200;
 				}
-				else if (TacticalGame.DEV_MODE_ENABLED && container.getInput().isKeyDown(Input.KEY_F12))
+				else if (container.getInput().isKeyDown(Input.KEY_F12))
 				{
 					updateSpeed *= 2;
 					inputTimer = 200;

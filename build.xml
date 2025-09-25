@@ -28,7 +28,8 @@
                 <attribute name="Main-Class" value="tactical.utils.planner.PlannerFrame"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="${dir.buildfile}/bin"/>
+            <fileset dir="${dir.buildfile}/bin"/>            
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/javax.activation-api-1.2.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/exp4j-0.3.11.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jaretutil-0.32.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/jfilechooser-bookmarks-0.1.0.jar"/>
@@ -41,7 +42,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/timebars-1.49.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/ZTCP.jar"/>
         </jar>
-    	<copy file="${dir.jarfile}/Tactical.jar" tofile="${dir.jarfile}/../LegaciesOfVeridocia/lib/Tactical.jar"/>
-    	<ant antfile="LoV-Ant-Dev.xml" target="create_run_jar" dir="../LegaciesOfVeridocia/" inheritAll="false"/>
+    	<copy file="${dir.jarfile}/Tactical.jar" tofile="${dir.jarfile}/../LegaciesOfVeridocia/LegaciesOfVeridocia/lib/Tactical.jar"/>
+    	<ant antfile="LoV-Ant-Dev.xml" target="create_run_jar" dir="../LegaciesOfVeridocia/LegaciesOfVeridocia" inheritAll="false"/>
     </target>
 </project>

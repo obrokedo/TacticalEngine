@@ -2,6 +2,10 @@ package tactical.engine.config;
 
 import java.io.Serializable;
 
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+
 import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.item.Item;
 import tactical.game.sprite.CombatSprite;
@@ -34,4 +38,5 @@ public abstract class EngineConfigurationValues implements Serializable {
 	public abstract String getFirstChapterDescriptionText();
 	public abstract int getItemCharges(CombatSprite caster, Item item, SpellDefinition spellDefintion);
 	public abstract int getItemMaxLevel(CombatSprite caster, Item item, SpellDefinition spellDefintion);
+	public abstract void renderCredits(GameContainer gc, Graphics graphics, float timeElapsed, Color white, Color accentColor);
 }

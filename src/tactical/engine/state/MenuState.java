@@ -1,5 +1,6 @@
 package tactical.engine.state;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -15,6 +16,7 @@ import org.newdawn.slick.state.transition.Transition;
 import tactical.engine.TacticalGame;
 import tactical.engine.config.EngineConfigurationValues;
 import tactical.engine.message.LoadMapMessage;
+import tactical.game.hudmenu.Panel;
 import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
 import tactical.game.manager.SoundManager;
@@ -24,6 +26,7 @@ import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.LoadingState;
 import tactical.loading.ResourceManager;
+import tactical.utils.StringUtils;
 
 /**
  * State that handles the main menu
@@ -120,6 +123,10 @@ public class MenuState extends LoadableGameState
 				g.drawImage(fcrm.getImage("Quit"), 111, 200);
 			}
 			g.drawImage(fcrm.getImage("Frame"), 0, 0);		
+			
+			g.setColor(Color.white);
+			g.setFont(Panel.SPEECH_FONT);
+			StringUtils.drawString("Marathon Mode (Demo 4)", 75, 18, g);
 			
 			if (transition != null)
 				try {
@@ -242,7 +249,7 @@ public class MenuState extends LoadableGameState
 		// persistentStateInfo.getClientProfile().serializeToFile();
 		// persistentStateInfo.getClientProgress().serializeToFile();
 		start(LoadTypeEnum.valueOf(jcv.getStartingState()), 
-				jcv.getStartingMapData(), jcv.getStartingLocation());
+			jcv.getStartingMapData(), jcv.getStartingLocation());
 	}
 
 	protected void handleInput(PaddedGameContainer container) {

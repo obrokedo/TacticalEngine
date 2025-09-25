@@ -130,7 +130,7 @@ public class HeroProgression implements Serializable
 					addStatChangeLog("Will learn spell: " + spellIds.get(i), statChanges);
 					
 					SpellDefinition spell = SpellResource.getSpell(spellIds.get(i));
-					text += " " + cs.getName() + " learned " + spell.getName() + " " + (j + 1) + "}[";
+					text += " " + cs.getName() + " learned " + spell.getName() + " " + (j + 1) + ".}[";
 					
 				}
 			}

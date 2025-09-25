@@ -8,27 +8,27 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import tactical.engine.TacticalGame;
+import tactical.engine.config.EngineConfigurationValues;
 import tactical.game.menu.Menu;
 import tactical.game.ui.PaddedGameContainer;
 import tactical.loading.LoadableGameState;
 import tactical.loading.ResourceManager;
 
 public class CreditsState extends LoadableGameState{
-	private float scrollY = 750;
+	private float timeElapsed = 0;
+	private EngineConfigurationValues engineConfig;
 
 	@Override
-	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
-		
+	public void enter(GameContainer container, StateBasedGame game) throws SlickException {		
 		super.enter(container, game);
-		scrollY = 770;
+		timeElapsed = -31000;
+		engineConfig = TacticalGame.ENGINE_CONFIGURATIOR.getConfigurationValues();
 	}
 
 
 
 	@Override
-	public void stateLoaded(ResourceManager resourceManager) {
-		
-		
+	public void stateLoaded(ResourceManager resourceManager) {	
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class CreditsState extends LoadableGameState{
 
 	@Override
 	public void doUpdate(PaddedGameContainer container, StateBasedGame game, int delta) throws SlickException {
-		scrollY = (float) Math.max(scrollY - .5, -1250);
+		timeElapsed += delta;
 		if (container.getInput().isKeyDown(Input.KEY_ENTER)) {
 			System.exit(0);
 		}
@@ -45,12 +45,7 @@ public class CreditsState extends LoadableGameState{
 
 	@Override
 	public void doRender(PaddedGameContainer container, StateBasedGame game, Graphics g) {
-		drawCredits(container, g);
-		
-		if (scrollY == -1250) {
-			g.drawString("(Press enter key to exit)", 120, container.getHeight() - 40);
-		}
-		
+		drawCredits(container, g);		
 	}
 
 	@Override
@@ -64,124 +59,282 @@ public class CreditsState extends LoadableGameState{
 		return TacticalGame.STATE_GAME_CREDITS;
 	}
 	
-	private void drawMusicContributions(float y, Graphics g) {
-		y = y + 105 + scrollY;
+	
+	private void drawCredits(GameContainer gc, Graphics graphics) {	
 		Color accentColor = new Color(66, 134, 244);
-		g.setColor(accentColor);
-		g.drawString("Musical Contributions", 40, y);
-		g.setColor(Color.white);
-		g.drawLine(40, y += 20, 400, y);
-		g.drawString("'The Tense Battle' ~ Sephirot24", 40, y += 5);
-		g.drawString("'Rise of the Titans' ~ Computer112/Dem0lecule", 40, y += 30);
-		g.drawString("'Remote Attack' ~ Computer112/Dem0lecule", 40, y += 30);
-		g.drawString("'Surrounded' ~ Devastus", 40, y += 30);
-		g.drawString("'Shark Patrol' ~ BenjaminTibbetts", 40, y += 30);
-		g.drawString("'King's Banquet' ~ dfiechter2", 40, y += 30);
-		g.drawString("'No Quarter' ~ Jeremiah 'McTricky' George", 40, y += 30);
-		g.drawString("'Unveiling for Brass Ensemble' ~ BrianSadler", 40, y += 30);
-		g.drawString("'Triumphant' ~ DavidGrossmanMusic", 40, y += 30);
-		g.drawString("'Hero Music' ~ Benmode", 40, y += 30);	
-		g.drawString("'Triumph' ~ nmarnson", 40, y += 30);
+		engineConfig.renderCredits(gc, graphics, timeElapsed, Color.white, accentColor);
 		
-		g.drawString("In memory of Frank Girtzmacher and Patrick Parent 'ZeXr0'", -20, y += 200);
+		// MOVE OVER MUSICAL CONTRIBUTIONS
+		/*
+		timeElapsed = 0;
 		
-		g.drawString("Legacies of Veridocia is an open-source project developed by a dedicated ", -60, y += 250);
-		g.drawString("team of volunteers and we are always looking for more help. If you're ", -60, y += 30);
-		g.drawString("interested in joining us in any capacity please contact us at ", -60, y += 30);
-		g.drawString("legaciesofveridocia@gmail.com", -60, y += 30);
-		g.drawString("Thank you for playing!", 120, y += 120);	
-			
-	}
-
-	private void drawCredits(GameContainer gc, Graphics g) {
-		g.resetTransform();
-		float y = 0 + scrollY;
-		Color accentColor = new Color(66, 134, 244);
-		g.setColor(accentColor);
-		g.translate(gc.getWidth() / 2 - 240, 0);
-		g.drawString("Credits", -90, y);
+		graphics.resetTransform();        
+        graphics.translate(gc.getWidth() / 2 - 240, timeElapsed / -50);
+        
+		int left = -70;
+		int right = 220;
+		int fromTop = 100;
+		int spacing = 20;
+		int spacingAfterHorizontalRule = 5;
+		int spacingBetweenSections = 60;
 		
-		g.drawString("Project Leads", -70, y += 20);
-		g.setColor(Color.white);
-		g.drawLine(-70, y += 20, 520, y);
-		g.drawString("Keegan McCarthy 'MXC'", -70, y += 5);		
-		g.drawString("Peter Dale 'Stordarth'", 230, y);
-		g.drawString("Brian Amell 'Corsair'", -70, y += 20);
-		g.drawString("Broked", 230, y);
-		g.drawString("Giuseppe T. 'SirIsaacLemon'", -70, y += 20);
-		g.drawString("Lindsey Porteous 'Wyndigo'", -70, y += 20);
+		graphics.setColor(accentColor);
+		graphics.drawString("Credits", -90, fromTop);
+		fromTop = fromTop + spacing;
+		// Project Leads
+		graphics.drawString("Project Leads", -70, fromTop);
+		fromTop = fromTop + spacing;
+		graphics.setColor(Color.white);
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		fromTop = fromTop + spacingAfterHorizontalRule;
 		
+		graphics.drawString("Keegan McCarthy 'MXC'", left, fromTop);		
+		graphics.drawString("Peter Dale 'Stordarth'", 230, fromTop);
+		graphics.setColor(accentColor);		
+		graphics.drawString("- Project", 125, fromTop);		
+		graphics.drawString("- Project", 435, fromTop);		
+		fromTop = fromTop + spacing;
 		
-		y -= 65;
-		g.setColor(accentColor);
-		g.drawString("- Project", 125, y += 5);		
-		g.drawString("- Project", 435, y);
-		g.drawString("- Artist", 125, y += 20);
-		g.drawString("- Programming", 295, y);
-		g.drawString("- Engineering", 180, y += 20);
-		g.drawString("- Map Creation", 180, y += 20);
+		graphics.setColor(Color.white);
+		graphics.drawString("Brian Amell 'Corsair'", left, fromTop);
+		graphics.drawString("'Broked'", 230, fromTop);
+		graphics.setColor(accentColor);		
+		graphics.drawString("- Artist", 125, fromTop);
+		graphics.drawString("- Programming", 310, fromTop);
+		fromTop = fromTop + spacing;
+		
+		graphics.setColor(Color.white);
+		graphics.drawString("'SirIsaacLemon'", left, fromTop);
+		graphics.setColor(accentColor);					
+		graphics.drawString("- Engineering", 70, fromTop);		
+		graphics.setColor(Color.white);
+		graphics.drawString("L. Porteous 'Wyndigo'", 230, fromTop);
+		graphics.setColor(accentColor);					
+		graphics.drawString("- Mapping", 425, fromTop);								
+		
+		// Story and Script
+		fromTop = fromTop + spacingBetweenSections;		
+		graphics.setColor(accentColor);
+		graphics.drawString("Story and Script", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.setColor(Color.white);		
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		
+		graphics.drawString("Richard Page 'Rick'", left, fromTop);
+		graphics.drawString("Keegan McCarthy 'MXC'", right, fromTop);
+		fromTop = fromTop + spacing;
+		
+		graphics.drawString("Peter Dale 'Stordarth'", left, fromTop);
+		graphics.drawString("Ethan Rowe 'Antman 537'", right, fromTop);
+		fromTop = fromTop + spacing;
+		
+		graphics.drawString("Jon Chown 'Nuburan'", left, fromTop);
+		graphics.drawString("'Hirsute'", right, fromTop);
+		
+		// Artists
+		fromTop = fromTop + spacingBetweenSections;
+		graphics.setColor(accentColor);
+		graphics.drawString("Artists", left, fromTop);
+		graphics.setColor(Color.white);
+		fromTop = fromTop + spacing;
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		fromTop = fromTop + spacingAfterHorizontalRule;
+		graphics.drawString("Brian Amell 'Corsair'", left, fromTop);
+		graphics.drawString("L. Porteous 'Wyndigo'", right, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("Joshua Greiner 'Dark Link'", left, fromTop);
+		graphics.drawString("'Mystic Shadow'", right, fromTop);
 				
-		g.setColor(accentColor);
-		g.drawString("Map Creation", -70, y += 30);
-		g.setColor(Color.white);
-		g.drawLine(-70, y += 20, 520, y);
-		g.drawString("Kevin Redenz 'zexxar'", -70, y += 5);
-		g.drawString("Johannes Husing 'Drakonis'", 220, y);
+		fromTop = fromTop + spacing;
+		graphics.drawString("'whiterose'", right, fromTop);
+		graphics.drawString("'Alones'", left, fromTop);
 		
-		g.setColor(accentColor);
-		g.drawString("Story and Script", -70, y += 30);
-		g.setColor(Color.white);
-		g.drawLine(-70, y += 20, 520, y);
-		g.drawString("Richard Page 'Rick'", -70, y += 5);
-		g.drawString("Ethan Rowe 'Antman 537'", 220, y);
-		g.drawString("Jon Chown 'Nuburan'", -70, y += 20);
-		g.drawString("Hirsute", 220, y);
+		fromTop = fromTop + spacing;		
+		graphics.drawString("Dani Hunt 'Omega Entity'", left, fromTop);
+		graphics.drawString("'Googrifflon'", right, fromTop);
 		
-		g.setColor(accentColor);
-		g.drawString("Artists", -70, y += 30);
-		g.setColor(Color.white);
-		g.drawLine(-70, y += 20, 520, y);
-		g.drawString("Joshua Greiner 'Dark Link'", -70, y += 5);
-		g.drawString("Red Archer", 220, y);
-		g.drawString("Mystic Shadow", -70, y += 20);
-		g.drawString("Alones", 220, y);
-		g.drawString("whiterose", -70, y += 20);
-		g.drawString("Dani Hunt 'Omega Entity'", 220, y);
-		g.drawString("Googrifflon", -70, y += 20);
+		fromTop = fromTop + spacing;		
+		graphics.drawString("'Red Archer'", left, fromTop);
+		
+		// Game Engine
+		fromTop = fromTop + spacingBetweenSections;
+		
+		graphics.setColor(accentColor);
+		graphics.drawString("Game Engine", left, fromTop);
+		fromTop = fromTop + spacing;
+		
+		graphics.setColor(Color.white);		
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		fromTop = fromTop + spacingAfterHorizontalRule;
+		
+		graphics.drawString("'Broked'", left, fromTop);		
+		graphics.drawString("'SirIsaacLemon'", right, fromTop);
+		
+		// Map Creation
+		fromTop = fromTop + spacingBetweenSections;
 				
+		graphics.setColor(accentColor);
+		graphics.drawString("Map Creation", left, fromTop);
+		fromTop = fromTop + spacing;
 		
-		g.setColor(accentColor);
-		g.drawString("Character Creation", -70, y += 30);
-		g.setColor(Color.white);
-		g.drawLine(-70, y += 20, 520, y);
-		g.drawString("Frank Gritzmacher 'Balbaroy'", -70, y += 5);
-		g.drawString("xenometal", 220, y);
-		g.drawString("Chris Geddis 'Aldur'", -70, y += 20);
-		g.drawString("RagnarokkerAJ", 220, y);
+		graphics.setColor(Color.white);		
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		fromTop = fromTop + spacingAfterHorizontalRule;
 		
-		g.setColor(accentColor);
-		g.drawString("Project Inspiration", -70, y += 30);
-		g.setColor(Color.white);
-		g.drawLine(-70, y += 20, 520, y);
-		g.drawString("BigNailCow", -70, y += 5);
-		g.drawString("Space King", 220, y);
-		g.drawString("Patrick Parent 'ZeXr0'", -70, y += 20);				
-		g.drawString("SFC Community", 220, y);
+		graphics.drawString("L. Porteous 'Wyndigo'", left, fromTop);
+		graphics.drawString("Kevin Redenz 'zexxar'", right, fromTop);
 		
-				
-		g.setColor(accentColor);
-		g.drawString("Support", -70, y += 30);
-		g.setColor(Color.white);
-		g.drawLine(-70, y += 20, 520, y);
-		g.drawString("Loftus", -70, y += 5);
-		g.drawString("nightshade00123", 220, y);		
-		g.drawString("Wandering Dezorian", -70, y += 20);
-		g.drawString("NekoNova", 220, y);
-		g.drawString("SirHedge", -70, y += 20);
-		g.drawString("Amelie", 220, y);
-		g.drawString("aanderse", -70, y += 20);
+		fromTop = fromTop + spacing;
+		graphics.drawString("Johannes Hüsing 'Drakonis'", left, fromTop);
+		graphics.drawString("Keegan McCarthy 'MXC'", right, fromTop);	
 		
-		drawMusicContributions(y - scrollY, g);
+		fromTop = fromTop + spacing;
+		graphics.drawString("'SirIsaacLemon'", left, fromTop);
+		
+		// Battle and Weapon Systems
+		fromTop = fromTop + spacingBetweenSections;
+		
+		graphics.setColor(accentColor);
+		graphics.drawString("Battle and Weapon Systems", left, fromTop);
+		fromTop = fromTop + spacing;
+		
+		graphics.setColor(Color.white);		
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		fromTop = fromTop + spacingAfterHorizontalRule;
+		
+		graphics.drawString("Keegan McCarthy 'MXC'", right, fromTop);		
+		graphics.drawString("Peter Dale 'Stordarth'", left, fromTop);
+		
+		// Character Creation
+		fromTop = fromTop + spacingBetweenSections;
+		graphics.setColor(accentColor);
+		graphics.drawString("Character Creation", left, fromTop);
+		fromTop = fromTop + spacing;
+		
+		graphics.setColor(Color.white);
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		fromTop = fromTop + spacingAfterHorizontalRule;
+		
+		graphics.drawString("Richard Page 'Rick'", left, fromTop);
+		graphics.drawString("Keegan McCarthy 'MXC'", right, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("xenometal", left, fromTop);
+		graphics.drawString("Frank Gritzmacher 'Balbaroy'", right, fromTop);		
+		fromTop = fromTop + spacing;
+		graphics.drawString("Peter Dale 'Stordarth'", left, fromTop);
+		graphics.drawString("'RagnarokkerAJ'", right, fromTop);
+		fromTop = fromTop + spacing;		
+		graphics.drawString("Chris Geddis 'Aldur'", left, fromTop);
+		
+		// Project Inspiration and Support
+		fromTop = fromTop + spacingBetweenSections;
+		graphics.setColor(accentColor);
+		graphics.drawString("Project Inspiration and Support", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.setColor(Color.white);
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		graphics.drawString("'BigNailCow'", left, fromTop += 5);
+		graphics.drawString("'Space King'", right, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("Patrick Parent 'ZeXr0'", left, fromTop);				
+		graphics.drawString("'Loftus'", right, fromTop);
+		
+		fromTop = fromTop + spacing;		
+		graphics.drawString("'nightshade00123'", left, fromTop);
+		graphics.drawString("'Wandering Dezorian'", right, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'NekoNova'", left, fromTop);
+		graphics.drawString("'SirHedge'", right, fromTop);
+		
+		fromTop = fromTop + spacing;		
+		graphics.drawString("'Amelie'", left, fromTop);
+		
+		fromTop = fromTop + spacingBetweenSections;
+		graphics.setColor(accentColor);
+		graphics.drawString("Musical Contributions", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.setColor(Color.white);
+		graphics.drawLine(left, fromTop, 520, fromTop);
+		
+		fromTop = fromTop + spacingAfterHorizontalRule;
+		graphics.drawString("'The Tense Battle' ~ Sephirot24", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Rise of the Titans' ~ Computer112/Dem0lecule", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Remote Attack' ~ Computer112/Dem0lecule", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Surrounded' ~ Devastus", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Shark Patrol' ~ BenjaminTibbetts", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'King's Banquet' ~ dfiechter2", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'No Quarter' ~ Jeremiah 'McTricky' George", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Unveiling for Brass Ensemble' ~ BrianSadler", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Triumphant' ~ DavidGrossmanMusic", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Hero Music' ~ Benmode", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Triumph' ~ nmarnson", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'It Feeds on Sanity' ~ SantaBro", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Battle Of The Brave' ~ Mattashi", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Darque Horizons' ~ satsumaudio", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Rising Warrior' ~ SteveSyz", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Contemplative Bliss' ~ TheBenjerman", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'He Made It' ~ AzureWorm", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'The American Child' ~ Bosa", left, fromTop);
+		
+		fromTop = fromTop + spacing;
+		graphics.drawString("'Icy Memories' ~ jakejosepheternity", left, fromTop);
+		
+		fromTop = fromTop + 200;
+		graphics.drawString("In memory of Frank Girtzmacher and Patrick Parent 'ZeXr0'", -20, fromTop);
+		
+		fromTop = fromTop + 200;
+		graphics.drawString("Legacies of Veridocia is an open-source project developed by a dedicated ", -60, fromTop);
+		fromTop = fromTop + spacing;
+		graphics.drawString("team of volunteers and we are always looking for more help. If you're ", -60, fromTop);
+		fromTop = fromTop + spacing;
+		graphics.drawString("interested in joining us in any capacity please contact us at ", -60, fromTop);
+		fromTop = fromTop + spacing;
+		graphics.drawString("legaciesofveridocia@gmail.com", -60, fromTop);
+		fromTop = fromTop + spacingBetweenSections;
+		graphics.drawString("Thank you for playing!", 120, fromTop);			
+		*/
+		
 	}
 
 	@Override
