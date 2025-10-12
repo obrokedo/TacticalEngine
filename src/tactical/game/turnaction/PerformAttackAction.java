@@ -65,7 +65,8 @@ public class PerformAttackAction extends TurnAction
 		}
 		
 		stateInfo.setShowAttackCinematic(true);
-		acs.setBattleInfo(turnManager.getCurrentSprite(), stateInfo.getResourceManager(), turnManager.getBattleResults(), stateInfo.getPaddedGameContainer(), TacticalGame.STATE_GAME_BATTLE);
+		acs.setBattleInfo(turnManager.getCurrentSprite(), stateInfo.getResourceManager(), 
+				turnManager.getBattleResults(), stateInfo.getPaddedGameContainer(), TacticalGame.STATE_GAME_BATTLE);
 		stateInfo.getPersistentStateInfo().getGame().enterState(TacticalGame.STATE_GAME_BATTLE_ANIM, new FadeOutTransition(Color.black, 250), new EmptyTransition());
 		return true;
 	}

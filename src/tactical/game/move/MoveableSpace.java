@@ -38,19 +38,15 @@ import tactical.map.Map;
  * case when the acting CombatSprite is moving. This means its' input and display
  * must be managed by some other entity
  */
-public class MoveableSpace implements KeyboardListener, TileBasedMap
+public class MoveableSpace extends LitTilesLocation implements KeyboardListener, TileBasedMap
 {
-	private int[][] moveableTiles;
-	private int topX, topY;
-	private int tileWidth, tileHeight;
+	
+	
 	private boolean owner;
 	private boolean checkEvents = true;
-	private Map map;
 	private String spriteMovementType;
 	int mapWidth, mapHeight;
 	private static final int UNMOVEABLE_TILE = 99;
-	private boolean oscillateUp = true;
-	private final Color MOVEABLE_COLOR = new Color(128, 128, 255, 40);
 	private boolean checkMoveable = true;
 	private ArrayList<Point> spritePoints = new ArrayList<Point>();
 
@@ -62,6 +58,7 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 		ms.map = stateInfo.getResourceManager().getMap();
 		ms.mapWidth = ms.map.getMapEffectiveWidth();
 		ms.mapHeight = ms.map.getMapEffectiveHeight();
+		ms.colorToFlash = new Color(128, 128, 255, 40);
 		int currentMove = currentSprite.getCurrentMove();
 		
 		// Check to see if we can move
@@ -144,65 +141,7 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 	}
 
 
-	public void renderHiddenMoveable(PaddedGameContainer gc, Camera camera, Graphics graphics)
-	{
-		renderMoveable(gc, camera, graphics, true);
-	}
-
-	public void renderMoveable(PaddedGameContainer gc, Camera camera, Graphics graphics)
-	{
-		if (oscillateUp) {
-			MOVEABLE_COLOR.a += (1.5 / 255.0f);
-			if (MOVEABLE_COLOR.a > (100 / 255.0f)) {
-				oscillateUp = false;
-			}
-		}
-		else {
-			MOVEABLE_COLOR.a -= (1.5 / 255.0f);
-			if (MOVEABLE_COLOR.a < (40 / 255.0f)) {
-				oscillateUp = true;
-			}
-		}
-			
-		renderMoveable(gc, camera, graphics, false);
-	}
 	
-	private void renderMoveable(PaddedGameContainer gc, Camera camera, Graphics graphics, boolean showOnlyForeground)
-	{
-		float camX = camera.getLocationX();
-		float camY = camera.getLocationY();
-		graphics.setColor(MOVEABLE_COLOR);
-		for (int i = 0; i < moveableTiles.length; i++)
-		{
-			for (int j = 0; j <moveableTiles[0].length; j++)
-			{										
-				if (moveableTiles[j][i] != -1)
-				{
-					boolean isKeyTileEmpty = false;
-					
-					outer: for (int offX = 0; offX < 2; offX++)
-						for (int offY = 0; offY < 2; offY++) {
-							if (map.getMapLayer(4).getTiles()[(j + topY) * 2 + offY][(i + topX) * 2 + offX] <= 0) {
-								isKeyTileEmpty = true;
-								break outer;
-							}
-							
-						}
-					
-					// showOnlyForeground = true;
-					// isKeyTileEmpty = false;
-					
-					if (showOnlyForeground != isKeyTileEmpty) {
-						
-						graphics.fillRect((i + topX) * tileWidth - camX,
-								(j + topY) * tileHeight - camY,
-								tileWidth, tileHeight);												
-					}
-				}
-			
-			}
-		}
-	}
 
 	private void determineMoveableSpacesRecursive(int remainingMove, int spriteX, int spriteY, int mapX, int mapY)
 	{
@@ -229,11 +168,11 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 	}
 
 	/**
-	 * Returns a boolean indicating whether a combat sprite can end their turn at the specified tile cooridinates
+	 * Returns a boolean indicating whether a combat sprite can end their turn at the specified tile coordinates
 	 *
 	 * @param tileX x tile index
 	 * @param tileY y tile index
-	 * @return a boolean indicating whether a combat sprite can end their turn at the specified tile cooridinates
+	 * @return a boolean indicating whether a combat sprite can end their turn at the specified tile coordinates
 	 */
 	public boolean canEndMoveHere(int tileX, int tileY)
 	{
@@ -246,11 +185,11 @@ public class MoveableSpace implements KeyboardListener, TileBasedMap
 	}
 
 	/**
-	 * Returns a boolean indicating whether a combat sprite can move through the tile at the specified tile cooridinates
+	 * Returns a boolean indicating whether a combat sprite can move through the tile at the specified tile coordinates
 	 *
 	 * @param tileX x tile index
 	 * @param tileY y tile index
-	 * @return a boolean indicating whether a combat sprite can move through the tile at the specified tile cooridinates
+	 * @return a boolean indicating whether a combat sprite can move through the tile at the specified tile coordinates
 	 */
 	public boolean canMoveHere(int tileX, int tileY)
 	{

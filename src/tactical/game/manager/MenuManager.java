@@ -18,6 +18,7 @@ import tactical.game.menu.MiniMapPanel;
 import tactical.game.menu.MultiHeroJoinMenu;
 import tactical.game.menu.PriestMenu;
 import tactical.game.menu.SpeechMenu;
+import tactical.game.menu.SplitPartyMenu;
 import tactical.game.menu.SystemMenu;
 import tactical.game.menu.YesNoMenu;
 import tactical.game.menu.advisor.AdvisorMenu;
@@ -187,6 +188,8 @@ public class MenuManager extends Manager
 			case SHOW_WITHDRAW_MENU:
 				stateInfo.addMenu(new RetrieveItemMenu(stateInfo));
 				break;
+			case SHOW_SPLIT_PARTY_MENU:
+				stateInfo.addMenu(new SplitPartyMenu(6, stateInfo));
 			default:
 				break;
 		}

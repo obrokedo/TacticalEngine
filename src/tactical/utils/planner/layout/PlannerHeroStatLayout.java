@@ -3,7 +3,8 @@ package tactical.utils.planner.layout;
 public class PlannerHeroStatLayout extends ThreeColumnPanelLayout {
 	@Override
 	public String[][] getLayoutList() {
-		String[][] layout = {{"attack", "attackstart", "attackend"},
+		String[][] layout = {
+				{"attack", "attackstart", "attackend"},
 				{"defense", "defensestart", "defenseend"},
 				{"speed", "speedstart", "speedend"},
 				{"hp", "hpstart", "hpend"},
@@ -17,6 +18,9 @@ public class PlannerHeroStatLayout extends ThreeColumnPanelLayout {
 				{"doubleStrength", "critStrength"},
 				{"usuableitems"},
 				{"class"},
+				{"promoted"},
+				{"specialpromoted"},
+				{"specialpromoteitem"},
 				{"evaluation"}};
 		return layout;
 	}

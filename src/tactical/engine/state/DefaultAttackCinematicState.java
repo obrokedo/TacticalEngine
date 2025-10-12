@@ -180,6 +180,7 @@ public class DefaultAttackCinematicState extends AttackCinematicState implements
 		
 		bgIm = battleBGSS.getSprite(battleBackgroundIndex % battleBGSS.getHorizontalCount(),
 				battleBackgroundIndex / battleBGSS.getHorizontalCount());
+		
 		backgroundScale = (int) (PaddedGameContainer.GAME_SCREEN_SIZE.width / (float) bgIm.getWidth());
 		
 		clipBackgroundWidth = (PaddedGameContainer.GAME_SCREEN_SIZE.width - (bgIm.getWidth() * backgroundScale)) / 2;

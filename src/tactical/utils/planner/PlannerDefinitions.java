@@ -2083,7 +2083,7 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_BOOLEAN,
 				"specialpromoted",
 				false,
-				"Special Promotion Progression",
+				"Spcl Promote Prog",
 				"If checked, this progression will be used for the SPECIAL promotion path (as opposed to default). Selecting this supercedes the 'promoted' checkbox"));
 		
 		// Special promotion required item
@@ -2093,7 +2093,7 @@ public class PlannerDefinitions {
 				PlannerValueDef.TYPE_STRING,
 				"specialpromoteitem",
 				true,
-				"Special Promotion Required Item",
+				"Spcl Promote Req Item",
 				"If special promotion is checked, this is the item that must be possesed by the group to allow the this special promotion to occur. If this item "
 				+ "is not owned then this progression path will be unavailable. If special promotion is checked and this value is not specified then this"
 				+ " promotion path will be impossible to take."));
@@ -2427,6 +2427,16 @@ public class PlannerDefinitions {
 				"Starts the battle with the given triggers and map",
 				definingValues));
 		mapControl.add("Load Battle");
+		
+		// Manually place sprites
+		// Start Battle
+		definingValues = new ArrayList<PlannerValueDef>();		
+		allowableLines.add(new PlannerLineDef("manuallyplaceheroes", "Split Battle",
+				"Require player to manually place heroes in start locations. Each location must have at least one hero. This should only be triggered by on map load",
+				definingValues));
+		battleControl.add("Split Battle");
+		
+		// Manually place sprites
 
 		// Load map
 		definingValues = new ArrayList<PlannerValueDef>();
@@ -2685,6 +2695,15 @@ public class PlannerDefinitions {
 		allowableLines.add(new PlannerLineDef("removehero", "Remove Hero",
 				"Removes the specified hero from the force. If this is called during a battle, then the hero will remain in the battle until the battle is ended.", definingValues));
 		partyControl.add("Remove Hero");
+		
+		// Remove hero
+		definingValues = new ArrayList<PlannerValueDef>();
+		definingValues.add(new PlannerValueDef(ReferenceStore.REFERS_HERO,
+				PlannerValueDef.TYPE_STRING, "heroid", false, "Hero ID",
+				"The ID of the hero that should be omitted from the current battle"));
+		allowableLines.add(new PlannerLineDef("omithero", "Omit Hero From Battle",
+				"Removes the specified hero from the current battle, they still remain in the active party and will return on subsequent battles.", definingValues));
+		partyControl.add("Omit Hero From Battle");
 		
 		// Hide Roof
 		/*

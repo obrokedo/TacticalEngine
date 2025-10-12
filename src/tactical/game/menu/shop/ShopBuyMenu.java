@@ -309,7 +309,7 @@ public class ShopBuyMenu extends Menu implements MenuListener
 				break;
 			case WHO_WILL_USE:
 				currentStep = ShopStepEnum.SELECT_HERO;
-				stateInfo.addMenu(new HeroesBuyMenu(stateInfo, this, selectedItem));
+				stateInfo.addMenu(new HeroesBuyMenu(stateInfo, this, selectedItem, selectedHero));
 				break;
 			case SELECT_HERO:
 				if (value == null)

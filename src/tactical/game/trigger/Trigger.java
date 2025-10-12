@@ -63,7 +63,7 @@ public class Trigger
 	
 	public Trigger() {}
 
-	// TODO Remove triggerimmediately
+	// TODO Remove trigger immediately
 	public Trigger(String name, int id, boolean retrigOnEnter, boolean nonRetrig,
 			boolean triggerOnce, boolean triggerImmediately, String[] requires, String[] excludes) {
 		super();
@@ -308,6 +308,19 @@ public class Trigger
 		@Override
 		public boolean perform(StateInfo stateInfo) {
 			stateInfo.sendMessage(new BattleCondMessage(leaderIds, enemyLeaderIds, killAllLeaders), true);
+			return true;
+		}
+	}
+	
+	public class TriggerManuallyPlaceHeroes implements Triggerable
+	{
+		public TriggerManuallyPlaceHeroes() {
+			super();
+		}
+
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			stateInfo.sendMessage(MessageType.MANUAL_HERO_PLACEMENT);
 			return true;
 		}
 	}
@@ -840,6 +853,22 @@ public class Trigger
 					return true;
 				}
 			}
+			return true;
+		}
+	}
+	
+	public class TriggerOmitHeroFromBattle implements Triggerable
+	{
+		private String spriteName;
+
+		public TriggerOmitHeroFromBattle(String spriteName) {
+			super();
+			this.spriteName = spriteName;
+		}
+
+		@Override
+		public boolean perform(StateInfo stateInfo) {
+			stateInfo.sendMessage(new StringMessage(MessageType.OMIT_HERO_FROM_BATTLE, spriteName, true));
 			return true;
 		}
 	}

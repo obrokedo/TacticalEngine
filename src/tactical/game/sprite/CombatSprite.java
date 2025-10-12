@@ -317,6 +317,7 @@ public class CombatSprite extends AnimatedSprite
 			super.setLocY(-1, 0);
 		}
 	
+		/*
 		for (Item item : items)
 		{
 			SpellItemUse itemUse = item.getSpellUse(); 
@@ -325,6 +326,7 @@ public class CombatSprite extends AnimatedSprite
 				itemUse.setCharges(charges);
 			}
 		}
+		*/
 		
 		// this.addBattleEffect(TacticalGame.ENGINE_CONFIGURATIOR.getBattleEffectFactory().createEffect("Bleed", 1));
 	}
@@ -524,8 +526,13 @@ public class CombatSprite extends AnimatedSprite
 	public void unequipItem(EquippableItem item)
 	{
 		toggleEquipWeapon(item, false);
-		int index = items.indexOf(item);
-		this.equipped.set(index, false);
+		
+		// Because items are not unique, make sure we unequip the correct item
+		for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
+			if (items.get(itemIndex) == item && equipped.get(itemIndex)) {
+				equipped.set(itemIndex, false);
+			}
+		}
 	}
 
 	protected void toggleEquipWeapon(EquippableItem item, boolean equip)

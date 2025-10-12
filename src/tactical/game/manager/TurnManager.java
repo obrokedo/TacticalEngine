@@ -1,6 +1,7 @@
 package tactical.game.manager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -32,6 +33,7 @@ import tactical.game.battle.command.BattleCommand;
 import tactical.game.battle.spell.KnownSpell;
 import tactical.game.battle.spell.SpellDefinition;
 import tactical.game.constants.Direction;
+import tactical.game.constants.TextSpecialCharacters;
 import tactical.game.hudmenu.Panel.PanelType;
 import tactical.game.input.KeyMapping;
 import tactical.game.input.UserInput;
@@ -46,6 +48,7 @@ import tactical.game.menu.battle.BattleActionsMenu;
 import tactical.game.menu.battle.BattleItemOptionMenu;
 import tactical.game.menu.devel.BattleAIDebug;
 import tactical.game.move.AttackableSpace;
+import tactical.game.move.LitTilesLocation;
 import tactical.game.move.MoveableSpace;
 import tactical.game.move.MovingSprite;
 import tactical.game.sprite.CombatSprite;
@@ -59,6 +62,7 @@ import tactical.game.turnaction.MoveToTurnAction;
 import tactical.game.turnaction.PerformAttackAction;
 import tactical.game.turnaction.TurnAction;
 import tactical.game.turnaction.WaitAction;
+import tactical.map.MapObject;
 
 public class TurnManager extends Manager implements KeyboardListener
 {
@@ -107,6 +111,12 @@ public class TurnManager extends Manager implements KeyboardListener
 	private boolean cinWasDisplayed = false;
 	
 	
+	private boolean pickSplit = false;
+	private List<LitTilesLocation> startLocationOptions;
+	private List<LitTilesLocation> startLocationPerHero;
+	private int splitPickIdx = 0;
+	
+	
 	// DEBUG Variables
 	public static boolean enableAIDebug = false;
 	public static boolean healOnTurn = false;
@@ -134,7 +144,85 @@ public class TurnManager extends Manager implements KeyboardListener
 		cursorImage = stateInfo.getResourceManager().getImage("battlecursor");
 		cursor = new Rectangle(0, 0, stateInfo.getTileWidth(), stateInfo.getTileHeight());
 		cursorTargetX = cursorTargetY = updateDelta = activeCharFlashDelta = 0;
+		
+		startLocationOptions = null;
+		startLocationPerHero = null;
+		pickSplit = false;
+		
 		battleAIDebug = new BattleAIDebug(this, stateInfo);		
+	}
+	
+	public void manuallyPlaceHeroes() {
+		for (CombatSprite cs : stateInfo.getClientProfile().getHeroesInParty()) {
+			cs.setVisible(false);
+		}
+		startLocationPerHero = new ArrayList<>();
+		this.currentSprite = stateInfo.getClientProfile().getHeroesInParty().get(0);
+		this.ownsSprite = true;		
+		this.pickSplit = true;
+		splitPickIdx = 0;
+		this.setToCursorMode();
+		stateInfo.addKeyboardListener(this);
+		startLocationOptions = new ArrayList<>();
+		for (MapObject mo : stateInfo.getCurrentMap().getMapObjects()) {
+				if (mo.getKey().equalsIgnoreCase("start") && mo.getParam("exit").equalsIgnoreCase(stateInfo.getEntranceLocation()))
+				{
+					startLocationOptions.add(LitTilesLocation.fromMapObject(mo, stateInfo.getCurrentMap(), stateInfo.getTileWidth(), stateInfo.getTileHeight()));
+				}
+		}
+		
+		java.awt.Point firstStartLoc = startLocationOptions.get(0).getFirstTile();
+		this.currentSprite.setLocation(firstStartLoc, 	
+				stateInfo.getTileWidth(), stateInfo.getTileHeight());
+		this.currentSprite.setFacing(Direction.DOWN);
+		this.currentSprite.setVisible(true);
+		cursor.setLocation(firstStartLoc.x, firstStartLoc.y);
+		stateInfo.getCamera().centerOnPoint(firstStartLoc.x, firstStartLoc.y, stateInfo.getCurrentMap());
+		
+		stateInfo.sendMessage(new SpeechMessage("Select a starting location for " + currentSprite.getName() + TextSpecialCharacters.CHAR_HARD_STOP));
+		stateInfo.sendMessage(new SpeechMessage("You must now determine starting positions for all hereos, each side must have at least one hero." + TextSpecialCharacters.CHAR_HARD_STOP));
+	}
+	
+	public void undoSplitPick() {
+		this.currentSprite.setVisible(false);
+		List<CombatSprite> heroes = this.stateInfo.getAllLivingHeroesInState();
+		this.currentSprite = heroes.get(--splitPickIdx);
+		this.currentSprite.setVisible(true);
+		
+		startLocationPerHero.remove(splitPickIdx).toggleTileAtLocation(currentSprite.getTileX(), currentSprite.getTileY());			
+		stateInfo.sendMessage(new SpeechMessage("Select a starting location for " + currentSprite.getName() + TextSpecialCharacters.CHAR_HARD_STOP));
+	}
+	
+	public boolean commitSplitPick() {
+		for (LitTilesLocation ltl : startLocationOptions) {
+			if (ltl.isInLocation(currentSprite.getTileX(), currentSprite.getTileY())) {
+				ltl.toggleTileAtLocation(currentSprite.getTileX(), currentSprite.getTileY());
+				this.currentSprite.setFacing(Direction.DOWN);
+				this.currentSprite.setVisible(true);
+				this.startLocationPerHero.add(ltl);
+				List<CombatSprite> heroes = this.stateInfo.getAllLivingHeroesInState();
+				if (splitPickIdx + 1 != heroes.size()) {
+					this.currentSprite = heroes.get(++splitPickIdx);
+					this.currentSprite.setVisible(true);
+					stateInfo.sendMessage(new SpeechMessage("Select a starting location for " + currentSprite.getName() + TextSpecialCharacters.CHAR_HARD_STOP));
+				// We're done picking start the battle for real
+				} else if (!startLocationPerHero.containsAll(startLocationOptions)) {
+					++splitPickIdx;
+					undoSplitPick();
+					stateInfo.sendMessage(new SpeechMessage("All start locations must have at least one hero. " + TextSpecialCharacters.CHAR_HARD_STOP));
+				} else {
+					this.pickSplit = false;
+					this.turnManagerHasFocus = false;
+					currentSprite.setVisible(true);
+					startLocationPerHero = null;
+					startLocationOptions = null;
+					setDisplayCursor(false);
+					stateInfo.sendMessage(MessageType.NEXT_TURN);
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void update(StateBasedGame game, int delta)
@@ -171,6 +259,12 @@ public class TurnManager extends Manager implements KeyboardListener
 			}
 		}
 		
+		// Pin the current sprite to the cursor as we're choosing a location
+		if (pickSplit) {
+			currentSprite.setLocation((int) cursor.getX(), (int) cursor.getY(), 
+					stateInfo.getTileWidth(), stateInfo.getTileHeight());
+		}
+		
 		if (TacticalGame.DEV_MODE_ENABLED)
 			enableAIDebug = battleAIDebug.handleDebugInput(game.getContainer().getInput(), enableAIDebug) || enableAIDebug;
 		
@@ -181,6 +275,49 @@ public class TurnManager extends Manager implements KeyboardListener
 
 		if (displayMoveable)
 			ms.renderMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);
+		
+		if (pickSplit) {						
+			for (LitTilesLocation ltl : startLocationOptions) {
+				ltl.renderMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);								
+				
+				float xDiff = (ltl.getCenter().x - stateInfo.getCamera().getLocationX()) - 
+						(cursor.getX() - stateInfo.getCamera().getLocationX() + 12);
+				
+				float yDiff = (ltl.getCenter().y - stateInfo.getCamera().getLocationY()) - 
+						(cursor.getY() - stateInfo.getCamera().getLocationY() + 12);
+				
+				float slope = yDiff / xDiff;											
+				int lineLength = 20;
+				
+				float dX = (float) (lineLength / Math.sqrt(1 + Math.pow(slope, 2)));
+				float dY = dX * slope;
+				if (dX == 0)
+					dY = (yDiff > 0 ? lineLength : -lineLength);
+						
+				graphics.setColor(Color.white);
+				graphics.setLineWidth(3);
+				
+				// To the left				
+				if (cursor.getX() - stateInfo.getCamera().getLocationX() + 12 > 
+					ltl.getCenter().x - stateInfo.getCamera().getLocationX()) {
+					graphics.drawLine(cursor.getX() - stateInfo.getCamera().getLocationX() + 12,
+							cursor.getY() - stateInfo.getCamera().getLocationY() + 12, 
+							
+							cursor.getX() - stateInfo.getCamera().getLocationX() + 12 - dX,
+							cursor.getY() - stateInfo.getCamera().getLocationY() + 12 - dY);
+				} else {
+					graphics.drawLine(cursor.getX() - stateInfo.getCamera().getLocationX() + 12,
+							cursor.getY() - stateInfo.getCamera().getLocationY() + 12, 
+							
+							cursor.getX() - stateInfo.getCamera().getLocationX() + 12 + dX,
+							cursor.getY() - stateInfo.getCamera().getLocationY() + 12 + dY);
+				}
+				
+				// break;
+			}
+			graphics.setLineWidth(1);
+			
+		}
 		
 		if (displayCursor)
 		{
@@ -210,6 +347,10 @@ public class TurnManager extends Manager implements KeyboardListener
 		
 		if (displayMoveable)
 			ms.renderHiddenMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);
+		
+		if (pickSplit)
+			for (LitTilesLocation ltl : startLocationOptions)
+				ltl.renderHiddenMoveable(stateInfo.getPaddedGameContainer(), stateInfo.getCamera(), graphics);
 		
 		if (enableAIDebug) {
 			battleAIDebug.renderDebugConfidences(graphics);
@@ -621,7 +762,10 @@ public class TurnManager extends Manager implements KeyboardListener
 				break;
 			case INITIALIZE_BATTLE:
 			case INITIALIZE_BATTLE_FROM_LOAD:
-				aiController.initialize(stateInfo.getCombatSprites());
+				aiController.initialize(stateInfo.getCombatSprites());				
+				break;
+			case MANUAL_HERO_PLACEMENT:
+				manuallyPlaceHeroes();
 				break;
 			case SEARCH_IN_BATTLE:
 				range = AttackableSpace.getAttackableArea(Range.ONE_ONLY);
@@ -685,27 +829,37 @@ public class TurnManager extends Manager implements KeyboardListener
 			}
 			else if (input.isKeyDown(KeyMapping.BUTTON_2))
 			{
-				this.turnManagerHasFocus = false;
-				currentSprite.setVisible(true);
-				turnActions.add(new MoveCursorToActorAction());
-				stateInfo.removePanel(landEffectPanel);
-				stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
-				return true;
+				if (!pickSplit) {
+					this.turnManagerHasFocus = false;
+					currentSprite.setVisible(true);
+					turnActions.add(new MoveCursorToActorAction());
+					stateInfo.removePanel(landEffectPanel);
+					stateInfo.removePanel(PanelType.PANEL_HEALTH_BAR);
+					return true;
+				} else {
+					if (splitPickIdx != 0) {
+						undoSplitPick();
+					}
+				}
 			}
 			else if (input.isKeyDown(KeyMapping.BUTTON_3))
 			{
-				// Get any combat sprite at the cursors location
-				CombatSprite cs = stateInfo.getCombatSpriteAtMapLocation((int) cursor.getX(), (int) cursor.getY(), null);
-
-				// if there is a combat sprite here display it's health panel
-				if (cs != null)
-				{
-					stateInfo.addMenu(TacticalGame.ENGINE_CONFIGURATIOR.getHeroStatMenu(stateInfo.getPaddedGameContainer(), cs, stateInfo));
-					return true;
-				}
-				else {
-					stateInfo.sendMessage(MessageType.SHOW_BATTLE_OPTIONS);
-					return true;
+				if (!pickSplit) {
+					// Get any combat sprite at the cursors location
+					CombatSprite cs = stateInfo.getCombatSpriteAtMapLocation((int) cursor.getX(), (int) cursor.getY(), null);
+	
+					// if there is a combat sprite here display it's health panel
+					if (cs != null)
+					{
+						stateInfo.addMenu(TacticalGame.ENGINE_CONFIGURATIOR.getHeroStatMenu(stateInfo.getPaddedGameContainer(), cs, stateInfo));
+						return true;
+					}
+					else {
+						stateInfo.sendMessage(MessageType.SHOW_BATTLE_OPTIONS);
+						return true;
+					}
+				} else {
+					commitSplitPick();
 				}
 			} else if (input.isKeyDown(Input.KEY_1)) {
 				if (TacticalGame.DEV_MODE_ENABLED) {
@@ -741,12 +895,13 @@ public class TurnManager extends Manager implements KeyboardListener
 					moved = true;
 				}
 			}
-
+			/*
 			if (!stateInfo.getResourceManager().getMap().isInBattleRegion(cursorTargetX, cursorTargetY))
 			{
 				cursorTargetY = (int) cursor.getY();
 				moved = false;
 			}
+			*/
 
 			if (input.isKeyDown(KeyMapping.BUTTON_LEFT))
 			{
@@ -765,11 +920,13 @@ public class TurnManager extends Manager implements KeyboardListener
 				}
 			}
 
+			/*
 			if (!stateInfo.getResourceManager().getMap().isInBattleRegion(cursorTargetX, cursorTargetY))
 			{
 				cursorTargetX = (int) cursor.getX();
 				moved = false;
 			}
+			*/
 
 			if (moved)
 			{

@@ -14,6 +14,7 @@ import tactical.game.sprite.CombatSprite;
 public class InitiativeManager extends Manager
 {
 	private List<CombatSprite> turnOrder = new ArrayList<>();
+	private boolean manuallyPlaceHeroes = false;
 	/*
 	private class InitiativeMenu extends Panel implements MouseListener
 	{
@@ -77,7 +78,7 @@ public class InitiativeManager extends Manager
 
 	@Override
 	public void initialize() {
-
+		manuallyPlaceHeroes = false;
 	}
 
 	private void initializeAfterSprites()
@@ -186,7 +187,11 @@ public class InitiativeManager extends Manager
 				break;
 			case INITIALIZE_BATTLE:
 				initializeAfterSprites();
-				stateInfo.sendMessage(MessageType.NEXT_TURN);
+				if (!manuallyPlaceHeroes)
+					stateInfo.sendMessage(MessageType.NEXT_TURN);
+				break;
+			case MANUAL_HERO_PLACEMENT:
+				manuallyPlaceHeroes = true;
 				break;
 			case INITIALIZE_BATTLE_FROM_LOAD:
 				initializeInitOrderFromLoad();

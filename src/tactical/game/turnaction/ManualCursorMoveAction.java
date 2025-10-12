@@ -9,6 +9,8 @@ import tactical.game.sprite.CombatSprite;
 
 public class ManualCursorMoveAction extends TurnAction {
 
+	private static final long serialVersionUID = 1L;
+
 	public ManualCursorMoveAction() {
 		super(TurnAction.ACTION_MANUAL_MOVE_CURSOR);
 	}
@@ -32,8 +34,7 @@ public class ManualCursorMoveAction extends TurnAction {
 		else if (turnManager.getCursor().getY() > turnManager.getCursorTargetY())
 			turnManager.getCursor().setY(turnManager.getCursor().getY() - stateInfo.getTileHeight() / 6);
 
-		stateInfo.getCamera().centerOnPoint((int) turnManager.getCursor().getX(), (int) turnManager.getCursor().getY(), stateInfo.getCurrentMap());
-
+		stateInfo.getCamera().centerOnPoint((int) turnManager.getCursor().getX(), (int) turnManager.getCursor().getY(), stateInfo.getCurrentMap());		
 		if (turnManager.getCursorTargetX() == turnManager.getCursor().getX() && turnManager.getCursorTargetY() == turnManager.getCursor().getY())
 		{
 			// Get any combat sprite at the cursors location

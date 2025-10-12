@@ -94,9 +94,9 @@ public class ClientProfile implements Serializable
 	}
 	
 	/**
-	 * Returns a modifiable safe list of heroes that are currently in the 'active" party
+	 * Returns a modifiable safe list of heroes that are currently in the 'active' party
 	 * 
-	 * @return a modifiable safe list of heroes that are currently in the 'active" party
+	 * @return a modifiable safe list of heroes that are currently in the 'active' party
 	 */
 	public ArrayList<CombatSprite> getHeroesInParty()
 	{

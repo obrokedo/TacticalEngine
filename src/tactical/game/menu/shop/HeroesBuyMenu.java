@@ -21,9 +21,15 @@ public class HeroesBuyMenu extends HeroesStatMenu
 	protected ArrayList<String> differences = new ArrayList<>();
 	protected boolean showDiffs = true;
 
-	public HeroesBuyMenu(StateInfo stateInfo, MenuListener listener, Item item) {
+	public HeroesBuyMenu(StateInfo stateInfo, MenuListener listener, Item item, CombatSprite startingSprite) {
 		this(stateInfo, listener, item, true);
 		selectedShopItem = item;
+		
+		if (startingSprite != null) { 
+			selectedIndex = heroes.indexOf(startingSprite);
+			updateCurrentHero(stateInfo);
+		}
+		
 		if (selectedShopItem != null && selectedShopItem.isEquippable())
 		{
 			view = VIEW_DIFFS;

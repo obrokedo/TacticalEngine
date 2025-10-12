@@ -13,6 +13,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import tactical.engine.TacticalGame;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
+import tactical.engine.message.ShopMessage;
 import tactical.game.input.KeyMapping;
 import tactical.game.manager.CinematicManager;
 import tactical.game.manager.MenuManager;
@@ -22,7 +23,6 @@ import tactical.game.manager.TownMoveManager;
 import tactical.game.menu.AbstractHeroStatMenu;
 import tactical.game.menu.Menu;
 import tactical.game.menu.PauseMenu;
-import tactical.game.menu.SplitPartyMenu;
 import tactical.game.menu.devel.DebugMenu;
 import tactical.game.menu.devel.HeroContextDebugMenu;
 import tactical.game.menu.devel.HeroesContextDebugMenu;
@@ -220,7 +220,9 @@ public class TownState extends LoadableGameState
 								break;								
 						}
 					} else {
-						stateInfo.sendMessage(MessageType.SHOW_ADVISOR_MENU);
+						// stateInfo.sendMessage(MessageType.SHOW_SPLIT_PARTY_MENU);
+						stateInfo.sendMessage(new ShopMessage(0, .8, new int[] {1, 1, 2, 2, 0, 0, 1, 1, 2, 2, 0, 0}, "Noah"));
+						// stateInfo.sendMessage(MessageType.SHOW_ADVISOR_MENU);
 					}
 					// image = null;
 					

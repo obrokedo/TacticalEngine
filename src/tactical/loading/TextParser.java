@@ -300,6 +300,9 @@ public class TextParser
 							parseMultiString("tempenemyleader", actionParams, enid -> EnemyResource.getEnemyIdByName(enid)), 
 							Boolean.parseBoolean(actionParams.get("allleaders"))));
 				}
+				else if (tagType.equalsIgnoreCase("manuallyplaceheroes")) {
+					te.addTriggerable(te.new TriggerManuallyPlaceHeroes());
+				}
 				else if (tagType.equalsIgnoreCase("loadmap"))
 				{
 					Direction dir = null;
@@ -473,11 +476,15 @@ public class TextParser
 				else if (tagType.equalsIgnoreCase("removesprite"))
 				{
 					te.addTriggerable(te.new TriggerRemoveSprite(actionParams.get("name")));
-				}
+				}				
 				else if (tagType.equalsIgnoreCase("changesprite"))
 				{
 					te.addTriggerable(te.new TriggerChangeSprite(actionParams.get("name"), actionParams.get("image")));
 					spriteToLoad.add(actionParams.get("image"));
+				}
+				else if (tagType.equalsIgnoreCase("omithero"))
+				{
+					te.addTriggerable(te.new TriggerOmitHeroFromBattle(actionParams.get("heroid")));
 				}
 				else if (tagType.equalsIgnoreCase("additem"))
 				{

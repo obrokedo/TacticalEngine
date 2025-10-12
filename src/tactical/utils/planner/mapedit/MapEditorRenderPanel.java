@@ -418,7 +418,7 @@ public class MapEditorRenderPanel extends JPanel implements MouseListener, Mouse
 			TagArea tagArea = new TagArea(tagAreaText);
 			tagAreaText = "<polyline points=\"";
 			for (int i = 0; i < selectedMapObject.getPolyPoints().size(); i++) {
-				tagAreaText += selectedMapObject.getPolyPoints().get(i).x + "," + selectedMapObject.getPolyPoints().get(i).y;
+				tagAreaText += selectedMapObject.getPolyPoints().get(i) + "," + selectedMapObject.getPolyPoints().get(i).y;
 				if (i != selectedMapObject.getPolyPoints().size() - 1) 
 					tagAreaText += " ";
 			}

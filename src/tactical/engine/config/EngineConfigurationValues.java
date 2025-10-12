@@ -26,7 +26,7 @@ public abstract class EngineConfigurationValues implements Serializable {
 	public abstract int getTerrainEffectAmount(String terrainType);
 	public abstract boolean isAffectedByTerrain(String movementType);
 	public abstract int getMovementCosts(String movementType, String terrainType);
-	public abstract int getBattleBackgroundImageIndexByTerrainType(String terrainType);
+	public abstract int getBattleBackgroundImageIndexByTerrainType(String attackerTerrainType);
 	public abstract int getHeroPromotionLevel();
 	public abstract int getBattleMusicVolume();
 	public abstract void clearPythonModules();

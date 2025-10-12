@@ -1,15 +1,19 @@
 package tactical.game.manager;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import tactical.engine.TacticalGame;
 import tactical.engine.config.MusicConfiguration;
 import tactical.engine.message.AudioMessage;
 import tactical.engine.message.BooleanMessage;
+import tactical.engine.message.IntMessage;
 import tactical.engine.message.Message;
 import tactical.engine.message.MessageType;
+import tactical.engine.message.StringMessage;
 import tactical.game.constants.Direction;
 import tactical.game.definition.EnemyDefinition;
 import tactical.game.dev.BattleOptimizer;
@@ -29,11 +33,14 @@ public class SpriteManager extends Manager
 	private int updateDelta = 0;
 	private static final int UPDATE_TIME = 50;
 	private static BattleOptimizer battleOptimizer = new BattleOptimizer();
+	private List<String> heroesToOmit;
+	private boolean manuallyPlaceHeroes = false;
 
 	@Override
 	public void initialize()
 	{
-		
+		heroesToOmit = new ArrayList<>();
+		manuallyPlaceHeroes = false;
 	}
 
 	private void initializeAfterSprites(boolean fromLoad)
@@ -46,187 +53,216 @@ public class SpriteManager extends Manager
 		// If we are not in combat then get this clients main character and set them as the current sprite
 		if (!stateInfo.isCombat())
 		{
-			for (CombatSprite cs : heroesInState)
-			{
-				if (cs.isLeader())
-				{
-					if (cs.getClientId() == stateInfo.getPersistentStateInfo().getClientId())
-					{
-						stateInfo.setCurrentSprite(cs);
-					}
-					stateInfo.addSprite(cs);
-				}
-			}
-
-			// Even though this is not the leader, the sprites need to be initialized so we can
-			// view items, spells and pictures
-			for (CombatSprite cs : stateInfo.getAllHeroes())
-			{
-				Direction facing = cs.getFacing();
-				cs.initializeSprite(stateInfo.getResourceManager());
-				cs.initializeStats();
-				if (facing != null)
-					cs.setFacing(facing);
-				else
-					cs.setFacing(Direction.DOWN);
-			}
-
-			boolean foundStart = false;
-			String entranceLocation = stateInfo.getEntranceLocation();
-			
-			// If entrance is null then we are coming from a save or egress
-			if (entranceLocation == null) {
-				Point savedPoint = null;
-				if (fromLoad) {
-					savedPoint = stateInfo.getClientProgress().getLastSaveLocation().getInTownPoint();
-				} else {
-					entranceLocation = stateInfo.getClientProgress().getLastEgressLocation().getInTownLocation();
-					savedPoint = stateInfo.getClientProgress().getLastEgressLocation().getInTownPoint();
-				}
-				
-				if (entranceLocation == null && savedPoint == null)
-					throw new BadMapException("The selected map does not contain a start location or a start point. Your save file may be bad");
-				
-				// Use integer division to place the hero at the nearest tile
-				stateInfo.getCurrentSprite().setLocation((savedPoint.x / stateInfo.getTileWidth()) * stateInfo.getTileWidth(), 
-						(savedPoint.y / stateInfo.getTileHeight()) * stateInfo.getTileHeight(), stateInfo.getTileWidth(), stateInfo.getTileHeight());
-				foundStart = true;
-			}
-
-			// Get any npcs from the map
-			for (MapObject mo : stateInfo.getResourceManager().getMap().getMapObjects())
-			{
-				if (mo.getKey().equalsIgnoreCase("npc"))
-				{
-					stateInfo.addSprite(mo.getNPC(stateInfo.getResourceManager()));
-				}
-				// Depending on where we are initializing this map from the entrance location could be null.
-				// If we are loading a map for the first time or via transition from another map then this
-				// value will be set. If we are loading from save then we will just use the absolute sprite
-				// absolute sprite location
-				else if (entranceLocation != null && mo.getKey().equalsIgnoreCase("start")
-						&& mo.getParam("exit").equalsIgnoreCase(entranceLocation))
-				{
-					mo.placeSpritesAtStartLocation(stateInfo);
-					foundStart = true;
-				}
-			}
-			
-			if (!foundStart)
-			{
-				throw new BadMapException("The selected map does not contain a start location with the name " + entranceLocation);
-			}
-			
-			for (AnimatedSprite as : stateInfo.getFollowers()) {
-				as.initializeSprite(stateInfo.getResourceManager());
-				as.setFacing(Direction.DOWN);
-				as.setLocation(stateInfo.getCurrentSprite().getLocX(),stateInfo.getCurrentSprite().getLocY(), 
-						stateInfo.getTileWidth(), stateInfo.getTileHeight());				
-			}
-			
-
-			stateInfo.getCamera().centerOnSprite(stateInfo.getCurrentSprite(), stateInfo.getCurrentMap());
+			initializeSpritesForTown(fromLoad, heroesInState);
 		}
 		// Otherwise just add all of the heroes
 		else
 		{
+			initializeSpritesForBattle(fromLoad, heroesInState);
+		}
+	}
+
+	private void initializeSpritesForBattle(boolean fromLoad, List<CombatSprite> heroesInState) {
+		// Initialize all of the heroes, this just sets images and initializes effects.
+		// Stats are initialized above for all heroes
+		for (CombatSprite cs : stateInfo.getAllHeroes())
+			cs.initializeSprite(stateInfo.getResourceManager());
+		
+		
+		// Regardless of whether or not this is a loaded mid-way battle
+		// or a new battle, initialize the hero list, do NOT initialize
+		// the stats
+		for (CombatSprite cs : heroesInState)
+		{
+			// Do not allow dead sprites to appear in the battle
+			if (cs.getCurrentHP() <= 0)
+				continue;
+
+			// Only initialize stats if this is a "new" battle
+			if (!fromLoad)
+				cs.initializeStats();
+		}
+
+		// Since this battle is not loaded we need to add all of the heroes and enemies
+		// to the state and place them in their starting locations
+		if (!fromLoad) 
+		{
+			heroesInState = heroesInState.stream().filter(s ->
+					// Make sure this isn't a "hero to omit"
+					!heroesToOmit.contains(s.getName()) &&
+					// Make sure the hero is alive
+					s.getCurrentHP() > 0
+						).collect(Collectors.toList());
+			
+			stateInfo.addAllCombatSprites(heroesInState);
+
+			// Place enemy sprites
+			for (MapObject mo : stateInfo.getResourceManager().getMap().getMapObjects())
+			{			
+				if (mo.getKey().equalsIgnoreCase("enemy"))
+				{
+					CombatSprite cs = mo.getEnemy(stateInfo.getResourceManager());
+					
+					if (TacticalGame.BATTLE_MODE_OPTIMIZE)
+						battleOptimizer.modifyStats(cs);
+						
+					// Enemies do not need to be initialized as it was 
+					// already done via the .getEnemy() method above
+					cs.initializeStats();
+					stateInfo.addSprite(cs);
+				}								
+			}		
+			
+			if (!manuallyPlaceHeroes)
+				placeHeroesAtStartLocation(heroesInState);
+			
+			if (TacticalGame.BATTLE_MODE_OPTIMIZE)
+				battleOptimizer.startBattle();
+		// Since the enemies already exist in the combat sprite list
+		// we don't need to add them, but they do need to be "initialized"s
+		} else {
 			// Initialize all of the heroes, this just sets images and initializes effects.
 			// Stats are initialized above for all heroes
 			for (CombatSprite cs : stateInfo.getAllHeroes())
 				cs.initializeSprite(stateInfo.getResourceManager());
 			
-			
-			// Regardless of whether or not this is a loaded mid-way battle
-			// or a new battle, initialize the hero list, do NOT initialize
-			// the stats
-			for (CombatSprite cs : heroesInState)
+			int nextEnemyId = 0;
+			for (CombatSprite cs : stateInfo.getCombatSprites())
 			{
-				// Do not allow dead sprites to appear in the battle
-				if (cs.getCurrentHP() <= 0)
-					continue;
-
-				// Only initialize stats if this is a "new" battle
-				if (!fromLoad)
-					cs.initializeStats();
-			}
-
-			// Since this battle is not loaded we need to add all of the heroes and enemies
-			// to the state and place them in their starting locations
-			if (!fromLoad) 
-			{
-				stateInfo.addAllCombatSprites(heroesInState);
-
-				// Get any npcs from the map
-				for (MapObject mo : stateInfo.getResourceManager().getMap().getMapObjects())
+				if (!cs.isHero())
 				{
-					// TODO This should automatically start the "BATTLE START"
-					if (mo.getKey().equalsIgnoreCase("start") && mo.getParam("exit").equalsIgnoreCase(stateInfo.getEntranceLocation()))
-					{
-						mo.placeSpritesAtStartLocation(stateInfo);
-					}
-					
-					if (mo.getKey().equalsIgnoreCase("enemy"))
-					{
-						CombatSprite cs = mo.getEnemy(stateInfo.getResourceManager());
-						
-						if (TacticalGame.BATTLE_MODE_OPTIMIZE)
-							battleOptimizer.modifyStats(cs);
-							
-						// Enemies do not need to be initialized as it was 
-						// already done via the .getEnemy() method above
-						cs.initializeStats();
-						stateInfo.addSprite(cs);
-					}
-					
-					
-				}
-				
-				// We purposely don't remove the combat sprites until this point so that their
-				// spots are still taken up in the start location (as empty spaces). Otherwise
-				// it could completely fuck up split battles... but so could less people in the party...
-				Iterator<CombatSprite> csIt = heroesInState.iterator();
-				while (csIt.hasNext())
-				{
-					CombatSprite cs = csIt.next();
-					if (cs.getCurrentHP() <= 0)
-						csIt.remove();
-				}
-				
-				if (heroesInState.stream().anyMatch(hs -> hs.getLocX() == -1))
-					throw new BadResourceException("The current battle does not have enough start locations to place all of the heroes currently in the party."
-							+ " Ensure that you have the expected amount of members in the party and that the start trigger refers to the correct start location");
-				
-				if (TacticalGame.BATTLE_MODE_OPTIMIZE)
-					battleOptimizer.startBattle();
-			// Since the enemies already exist in the combat sprite list
-			// we don't need to add them, but they do need to be "initialized"s
-			} else {
-				// Initialize all of the heroes, this just sets images and initializes effects.
-				// Stats are initialized above for all heroes
-				for (CombatSprite cs : stateInfo.getAllHeroes())
 					cs.initializeSprite(stateInfo.getResourceManager());
-				
-				int nextEnemyId = 0;
-				for (CombatSprite cs : stateInfo.getCombatSprites())
-				{
-					if (!cs.isHero())
-					{
-						cs.initializeSprite(stateInfo.getResourceManager());
-						// The target location of AI may be incorrect, fix that here
-						if (cs.getAi() != null)
-							cs.getAi().reinitialize(stateInfo);
-						nextEnemyId = Math.min(nextEnemyId, cs.getId());
-					}
+					// The target location of AI may be incorrect, fix that here
+					if (cs.getAi() != null)
+						cs.getAi().reinitialize(stateInfo);
+					nextEnemyId = Math.min(nextEnemyId, cs.getId());
 				}
-				EnemyDefinition.setNextEnemyId(nextEnemyId - 1);
 			}
-				
-
-			/*
-			AIController aic = new AIController();
-			aic.initialize(stateInfo.getCombatSprites());
-			*/
+			EnemyDefinition.setNextEnemyId(nextEnemyId - 1);
 		}
+			
+
+		/*
+		AIController aic = new AIController();
+		aic.initialize(stateInfo.getCombatSprites());
+		*/
+	}
+	
+	private void placeHeroesAtStartLocation(List<CombatSprite> heroesInState) {
+		Iterator<CombatSprite> csItr = heroesInState.iterator();
+		for (MapObject mo : stateInfo.getResourceManager().getMap().getMapObjects())
+		{
+			// TODO This should automatically start the "BATTLE START"
+			if (mo.getKey().equalsIgnoreCase("start") && mo.getParam("exit").equalsIgnoreCase(stateInfo.getEntranceLocation()))
+			{
+				List<Point> startLocations = mo.getTilePositionsContained(stateInfo.getTileWidth(), stateInfo.getTileHeight());
+				
+				for (Point startLoc : startLocations) {
+					if (csItr.hasNext()) {
+						CombatSprite cs = csItr.next();						
+						if (cs.getCurrentHP() <= 0)
+							csItr.remove();
+						else
+							cs.setLocation(startLoc.x, startLoc.y, 
+									stateInfo.getTileWidth(), stateInfo.getTileHeight());
+					}					
+				}
+			}
+		}
+		
+		if (csItr.hasNext())
+			throw new BadResourceException("The current battle does not have enough start locations to place all of the heroes currently in the party."
+					+ " Ensure that you have the expected amount of members in the party and that the start trigger refers to the correct start location");
+					
+	}
+
+	private void initializeSpritesForTown(boolean fromLoad, List<CombatSprite> heroesInState) {
+		for (CombatSprite cs : heroesInState)
+		{
+			if (cs.isLeader())
+			{
+				if (cs.getClientId() == stateInfo.getPersistentStateInfo().getClientId())
+				{
+					stateInfo.setCurrentSprite(cs);
+				}
+				stateInfo.addSprite(cs);
+			}
+		}
+
+		// Even though this is not the leader, the sprites need to be initialized so we can
+		// view items, spells and pictures
+		for (CombatSprite cs : stateInfo.getAllHeroes())
+		{
+			Direction facing = cs.getFacing();
+			cs.initializeSprite(stateInfo.getResourceManager());
+			cs.initializeStats();
+			if (facing != null)
+				cs.setFacing(facing);
+			else
+				cs.setFacing(Direction.DOWN);
+		}
+
+		boolean foundStart = false;
+		String entranceLocation = stateInfo.getEntranceLocation();
+		
+		// If entrance is null then we are coming from a save or egress
+		if (entranceLocation == null) {
+			Point savedPoint = null;
+			if (fromLoad) {
+				savedPoint = stateInfo.getClientProgress().getLastSaveLocation().getInTownPoint();
+			} else {
+				entranceLocation = stateInfo.getClientProgress().getLastEgressLocation().getInTownLocation();
+				savedPoint = stateInfo.getClientProgress().getLastEgressLocation().getInTownPoint();
+			}
+			
+			if (entranceLocation == null && savedPoint == null)
+				throw new BadMapException("The selected map does not contain a start location or a start point. Your save file may be bad");
+			
+			// Use integer division to place the hero at the nearest tile
+			stateInfo.getCurrentSprite().setLocation((savedPoint.x / stateInfo.getTileWidth()) * stateInfo.getTileWidth(), 
+					(savedPoint.y / stateInfo.getTileHeight()) * stateInfo.getTileHeight(), stateInfo.getTileWidth(), stateInfo.getTileHeight());
+			foundStart = true;
+		}
+
+		// Get any npcs from the map
+		for (MapObject mo : stateInfo.getResourceManager().getMap().getMapObjects())
+		{
+			if (mo.getKey().equalsIgnoreCase("npc"))
+			{
+				stateInfo.addSprite(mo.getNPC(stateInfo.getResourceManager()));
+			}
+			// Depending on where we are initializing this map from the entrance location could be null.
+			// If we are loading a map for the first time or via transition from another map then this
+			// value will be set. If we are loading from save then we will just use the absolute sprite
+			// absolute sprite location
+			else if (entranceLocation != null && mo.getKey().equalsIgnoreCase("start")
+					&& mo.getParam("exit").equalsIgnoreCase(entranceLocation))
+			{
+				List<Point> startLocs = mo.getTilePositionsContained(stateInfo.getTileWidth(), stateInfo.getTileHeight());
+				if (startLocs.size() > 0)
+					stateInfo.getCurrentSprite().setLocation(startLocs.get(0).x, startLocs.get(0).y, 
+							stateInfo.getTileWidth(), stateInfo.getTileHeight());
+				else 
+					throw new BadResourceException("The current map does not have any start locations.");
+							
+				foundStart = true;
+			}
+		}
+		
+		if (!foundStart)
+		{
+			throw new BadMapException("The selected map does not contain a start location with the name " + entranceLocation);
+		}
+		
+		for (AnimatedSprite as : stateInfo.getFollowers()) {
+			as.initializeSprite(stateInfo.getResourceManager());
+			as.setFacing(Direction.DOWN);
+			as.setLocation(stateInfo.getCurrentSprite().getLocX(),stateInfo.getCurrentSprite().getLocY(), 
+					stateInfo.getTileWidth(), stateInfo.getTileHeight());				
+		}
+		
+
+		stateInfo.getCamera().centerOnSprite(stateInfo.getCurrentSprite(), stateInfo.getCurrentMap());
 	}
 
 	public void update(int delta)
@@ -343,6 +379,12 @@ public class SpriteManager extends Manager
 						}
 					}
 				}
+				break;
+			case OMIT_HERO_FROM_BATTLE:
+				heroesToOmit.add(((StringMessage) message).getString());
+				break;
+			case MANUAL_HERO_PLACEMENT:
+				manuallyPlaceHeroes = true;
 				break;
 			default:
 				break;

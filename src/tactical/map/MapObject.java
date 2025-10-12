@@ -3,7 +3,7 @@ package tactical.map;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -13,7 +13,6 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
 import tactical.engine.TacticalGame;
-import tactical.engine.state.StateInfo;
 import tactical.game.ai.AI;
 import tactical.game.ai.ClericAI;
 import tactical.game.ai.WarriorAI;
@@ -168,48 +167,33 @@ public class MapObject
 	public Hashtable<String, String> getParams() {
 		return params;
 	}
-
-	public void placeSpritesAtStartLocation(StateInfo stateInfo)
-	{
+	
+	public List<Point> getTilePositionsContained(int tileWidth, int tileHeight) {
 		int startX = 0;
 		int startY = 0;
-
-		Iterator<Sprite> spritesItr = stateInfo.getSpriteIterator();
-		boolean getOnNext = true;
-		Sprite sprite = null;
-
-		while (spritesItr.hasNext())
-		{
-			if (getOnNext)
-				sprite = spritesItr.next();
-			getOnNext = true;
-
-			if (sprite.getSpriteType() == Sprite.TYPE_COMBAT && ((CombatSprite) sprite).isHero() && sprite.getLocX() == -1)
+		
+		List<Point> availPoints = new ArrayList<>();
+		
+		// Look at all possible points based on width and height, some of these may not actually be in the location
+		for (int i = 0; i < (shape.getWidth() / tileWidth * shape.getHeight() / tileHeight); i++) {
+		
+			if (shape.contains(shape.getX() + startX + 1, shape.getY() + startY + 1))
+			{	
+				availPoints.add(new Point((int) Math.ceil((shape.getX() + startX)), 
+						(int) Math.ceil((shape.getY() + startY))));
+			}
+	
+			startX += tileWidth;
+			if (startX == shape.getWidth())
 			{
-				if (shape.contains(shape.getX() + startX + 1, shape.getY() + startY + 1))
-				{
-					CombatSprite cs = ((CombatSprite) sprite);
-					Direction facing = cs.getFacing();
-					cs.setLocation((shape.getX() + startX), (shape.getY() + startY), stateInfo.getTileWidth(), stateInfo.getTileHeight());
-					if (stateInfo.isCombat() || facing == null)
-						cs.setFacing(Direction.DOWN);
-					else
-						cs.setFacing(facing);
-					
-				}
-				else
-					getOnNext = false;
-
-				startX += stateInfo.getTileWidth();
-				if (startX == shape.getWidth())
-				{
-					startX = 0;
-					startY += stateInfo.getTileHeight();
-					if (startY == shape.getHeight())
-						break;
-				}
+				startX = 0;
+				startY += tileHeight;
+				if (startY == shape.getHeight())
+					break;
 			}
 		}
+		
+		return availPoints;
 	}
 
 	public NPCSprite getNPC(ResourceManager fcrm)

@@ -51,27 +51,29 @@ public class TriggerCondition {
 		@Override
 		public boolean conditionIsMet(String location, boolean locationEntered, 
 				boolean immediate, boolean onMapLoad, boolean searching, StateInfo stateInfo) {
-			int count = 0;
-			for (CombatSprite cs : stateInfo.getCombatSprites())
-			{
-				if (!cs.isHero())
+			if (!onMapLoad) {
+				int count = 0;
+				for (CombatSprite cs : stateInfo.getCombatSprites())
 				{
-					count++;
+					if (!cs.isHero())
+					{
+						count++;
+					}
 				}
-			}
-			
-			if (operator.equalsIgnoreCase("Greater Than"))
-			{
-				return count > amount;
-					
-			}
-			else if (operator.equalsIgnoreCase("Less Than"))
-			{
-				return count < amount;
-			}
-			else if (operator.equalsIgnoreCase("Equals"))
-			{
-				return count == amount;
+				
+				if (operator.equalsIgnoreCase("Greater Than"))
+				{
+					return count > amount;
+						
+				}
+				else if (operator.equalsIgnoreCase("Less Than"))
+				{
+					return count < amount;
+				}
+				else if (operator.equalsIgnoreCase("Equals"))
+				{
+					return count == amount;
+				}
 			}
 			return false;
 		}

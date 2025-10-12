@@ -71,6 +71,7 @@ public class StateInfo
 	private ArrayList<Message> messagesToProcess;
 	private ArrayList<Message> newMessages;
 	private ArrayList<Message> oldMessages;
+	
 	@Getter @Setter private boolean initialized = false;
 	@Getter private boolean isCombat = false;
 	private boolean isCinematic = false;
@@ -244,16 +245,17 @@ public class StateInfo
 		*/
 		
 
-		sendMessage(new BooleanMessage(MessageType.INTIIALIZE_MANAGERS, isBattleInitialized));
-		if (this.getClientProgress().getRetriggerablesByMap() != null)
-			for (Integer triggerId : this.getClientProgress().getRetriggerablesByMap())
-				getResourceManager().getTriggerEventById(triggerId).perform(this);
-
 		// If this isn't a cinematic check MapLoad conditions
 		if (!isCinematic)
 		{
 			this.getResourceManager().checkTriggerCondtions(null, false ,false, true, false, this);
 		}
+		
+		if (this.getClientProgress().getRetriggerablesByMap() != null)
+			for (Integer triggerId : this.getClientProgress().getRetriggerablesByMap())
+				getResourceManager().getTriggerEventById(triggerId).perform(this);
+		
+		sendMessage(new BooleanMessage(MessageType.INTIIALIZE_MANAGERS, isBattleInitialized));
 		
 		persistentStateInfo.getGc().getInput().addKeyListener(input);
 		
@@ -860,6 +862,10 @@ public class StateInfo
 	
 	public Iterable<CombatSprite> getAllHeroes() {
 		return this.persistentStateInfo.getClientProfile().getHeroes();
+	}
+	
+	public List<CombatSprite> getAllLivingHeroesInState() {
+		return this.combatSprites.stream().filter(cs -> cs.isHero() && cs.getCurrentHP() > 0).collect(Collectors.toList());
 	}
 	
 	public boolean isInCinematicState() {
