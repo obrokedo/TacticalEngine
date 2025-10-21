@@ -164,6 +164,13 @@ public class AnimatedSprite extends Sprite
 		setLocX(locX, tileWidth);
 		setLocY(locY, tileHeight);
 	}
+	
+	public void setLocation(java.awt.Point loc, int tileWidth, int tileHeight)
+	{
+		setLocX(loc.x, tileWidth);
+		setLocY(loc.y, tileHeight);
+	}
+
 
 	public void doneMoving(StateInfo stateInfo) {
 

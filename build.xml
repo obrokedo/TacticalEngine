@@ -42,7 +42,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/timebars-1.49.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/ZTCP.jar"/>
         </jar>
-    	<copy file="${dir.jarfile}/Tactical.jar" tofile="${dir.jarfile}/../LegaciesOfVeridocia/LegaciesOfVeridocia/lib/Tactical.jar"/>
-    	<ant antfile="LoV-Ant-Dev.xml" target="create_run_jar" dir="../LegaciesOfVeridocia/LegaciesOfVeridocia" inheritAll="false"/>
+    	<copy file="${dir.jarfile}/Tactical.jar" tofile="../../workspace/LegaciesOfVeridocia/lib/Tactical.jar"/>
+    	<ant antfile="LoV-Ant-Dev.xml" target="create_run_jar" dir="../../workspace/LegaciesOfVeridocia" inheritAll="false"/>
     </target>
 </project>

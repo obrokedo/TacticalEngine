@@ -289,6 +289,7 @@ public class BattleSceneCreator {
 			{
 				addCombatAnimation(target.isHero(), new StandCombatAnimation(target, platformBySprite.get(target)));
 			}
+			textToDisplay.add(battleResults.attackOverText);
 		}
 	}
 

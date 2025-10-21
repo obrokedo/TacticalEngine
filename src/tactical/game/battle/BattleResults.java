@@ -78,7 +78,7 @@ public class BattleResults implements Serializable
 					(battleCommand.getCommand() == BattleCommand.COMMAND_ATTACK && effect.preventsAttack()) ||
 					(battleCommand.getCommand() == BattleCommand.COMMAND_SPELL && effect.preventsSpells()))
 			{
-					battleCommand = new BattleCommand(BattleCommand.COMMAND_TURN_PREVENTED);
+					br.battleCommand = battleCommand = new BattleCommand(BattleCommand.COMMAND_TURN_PREVENTED);
 					preventEffectName = effect.getBattleEffectId();
 					break;
 			}
